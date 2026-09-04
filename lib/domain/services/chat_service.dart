@@ -1,4 +1,5 @@
 import '../../dal/remote/cortex_api_adapter.dart';
+import '../models/attachment.dart';
 import '../models/chat_message.dart';
 import '../models/conversation.dart';
 import '../models/execute_request.dart';
@@ -11,11 +12,25 @@ import '../models/execute_request.dart';
 /// `CortexApiAdapter`), instead of the delayed, hardcoded reply this used to
 /// return.
 ///
-/// Two modes are supported, chosen per-call via [sendMessage]'s `useMemory`:
+/// Three modes are supported, chosen per-call:
 /// - Plain chat: streams tokens from cortex_api's OpenAI facade
 ///   (`POST /v1/chat/completions`, `stream: true`).
-/// - Memory recall: calls cortex_api's native `POST /execute` with
-///   `capabilities.memory = true`, a single non-streamed reply.
+/// - Memory recall (`useMemory`): calls cortex_api's native `POST /execute`
+///   with `capabilities.memory = true`, a single non-streamed reply.
+/// - Attachments force the native `/execute` route regardless of
+///   `useMemory`: `ChatCompletionRequest` (the streaming facade) has no
+///   `attachments` field on cortex_api's real schema, only `ExecuteRequest`
+///   does.
+///
+/// Web-search grounding (`needsWeb`) is orthogonal to the above and is
+/// forwarded on whichever route is used (both real schemas carry
+/// `needs_web`).
+///
+/// [sendEphemeralMessage] is the separate incognito/temporary-chat path
+/// (issue #6): it never touches the in-memory `_conversations` list (so
+/// nothing is added to `listConversations()` and nothing could ever be
+/// written to `LocalStorageAdapter`), and it always forces memory off and
+/// `capabilities.temporary = true`.
 class ChatService {
   ChatService({CortexApiAdapter? cortexApiAdapter})
     : _cortexApi = cortexApiAdapter ?? CortexApiAdapter(),
@@ -33,20 +48,36 @@ class ChatService {
     return null;
   }
 
+  /// Builds a brand-new, never-persisted conversation for incognito mode.
+  /// It is intentionally not added to `_conversations`: it never appears in
+  /// `listConversations()` and is lost as soon as the caller stops holding
+  /// a reference to it (e.g. the user switches to another conversation).
+  Conversation newEphemeralConversation({required String title}) {
+    final now = DateTime.now();
+    return Conversation(
+      id: 'ephemeral-${now.microsecondsSinceEpoch}',
+      title: title,
+      isEphemeral: true,
+      messages: const [],
+    );
+  }
+
   /// Appends [content] as a user message, then produces an assistant reply
-  /// either by streaming (default) or, when [useMemory] is true, by calling
-  /// the native memory-aware `/execute` route. Returns the final, fully
-  /// updated conversation.
+  /// either by streaming (default) or, when [useMemory] is true or
+  /// [attachments] is non-empty, by calling the native memory-aware
+  /// `/execute` route. Returns the final, fully updated conversation.
   ///
   /// [onUpdate], if given, is called every time the stored conversation
   /// changes: once right after the user message is appended, then once per
-  /// streamed token (or once with the full reply in the memory-recall
-  /// path). Callers that want to render tokens as they arrive should use
-  /// this callback rather than waiting on the returned [Future].
+  /// streamed token (or once with the full reply in the `/execute` path).
+  /// Callers that want to render tokens as they arrive should use this
+  /// callback rather than waiting on the returned [Future].
   Future<Conversation> sendMessage({
     required String conversationId,
     required String content,
     bool useMemory = false,
+    bool needsWeb = false,
+    List<ChatAttachment> attachments = const [],
     void Function(Conversation conversation)? onUpdate,
   }) async {
     final index = _conversations.indexWhere((c) => c.id == conversationId);
@@ -55,6 +86,55 @@ class ChatService {
     }
 
     final conversation = _conversations[index];
+    final updated = await _appendUserMessageAndReply(
+      conversation: conversation,
+      content: content,
+      useMemory: useMemory,
+      needsWeb: needsWeb,
+      temporary: false,
+      attachments: attachments,
+      onUpdate: (c) {
+        _conversations[index] = c;
+        onUpdate?.call(c);
+      },
+    );
+    _conversations[index] = updated;
+    return updated;
+  }
+
+  /// Incognito counterpart of [sendMessage]: operates entirely on the
+  /// [conversation] object passed in (expected to be
+  /// `isEphemeral == true`, e.g. from [newEphemeralConversation]) and never
+  /// touches `_conversations`. Memory is always forced off here regardless
+  /// of any caller input: incognito chats must never opt into server-side
+  /// memory recall.
+  Future<Conversation> sendEphemeralMessage({
+    required Conversation conversation,
+    required String content,
+    bool needsWeb = false,
+    List<ChatAttachment> attachments = const [],
+    void Function(Conversation conversation)? onUpdate,
+  }) {
+    return _appendUserMessageAndReply(
+      conversation: conversation,
+      content: content,
+      useMemory: false,
+      needsWeb: needsWeb,
+      temporary: true,
+      attachments: attachments,
+      onUpdate: onUpdate,
+    );
+  }
+
+  Future<Conversation> _appendUserMessageAndReply({
+    required Conversation conversation,
+    required String content,
+    required bool useMemory,
+    required bool needsWeb,
+    required bool temporary,
+    required List<ChatAttachment> attachments,
+    void Function(Conversation conversation)? onUpdate,
+  }) async {
     final now = DateTime.now();
 
     final userMessage = ChatMessage(
@@ -62,42 +142,55 @@ class ChatService {
       role: MessageRole.user,
       content: content,
       createdAt: now,
+      attachments: attachments,
     );
 
     var updated = Conversation(
       id: conversation.id,
       title: conversation.title,
       isPinned: conversation.isPinned,
+      isEphemeral: conversation.isEphemeral,
       messages: [...conversation.messages, userMessage],
     );
-    _conversations[index] = updated;
     onUpdate?.call(updated);
 
     final replyId = 'msg-${now.microsecondsSinceEpoch}-r';
 
-    if (useMemory) {
-      updated = await _replyWithMemoryRecall(index, updated, replyId);
+    if (useMemory || attachments.isNotEmpty || temporary) {
+      updated = await _replyWithExecute(
+        updated,
+        replyId,
+        useMemory: useMemory,
+        needsWeb: needsWeb,
+        temporary: temporary,
+        attachments: attachments,
+      );
     } else {
-      updated = await _replyWithStreamedChat(index, updated, replyId, onUpdate);
+      updated = await _replyWithStreamedChat(
+        updated,
+        replyId,
+        needsWeb: needsWeb,
+        onUpdate: onUpdate,
+      );
     }
     onUpdate?.call(updated);
     return updated;
   }
 
   Future<Conversation> _replyWithStreamedChat(
-    int index,
     Conversation conversation,
-    String replyId,
+    String replyId, {
+    required bool needsWeb,
     void Function(Conversation conversation)? onUpdate,
-  ) async {
+  }) async {
     final createdAt = DateTime.now();
     final buffer = StringBuffer();
     var updated = _withAppendedReply(conversation, replyId, '', createdAt);
-    _conversations[index] = updated;
 
     try {
       await for (final tokenDelta in _cortexApi.streamChatCompletion(
         messages: conversation.messages,
+        needsWeb: needsWeb,
       )) {
         buffer.write(tokenDelta);
         updated = _withAppendedReply(
@@ -105,8 +198,8 @@ class ChatService {
           replyId,
           buffer.toString(),
           createdAt,
+          sources: needsWeb ? _extractSources(buffer.toString()) : const [],
         );
-        _conversations[index] = updated;
         onUpdate?.call(updated);
       }
     } on CortexApiException catch (e) {
@@ -116,51 +209,89 @@ class ChatService {
         'Sorry, I could not reach Cortex: ${e.message}',
         createdAt,
       );
-      _conversations[index] = updated;
     }
 
     return updated;
   }
 
-  Future<Conversation> _replyWithMemoryRecall(
-    int index,
+  Future<Conversation> _replyWithExecute(
     Conversation conversation,
-    String replyId,
-  ) async {
+    String replyId, {
+    required bool useMemory,
+    required bool needsWeb,
+    required bool temporary,
+    required List<ChatAttachment> attachments,
+  }) async {
     final createdAt = DateTime.now();
     String content;
+    List<String> sources = const [];
     try {
       final result = await _cortexApi.execute(
-        ExecuteRequest(prompt: conversation.messages.last.content, useMemory: true),
+        ExecuteRequest(
+          prompt: conversation.messages.last.content,
+          useMemory: useMemory,
+          needsWeb: needsWeb,
+          temporary: temporary,
+          attachments: attachments,
+        ),
       );
       content = result.response;
+      if (needsWeb) sources = _extractSources(content);
     } on CortexApiException catch (e) {
       content = 'Sorry, I could not reach Cortex: ${e.message}';
     }
 
-    final updated = _withAppendedReply(conversation, replyId, content, createdAt);
-    _conversations[index] = updated;
-    return updated;
+    return _withAppendedReply(
+      conversation,
+      replyId,
+      content,
+      createdAt,
+      sources: sources,
+    );
   }
 
   Conversation _withAppendedReply(
     Conversation conversation,
     String replyId,
     String content,
-    DateTime createdAt,
-  ) {
+    DateTime createdAt, {
+    List<String> sources = const [],
+  }) {
     final reply = ChatMessage(
       id: replyId,
       role: MessageRole.assistant,
       content: content,
       createdAt: createdAt,
+      sources: sources,
     );
     return Conversation(
       id: conversation.id,
       title: conversation.title,
       isPinned: conversation.isPinned,
+      isEphemeral: conversation.isEphemeral,
       messages: [...conversation.messages, reply],
     );
+  }
+
+  /// Heuristically pulls raw `http(s)://` URLs out of [text]. cortex_api has
+  /// no dedicated citation/source field on `ExecuteResponse` or
+  /// `ChatCompletionResponse` today, so this is the only way to surface a
+  /// "Sources (N)" card: it is real extraction of whatever the model
+  /// actually wrote, not fabricated data, but it depends on the model
+  /// choosing to cite URLs in the reply text and is not a structured
+  /// backend guarantee.
+  static final _urlPattern = RegExp(r'https?://[^\s)>\]"]+');
+
+  List<String> _extractSources(String text) {
+    final seen = <String>{};
+    final sources = <String>[];
+    for (final match in _urlPattern.allMatches(text)) {
+      var url = match.group(0)!;
+      // Strip common trailing punctuation picked up by the greedy match.
+      url = url.replaceAll(RegExp(r'[.,;:!?]+$'), '');
+      if (seen.add(url)) sources.add(url);
+    }
+    return sources;
   }
 
   static List<Conversation> _mockConversations() {
