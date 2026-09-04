@@ -50,6 +50,15 @@
 
   "couldNotSendMessage": "ไม่สามารถส่งข้อความได้: {error}",
 
+  "scrollToBottomTooltip": "เลื่อนไปด้านล่างสุด",
+
+  "codeBlockPlainLabel": "โค้ด",
+  "codeBlockCopyLabel": "คัดลอก",
+  "codeBlockCopiedLabel": "คัดลอกแล้ว!",
+
+  "continueGenerationLabel": "สร้างคำตอบต่อ",
+  "continueGenerationTooltip": "การเชื่อมต่อขาดหายระหว่างการตอบกลับ การกดนี้จะลองส่งคำขอใหม่ทั้งหมด (cortex_api ไม่สามารถสร้างคำตอบต่อจากส่วนที่ค้างไว้ได้) และจะแทนที่ข้อความนี้เมื่อได้คำตอบใหม่",
+
   "settingsTitle": "ตั้งค่า",
   "themeLabel": "ธีม",
   "themeLight": "สว่าง",

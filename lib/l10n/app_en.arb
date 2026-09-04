@@ -69,6 +69,15 @@
     "placeholders": {"error": {"type": "String"}}
   },
 
+  "scrollToBottomTooltip": "Scroll to bottom",
+
+  "codeBlockPlainLabel": "code",
+  "codeBlockCopyLabel": "Copy",
+  "codeBlockCopiedLabel": "Copied!",
+
+  "continueGenerationLabel": "Continue generation",
+  "continueGenerationTooltip": "The connection dropped mid-reply. This retries the request from scratch (cortex_api cannot resume a partial reply) and replaces this message once a new answer comes in.",
+
   "settingsTitle": "Settings",
   "themeLabel": "Theme",
   "themeLight": "Light",

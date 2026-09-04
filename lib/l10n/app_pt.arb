@@ -50,6 +50,15 @@
 
   "couldNotSendMessage": "Não foi possível enviar a mensagem: {error}",
 
+  "scrollToBottomTooltip": "Rolar até o fim",
+
+  "codeBlockPlainLabel": "código",
+  "codeBlockCopyLabel": "Copiar",
+  "codeBlockCopiedLabel": "Copiado!",
+
+  "continueGenerationLabel": "Continuar geração",
+  "continueGenerationTooltip": "A conexão caiu no meio da resposta. Isso tenta a solicitação de novo, do zero (o cortex_api não consegue retomar uma resposta parcial), substituindo esta mensagem quando a nova resposta chegar.",
+
   "settingsTitle": "Configurações",
   "themeLabel": "Tema",
   "themeLight": "Claro",

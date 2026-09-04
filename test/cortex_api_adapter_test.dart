@@ -5,6 +5,7 @@
 
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:cortex/dal/remote/cortex_api_adapter.dart';
 import 'package:cortex/domain/models/chat_message.dart';
@@ -29,7 +30,10 @@ class _FakeHttpClient extends http.BaseClient {
   }
 }
 
-http.StreamedResponse _sseResponse(List<String> frames, {int statusCode = 200}) {
+http.StreamedResponse _sseResponse(
+  List<String> frames, {
+  int statusCode = 200,
+}) {
   final bytes = frames.map((f) => utf8.encode(f)).toList();
   return http.StreamedResponse(
     Stream.fromIterable(bytes),
@@ -40,78 +44,93 @@ http.StreamedResponse _sseResponse(List<String> frames, {int statusCode = 200}) 
 
 void main() {
   group('CortexApiAdapter.streamChatCompletion', () {
-    test('parses chat.completion.chunk SSE frames into content deltas', () async {
-      final client = _FakeHttpClient((request) async {
-        return _sseResponse([
-          'data: ${jsonEncode({
-            "id": "chatcmpl-1",
-            "object": "chat.completion.chunk",
-            "created": 1,
-            "model": "cortex-t0",
-            "choices": [
-              {"index": 0, "delta": {"role": "assistant"}, "finish_reason": null},
-            ],
-          })}\n\n',
-          'data: ${jsonEncode({
-            "id": "chatcmpl-1",
-            "object": "chat.completion.chunk",
-            "created": 1,
-            "model": "cortex-t0",
-            "choices": [
-              {"index": 0, "delta": {"content": "Hello "}, "finish_reason": null},
-            ],
-          })}\n\n',
-          'data: ${jsonEncode({
-            "id": "chatcmpl-1",
-            "object": "chat.completion.chunk",
-            "created": 1,
-            "model": "cortex-t0",
-            "choices": [
-              {"index": 0, "delta": {"content": "world"}, "finish_reason": null},
-            ],
-          })}\n\n',
-          'data: ${jsonEncode({
-            "id": "chatcmpl-1",
-            "object": "chat.completion.chunk",
-            "created": 1,
-            "model": "cortex-t0",
-            "choices": [
-              {"index": 0, "delta": {}, "finish_reason": "stop"},
-            ],
-          })}\n\n',
-          'data: [DONE]\n\n',
-        ]);
-      });
+    test(
+      'parses chat.completion.chunk SSE frames into content deltas',
+      () async {
+        final client = _FakeHttpClient((request) async {
+          return _sseResponse([
+            'data: ${jsonEncode({
+              "id": "chatcmpl-1",
+              "object": "chat.completion.chunk",
+              "created": 1,
+              "model": "cortex-t0",
+              "choices": [
+                {
+                  "index": 0,
+                  "delta": {"role": "assistant"},
+                  "finish_reason": null,
+                },
+              ],
+            })}\n\n',
+            'data: ${jsonEncode({
+              "id": "chatcmpl-1",
+              "object": "chat.completion.chunk",
+              "created": 1,
+              "model": "cortex-t0",
+              "choices": [
+                {
+                  "index": 0,
+                  "delta": {"content": "Hello "},
+                  "finish_reason": null,
+                },
+              ],
+            })}\n\n',
+            'data: ${jsonEncode({
+              "id": "chatcmpl-1",
+              "object": "chat.completion.chunk",
+              "created": 1,
+              "model": "cortex-t0",
+              "choices": [
+                {
+                  "index": 0,
+                  "delta": {"content": "world"},
+                  "finish_reason": null,
+                },
+              ],
+            })}\n\n',
+            'data: ${jsonEncode({
+              "id": "chatcmpl-1",
+              "object": "chat.completion.chunk",
+              "created": 1,
+              "model": "cortex-t0",
+              "choices": [
+                {"index": 0, "delta": {}, "finish_reason": "stop"},
+              ],
+            })}\n\n',
+            'data: [DONE]\n\n',
+          ]);
+        });
 
-      final adapter = CortexApiAdapter(
-        apiForAppsBaseUrl: 'http://test.local',
-        httpClient: client,
-      );
+        final adapter = CortexApiAdapter(
+          apiForAppsBaseUrl: 'http://test.local',
+          httpClient: client,
+        );
 
-      final deltas = await adapter
-          .streamChatCompletion(
-            messages: [
-              ChatMessage(
-                id: 'm1',
-                role: MessageRole.user,
-                content: 'hi',
-                createdAt: DateTime.now(),
-              ),
-            ],
-          )
-          .toList();
+        final deltas = await adapter
+            .streamChatCompletion(
+              messages: [
+                ChatMessage(
+                  id: 'm1',
+                  role: MessageRole.user,
+                  content: 'hi',
+                  createdAt: DateTime.now(),
+                ),
+              ],
+            )
+            .toList();
 
-      expect(deltas, ['Hello ', 'world']);
+        expect(deltas, ['Hello ', 'world']);
 
-      final request = client.lastRequest! as http.Request;
-      expect(
-        request.url.toString(),
-        'http://test.local/cortex/v1/v1/chat/completions',
-      );
-      final body = jsonDecode(request.body) as Map<String, dynamic>;
-      expect(body['model'], 'cortex-t0');
-      expect(body['stream'], true);
-    });
+        final request = client.lastRequest! as http.Request;
+        expect(
+          request.url.toString(),
+          'http://test.local/cortex/v1/v1/chat/completions',
+        );
+        final body = jsonDecode(request.body) as Map<String, dynamic>;
+        expect(body['model'], 'cortex-t0');
+        expect(body['stream'], true);
+      },
+    );
 
     test('ignores malformed SSE frames instead of throwing', () async {
       final client = _FakeHttpClient((request) async {
@@ -119,7 +138,9 @@ void main() {
           'data: not-json\n\n',
           'data: ${jsonEncode({
             "choices": [
-              {"delta": {"content": "ok"}},
+              {
+                "delta": {"content": "ok"},
+              },
             ],
           })}\n\n',
           'data: [DONE]\n\n',
@@ -140,10 +161,7 @@ void main() {
 
     test('throws CortexApiException on a non-200 status', () async {
       final client = _FakeHttpClient((request) async {
-        return http.StreamedResponse(
-          Stream.value(utf8.encode('boom')),
-          500,
-        );
+        return http.StreamedResponse(Stream.value(utf8.encode('boom')), 500);
       });
 
       final adapter = CortexApiAdapter(
@@ -156,67 +174,115 @@ void main() {
         throwsA(isA<CortexApiException>()),
       );
     });
+
+    test(
+      'throws CortexStreamInterruptedException when the byte stream errors '
+      'mid-read, after some deltas were already yielded (issue #7)',
+      () async {
+        final client = _FakeHttpClient((request) async {
+          final controller = StreamController<List<int>>();
+          controller.add(
+            utf8.encode(
+              'data: ${jsonEncode({
+                "choices": [
+                  {
+                    "delta": {"content": "partial "},
+                  },
+                ],
+              })}\n\n',
+            ),
+          );
+          // Simulate the connection dropping mid-response instead of
+          // reaching `data: [DONE]`.
+          Future<void>.delayed(Duration.zero, () {
+            controller.addError(const SocketException('connection reset'));
+          });
+          return http.StreamedResponse(
+            controller.stream,
+            200,
+            headers: const {'content-type': 'text/event-stream'},
+          );
+        });
+
+        final adapter = CortexApiAdapter(
+          apiForAppsBaseUrl: 'http://test.local',
+          httpClient: client,
+        );
+
+        final received = <String>[];
+        await expectLater(() async {
+          await for (final delta in adapter.streamChatCompletion(
+            messages: const [],
+          )) {
+            received.add(delta);
+          }
+        }, throwsA(isA<CortexStreamInterruptedException>()));
+        // The delta yielded before the drop must not be lost, this is
+        // exactly what lets ChatService preserve partial text.
+        expect(received, ['partial ']);
+      },
+    );
   });
 
   group('CortexApiAdapter.execute', () {
-    test('posts to the double-prefixed /execute path and parses the response', () async {
-      final client = _FakeHttpClient((request) async {
-        expect(
-          request.url.toString(),
-          'http://test.local/cortex/v1/execute',
-        );
-        return http.StreamedResponse(
-          Stream.value(
-            utf8.encode(
-              jsonEncode({
-                'request_id': 'req-1',
-                'tier_requested': 0,
-                'tier_executed': 0,
-                'strategy_id': 'hippocampus_proxy_passthrough',
-                'task_type': 'memory_recall',
-                'success': true,
-                'response': 'recalled memory',
-                'input_tokens': 0,
-                'output_tokens': 0,
-                'total_tokens': 0,
-                'cost_usd': 0.0,
-                'latency_ms': 15,
-                'steps': [],
-              }),
+    test(
+      'posts to the double-prefixed /execute path and parses the response',
+      () async {
+        final client = _FakeHttpClient((request) async {
+          expect(request.url.toString(), 'http://test.local/cortex/v1/execute');
+          return http.StreamedResponse(
+            Stream.value(
+              utf8.encode(
+                jsonEncode({
+                  'request_id': 'req-1',
+                  'tier_requested': 0,
+                  'tier_executed': 0,
+                  'strategy_id': 'hippocampus_proxy_passthrough',
+                  'task_type': 'memory_recall',
+                  'success': true,
+                  'response': 'recalled memory',
+                  'input_tokens': 0,
+                  'output_tokens': 0,
+                  'total_tokens': 0,
+                  'cost_usd': 0.0,
+                  'latency_ms': 15,
+                  'steps': [],
+                }),
+              ),
             ),
-          ),
-          200,
-          headers: const {'content-type': 'application/json'},
+            200,
+            headers: const {'content-type': 'application/json'},
+          );
+        });
+
+        final adapter = CortexApiAdapter(
+          apiForAppsBaseUrl: 'http://test.local',
+          httpClient: client,
         );
-      });
 
-      final adapter = CortexApiAdapter(
-        apiForAppsBaseUrl: 'http://test.local',
-        httpClient: client,
-      );
+        final result = await adapter.execute(
+          const ExecuteRequest(prompt: 'remember this', useMemory: true),
+        );
 
-      final result = await adapter.execute(
-        const ExecuteRequest(prompt: 'remember this', useMemory: true),
-      );
+        expect(result.success, isTrue);
+        expect(result.response, 'recalled memory');
+        expect(result.strategyId, 'hippocampus_proxy_passthrough');
 
-      expect(result.success, isTrue);
-      expect(result.response, 'recalled memory');
-      expect(result.strategyId, 'hippocampus_proxy_passthrough');
-
-      final request = client.lastRequest! as http.Request;
-      final body = jsonDecode(request.body) as Map<String, dynamic>;
-      expect(body['use_memory'], true);
-      expect(body['capabilities'], {
-        'memory': true,
-        'web': false,
-        'temporary': false,
-      });
-      // Never sends any tier/model override: the client offers no UI for
-      // it, and the proxy would strip it anyway.
-      expect(body.containsKey('tier'), isFalse);
-      expect(body.containsKey('force_model'), isFalse);
-      expect(body.containsKey('force_provider'), isFalse);
-    });
+        final request = client.lastRequest! as http.Request;
+        final body = jsonDecode(request.body) as Map<String, dynamic>;
+        expect(body['use_memory'], true);
+        expect(body['capabilities'], {
+          'memory': true,
+          'web': false,
+          'temporary': false,
+        });
+        // Never sends any tier/model override: the client offers no UI for
+        // it, and the proxy would strip it anyway.
+        expect(body.containsKey('tier'), isFalse);
+        expect(body.containsKey('force_model'), isFalse);
+        expect(body.containsKey('force_provider'), isFalse);
+      },
+    );
 
     test(
       'needsWeb sets needs_web and capabilities.web on the request (issue #6)',

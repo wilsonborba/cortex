@@ -5,6 +5,7 @@ import '../../components/app_settings_sheet.dart';
 import '../../components/conversation_tile.dart';
 import '../../components/message_bubble.dart';
 import '../../components/prompt_dock.dart';
+import '../../components/scroll_to_bottom_button.dart';
 import '../../components/telemetry_panel.dart';
 import '../../components/tier_badge.dart';
 import 'chat_screen.dart';
@@ -23,24 +24,12 @@ class MobileChatScreen extends StatefulWidget {
 }
 
 class _MobileChatScreenState extends State<MobileChatScreen> {
-  final _scrollController = ScrollController();
+  final _scroll = StickyScrollController();
 
   @override
   void dispose() {
-    _scrollController.dispose();
+    _scroll.dispose();
     super.dispose();
-  }
-
-  void _scrollToBottom() {
-    if (!_scrollController.hasClients) return;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!_scrollController.hasClients) return;
-      _scrollController.animateTo(
-        _scrollController.position.maxScrollExtent,
-        duration: const Duration(milliseconds: 200),
-        curve: Curves.easeOut,
-      );
-    });
   }
 
   void _openSessionSheet() {
@@ -97,7 +86,11 @@ class _MobileChatScreenState extends State<MobileChatScreen> {
   Widget build(BuildContext context) {
     final props = widget.props;
     final l10n = AppLocalizations.of(context);
-    _scrollToBottom();
+    // Runs after every rebuild (new message, growing streamed token, etc.),
+    // and only actually scrolls while sticky (issue #7).
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) => _scroll.maybeAutoScroll(),
+    );
 
     return Scaffold(
       resizeToAvoidBottomInset: true,
@@ -181,18 +174,47 @@ class _MobileChatScreenState extends State<MobileChatScreen> {
         child: Column(
           children: [
             Expanded(
-              child: ListView.builder(
-                controller: _scrollController,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 12,
-                ),
-                itemCount: props.selectedConversation.messages.length,
-                itemBuilder: (context, index) {
-                  return MessageBubble(
-                    message: props.selectedConversation.messages[index],
-                  );
-                },
+              child: Stack(
+                alignment: Alignment.bottomCenter,
+                children: [
+                  NotificationListener<ScrollNotification>(
+                    onNotification: (notification) {
+                      if (_scroll.handleNotification(notification)) {
+                        setState(() {});
+                      }
+                      return false;
+                    },
+                    child: ListView.builder(
+                      controller: _scroll.controller,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 12,
+                      ),
+                      itemCount: props.selectedConversation.messages.length,
+                      itemBuilder: (context, index) {
+                        final message =
+                            props.selectedConversation.messages[index];
+                        return MessageBubble(
+                          message: message,
+                          onContinueGeneration: () =>
+                              props.onContinueGeneration(message.id),
+                          isContinuingGeneration:
+                              props.continuingMessageId == message.id,
+                        );
+                      },
+                    ),
+                  ),
+                  if (!_scroll.isSticky)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 8),
+                      child: ScrollToBottomButton(
+                        onPressed: () {
+                          _scroll.scrollToBottom();
+                          setState(() {});
+                        },
+                      ),
+                    ),
+                ],
               ),
             ),
             Padding(
@@ -207,6 +229,9 @@ class _MobileChatScreenState extends State<MobileChatScreen> {
                 pendingAttachments: props.pendingAttachments,
                 onAddAttachments: props.onAddAttachments,
                 onRemoveAttachment: props.onRemoveAttachment,
+                conversationId: props.selectedConversation.id,
+                draftText: props.draftText,
+                onDraftChanged: props.onDraftChanged,
               ),
             ),
           ],

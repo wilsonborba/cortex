@@ -153,6 +153,25 @@ class AppLocalizationsTh extends AppLocalizations {
   }
 
   @override
+  String get scrollToBottomTooltip => 'เลื่อนไปด้านล่างสุด';
+
+  @override
+  String get codeBlockPlainLabel => 'โค้ด';
+
+  @override
+  String get codeBlockCopyLabel => 'คัดลอก';
+
+  @override
+  String get codeBlockCopiedLabel => 'คัดลอกแล้ว!';
+
+  @override
+  String get continueGenerationLabel => 'สร้างคำตอบต่อ';
+
+  @override
+  String get continueGenerationTooltip =>
+      'การเชื่อมต่อขาดหายระหว่างการตอบกลับ การกดนี้จะลองส่งคำขอใหม่ทั้งหมด (cortex_api ไม่สามารถสร้างคำตอบต่อจากส่วนที่ค้างไว้ได้) และจะแทนที่ข้อความนี้เมื่อได้คำตอบใหม่';
+
+  @override
   String get settingsTitle => 'ตั้งค่า';
 
   @override

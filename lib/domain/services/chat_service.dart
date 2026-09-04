@@ -202,6 +202,18 @@ class ChatService {
         );
         onUpdate?.call(updated);
       }
+    } on CortexStreamInterruptedException {
+      // Preserve whatever partial text already streamed in (issue #7):
+      // the reply is marked `interrupted` so the UI can offer "Continue
+      // generation" instead of discarding the partial answer.
+      updated = _withAppendedReply(
+        conversation,
+        replyId,
+        buffer.toString(),
+        createdAt,
+        sources: needsWeb ? _extractSources(buffer.toString()) : const [],
+        interrupted: true,
+      );
     } on CortexApiException catch (e) {
       updated = _withAppendedReply(
         conversation,
@@ -211,6 +223,93 @@ class ChatService {
       );
     }
 
+    return updated;
+  }
+
+  /// "Continue generation" for a reply left [ChatMessage.interrupted] by a
+  /// dropped SSE connection (issue #7).
+  ///
+  /// Honesty note: cortex_api's streaming facade sends the full model
+  /// response and then chunks it out over SSE (issue #3's finding), it does
+  /// not generate token-by-token, and it exposes no partial-completion
+  /// resume endpoint. So this is **not** a true "pick up where it left
+  /// off": it retries the exact same prompt context that produced the
+  /// interrupted reply (every message up to, but excluding, that reply)
+  /// from scratch, and once a new response streams in, it *replaces* the
+  /// interrupted message's content rather than appending to it, there is no
+  /// meaningful token-level continuity between the discarded partial text
+  /// and the retried answer. If the retry is interrupted again, the newly
+  /// (still partial) text is preserved the same way, so nothing already
+  /// received is ever silently dropped.
+  ///
+  /// [conversation] is the conversation the interrupted message belongs to
+  /// (works for both persisted and ephemeral/incognito conversations, the
+  /// latter mirroring [sendEphemeralMessage]'s "never touches
+  /// `_conversations`" behaviour). [replyMessageId] must be the id of an
+  /// existing assistant message in [conversation.messages].
+  Future<Conversation> continueGeneration({
+    required Conversation conversation,
+    required String replyMessageId,
+    bool needsWeb = false,
+    void Function(Conversation conversation)? onUpdate,
+  }) async {
+    final replyIndex = conversation.messages.indexWhere(
+      (m) => m.id == replyMessageId,
+    );
+    if (replyIndex == -1) {
+      throw ArgumentError('Unknown message: $replyMessageId');
+    }
+    final promptMessages = conversation.messages.sublist(0, replyIndex);
+
+    void publish(Conversation next) {
+      final index = _conversations.indexWhere((c) => c.id == next.id);
+      if (index != -1) _conversations[index] = next;
+      onUpdate?.call(next);
+    }
+
+    final createdAt = DateTime.now();
+    final buffer = StringBuffer();
+    var updated = _withReplacedReply(
+      conversation,
+      replyMessageId,
+      '',
+      createdAt,
+    );
+    publish(updated);
+
+    try {
+      await for (final tokenDelta in _cortexApi.streamChatCompletion(
+        messages: promptMessages,
+        needsWeb: needsWeb,
+      )) {
+        buffer.write(tokenDelta);
+        updated = _withReplacedReply(
+          updated,
+          replyMessageId,
+          buffer.toString(),
+          createdAt,
+          sources: needsWeb ? _extractSources(buffer.toString()) : const [],
+        );
+        publish(updated);
+      }
+    } on CortexStreamInterruptedException {
+      updated = _withReplacedReply(
+        updated,
+        replyMessageId,
+        buffer.toString(),
+        createdAt,
+        interrupted: true,
+      );
+    } on CortexApiException catch (e) {
+      updated = _withReplacedReply(
+        updated,
+        replyMessageId,
+        'Sorry, I could not reach Cortex: ${e.message}',
+        createdAt,
+      );
+    }
+
+    publish(updated);
     return updated;
   }
 
@@ -256,6 +355,7 @@ class ChatService {
     String content,
     DateTime createdAt, {
     List<String> sources = const [],
+    bool interrupted = false,
   }) {
     final reply = ChatMessage(
       id: replyId,
@@ -263,6 +363,7 @@ class ChatService {
       content: content,
       createdAt: createdAt,
       sources: sources,
+      interrupted: interrupted,
     );
     return Conversation(
       id: conversation.id,
@@ -270,6 +371,38 @@ class ChatService {
       isPinned: conversation.isPinned,
       isEphemeral: conversation.isEphemeral,
       messages: [...conversation.messages, reply],
+    );
+  }
+
+  /// Like [_withAppendedReply], but replaces an existing message (by id) in
+  /// place instead of appending a new one. Used by [continueGeneration]: a
+  /// retried reply reuses the same message id so the UI keeps rendering it
+  /// at the same position in the transcript.
+  Conversation _withReplacedReply(
+    Conversation conversation,
+    String replyId,
+    String content,
+    DateTime createdAt, {
+    List<String> sources = const [],
+    bool interrupted = false,
+  }) {
+    final messages = conversation.messages.map((m) {
+      if (m.id != replyId) return m;
+      return ChatMessage(
+        id: replyId,
+        role: MessageRole.assistant,
+        content: content,
+        createdAt: createdAt,
+        sources: sources,
+        interrupted: interrupted,
+      );
+    }).toList();
+    return Conversation(
+      id: conversation.id,
+      title: conversation.title,
+      isPinned: conversation.isPinned,
+      isEphemeral: conversation.isEphemeral,
+      messages: messages,
     );
   }
 

@@ -152,6 +152,25 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get scrollToBottomTooltip => 'Scroll to bottom';
+
+  @override
+  String get codeBlockPlainLabel => 'code';
+
+  @override
+  String get codeBlockCopyLabel => 'Copy';
+
+  @override
+  String get codeBlockCopiedLabel => 'Copied!';
+
+  @override
+  String get continueGenerationLabel => 'Continue generation';
+
+  @override
+  String get continueGenerationTooltip =>
+      'The connection dropped mid-reply. This retries the request from scratch (cortex_api cannot resume a partial reply) and replaces this message once a new answer comes in.';
+
+  @override
   String get settingsTitle => 'Settings';
 
   @override

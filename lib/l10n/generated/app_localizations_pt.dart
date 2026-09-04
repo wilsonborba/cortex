@@ -153,6 +153,25 @@ class AppLocalizationsPt extends AppLocalizations {
   }
 
   @override
+  String get scrollToBottomTooltip => 'Rolar até o fim';
+
+  @override
+  String get codeBlockPlainLabel => 'código';
+
+  @override
+  String get codeBlockCopyLabel => 'Copiar';
+
+  @override
+  String get codeBlockCopiedLabel => 'Copiado!';
+
+  @override
+  String get continueGenerationLabel => 'Continuar geração';
+
+  @override
+  String get continueGenerationTooltip =>
+      'A conexão caiu no meio da resposta. Isso tenta a solicitação de novo, do zero (o cortex_api não consegue retomar uma resposta parcial), substituindo esta mensagem quando a nova resposta chegar.';
+
+  @override
   String get settingsTitle => 'Configurações';
 
   @override
