@@ -98,11 +98,27 @@ class _DesktopChatScreenState extends State<DesktopChatScreen> {
                             onPressed: () =>
                                 setState(() => _sidebarCollapsed = false),
                           ),
+                        if (props.selectedConversation.isEphemeral)
+                          Padding(
+                            padding: const EdgeInsets.only(right: 6),
+                            child: Tooltip(
+                              message: l10n.incognitoModeSubtitle,
+                              child: const Icon(
+                                Icons.visibility_off_outlined,
+                                size: 18,
+                              ),
+                            ),
+                          ),
                         Expanded(
                           child: Text(
                             props.selectedConversation.title,
                             style: Theme.of(context).textTheme.titleMedium,
                           ),
+                        ),
+                        IconButton(
+                          tooltip: l10n.newIncognitoChat,
+                          icon: const Icon(Icons.visibility_off_outlined),
+                          onPressed: props.onStartIncognitoChat,
                         ),
                         const TelemetryPanelButton(),
                         IconButton(
@@ -143,6 +159,11 @@ class _DesktopChatScreenState extends State<DesktopChatScreen> {
                           onSubmit: props.onSubmit,
                           useMemory: props.useMemory,
                           onToggleMemory: props.onToggleMemory,
+                          needsWeb: props.needsWeb,
+                          onToggleNeedsWeb: props.onToggleNeedsWeb,
+                          pendingAttachments: props.pendingAttachments,
+                          onAddAttachments: props.onAddAttachments,
+                          onRemoveAttachment: props.onRemoveAttachment,
                         ),
                       ),
                     ),
