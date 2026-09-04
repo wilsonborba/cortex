@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 
 import '../../core/logs.dart';
 import '../../core/settings.dart';
+import '../../core/utils/app_proof.dart';
 import '../../domain/models/chat_message.dart';
 import '../../domain/models/execute_request.dart';
 import '../../domain/models/execute_response.dart';
@@ -32,6 +33,20 @@ class CortexApiAdapter {
   Uri get _executeUri =>
       Uri.parse('$apiForAppsBaseUrl${AppSettings.cortexProxyPrefix}/execute');
 
+  /// Attaches `X-Asodya-App-Proof` to [headers] when
+  /// [AppSettings.cortexProofSecret] is configured (build-time
+  /// `--dart-define`), so this app's requests qualify for api_for_apps'
+  /// unlimited official-web-app path (api_for_apps issue #19) instead of
+  /// its 5-requests/day guest quota. When the secret is empty (the default,
+  /// e.g. local dev), no header is added and the request simply falls back
+  /// to that quota.
+  void _addAppProofHeader(Map<String, String> headers) {
+    final proof = computeAppProof(date: DateTime.now().toUtc());
+    if (proof != null) {
+      headers[appProofHeaderName] = proof;
+    }
+  }
+
   /// Streams assistant reply tokens for [messages] via cortex_api's OpenAI
   /// facade, `POST $cortexProxyPrefix/v1/chat/completions` with
   /// `stream: true`. Parses the upstream `text/event-stream` response
@@ -56,6 +71,7 @@ class CortexApiAdapter {
             .toList(),
         'stream': true,
       });
+    _addAppProofHeader(request.headers);
 
     final http.StreamedResponse streamedResponse;
     try {
@@ -115,9 +131,11 @@ class CortexApiAdapter {
   Future<ExecuteResponse> execute(ExecuteRequest request) async {
     final http.Response response;
     try {
+      final headers = {'Content-Type': 'application/json'};
+      _addAppProofHeader(headers);
       response = await _httpClient.post(
         _executeUri,
-        headers: const {'Content-Type': 'application/json'},
+        headers: headers,
         body: jsonEncode(request.toJson()),
       );
     } catch (e, stackTrace) {

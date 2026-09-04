@@ -108,4 +108,38 @@ class AppSettings {
   /// `SessionService` and `AuthService`).
   static const String sessionActiveStorageKey = 'session_active';
   static const String guestModeStorageKey = 'guest_mode';
+
+  // --- X-Asodya-App-Proof attestation (api_for_apps issue #19, cortex
+  // issue #8) ---
+
+  /// Shared HMAC secret used to compute the `X-Asodya-App-Proof` header
+  /// that lets the official Web App bypass api_for_apps' 5-requests/day
+  /// guest quota (see `cortex_attestation_handler.py` in api_for_apps,
+  /// read-only reference). Read from a compile-time `--dart-define`, never
+  /// hardcoded: CI/CD must build with
+  /// `flutter build web --dart-define=CORTEX_PROOF_SECRET=<value>`, where
+  /// `<value>` matches `CORTEX_PROOF_SECRET` in the target deployment's
+  /// api_for_apps `.env`. Left empty by default (local dev, or any build
+  /// that omits the define), in which case the header is simply omitted and
+  /// the request falls back to the unproven-traffic quota: nothing breaks.
+  ///
+  /// This is not meant to be cryptographically strong: any secret baked
+  /// into a Flutter web bundle is extractable by a determined reader. Its
+  /// only purpose is to distinguish the shipped official bundle from ad hoc
+  /// scripts/curl/Postman traffic, matching api_for_apps#19's stated intent.
+  static const String cortexProofSecret = String.fromEnvironment(
+    'CORTEX_PROOF_SECRET',
+    defaultValue: '',
+  );
+
+  /// App identifier included in the attestation HMAC message. Must match
+  /// api_for_apps' `CORTEX_APP_ID` setting for this deployment, which
+  /// defaults server-side to `cortex_web_app` (see api_for_apps'
+  /// `src/core/settings.py`, read-only reference), so this default mirrors
+  /// that. Overridable via `--dart-define` for deployments that register a
+  /// different app id.
+  static const String cortexAppId = String.fromEnvironment(
+    'CORTEX_APP_ID',
+    defaultValue: 'cortex_web_app',
+  );
 }
