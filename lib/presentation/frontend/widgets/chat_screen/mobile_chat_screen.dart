@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../components/conversation_tile.dart';
 import '../../components/message_bubble.dart';
 import '../../components/prompt_dock.dart';
+import '../../components/telemetry_panel.dart';
 import '../../components/tier_badge.dart';
 import 'chat_screen.dart';
 
@@ -59,10 +60,13 @@ class _MobileChatScreenState extends State<MobileChatScreen> {
                 const SizedBox(height: 16),
                 SwitchListTile(
                   contentPadding: EdgeInsets.zero,
-                  title: const Text('Memory'),
-                  subtitle: const Text('Locked on Tier 0'),
-                  value: false,
-                  onChanged: null,
+                  title: const Text('Memory recall'),
+                  subtitle: const Text(
+                    'Uses cortex_api\'s native /execute with server-side '
+                    'memory recall, available on Tier 0',
+                  ),
+                  value: widget.props.useMemory,
+                  onChanged: widget.props.onToggleMemory,
                 ),
                 SwitchListTile(
                   contentPadding: EdgeInsets.zero,
@@ -93,6 +97,7 @@ class _MobileChatScreenState extends State<MobileChatScreen> {
           overflow: TextOverflow.ellipsis,
         ),
         actions: [
+          const TelemetryPanelButton(),
           IconButton(
             tooltip: 'Session options',
             icon: const Icon(Icons.tune),
@@ -153,7 +158,12 @@ class _MobileChatScreenState extends State<MobileChatScreen> {
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
-              child: PromptDock(isBusy: props.isBusy, onSubmit: props.onSubmit),
+              child: PromptDock(
+                isBusy: props.isBusy,
+                onSubmit: props.onSubmit,
+                useMemory: props.useMemory,
+                onToggleMemory: props.onToggleMemory,
+              ),
             ),
           ],
         ),
