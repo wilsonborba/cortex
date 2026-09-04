@@ -46,6 +46,8 @@ dependencies:
   encrypt: ^5.0.3
   url_launcher: ^6.3.1
   web_socket_channel: ^3.0.3
+  file_picker: ^12.2.0
+  speech_to_text: ^7.4.0
 
 dev_dependencies:
   flutter_test:
