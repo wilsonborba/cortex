@@ -103,30 +103,48 @@ class CortexApiAdapter {
         .transform(utf8.decoder)
         .transform(const LineSplitter());
 
-    await for (final line in lines) {
-      if (line.isEmpty) continue; // SSE frame separator, no payload
-      if (!line.startsWith('data:')) continue;
+    // The read loop is wrapped separately from the initial `send()` above:
+    // a failure here (connection reset, socket closed, proxy timeout mid
+    // response) happens *after* zero or more content deltas may already
+    // have been yielded downstream, so it is surfaced as
+    // [CortexStreamInterruptedException] rather than [CortexApiException],
+    // letting callers (see `ChatService`) preserve whatever partial text
+    // they already have instead of discarding it.
+    try {
+      await for (final line in lines) {
+        if (line.isEmpty) continue; // SSE frame separator, no payload
+        if (!line.startsWith('data:')) continue;
 
-      final data = line.substring(5).trim();
-      if (data.isEmpty) continue;
-      if (data == '[DONE]') break;
+        final data = line.substring(5).trim();
+        if (data.isEmpty) continue;
+        if (data == '[DONE]') break;
 
-      Map<String, dynamic> chunk;
-      try {
-        chunk = jsonDecode(data) as Map<String, dynamic>;
-      } catch (e) {
-        AppLogger.warning('Skipping malformed SSE chunk: $data');
-        continue;
+        Map<String, dynamic> chunk;
+        try {
+          chunk = jsonDecode(data) as Map<String, dynamic>;
+        } catch (e) {
+          AppLogger.warning('Skipping malformed SSE chunk: $data');
+          continue;
+        }
+
+        final choices = chunk['choices'] as List<dynamic>?;
+        if (choices == null || choices.isEmpty) continue;
+        final choice = choices.first as Map<String, dynamic>;
+        final delta = choice['delta'] as Map<String, dynamic>?;
+        final content = delta?['content'] as String?;
+        if (content != null && content.isNotEmpty) {
+          yield content;
+        }
       }
-
-      final choices = chunk['choices'] as List<dynamic>?;
-      if (choices == null || choices.isEmpty) continue;
-      final choice = choices.first as Map<String, dynamic>;
-      final delta = choice['delta'] as Map<String, dynamic>?;
-      final content = delta?['content'] as String?;
-      if (content != null && content.isNotEmpty) {
-        yield content;
-      }
+    } catch (e, stackTrace) {
+      AppLogger.error(
+        'Chat completion stream interrupted before completion',
+        error: e,
+        stackTrace: stackTrace,
+      );
+      throw CortexStreamInterruptedException(
+        'The connection dropped while Cortex was replying: $e',
+      );
     }
   }
 
@@ -145,7 +163,11 @@ class CortexApiAdapter {
         body: jsonEncode(request.toJson()),
       );
     } catch (e, stackTrace) {
-      AppLogger.error('Execute request failed', error: e, stackTrace: stackTrace);
+      AppLogger.error(
+        'Execute request failed',
+        error: e,
+        stackTrace: stackTrace,
+      );
       throw CortexApiException('Could not reach the Cortex execute API: $e');
     }
 
@@ -182,4 +204,26 @@ class CortexApiException implements Exception {
 
   @override
   String toString() => 'CortexApiException: $message';
+}
+
+/// Raised when a `streamChatCompletion` SSE read loop is interrupted (e.g.
+/// the connection drops, the socket is reset, or the stream closes early)
+/// before a terminating `data: [DONE]` frame is seen.
+///
+/// Unlike [CortexApiException], which only ever happens before the request
+/// is even sent or before any token was received, this signals that some
+/// content deltas may have already been yielded to the caller. cortex_api's
+/// streaming facade (per issue #3's findings) sends the full model response
+/// in one shot, then chunks it out over SSE, it is not incremental
+/// token-by-token generation. That means there is no server-side
+/// "resume from where it stopped" capability: recovering from this
+/// exception can only mean retrying the whole request from scratch, not
+/// truly continuing generation.
+class CortexStreamInterruptedException implements Exception {
+  CortexStreamInterruptedException(this.message);
+
+  final String message;
+
+  @override
+  String toString() => 'CortexStreamInterruptedException: $message';
 }

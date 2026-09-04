@@ -11,6 +11,7 @@ class ChatMessage {
     required this.createdAt,
     this.sources = const [],
     this.attachments = const [],
+    this.interrupted = false,
   });
 
   final String id;
@@ -32,4 +33,12 @@ class ChatMessage {
   /// Files the user attached to this message (for user messages) so the
   /// bubble can render the same preview it showed before sending.
   final List<ChatAttachment> attachments;
+
+  /// True when this assistant reply was left incomplete by a dropped SSE
+  /// connection (see `CortexStreamInterruptedException` in
+  /// `CortexApiAdapter`), issue #7. [content] still holds whatever partial
+  /// text had already streamed in when the connection dropped, it is never
+  /// discarded. The chat UI shows a "Continue generation" chip under a
+  /// message with this flag set.
+  final bool interrupted;
 }
