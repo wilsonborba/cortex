@@ -217,8 +217,92 @@ abstract class AppLocalizations {
   /// No description provided for @webBrowsingSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Locked on Tier 0'**
+  /// **'Grounds the reply with a web search, available on Tier 0'**
   String get webBrowsingSubtitle;
+
+  /// No description provided for @webSearchOnTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Web search on: this reply will be grounded with a web search (needs_web)'**
+  String get webSearchOnTooltip;
+
+  /// No description provided for @webSearchOffTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Turn on web search grounding (needs_web)'**
+  String get webSearchOffTooltip;
+
+  /// No description provided for @sourcesCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Sources ({count})'**
+  String sourcesCount(int count);
+
+  /// No description provided for @attachFile.
+  ///
+  /// In en, this message translates to:
+  /// **'Attach a file'**
+  String get attachFile;
+
+  /// No description provided for @attachImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Image'**
+  String get attachImage;
+
+  /// No description provided for @attachDocument.
+  ///
+  /// In en, this message translates to:
+  /// **'Document'**
+  String get attachDocument;
+
+  /// No description provided for @removeAttachment.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove attachment'**
+  String get removeAttachment;
+
+  /// No description provided for @documentAttachmentBackendGap.
+  ///
+  /// In en, this message translates to:
+  /// **'Document ingestion is not supported by the backend yet: only images are accepted today.'**
+  String get documentAttachmentBackendGap;
+
+  /// No description provided for @voiceStartRecording.
+  ///
+  /// In en, this message translates to:
+  /// **'Start voice recording'**
+  String get voiceStartRecording;
+
+  /// No description provided for @voiceStopRecording.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop recording and insert transcript'**
+  String get voiceStopRecording;
+
+  /// No description provided for @micPermissionDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'Microphone access is unavailable or was denied.'**
+  String get micPermissionDenied;
+
+  /// No description provided for @incognitoModeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Incognito chat'**
+  String get incognitoModeTitle;
+
+  /// No description provided for @incognitoModeSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Ephemeral session: no history is saved and memory is explicitly off'**
+  String get incognitoModeSubtitle;
+
+  /// No description provided for @newIncognitoChat.
+  ///
+  /// In en, this message translates to:
+  /// **'Start incognito chat'**
+  String get newIncognitoChat;
 
   /// No description provided for @liveLogsTooltip.
   ///
