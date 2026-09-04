@@ -36,7 +36,7 @@ class TierBadge extends StatelessWidget {
           ),
           const SizedBox(width: 6),
           Text(
-            tier.label,
+            tier.labelOf(context),
             style: Theme.of(context).textTheme.labelSmall?.copyWith(
               color: scheme.onSurface.withValues(alpha: 0.7),
               fontWeight: FontWeight.w600,

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../../l10n/generated/app_localizations.dart';
+import '../../components/app_settings_sheet.dart';
 import '../../components/conversation_tile.dart';
 import '../../components/message_bubble.dart';
 import '../../components/premium_hover_card.dart';
@@ -25,6 +27,7 @@ class _DesktopChatScreenState extends State<DesktopChatScreen> {
   @override
   Widget build(BuildContext context) {
     final props = widget.props;
+    final l10n = AppLocalizations.of(context);
 
     return Scaffold(
       body: SafeArea(
@@ -46,13 +49,13 @@ class _DesktopChatScreenState extends State<DesktopChatScreen> {
                             children: [
                               Expanded(
                                 child: Text(
-                                  'Cortex',
+                                  l10n.appTitle,
                                   style: Theme.of(context).textTheme.titleMedium
                                       ?.copyWith(fontWeight: FontWeight.w700),
                                 ),
                               ),
                               IconButton(
-                                tooltip: 'Collapse sidebar',
+                                tooltip: l10n.collapseSidebar,
                                 icon: const Icon(Icons.menu_open, size: 20),
                                 onPressed: () =>
                                     setState(() => _sidebarCollapsed = true),
@@ -90,7 +93,7 @@ class _DesktopChatScreenState extends State<DesktopChatScreen> {
                       children: [
                         if (_sidebarCollapsed)
                           IconButton(
-                            tooltip: 'Expand sidebar',
+                            tooltip: l10n.expandSidebar,
                             icon: const Icon(Icons.menu),
                             onPressed: () =>
                                 setState(() => _sidebarCollapsed = false),
@@ -103,9 +106,9 @@ class _DesktopChatScreenState extends State<DesktopChatScreen> {
                         ),
                         const TelemetryPanelButton(),
                         IconButton(
-                          tooltip: 'Toggle theme',
-                          icon: const Icon(Icons.brightness_6_outlined),
-                          onPressed: () {},
+                          tooltip: l10n.openSettings,
+                          icon: const Icon(Icons.settings_outlined),
+                          onPressed: () => AppSettingsSheet.show(context),
                         ),
                       ],
                     ),

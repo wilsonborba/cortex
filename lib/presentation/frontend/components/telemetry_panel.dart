@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../../../core/settings.dart';
 import '../../../dal/remote/cortex_logs_socket_adapter.dart';
+import '../../../l10n/generated/app_localizations.dart';
 
 /// Small, dev-only affordance: an icon button that opens a collapsible
 /// sheet streaming cortex_api's live log lines over WebSocket (see
@@ -19,7 +20,7 @@ class TelemetryPanelButton extends StatelessWidget {
   Widget build(BuildContext context) {
     if (!AppSettings.enableLiveLogStreaming) return const SizedBox.shrink();
     return IconButton(
-      tooltip: 'Live logs (local dev only)',
+      tooltip: AppLocalizations.of(context).liveLogsTooltip,
       icon: const Icon(Icons.bug_report_outlined),
       onPressed: () => showModalBottomSheet<void>(
         context: context,
@@ -67,6 +68,7 @@ class _TelemetryPanelSheetState extends State<_TelemetryPanelSheet> {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     return SafeArea(
       child: SizedBox(
         height: MediaQuery.of(context).size.height * 0.6,
@@ -76,26 +78,24 @@ class _TelemetryPanelSheetState extends State<_TelemetryPanelSheet> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Text(
-                'Cortex live logs',
+                l10n.liveLogsTitle,
                 style: Theme.of(context).textTheme.titleMedium,
               ),
               const SizedBox(height: 4),
               Text(
-                'Local dev only: connects directly to cortex_api\'s '
-                '/logs/stream, this bypasses the api_for_apps proxy '
-                '(it cannot carry a WebSocket).',
+                l10n.liveLogsDescription,
                 style: Theme.of(context).textTheme.labelSmall,
               ),
               const Divider(),
               if (_connectionError != null)
                 Text(
-                  'Could not connect: $_connectionError',
+                  l10n.liveLogsConnectionError(_connectionError!),
                   style: TextStyle(color: scheme.error),
                 )
               else if (_lines.isEmpty)
-                const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 8),
-                  child: Text('Waiting for log lines...'),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  child: Text(l10n.liveLogsWaiting),
                 )
               else
                 Expanded(

@@ -21,7 +21,12 @@ class ChatFlowHandler extends ChangeNotifier {
   Conversation conversation;
   bool isBusy = false;
   bool useMemory = false;
-  String? error;
+
+  /// Raw error thrown by [ChatService.sendMessage], if the last submit
+  /// failed. Kept untranslated here (this handler has no [BuildContext]):
+  /// the widget layer turns it into a localized message via
+  /// `AppLocalizations.couldNotSendMessage`.
+  Object? error;
 
   void setUseMemory(bool value) {
     if (useMemory == value) return;
@@ -46,7 +51,7 @@ class ChatFlowHandler extends ChangeNotifier {
         },
       );
     } catch (e) {
-      error = 'Could not send message: $e';
+      error = e;
     } finally {
       isBusy = false;
       notifyListeners();
