@@ -28,11 +28,31 @@ class PromptDock extends StatefulWidget {
     this.pendingAttachments = const [],
     this.onAddAttachments,
     this.onRemoveAttachment,
+    this.conversationId,
+    this.draftText = '',
+    this.onDraftChanged,
   });
 
   final ValueChanged<String> onSubmit;
   final AppTier tier;
   final bool isBusy;
+
+  /// Id of the conversation this dock is currently composing a message
+  /// for (issue #7). When it changes between builds, the text field's
+  /// content is swapped for [draftText] (the newly-selected conversation's
+  /// restored draft) instead of keeping whatever was typed for the
+  /// previous conversation.
+  final String? conversationId;
+
+  /// The persisted, in-progress draft for [conversationId], restored from
+  /// `DraftStore` by `ChatFlowHandler`. Only consulted on first build and
+  /// whenever [conversationId] changes, once the user starts typing this
+  /// widget owns the text via its own `TextEditingController`.
+  final String draftText;
+
+  /// Called on every keystroke so the caller (`ChatFlowHandler`) can persist
+  /// the draft (issue #7).
+  final ValueChanged<String>? onDraftChanged;
 
   /// Whether the next submit should opt into memory-aware execution
   /// (cortex_api's native `/execute` with `capabilities.memory = true`)
@@ -57,9 +77,23 @@ class PromptDock extends StatefulWidget {
 }
 
 class _PromptDockState extends State<PromptDock> {
-  final _controller = TextEditingController();
+  late final _controller = TextEditingController(text: widget.draftText);
   final _focusNode = FocusNode();
   final _attachmentService = const AttachmentService();
+
+  @override
+  void didUpdateWidget(PromptDock oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Only swap the field's content when the conversation actually changed,
+    // not on every rebuild carrying the same draft back down (issue #7):
+    // otherwise this would clobber whatever the user is actively typing.
+    if (oldWidget.conversationId != widget.conversationId) {
+      _controller.text = widget.draftText;
+      _controller.selection = TextSelection.collapsed(
+        offset: _controller.text.length,
+      );
+    }
+  }
 
   @override
   void dispose() {
@@ -80,7 +114,8 @@ class _PromptDockState extends State<PromptDock> {
     final selection = _controller.selection;
     final text = _controller.text;
     final insertAt = selection.isValid ? selection.start : text.length;
-    final needsSpace = insertAt > 0 && text.isNotEmpty && text[insertAt - 1] != ' ';
+    final needsSpace =
+        insertAt > 0 && text.isNotEmpty && text[insertAt - 1] != ' ';
     final toInsert = (needsSpace ? ' ' : '') + transcript;
     final newText = text.replaceRange(insertAt, insertAt, toInsert);
     _controller.value = TextEditingValue(
@@ -151,7 +186,9 @@ class _PromptDockState extends State<PromptDock> {
               _DockIconButton(
                 icon: Icons.add,
                 tooltip: l10n.attachFile,
-                onPressed: widget.onAddAttachments == null ? null : _openAttachMenu,
+                onPressed: widget.onAddAttachments == null
+                    ? null
+                    : _openAttachMenu,
               ),
               const SizedBox(width: 4),
               Expanded(
@@ -173,6 +210,7 @@ class _PromptDockState extends State<PromptDock> {
                       ),
                     ),
                     onSubmitted: (_) => _submit(),
+                    onChanged: widget.onDraftChanged,
                   ),
                 ),
               ),
@@ -181,7 +219,9 @@ class _PromptDockState extends State<PromptDock> {
               const SizedBox(width: 4),
               _DockIconButton(
                 icon: Icons.public,
-                tooltip: widget.needsWeb ? l10n.webSearchOnTooltip : l10n.webSearchOffTooltip,
+                tooltip: widget.needsWeb
+                    ? l10n.webSearchOnTooltip
+                    : l10n.webSearchOffTooltip,
                 onPressed: widget.onToggleNeedsWeb == null
                     ? null
                     : () => widget.onToggleNeedsWeb!(!widget.needsWeb),
@@ -249,7 +289,9 @@ class _DockIconButton extends StatelessWidget {
           onPressed: onPressed,
           icon: Icon(
             icon,
-            color: active ? scheme.primary : scheme.onSurface.withValues(alpha: 0.7),
+            color: active
+                ? scheme.primary
+                : scheme.onSurface.withValues(alpha: 0.7),
           ),
         ),
       ),
