@@ -340,6 +340,42 @@ abstract class AppLocalizations {
   /// **'Could not send message: {error}'**
   String couldNotSendMessage(String error);
 
+  /// No description provided for @scrollToBottomTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Scroll to bottom'**
+  String get scrollToBottomTooltip;
+
+  /// No description provided for @codeBlockPlainLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'code'**
+  String get codeBlockPlainLabel;
+
+  /// No description provided for @codeBlockCopyLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy'**
+  String get codeBlockCopyLabel;
+
+  /// No description provided for @codeBlockCopiedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Copied!'**
+  String get codeBlockCopiedLabel;
+
+  /// No description provided for @continueGenerationLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue generation'**
+  String get continueGenerationLabel;
+
+  /// No description provided for @continueGenerationTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'The connection dropped mid-reply. This retries the request from scratch (cortex_api cannot resume a partial reply) and replaces this message once a new answer comes in.'**
+  String get continueGenerationTooltip;
+
   /// No description provided for @settingsTitle.
   ///
   /// In en, this message translates to:

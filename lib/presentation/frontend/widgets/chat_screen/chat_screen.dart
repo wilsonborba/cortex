@@ -41,9 +41,9 @@ class _ChatScreenState extends State<ChatScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       final l10n = AppLocalizations.of(context);
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(l10n.couldNotSendMessage('$error'))));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.couldNotSendMessage('$error'))),
+      );
     });
   }
 
@@ -61,6 +61,12 @@ class _ChatScreenState extends State<ChatScreen> {
 
   Future<void> _onSubmit(String text) async {
     await _flowHandler.submit(text);
+    _conversationHandler.refresh();
+    setState(() {});
+  }
+
+  Future<void> _onContinueGeneration(String replyMessageId) async {
+    await _flowHandler.continueGeneration(replyMessageId);
     _conversationHandler.refresh();
     setState(() {});
   }
@@ -98,6 +104,10 @@ class _ChatScreenState extends State<ChatScreen> {
           onStartIncognitoChat: _onStartIncognitoChat,
           onSelectConversation: _onSelectConversation,
           onSubmit: _onSubmit,
+          draftText: _flowHandler.draftText,
+          onDraftChanged: _flowHandler.updateDraft,
+          onContinueGeneration: _onContinueGeneration,
+          continuingMessageId: _flowHandler.continuingMessageId,
         );
         return Responsive.isMobile(context)
             ? MobileChatScreen(props: props)
@@ -123,6 +133,10 @@ class ChatScreenProps {
     required this.onStartIncognitoChat,
     required this.onSelectConversation,
     required this.onSubmit,
+    required this.draftText,
+    required this.onDraftChanged,
+    required this.onContinueGeneration,
+    required this.continuingMessageId,
   });
 
   final List<Conversation> conversations;
@@ -151,4 +165,17 @@ class ChatScreenProps {
   final VoidCallback onStartIncognitoChat;
   final ValueChanged<String> onSelectConversation;
   final ValueChanged<String> onSubmit;
+
+  /// Current in-progress, unsent draft for [selectedConversation] (issue
+  /// #7), restored from `DraftStore` and kept in sync as the user types.
+  final String draftText;
+  final ValueChanged<String> onDraftChanged;
+
+  /// Retries the request behind an interrupted assistant reply (issue #7).
+  /// Called with that message's id.
+  final ValueChanged<String> onContinueGeneration;
+
+  /// Id of the assistant message currently being retried via
+  /// [onContinueGeneration], if any.
+  final String? continuingMessageId;
 }
