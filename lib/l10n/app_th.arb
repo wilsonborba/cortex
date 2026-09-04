@@ -23,7 +23,24 @@
   "memoryRecallTitle": "การเรียกคืนความจำ",
   "memoryRecallSubtitle": "ใช้ /execute แบบเนทีฟของ cortex_api พร้อมการเรียกคืนความจำฝั่งเซิร์ฟเวอร์ ใช้ได้ในระดับ 0",
   "webBrowsingTitle": "การท่องเว็บ",
-  "webBrowsingSubtitle": "ล็อกอยู่ในระดับ 0",
+  "webBrowsingSubtitle": "ใช้การค้นหาเว็บประกอบคำตอบ ใช้ได้ในระดับ 0",
+  "webSearchOnTooltip": "เปิดการค้นหาเว็บแล้ว: คำตอบนี้จะอ้างอิงจากการค้นหาเว็บ (needs_web)",
+  "webSearchOffTooltip": "เปิดใช้การค้นหาเว็บประกอบคำตอบ (needs_web)",
+  "sourcesCount": "แหล่งที่มา ({count})",
+
+  "attachFile": "แนบไฟล์",
+  "attachImage": "รูปภาพ",
+  "attachDocument": "เอกสาร",
+  "removeAttachment": "ลบไฟล์แนบ",
+  "documentAttachmentBackendGap": "ระบบหลังบ้านยังไม่รองรับการนำเข้าเอกสาร วันนี้รองรับเฉพาะรูปภาพเท่านั้น",
+
+  "voiceStartRecording": "เริ่มบันทึกเสียง",
+  "voiceStopRecording": "หยุดบันทึกและแทรกข้อความที่ถอดเสียง",
+  "micPermissionDenied": "ไม่สามารถใช้งานไมโครโฟนได้ หรือการเข้าถึงถูกปฏิเสธ",
+
+  "incognitoModeTitle": "แชทไม่ระบุตัวตน",
+  "incognitoModeSubtitle": "เซสชันชั่วคราว ไม่บันทึกประวัติและปิดใช้งานความจำอย่างชัดเจน",
+  "newIncognitoChat": "เริ่มแชทไม่ระบุตัวตน",
 
   "liveLogsTooltip": "บันทึกสด (สำหรับการพัฒนาในเครื่องเท่านั้น)",
   "liveLogsTitle": "บันทึกสดของ Cortex",

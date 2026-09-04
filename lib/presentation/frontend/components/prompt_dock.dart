@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
 
+import '../../../domain/models/attachment.dart';
 import '../../../domain/models/tier.dart';
+import '../../../domain/services/attachment_service.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import 'app_theme.dart';
+import 'attachment_preview_strip.dart';
 import 'tier_badge.dart';
+import 'voice_recorder_button.dart';
 
 /// Floating, bottom-anchored glass prompt input.
 ///
-/// Visually locks premium features (attachments, web browsing, model
-/// picker) behind a small lock affordance while the session is on Tier 0.
-/// There is no backend behind the lock yet, tapping a locked action simply
-/// surfaces a snackbar explaining that upgrades are not available yet; the
-/// real gating logic is issue #3's job.
+/// Carries the memory recall, web-search grounding, attachment and voice
+/// affordances. Attachments and web-search grounding (issue #6) are real,
+/// working features on Tier 0 today, unlike the model-picker style
+/// upgrades this dock has no UI for at all.
 class PromptDock extends StatefulWidget {
   const PromptDock({
     super.key,
@@ -20,6 +23,11 @@ class PromptDock extends StatefulWidget {
     this.isBusy = false,
     this.useMemory = false,
     this.onToggleMemory,
+    this.needsWeb = false,
+    this.onToggleNeedsWeb,
+    this.pendingAttachments = const [],
+    this.onAddAttachments,
+    this.onRemoveAttachment,
   });
 
   final ValueChanged<String> onSubmit;
@@ -33,6 +41,17 @@ class PromptDock extends StatefulWidget {
   final bool useMemory;
   final ValueChanged<bool>? onToggleMemory;
 
+  /// Whether the next submit should set `needs_web`/`capabilities.web`
+  /// (issue #6), asking cortex_api for web-search-grounded results.
+  final bool needsWeb;
+  final ValueChanged<bool>? onToggleNeedsWeb;
+
+  /// Files picked from the attach menu, waiting to be sent with the next
+  /// submit (issue #6).
+  final List<ChatAttachment> pendingAttachments;
+  final ValueChanged<List<ChatAttachment>>? onAddAttachments;
+  final ValueChanged<String>? onRemoveAttachment;
+
   @override
   State<PromptDock> createState() => _PromptDockState();
 }
@@ -40,6 +59,7 @@ class PromptDock extends StatefulWidget {
 class _PromptDockState extends State<PromptDock> {
   final _controller = TextEditingController();
   final _focusNode = FocusNode();
+  final _attachmentService = const AttachmentService();
 
   @override
   void dispose() {
@@ -56,14 +76,49 @@ class _PromptDockState extends State<PromptDock> {
     _focusNode.requestFocus();
   }
 
-  void _showLockedFeatureNotice() {
+  void _insertTranscript(String transcript) {
+    final selection = _controller.selection;
+    final text = _controller.text;
+    final insertAt = selection.isValid ? selection.start : text.length;
+    final needsSpace = insertAt > 0 && text.isNotEmpty && text[insertAt - 1] != ' ';
+    final toInsert = (needsSpace ? ' ' : '') + transcript;
+    final newText = text.replaceRange(insertAt, insertAt, toInsert);
+    _controller.value = TextEditingValue(
+      text: newText,
+      selection: TextSelection.collapsed(offset: insertAt + toInsert.length),
+    );
+    _focusNode.requestFocus();
+  }
+
+  Future<void> _openAttachMenu() async {
     final l10n = AppLocalizations.of(context);
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(l10n.lockedFeatureNotice(widget.tier.labelOf(context))),
-        behavior: SnackBarBehavior.floating,
+    final choice = await showModalBottomSheet<String>(
+      context: context,
+      showDragHandle: true,
+      builder: (context) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.image_outlined),
+              title: Text(l10n.attachImage),
+              onTap: () => Navigator.of(context).pop('image'),
+            ),
+            ListTile(
+              leading: const Icon(Icons.description_outlined),
+              title: Text(l10n.attachDocument),
+              subtitle: Text(l10n.documentAttachmentBackendGap),
+              onTap: () => Navigator.of(context).pop('document'),
+            ),
+          ],
+        ),
       ),
     );
+    if (choice == null || widget.onAddAttachments == null) return;
+    final picked = choice == 'image'
+        ? await _attachmentService.pickImages()
+        : await _attachmentService.pickDocuments();
+    if (picked.isNotEmpty) widget.onAddAttachments!(picked);
   }
 
   @override
@@ -86,16 +141,17 @@ class _PromptDockState extends State<PromptDock> {
             padding: const EdgeInsets.only(left: 4, bottom: 8),
             child: TierBadge(tier: widget.tier, dense: true),
           ),
+          AttachmentPreviewStrip(
+            attachments: widget.pendingAttachments,
+            onRemove: widget.onRemoveAttachment ?? (_) {},
+          ),
           Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               _DockIconButton(
                 icon: Icons.add,
-                tooltip: l10n.attachFileLocked(widget.tier.labelOf(context)),
-                onPressed: widget.tier.isLocked
-                    ? _showLockedFeatureNotice
-                    : null,
-                locked: widget.tier.isLocked,
+                tooltip: l10n.attachFile,
+                onPressed: widget.onAddAttachments == null ? null : _openAttachMenu,
               ),
               const SizedBox(width: 4),
               Expanded(
@@ -121,13 +177,15 @@ class _PromptDockState extends State<PromptDock> {
                 ),
               ),
               const SizedBox(width: 4),
+              VoiceRecorderButton(onTranscript: _insertTranscript),
+              const SizedBox(width: 4),
               _DockIconButton(
                 icon: Icons.public,
-                tooltip: l10n.webBrowsingLocked(widget.tier.labelOf(context)),
-                onPressed: widget.tier.isLocked
-                    ? _showLockedFeatureNotice
-                    : null,
-                locked: widget.tier.isLocked,
+                tooltip: widget.needsWeb ? l10n.webSearchOnTooltip : l10n.webSearchOffTooltip,
+                onPressed: widget.onToggleNeedsWeb == null
+                    ? null
+                    : () => widget.onToggleNeedsWeb!(!widget.needsWeb),
+                active: widget.needsWeb,
               ),
               const SizedBox(width: 4),
               _DockIconButton(
@@ -171,14 +229,12 @@ class _DockIconButton extends StatelessWidget {
     required this.icon,
     required this.tooltip,
     required this.onPressed,
-    this.locked = false,
     this.active = false,
   });
 
   final IconData icon;
   final String tooltip;
   final VoidCallback? onPressed;
-  final bool locked;
   final bool active;
 
   @override
@@ -189,29 +245,12 @@ class _DockIconButton extends StatelessWidget {
       child: SizedBox(
         width: 48,
         height: 48,
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
-            IconButton(
-              onPressed: onPressed,
-              icon: Icon(
-                icon,
-                color: active
-                    ? scheme.primary
-                    : scheme.onSurface.withValues(alpha: 0.7),
-              ),
-            ),
-            if (locked)
-              Positioned(
-                right: 6,
-                bottom: 6,
-                child: Icon(
-                  Icons.lock,
-                  size: 10,
-                  color: scheme.onSurface.withValues(alpha: 0.6),
-                ),
-              ),
-          ],
+        child: IconButton(
+          onPressed: onPressed,
+          icon: Icon(
+            icon,
+            color: active ? scheme.primary : scheme.onSurface.withValues(alpha: 0.7),
+          ),
         ),
       ),
     );

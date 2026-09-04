@@ -206,13 +206,113 @@ void main() {
       final request = client.lastRequest! as http.Request;
       final body = jsonDecode(request.body) as Map<String, dynamic>;
       expect(body['use_memory'], true);
-      expect(body['capabilities'], {'memory': true});
+      expect(body['capabilities'], {
+        'memory': true,
+        'web': false,
+        'temporary': false,
+      });
       // Never sends any tier/model override: the client offers no UI for
       // it, and the proxy would strip it anyway.
       expect(body.containsKey('tier'), isFalse);
       expect(body.containsKey('force_model'), isFalse);
       expect(body.containsKey('force_provider'), isFalse);
     });
+
+    test(
+      'needsWeb sets needs_web and capabilities.web on the request (issue #6)',
+      () async {
+        final client = _FakeHttpClient((request) async {
+          return http.StreamedResponse(
+            Stream.value(
+              utf8.encode(
+                jsonEncode({
+                  'request_id': 'req-2',
+                  'tier_requested': 0,
+                  'tier_executed': 0,
+                  'strategy_id': 'web_grounded',
+                  'task_type': 'general',
+                  'success': true,
+                  'response': 'see https://example.com/a for details',
+                  'input_tokens': 0,
+                  'output_tokens': 0,
+                  'total_tokens': 0,
+                  'cost_usd': 0.0,
+                  'latency_ms': 5,
+                  'steps': [],
+                }),
+              ),
+            ),
+            200,
+          );
+        });
+
+        final adapter = CortexApiAdapter(
+          apiForAppsBaseUrl: 'http://test.local',
+          httpClient: client,
+        );
+
+        await adapter.execute(
+          const ExecuteRequest(prompt: 'what is new today', needsWeb: true),
+        );
+
+        final request = client.lastRequest! as http.Request;
+        final body = jsonDecode(request.body) as Map<String, dynamic>;
+        expect(body['needs_web'], true);
+        expect(body['capabilities'], {
+          'memory': false,
+          'web': true,
+          'temporary': false,
+        });
+      },
+    );
+
+    test(
+      'temporary (incognito) forces capabilities.temporary and never sets memory',
+      () async {
+        final client = _FakeHttpClient((request) async {
+          return http.StreamedResponse(
+            Stream.value(
+              utf8.encode(
+                jsonEncode({
+                  'request_id': 'req-3',
+                  'tier_requested': 0,
+                  'tier_executed': 0,
+                  'strategy_id': 'ephemeral',
+                  'task_type': 'general',
+                  'success': true,
+                  'response': 'ephemeral reply',
+                  'input_tokens': 0,
+                  'output_tokens': 0,
+                  'total_tokens': 0,
+                  'cost_usd': 0.0,
+                  'latency_ms': 5,
+                  'steps': [],
+                }),
+              ),
+            ),
+            200,
+          );
+        });
+
+        final adapter = CortexApiAdapter(
+          apiForAppsBaseUrl: 'http://test.local',
+          httpClient: client,
+        );
+
+        await adapter.execute(
+          const ExecuteRequest(prompt: 'do not remember this', temporary: true),
+        );
+
+        final request = client.lastRequest! as http.Request;
+        final body = jsonDecode(request.body) as Map<String, dynamic>;
+        expect(body['use_memory'], false);
+        expect(body['capabilities'], {
+          'memory': false,
+          'web': false,
+          'temporary': true,
+        });
+      },
+    );
 
     test('throws CortexApiException on a non-200 status', () async {
       final client = _FakeHttpClient((request) async {

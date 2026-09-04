@@ -58,8 +58,13 @@ class CortexApiAdapter {
   /// `model` is always [AppSettings.cortexTier0Model]: the proxy rewrites it
   /// to that value regardless of what is sent, and this client never offers
   /// any other model in its UI.
+  ///
+  /// [needsWeb] is forwarded as-is: `ChatCompletionRequest.needs_web` is a
+  /// real field on cortex_api's OpenAI facade schema (see
+  /// `lib/presentation/api/schemas/openai_facade.py`).
   Stream<String> streamChatCompletion({
     required List<ChatMessage> messages,
+    bool needsWeb = false,
   }) async* {
     final request = http.Request('POST', _chatCompletionsUri)
       ..headers['Content-Type'] = 'application/json'
@@ -70,6 +75,7 @@ class CortexApiAdapter {
             .map((m) => {'role': _roleName(m.role), 'content': m.content})
             .toList(),
         'stream': true,
+        'needs_web': needsWeb,
       });
     _addAppProofHeader(request.headers);
 

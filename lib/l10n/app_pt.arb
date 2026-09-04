@@ -23,7 +23,24 @@
   "memoryRecallTitle": "Recuperação de memória",
   "memoryRecallSubtitle": "Usa o /execute nativo do cortex_api com recuperação de memória no servidor, disponível no Nível 0",
   "webBrowsingTitle": "Navegação na web",
-  "webBrowsingSubtitle": "Bloqueada no Nível 0",
+  "webBrowsingSubtitle": "Fundamenta a resposta com uma busca na web, disponível no Nível 0",
+  "webSearchOnTooltip": "Busca na web ativada: esta resposta será fundamentada com uma busca na web (needs_web)",
+  "webSearchOffTooltip": "Ativar fundamentação por busca na web (needs_web)",
+  "sourcesCount": "Fontes ({count})",
+
+  "attachFile": "Anexar um arquivo",
+  "attachImage": "Imagem",
+  "attachDocument": "Documento",
+  "removeAttachment": "Remover anexo",
+  "documentAttachmentBackendGap": "A ingestão de documentos ainda não é suportada pelo backend: hoje só imagens são aceitas.",
+
+  "voiceStartRecording": "Iniciar gravação de voz",
+  "voiceStopRecording": "Parar gravação e inserir transcrição",
+  "micPermissionDenied": "O acesso ao microfone está indisponível ou foi negado.",
+
+  "incognitoModeTitle": "Chat incógnito",
+  "incognitoModeSubtitle": "Sessão efêmera: nenhum histórico é salvo e a memória fica explicitamente desligada",
+  "newIncognitoChat": "Iniciar chat incógnito",
 
   "liveLogsTooltip": "Logs ao vivo (somente desenvolvimento local)",
   "liveLogsTitle": "Logs ao vivo do Cortex",

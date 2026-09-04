@@ -77,7 +77,57 @@ class AppLocalizationsTh extends AppLocalizations {
   String get webBrowsingTitle => 'การท่องเว็บ';
 
   @override
-  String get webBrowsingSubtitle => 'ล็อกอยู่ในระดับ 0';
+  String get webBrowsingSubtitle =>
+      'ใช้การค้นหาเว็บประกอบคำตอบ ใช้ได้ในระดับ 0';
+
+  @override
+  String get webSearchOnTooltip =>
+      'เปิดการค้นหาเว็บแล้ว: คำตอบนี้จะอ้างอิงจากการค้นหาเว็บ (needs_web)';
+
+  @override
+  String get webSearchOffTooltip =>
+      'เปิดใช้การค้นหาเว็บประกอบคำตอบ (needs_web)';
+
+  @override
+  String sourcesCount(int count) {
+    return 'แหล่งที่มา ($count)';
+  }
+
+  @override
+  String get attachFile => 'แนบไฟล์';
+
+  @override
+  String get attachImage => 'รูปภาพ';
+
+  @override
+  String get attachDocument => 'เอกสาร';
+
+  @override
+  String get removeAttachment => 'ลบไฟล์แนบ';
+
+  @override
+  String get documentAttachmentBackendGap =>
+      'ระบบหลังบ้านยังไม่รองรับการนำเข้าเอกสาร วันนี้รองรับเฉพาะรูปภาพเท่านั้น';
+
+  @override
+  String get voiceStartRecording => 'เริ่มบันทึกเสียง';
+
+  @override
+  String get voiceStopRecording => 'หยุดบันทึกและแทรกข้อความที่ถอดเสียง';
+
+  @override
+  String get micPermissionDenied =>
+      'ไม่สามารถใช้งานไมโครโฟนได้ หรือการเข้าถึงถูกปฏิเสธ';
+
+  @override
+  String get incognitoModeTitle => 'แชทไม่ระบุตัวตน';
+
+  @override
+  String get incognitoModeSubtitle =>
+      'เซสชันชั่วคราว ไม่บันทึกประวัติและปิดใช้งานความจำอย่างชัดเจน';
+
+  @override
+  String get newIncognitoChat => 'เริ่มแชทไม่ระบุตัวตน';
 
   @override
   String get liveLogsTooltip => 'บันทึกสด (สำหรับการพัฒนาในเครื่องเท่านั้น)';

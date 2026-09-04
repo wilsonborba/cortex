@@ -77,7 +77,57 @@ class AppLocalizationsPt extends AppLocalizations {
   String get webBrowsingTitle => 'Navegação na web';
 
   @override
-  String get webBrowsingSubtitle => 'Bloqueada no Nível 0';
+  String get webBrowsingSubtitle =>
+      'Fundamenta a resposta com uma busca na web, disponível no Nível 0';
+
+  @override
+  String get webSearchOnTooltip =>
+      'Busca na web ativada: esta resposta será fundamentada com uma busca na web (needs_web)';
+
+  @override
+  String get webSearchOffTooltip =>
+      'Ativar fundamentação por busca na web (needs_web)';
+
+  @override
+  String sourcesCount(int count) {
+    return 'Fontes ($count)';
+  }
+
+  @override
+  String get attachFile => 'Anexar um arquivo';
+
+  @override
+  String get attachImage => 'Imagem';
+
+  @override
+  String get attachDocument => 'Documento';
+
+  @override
+  String get removeAttachment => 'Remover anexo';
+
+  @override
+  String get documentAttachmentBackendGap =>
+      'A ingestão de documentos ainda não é suportada pelo backend: hoje só imagens são aceitas.';
+
+  @override
+  String get voiceStartRecording => 'Iniciar gravação de voz';
+
+  @override
+  String get voiceStopRecording => 'Parar gravação e inserir transcrição';
+
+  @override
+  String get micPermissionDenied =>
+      'O acesso ao microfone está indisponível ou foi negado.';
+
+  @override
+  String get incognitoModeTitle => 'Chat incógnito';
+
+  @override
+  String get incognitoModeSubtitle =>
+      'Sessão efêmera: nenhum histórico é salvo e a memória fica explicitamente desligada';
+
+  @override
+  String get newIncognitoChat => 'Iniciar chat incógnito';
 
   @override
   String get liveLogsTooltip => 'Logs ao vivo (somente desenvolvimento local)';

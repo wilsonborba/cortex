@@ -111,6 +111,106 @@ void main() {
     expect(result.messages.last.content, 'from memory');
   });
 
+  test(
+    'sendEphemeralMessage never sets capabilities.memory and forces capabilities.temporary (issue #6)',
+    () async {
+      final client = _FakeHttpClient((request) async {
+        // Attachments force the native /execute route even with useMemory
+        // left at its default (false), so an ephemeral message with an
+        // attachment reaches /execute; here there is no attachment, but
+        // sendEphemeralMessage always routes through /execute regardless.
+        expect(request.url.path, endsWith('/execute'));
+        final body = jsonDecode((request as http.Request).body) as Map<String, dynamic>;
+        expect(body['use_memory'], false);
+        expect(body['capabilities'], {
+          'memory': false,
+          'web': false,
+          'temporary': true,
+        });
+        return http.StreamedResponse(
+          Stream.value(
+            utf8.encode(
+              jsonEncode({
+                'request_id': 'req-incognito',
+                'tier_requested': 0,
+                'tier_executed': 0,
+                'strategy_id': 'ephemeral',
+                'task_type': 'general',
+                'success': true,
+                'response': 'this is not remembered',
+                'input_tokens': 0,
+                'output_tokens': 0,
+                'total_tokens': 0,
+                'cost_usd': 0.0,
+                'latency_ms': 5,
+                'steps': [],
+              }),
+            ),
+          ),
+          200,
+        );
+      });
+
+      final chatService = ChatService(
+        cortexApiAdapter: CortexApiAdapter(
+          apiForAppsBaseUrl: 'http://test.local',
+          httpClient: client,
+        ),
+      );
+
+      final before = chatService.listConversations();
+      final ephemeral = chatService.newEphemeralConversation(title: 'Incognito chat');
+      expect(ephemeral.isEphemeral, isTrue);
+
+      final result = await chatService.sendEphemeralMessage(
+        conversation: ephemeral,
+        content: 'do not remember this',
+      );
+
+      expect(result.messages.last.content, 'this is not remembered');
+      // The ephemeral conversation was never added to the persisted list.
+      expect(chatService.listConversations().length, before.length);
+      expect(chatService.conversationById(ephemeral.id), isNull);
+    },
+  );
+
+  test('sendMessage with needsWeb sets needs_web/capabilities.web and surfaces sources', () async {
+    final client = _FakeHttpClient((request) async {
+      final frames = [
+        'data: ${jsonEncode({
+          "choices": [
+            {"delta": {"content": "See https://example.com/docs for more."}},
+          ],
+        })}\n\n',
+        'data: [DONE]\n\n',
+      ];
+      final body = jsonDecode((request as http.Request).body) as Map<String, dynamic>;
+      expect(body['needs_web'], true);
+      return http.StreamedResponse(
+        Stream.fromIterable(frames.map(utf8.encode)),
+        200,
+      );
+    });
+
+    final chatService = ChatService(
+      cortexApiAdapter: CortexApiAdapter(
+        apiForAppsBaseUrl: 'http://test.local',
+        httpClient: client,
+      ),
+    );
+
+    final conversation = chatService.listConversations().first;
+
+    final result = await chatService.sendMessage(
+      conversationId: conversation.id,
+      content: 'what happened today?',
+      needsWeb: true,
+    );
+
+    expect(result.messages.last.content, contains('example.com/docs'));
+    expect(result.messages.last.sources, ['https://example.com/docs']);
+  });
+
   test('sendMessage surfaces a friendly error when the backend is unreachable', () async {
     final client = _FakeHttpClient((request) async {
       return http.StreamedResponse(Stream.value(utf8.encode('boom')), 500);

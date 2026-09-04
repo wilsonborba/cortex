@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/utils/responsive.dart';
+import '../../../../domain/models/attachment.dart';
 import '../../../../domain/models/conversation.dart';
 import '../../../../domain/services/chat_service.dart';
 import '../../../../l10n/generated/app_localizations.dart';
@@ -69,6 +70,14 @@ class _ChatScreenState extends State<ChatScreen> {
     setState(() {});
   }
 
+  /// Starts a new incognito/temporary chat (issue #6): a brand-new,
+  /// never-persisted conversation, not added to the sidebar list, with
+  /// memory explicitly forced off for every message sent inside it.
+  void _onStartIncognitoChat() {
+    _flowHandler.startIncognitoConversation();
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
@@ -81,6 +90,12 @@ class _ChatScreenState extends State<ChatScreen> {
           isBusy: _flowHandler.isBusy,
           useMemory: _flowHandler.useMemory,
           onToggleMemory: _flowHandler.setUseMemory,
+          needsWeb: _flowHandler.needsWeb,
+          onToggleNeedsWeb: _flowHandler.setNeedsWeb,
+          pendingAttachments: _flowHandler.pendingAttachments,
+          onAddAttachments: _flowHandler.addPendingAttachments,
+          onRemoveAttachment: _flowHandler.removePendingAttachment,
+          onStartIncognitoChat: _onStartIncognitoChat,
           onSelectConversation: _onSelectConversation,
           onSubmit: _onSubmit,
         );
@@ -100,6 +115,12 @@ class ChatScreenProps {
     required this.isBusy,
     required this.useMemory,
     required this.onToggleMemory,
+    required this.needsWeb,
+    required this.onToggleNeedsWeb,
+    required this.pendingAttachments,
+    required this.onAddAttachments,
+    required this.onRemoveAttachment,
+    required this.onStartIncognitoChat,
     required this.onSelectConversation,
     required this.onSubmit,
   });
@@ -113,6 +134,21 @@ class ChatScreenProps {
   /// chat completion facade.
   final bool useMemory;
   final ValueChanged<bool> onToggleMemory;
+
+  /// Whether the next [onSubmit] should set `needs_web`/`capabilities.web`
+  /// (issue #6, web-search grounding).
+  final bool needsWeb;
+  final ValueChanged<bool> onToggleNeedsWeb;
+
+  /// Files picked from the prompt dock's attach menu, waiting to be sent
+  /// with the next [onSubmit] (issue #6).
+  final List<ChatAttachment> pendingAttachments;
+  final ValueChanged<List<ChatAttachment>> onAddAttachments;
+  final ValueChanged<String> onRemoveAttachment;
+
+  /// Starts a brand-new incognito/temporary conversation (issue #6): no
+  /// persisted history, memory explicitly off.
+  final VoidCallback onStartIncognitoChat;
   final ValueChanged<String> onSelectConversation;
   final ValueChanged<String> onSubmit;
 }

@@ -72,8 +72,18 @@ class _MobileChatScreenState extends State<MobileChatScreen> {
                   contentPadding: EdgeInsets.zero,
                   title: Text(l10n.webBrowsingTitle),
                   subtitle: Text(l10n.webBrowsingSubtitle),
-                  value: false,
-                  onChanged: null,
+                  value: widget.props.needsWeb,
+                  onChanged: widget.props.onToggleNeedsWeb,
+                ),
+                ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: const Icon(Icons.visibility_off_outlined),
+                  title: Text(l10n.incognitoModeTitle),
+                  subtitle: Text(l10n.incognitoModeSubtitle),
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    widget.props.onStartIncognitoChat();
+                  },
                 ),
               ],
             ),
@@ -92,12 +102,32 @@ class _MobileChatScreenState extends State<MobileChatScreen> {
     return Scaffold(
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
-        title: Text(
-          props.selectedConversation.title,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
+        title: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (props.selectedConversation.isEphemeral)
+              Padding(
+                padding: const EdgeInsets.only(right: 6),
+                child: Tooltip(
+                  message: l10n.incognitoModeSubtitle,
+                  child: const Icon(Icons.visibility_off_outlined, size: 18),
+                ),
+              ),
+            Flexible(
+              child: Text(
+                props.selectedConversation.title,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
         ),
         actions: [
+          IconButton(
+            tooltip: l10n.newIncognitoChat,
+            icon: const Icon(Icons.visibility_off_outlined),
+            onPressed: props.onStartIncognitoChat,
+          ),
           const TelemetryPanelButton(),
           IconButton(
             tooltip: l10n.openSettings,
@@ -172,6 +202,11 @@ class _MobileChatScreenState extends State<MobileChatScreen> {
                 onSubmit: props.onSubmit,
                 useMemory: props.useMemory,
                 onToggleMemory: props.onToggleMemory,
+                needsWeb: props.needsWeb,
+                onToggleNeedsWeb: props.onToggleNeedsWeb,
+                pendingAttachments: props.pendingAttachments,
+                onAddAttachments: props.onAddAttachments,
+                onRemoveAttachment: props.onRemoveAttachment,
               ),
             ),
           ],

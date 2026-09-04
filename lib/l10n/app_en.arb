@@ -33,7 +33,27 @@
   "memoryRecallTitle": "Memory recall",
   "memoryRecallSubtitle": "Uses cortex_api's native /execute with server-side memory recall, available on Tier 0",
   "webBrowsingTitle": "Web browsing",
-  "webBrowsingSubtitle": "Locked on Tier 0",
+  "webBrowsingSubtitle": "Grounds the reply with a web search, available on Tier 0",
+  "webSearchOnTooltip": "Web search on: this reply will be grounded with a web search (needs_web)",
+  "webSearchOffTooltip": "Turn on web search grounding (needs_web)",
+  "sourcesCount": "Sources ({count})",
+  "@sourcesCount": {
+    "placeholders": {"count": {"type": "int"}}
+  },
+
+  "attachFile": "Attach a file",
+  "attachImage": "Image",
+  "attachDocument": "Document",
+  "removeAttachment": "Remove attachment",
+  "documentAttachmentBackendGap": "Document ingestion is not supported by the backend yet: only images are accepted today.",
+
+  "voiceStartRecording": "Start voice recording",
+  "voiceStopRecording": "Stop recording and insert transcript",
+  "micPermissionDenied": "Microphone access is unavailable or was denied.",
+
+  "incognitoModeTitle": "Incognito chat",
+  "incognitoModeSubtitle": "Ephemeral session: no history is saved and memory is explicitly off",
+  "newIncognitoChat": "Start incognito chat",
 
   "liveLogsTooltip": "Live logs (local dev only)",
   "liveLogsTitle": "Cortex live logs",
