@@ -4,6 +4,7 @@ import '../../components/conversation_tile.dart';
 import '../../components/message_bubble.dart';
 import '../../components/premium_hover_card.dart';
 import '../../components/prompt_dock.dart';
+import '../../components/telemetry_panel.dart';
 import 'chat_screen.dart';
 
 /// Desktop / wide-viewport layout: a collapsible master sidebar of
@@ -100,6 +101,7 @@ class _DesktopChatScreenState extends State<DesktopChatScreen> {
                             style: Theme.of(context).textTheme.titleMedium,
                           ),
                         ),
+                        const TelemetryPanelButton(),
                         IconButton(
                           tooltip: 'Toggle theme',
                           icon: const Icon(Icons.brightness_6_outlined),
@@ -136,6 +138,8 @@ class _DesktopChatScreenState extends State<DesktopChatScreen> {
                         child: PromptDock(
                           isBusy: props.isBusy,
                           onSubmit: props.onSubmit,
+                          useMemory: props.useMemory,
+                          onToggleMemory: props.onToggleMemory,
                         ),
                       ),
                     ),

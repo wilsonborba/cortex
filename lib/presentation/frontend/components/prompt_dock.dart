@@ -17,11 +17,20 @@ class PromptDock extends StatefulWidget {
     required this.onSubmit,
     this.tier = AppTier.tier0,
     this.isBusy = false,
+    this.useMemory = false,
+    this.onToggleMemory,
   });
 
   final ValueChanged<String> onSubmit;
   final AppTier tier;
   final bool isBusy;
+
+  /// Whether the next submit should opt into memory-aware execution
+  /// (cortex_api's native `/execute` with `capabilities.memory = true`)
+  /// instead of the plain streamed chat facade. Unlike attachments/web
+  /// browsing, this is not tier-locked: it works on Tier 0 today.
+  final bool useMemory;
+  final ValueChanged<bool>? onToggleMemory;
 
   @override
   State<PromptDock> createState() => _PromptDockState();
@@ -120,6 +129,18 @@ class _PromptDockState extends State<PromptDock> {
                 locked: widget.tier.isLocked,
               ),
               const SizedBox(width: 4),
+              _DockIconButton(
+                icon: Icons.psychology_alt_outlined,
+                tooltip: widget.useMemory
+                    ? 'Memory recall on: this reply will use cortex_api\'s '
+                          'native /execute with server-side memory recall'
+                    : 'Turn on memory recall (native /execute)',
+                onPressed: widget.onToggleMemory == null
+                    ? null
+                    : () => widget.onToggleMemory!(!widget.useMemory),
+                active: widget.useMemory,
+              ),
+              const SizedBox(width: 4),
               Material(
                 color: scheme.onSurface,
                 shape: const CircleBorder(),
@@ -150,13 +171,15 @@ class _DockIconButton extends StatelessWidget {
     required this.icon,
     required this.tooltip,
     required this.onPressed,
-    required this.locked,
+    this.locked = false,
+    this.active = false,
   });
 
   final IconData icon;
   final String tooltip;
   final VoidCallback? onPressed;
   final bool locked;
+  final bool active;
 
   @override
   Widget build(BuildContext context) {
@@ -171,7 +194,12 @@ class _DockIconButton extends StatelessWidget {
           children: [
             IconButton(
               onPressed: onPressed,
-              icon: Icon(icon, color: scheme.onSurface.withValues(alpha: 0.7)),
+              icon: Icon(
+                icon,
+                color: active
+                    ? scheme.primary
+                    : scheme.onSurface.withValues(alpha: 0.7),
+              ),
             ),
             if (locked)
               Positioned(

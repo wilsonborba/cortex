@@ -7,6 +7,11 @@ import '../../../domain/services/chat_service.dart';
 /// the dock can show a stop affordance, calls into [ChatService], and
 /// notifies listeners so the screen can rebuild with the updated
 /// conversation. No business logic lives in the widgets themselves.
+///
+/// Also owns the `useMemory` toggle wired from the prompt dock's memory
+/// recall affordance: when on, [submit] routes through cortex_api's native
+/// `/execute` (server-side memory recall) instead of the streamed chat
+/// completion facade.
 class ChatFlowHandler extends ChangeNotifier {
   ChatFlowHandler(this._chatService, Conversation initialConversation)
     : conversation = initialConversation;
@@ -15,7 +20,14 @@ class ChatFlowHandler extends ChangeNotifier {
 
   Conversation conversation;
   bool isBusy = false;
+  bool useMemory = false;
   String? error;
+
+  void setUseMemory(bool value) {
+    if (useMemory == value) return;
+    useMemory = value;
+    notifyListeners();
+  }
 
   Future<void> submit(String text) async {
     if (text.trim().isEmpty || isBusy) return;
@@ -27,6 +39,11 @@ class ChatFlowHandler extends ChangeNotifier {
       conversation = await _chatService.sendMessage(
         conversationId: conversation.id,
         content: text,
+        useMemory: useMemory,
+        onUpdate: (updated) {
+          conversation = updated;
+          notifyListeners();
+        },
       );
     } catch (e) {
       error = 'Could not send message: $e';

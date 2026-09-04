@@ -63,6 +63,8 @@ class _ChatScreenState extends State<ChatScreen> {
           conversations: _conversationHandler.conversations,
           selectedConversation: _flowHandler.conversation,
           isBusy: _flowHandler.isBusy,
+          useMemory: _flowHandler.useMemory,
+          onToggleMemory: _flowHandler.setUseMemory,
           onSelectConversation: _onSelectConversation,
           onSubmit: _onSubmit,
         );
@@ -80,6 +82,8 @@ class ChatScreenProps {
     required this.conversations,
     required this.selectedConversation,
     required this.isBusy,
+    required this.useMemory,
+    required this.onToggleMemory,
     required this.onSelectConversation,
     required this.onSubmit,
   });
@@ -87,6 +91,12 @@ class ChatScreenProps {
   final List<Conversation> conversations;
   final Conversation selectedConversation;
   final bool isBusy;
+
+  /// Whether the next [onSubmit] should route through cortex_api's native
+  /// `/execute` with `capabilities.memory = true` instead of the streamed
+  /// chat completion facade.
+  final bool useMemory;
+  final ValueChanged<bool> onToggleMemory;
   final ValueChanged<String> onSelectConversation;
   final ValueChanged<String> onSubmit;
 }
