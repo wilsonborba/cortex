@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/utils/responsive.dart';
 import '../../../../domain/models/conversation.dart';
 import '../../../../domain/services/chat_service.dart';
+import '../../../../l10n/generated/app_localizations.dart';
 import '../../handlers/chat_flow_handler.dart';
 import '../../handlers/conversation_handler.dart';
 import 'desktop_chat_screen.dart';
@@ -22,6 +23,7 @@ class _ChatScreenState extends State<ChatScreen> {
   final _chatService = ChatService();
   late final ConversationHandler _conversationHandler;
   late ChatFlowHandler _flowHandler;
+  Object? _lastShownError;
 
   @override
   void initState() {
@@ -29,6 +31,19 @@ class _ChatScreenState extends State<ChatScreen> {
     _conversationHandler = ConversationHandler(_chatService);
     _flowHandler = ChatFlowHandler(_chatService, _conversationHandler.selected);
     _conversationHandler.addListener(_onConversationChanged);
+  }
+
+  void _maybeShowError() {
+    final error = _flowHandler.error;
+    if (error == null || identical(error, _lastShownError)) return;
+    _lastShownError = error;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final l10n = AppLocalizations.of(context);
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.couldNotSendMessage('$error'))));
+    });
   }
 
   void _onConversationChanged() {
@@ -59,6 +74,7 @@ class _ChatScreenState extends State<ChatScreen> {
     return AnimatedBuilder(
       animation: Listenable.merge([_conversationHandler, _flowHandler]),
       builder: (context, _) {
+        _maybeShowError();
         final props = ChatScreenProps(
           conversations: _conversationHandler.conversations,
           selectedConversation: _flowHandler.conversation,

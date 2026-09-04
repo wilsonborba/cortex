@@ -32,12 +32,14 @@ dependencies:
     sdk: flutter
   flutter_web_plugins:
     sdk: flutter
+  flutter_localizations:
+    sdk: flutter
   cupertino_icons: ^1.0.8
   google_fonts: ^6.2.1
   http: ^1.2.2
   web: ^1.0.0
   crypto: ^3.0.3
-  intl: ^0.19.0
+  intl: ^0.20.2
   flutter_markdown: ^0.7.4
   shared_preferences: ^2.3.2
   flutter_svg: ^2.0.10+1
@@ -55,6 +57,10 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
+
+  # Generates lib/l10n/generated/app_localizations.dart from the ARB files
+  # under lib/l10n (see l10n.yaml at the repo root).
+  generate: true
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in

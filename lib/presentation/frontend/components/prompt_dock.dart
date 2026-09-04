@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../domain/models/tier.dart';
+import '../../../l10n/generated/app_localizations.dart';
 import 'app_theme.dart';
 import 'tier_badge.dart';
 
@@ -56,11 +57,10 @@ class _PromptDockState extends State<PromptDock> {
   }
 
   void _showLockedFeatureNotice() {
+    final l10n = AppLocalizations.of(context);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(
-          '${widget.tier.label}: this feature unlocks on a higher tier.',
-        ),
+        content: Text(l10n.lockedFeatureNotice(widget.tier.labelOf(context))),
         behavior: SnackBarBehavior.floating,
       ),
     );
@@ -69,6 +69,7 @@ class _PromptDockState extends State<PromptDock> {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
 
     return Container(
       padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
@@ -90,7 +91,7 @@ class _PromptDockState extends State<PromptDock> {
             children: [
               _DockIconButton(
                 icon: Icons.add,
-                tooltip: 'Attach file (locked on ${widget.tier.label})',
+                tooltip: l10n.attachFileLocked(widget.tier.labelOf(context)),
                 onPressed: widget.tier.isLocked
                     ? _showLockedFeatureNotice
                     : null,
@@ -106,9 +107,9 @@ class _PromptDockState extends State<PromptDock> {
                     minLines: 1,
                     maxLines: 5,
                     textInputAction: TextInputAction.newline,
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       isDense: true,
-                      hintText: 'Message Cortex...',
+                      hintText: l10n.messageHint,
                       border: InputBorder.none,
                       contentPadding: EdgeInsets.symmetric(
                         vertical: 12,
@@ -122,7 +123,7 @@ class _PromptDockState extends State<PromptDock> {
               const SizedBox(width: 4),
               _DockIconButton(
                 icon: Icons.public,
-                tooltip: 'Web browsing (locked on ${widget.tier.label})',
+                tooltip: l10n.webBrowsingLocked(widget.tier.labelOf(context)),
                 onPressed: widget.tier.isLocked
                     ? _showLockedFeatureNotice
                     : null,
@@ -132,9 +133,8 @@ class _PromptDockState extends State<PromptDock> {
               _DockIconButton(
                 icon: Icons.psychology_alt_outlined,
                 tooltip: widget.useMemory
-                    ? 'Memory recall on: this reply will use cortex_api\'s '
-                          'native /execute with server-side memory recall'
-                    : 'Turn on memory recall (native /execute)',
+                    ? l10n.memoryRecallOnTooltip
+                    : l10n.memoryRecallOffTooltip,
                 onPressed: widget.onToggleMemory == null
                     ? null
                     : () => widget.onToggleMemory!(!widget.useMemory),

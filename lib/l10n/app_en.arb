@@ -1,0 +1,61 @@
+{
+  "@@locale": "en",
+  "appTitle": "Cortex",
+  "@appTitle": {"description": "Brand name, kept the same across all languages."},
+
+  "landingTagline": "A calm, monochrome place to think out loud, backed by the colour running wild behind it.",
+  "signInWithAsodya": "Sign in with Asodya",
+  "continueAsGuest": "Continue as Guest",
+  "guestModeNotice": "Guest mode skips sign-in entirely: it is a local shortcut, not an Asodya account.",
+
+  "collapseSidebar": "Collapse sidebar",
+  "expandSidebar": "Expand sidebar",
+  "openSettings": "Settings",
+  "sessionOptions": "Session options",
+
+  "tierZeroLabel": "Tier 0 - Free & Fast",
+
+  "messageHint": "Message Cortex...",
+  "lockedFeatureNotice": "{tier}: this feature unlocks on a higher tier.",
+  "@lockedFeatureNotice": {
+    "placeholders": {"tier": {"type": "String"}}
+  },
+  "attachFileLocked": "Attach file (locked on {tier})",
+  "@attachFileLocked": {
+    "placeholders": {"tier": {"type": "String"}}
+  },
+  "webBrowsingLocked": "Web browsing (locked on {tier})",
+  "@webBrowsingLocked": {
+    "placeholders": {"tier": {"type": "String"}}
+  },
+  "memoryRecallOnTooltip": "Memory recall on: this reply will use cortex_api's native /execute with server-side memory recall",
+  "memoryRecallOffTooltip": "Turn on memory recall (native /execute)",
+  "memoryRecallTitle": "Memory recall",
+  "memoryRecallSubtitle": "Uses cortex_api's native /execute with server-side memory recall, available on Tier 0",
+  "webBrowsingTitle": "Web browsing",
+  "webBrowsingSubtitle": "Locked on Tier 0",
+
+  "liveLogsTooltip": "Live logs (local dev only)",
+  "liveLogsTitle": "Cortex live logs",
+  "liveLogsDescription": "Local dev only: connects directly to cortex_api's /logs/stream, this bypasses the api_for_apps proxy (it cannot carry a WebSocket).",
+  "liveLogsConnectionError": "Could not connect: {error}",
+  "@liveLogsConnectionError": {
+    "placeholders": {"error": {"type": "String"}}
+  },
+  "liveLogsWaiting": "Waiting for log lines...",
+
+  "couldNotSendMessage": "Could not send message: {error}",
+  "@couldNotSendMessage": {
+    "placeholders": {"error": {"type": "String"}}
+  },
+
+  "settingsTitle": "Settings",
+  "themeLabel": "Theme",
+  "themeLight": "Light",
+  "themeDark": "Dark",
+  "themeSystem": "System",
+  "languageLabel": "Language",
+  "languageEnglish": "English",
+  "languagePortuguese": "Portuguese",
+  "languageThai": "Thai"
+}

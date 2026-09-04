@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../../l10n/generated/app_localizations.dart';
+import '../../components/app_settings_sheet.dart';
 import '../../components/conversation_tile.dart';
 import '../../components/message_bubble.dart';
 import '../../components/prompt_dock.dart';
@@ -42,6 +44,7 @@ class _MobileChatScreenState extends State<MobileChatScreen> {
   }
 
   void _openSessionSheet() {
+    final l10n = AppLocalizations.of(context);
     showModalBottomSheet<void>(
       context: context,
       showDragHandle: true,
@@ -60,18 +63,15 @@ class _MobileChatScreenState extends State<MobileChatScreen> {
                 const SizedBox(height: 16),
                 SwitchListTile(
                   contentPadding: EdgeInsets.zero,
-                  title: const Text('Memory recall'),
-                  subtitle: const Text(
-                    'Uses cortex_api\'s native /execute with server-side '
-                    'memory recall, available on Tier 0',
-                  ),
+                  title: Text(l10n.memoryRecallTitle),
+                  subtitle: Text(l10n.memoryRecallSubtitle),
                   value: widget.props.useMemory,
                   onChanged: widget.props.onToggleMemory,
                 ),
                 SwitchListTile(
                   contentPadding: EdgeInsets.zero,
-                  title: const Text('Web browsing'),
-                  subtitle: const Text('Locked on Tier 0'),
+                  title: Text(l10n.webBrowsingTitle),
+                  subtitle: Text(l10n.webBrowsingSubtitle),
                   value: false,
                   onChanged: null,
                 ),
@@ -86,6 +86,7 @@ class _MobileChatScreenState extends State<MobileChatScreen> {
   @override
   Widget build(BuildContext context) {
     final props = widget.props;
+    final l10n = AppLocalizations.of(context);
     _scrollToBottom();
 
     return Scaffold(
@@ -99,7 +100,12 @@ class _MobileChatScreenState extends State<MobileChatScreen> {
         actions: [
           const TelemetryPanelButton(),
           IconButton(
-            tooltip: 'Session options',
+            tooltip: l10n.openSettings,
+            icon: const Icon(Icons.settings_outlined),
+            onPressed: () => AppSettingsSheet.show(context),
+          ),
+          IconButton(
+            tooltip: l10n.sessionOptions,
             icon: const Icon(Icons.tune),
             onPressed: _openSessionSheet,
           ),
@@ -110,11 +116,14 @@ class _MobileChatScreenState extends State<MobileChatScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const Padding(
-                padding: EdgeInsets.all(16),
+              Padding(
+                padding: const EdgeInsets.all(16),
                 child: Text(
-                  'Cortex',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
+                  l10n.appTitle,
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
               ),
               Expanded(

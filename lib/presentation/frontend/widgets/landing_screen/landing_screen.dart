@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/utils/responsive.dart';
+import '../../../../l10n/generated/app_localizations.dart';
 import '../../components/app_theme.dart';
 import '../../components/premium_hover_card.dart';
 import 'my_background.dart';
@@ -67,20 +68,20 @@ class _LandingContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final l10n = AppLocalizations.of(context);
 
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text(
-          'Cortex',
+          l10n.appTitle,
           textAlign: TextAlign.center,
           style: textTheme.displaySmall?.copyWith(fontWeight: FontWeight.w700),
         ),
         const SizedBox(height: 12),
         Text(
-          'A calm, monochrome place to think out loud, backed by the '
-          'colour running wild behind it.',
+          l10n.landingTagline,
           textAlign: TextAlign.center,
           style: textTheme.bodyLarge,
         ),
@@ -90,7 +91,7 @@ class _LandingContent extends StatelessWidget {
           style: ElevatedButton.styleFrom(
             minimumSize: const Size.fromHeight(52),
           ),
-          child: const Text('Sign in with Asodya'),
+          child: Text(l10n.signInWithAsodya),
         ),
         const SizedBox(height: 12),
         OutlinedButton(
@@ -101,12 +102,11 @@ class _LandingContent extends StatelessWidget {
               borderRadius: BorderRadius.circular(AppTheme.controlRadius),
             ),
           ),
-          child: const Text('Continue as Guest'),
+          child: Text(l10n.continueAsGuest),
         ),
         const SizedBox(height: 8),
         Text(
-          'Guest mode skips sign-in entirely: it is a local shortcut, not an '
-          'Asodya account.',
+          l10n.guestModeNotice,
           textAlign: TextAlign.center,
           style: textTheme.bodySmall,
         ),
