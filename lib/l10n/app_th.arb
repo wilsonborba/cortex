@@ -1,0 +1,45 @@
+{
+  "@@locale": "th",
+  "appTitle": "Cortex",
+
+  "landingTagline": "พื้นที่สงบสีขาวดำสำหรับคิดออกเสียง โดยมีสีสันพลิ้วไหวอยู่เบื้องหลัง",
+  "signInWithAsodya": "เข้าสู่ระบบด้วย Asodya",
+  "continueAsGuest": "ดำเนินการต่อในฐานะผู้เยี่ยมชม",
+  "guestModeNotice": "โหมดผู้เยี่ยมชมข้ามการเข้าสู่ระบบทั้งหมด เป็นเพียงทางลัดในเครื่อง ไม่ใช่บัญชี Asodya",
+
+  "collapseSidebar": "ย่อแถบด้านข้าง",
+  "expandSidebar": "ขยายแถบด้านข้าง",
+  "openSettings": "ตั้งค่า",
+  "sessionOptions": "ตัวเลือกเซสชัน",
+
+  "tierZeroLabel": "ระดับ 0 - ฟรีและรวดเร็ว",
+
+  "messageHint": "ส่งข้อความถึง Cortex...",
+  "lockedFeatureNotice": "{tier}: ฟีเจอร์นี้จะปลดล็อกในระดับที่สูงขึ้น",
+  "attachFileLocked": "แนบไฟล์ (ล็อกอยู่ที่ {tier})",
+  "webBrowsingLocked": "การท่องเว็บ (ล็อกอยู่ที่ {tier})",
+  "memoryRecallOnTooltip": "เปิดใช้งานความจำแล้ว: คำตอบนี้จะใช้ /execute แบบเนทีฟของ cortex_api พร้อมการเรียกคืนความจำฝั่งเซิร์ฟเวอร์",
+  "memoryRecallOffTooltip": "เปิดใช้งานการเรียกคืนความจำ (/execute แบบเนทีฟ)",
+  "memoryRecallTitle": "การเรียกคืนความจำ",
+  "memoryRecallSubtitle": "ใช้ /execute แบบเนทีฟของ cortex_api พร้อมการเรียกคืนความจำฝั่งเซิร์ฟเวอร์ ใช้ได้ในระดับ 0",
+  "webBrowsingTitle": "การท่องเว็บ",
+  "webBrowsingSubtitle": "ล็อกอยู่ในระดับ 0",
+
+  "liveLogsTooltip": "บันทึกสด (สำหรับการพัฒนาในเครื่องเท่านั้น)",
+  "liveLogsTitle": "บันทึกสดของ Cortex",
+  "liveLogsDescription": "สำหรับการพัฒนาในเครื่องเท่านั้น: เชื่อมต่อโดยตรงกับ /logs/stream ของ cortex_api ซึ่งข้ามพร็อกซีของ api_for_apps (ที่ไม่รองรับ WebSocket)",
+  "liveLogsConnectionError": "ไม่สามารถเชื่อมต่อได้: {error}",
+  "liveLogsWaiting": "กำลังรอบรรทัดบันทึก...",
+
+  "couldNotSendMessage": "ไม่สามารถส่งข้อความได้: {error}",
+
+  "settingsTitle": "ตั้งค่า",
+  "themeLabel": "ธีม",
+  "themeLight": "สว่าง",
+  "themeDark": "มืด",
+  "themeSystem": "ตามระบบ",
+  "languageLabel": "ภาษา",
+  "languageEnglish": "อังกฤษ",
+  "languagePortuguese": "โปรตุเกส",
+  "languageThai": "ไทย"
+}
