@@ -40,14 +40,16 @@ class AuthApiAdapter {
   /// once login completes.
   Uri buildSsoRedirectUri({required String returnOrigin}) {
     final appContext = <String, dynamic>{
-      'name': AppSettings.appIdentifier,
-      'description': 'Cortex chat',
-      'logo_image_url': '',
+      'name': 'Cortex',
+      'description':
+          'Intelligent neural workspace with autonomous multi-agent reasoning, deep research, and high-performance workflow execution.',
+      'logo_image_url':
+          'https://res.cloudinary.com/dhncdmb2t/image/upload/v1761907623/temp_logo_tw3grt.png',
       'url_app': returnOrigin,
       'two_fa_auth': false,
       'primary_color': '#0D0D0D',
-      'secondary_color': '#F7F7F7',
-      'tertiary_color': '#E2E2E2',
+      'secondary_color': '#1A1A1A',
+      'tertiary_color': '#FFFFFF',
       'quartary_color': null,
       'created_at': DateTime.now().toUtc().toIso8601String(),
     };
