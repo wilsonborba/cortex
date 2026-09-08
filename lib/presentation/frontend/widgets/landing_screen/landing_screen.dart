@@ -5,7 +5,7 @@ import '../../../../core/utils/responsive.dart';
 import '../../handlers/app_preferences_scope.dart';
 import 'my_background.dart';
 
-/// Neural Grid Landing Page matching the Asodya monochromatic design language.
+/// Neural Grid Landing Page matching the exact Asodya monochromatic design language from the preview.
 class LandingScreen extends StatelessWidget {
   const LandingScreen({
     super.key,
@@ -40,17 +40,146 @@ class LandingScreen extends StatelessWidget {
                   onSignIn: onSignIn,
                   onAbout: _openAbout,
                 ),
-                // Hero Content
+                // Main Scrollable Body
                 Expanded(
-                  child: Center(
-                    child: SingleChildScrollView(
-                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+                  child: SingleChildScrollView(
+                    child: Center(
                       child: ConstrainedBox(
-                        constraints: BoxConstraints(maxWidth: isMobile ? 420 : 640),
-                        child: _LandingHeroContent(
-                          onSignIn: onSignIn,
-                          isDark: isDark,
-                          scheme: scheme,
+                        constraints: const BoxConstraints(maxWidth: 1100),
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: isMobile ? 20 : 32,
+                            vertical: isMobile ? 32 : 56,
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              // Pill Tag
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                                decoration: BoxDecoration(
+                                  color: scheme.surfaceContainerHighest.withValues(alpha: 0.5),
+                                  borderRadius: BorderRadius.circular(4),
+                                  border: Border.all(
+                                    color: scheme.outline.withValues(alpha: isDark ? 0.3 : 0.5),
+                                  ),
+                                ),
+                                child: Text(
+                                  'AUTONOMOUS NEURAL WORKSPACE',
+                                  style: TextStyle(
+                                    fontFamily: 'monospace',
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w600,
+                                    letterSpacing: 1.5,
+                                    color: scheme.onSurface.withValues(alpha: 0.75),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 24),
+                              // Hero Title
+                              Text(
+                                'Intelligence without distraction.',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: isMobile ? 32 : 54,
+                                  fontWeight: FontWeight.w700,
+                                  letterSpacing: -1.5,
+                                  height: 1.1,
+                                  color: scheme.onSurface,
+                                ),
+                              ),
+                              const SizedBox(height: 18),
+                              // Hero Description
+                              ConstrainedBox(
+                                constraints: const BoxConstraints(maxWidth: 580),
+                                child: Text(
+                                  'High-throughput reasoning and persistent chat workspace. Built for deep focus with zero telemetry leakage.',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: isMobile ? 15 : 18,
+                                    height: 1.6,
+                                    color: scheme.onSurface.withValues(alpha: 0.7),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 36),
+                              // CTA Box
+                              ElevatedButton(
+                                onPressed: () => onSignIn(),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: scheme.primary,
+                                  foregroundColor: scheme.onPrimary,
+                                  elevation: 0,
+                                  padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 18),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(6),
+                                  ),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    const Text(
+                                      '[ Get Started ]',
+                                      style: TextStyle(
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.w600,
+                                        letterSpacing: 0.5,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Icon(
+                                      Icons.arrow_forward,
+                                      size: 16,
+                                      color: scheme.onPrimary,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(height: 12),
+                              Text(
+                                '[ Single Sign-On • Requires Account ]',
+                                style: TextStyle(
+                                  fontFamily: 'monospace',
+                                  fontSize: 11,
+                                  color: scheme.onSurface.withValues(alpha: 0.45),
+                                ),
+                              ),
+                              const SizedBox(height: 64),
+                              // 3 Feature Cards Grid
+                              _FeatureCardsGrid(isMobile: isMobile),
+                              const SizedBox(height: 48),
+                              // Footer
+                              const Divider(height: 32),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 16),
+                                child: Wrap(
+                                  alignment: WrapAlignment.spaceBetween,
+                                  runAlignment: WrapAlignment.center,
+                                  crossAxisAlignment: WrapCrossAlignment.center,
+                                  spacing: 16,
+                                  runSpacing: 8,
+                                  children: [
+                                    Text(
+                                      'ASODYA CORTEX // TIER 0 WORKSPACE',
+                                      style: TextStyle(
+                                        fontFamily: 'monospace',
+                                        fontSize: 11,
+                                        color: scheme.onSurface.withValues(alpha: 0.4),
+                                      ),
+                                    ),
+                                    Text(
+                                      '© 2026 ASODYA. ALL RIGHTS RESERVED.',
+                                      style: TextStyle(
+                                        fontFamily: 'monospace',
+                                        fontSize: 11,
+                                        color: scheme.onSurface.withValues(alpha: 0.4),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
@@ -82,11 +211,15 @@ class _LandingNavBar extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+      padding: EdgeInsets.symmetric(
+        horizontal: isMobile ? 20 : 32,
+        vertical: 16,
+      ),
       decoration: BoxDecoration(
+        color: scheme.surface.withValues(alpha: 0.8),
         border: Border(
           bottom: BorderSide(
-            color: scheme.onSurface.withValues(alpha: 0.08),
+            color: scheme.outline.withValues(alpha: isDark ? 0.2 : 0.4),
           ),
         ),
       ),
@@ -132,7 +265,7 @@ class _LandingNavBar extends StatelessWidget {
             const SizedBox(width: 8),
             IconButton(
               tooltip: isDark ? 'Light Theme' : 'Dark Theme',
-              icon: Icon(isDark ? Icons.light_mode : Icons.dark_mode, size: 18),
+              icon: Icon(isDark ? Icons.light_mode_outlined : Icons.dark_mode_outlined, size: 18),
               onPressed: () {
                 prefs.setThemeMode(isDark ? ThemeMode.light : ThemeMode.dark);
               },
@@ -198,6 +331,141 @@ class _LanguageDropdown extends StatelessWidget {
   }
 }
 
+class _FeatureCardsGrid extends StatelessWidget {
+  const _FeatureCardsGrid({required this.isMobile});
+
+  final bool isMobile;
+
+  @override
+  Widget build(BuildContext context) {
+    final cards = [
+      const _FeatureCardData(
+        num: '01 / ARCHITECTURE',
+        title: 'Neural Engine',
+        description:
+            'Zero-latency contextual streaming backed by local Tier 0 inference and isolated execution parameters.',
+      ),
+      const _FeatureCardData(
+        num: '02 / INTEGRITY',
+        title: 'Zero Telemetry Leak',
+        description:
+            'System telemetry is isolated at the infrastructure boundary. User prompts and conversations remain private.',
+      ),
+      const _FeatureCardData(
+        num: '03 / CONTINUITY',
+        title: 'Persistent Drafts',
+        description:
+            'Local draft caching and resilient session recovery across devices through unified SSO token exchange.',
+      ),
+    ];
+
+    if (isMobile) {
+      return Column(
+        children: cards.map((c) => Padding(
+          padding: const EdgeInsets.only(bottom: 16),
+          child: _FeatureCard(data: c),
+        )).toList(),
+      );
+    }
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: cards.map((c) {
+            return Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: _FeatureCard(data: c),
+              ),
+            );
+          }).toList(),
+        );
+      },
+    );
+  }
+}
+
+class _FeatureCardData {
+  const _FeatureCardData({
+    required this.num,
+    required this.title,
+    required this.description,
+  });
+
+  final String num;
+  final String title;
+  final String description;
+}
+
+class _FeatureCard extends StatelessWidget {
+  const _FeatureCard({required this.data});
+
+  final _FeatureCardData data;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
+
+    return Container(
+      decoration: BoxDecoration(
+        color: scheme.surface,
+        borderRadius: BorderRadius.circular(6),
+        border: Border.all(
+          color: scheme.outline.withValues(alpha: isDark ? 0.3 : 0.5),
+        ),
+      ),
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          // Architectural Corner Crosshairs
+          const Positioned(top: -6, left: -4, child: _Crosshair()),
+          const Positioned(bottom: -6, right: -4, child: _Crosshair()),
+          Padding(
+            padding: const EdgeInsets.all(28),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  data.num,
+                  style: TextStyle(
+                    fontFamily: 'monospace',
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: 1.0,
+                    color: scheme.onSurface.withValues(alpha: 0.45),
+                  ),
+                ),
+                const SizedBox(height: 14),
+                Text(
+                  data.title,
+                  style: const TextStyle(
+                    fontSize: 17,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: -0.3,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  data.description,
+                  style: TextStyle(
+                    fontSize: 13,
+                    height: 1.55,
+                    color: scheme.onSurface.withValues(alpha: 0.7),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _LandingMobileDrawer extends StatelessWidget {
   const _LandingMobileDrawer({
     required this.onSignIn,
@@ -224,13 +492,25 @@ class _LandingMobileDrawer extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    'CORTEX',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: 1.5,
-                      color: scheme.onSurface,
-                    ),
+                  Row(
+                    children: [
+                      Image.asset(
+                        'lib/presentation/assets/img/logo.png',
+                        width: 22,
+                        height: 22,
+                        fit: BoxFit.contain,
+                        errorBuilder: (_, __, ___) => const Icon(Icons.hub, size: 20),
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        'CORTEX',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 1.5,
+                          color: scheme.onSurface,
+                        ),
+                      ),
+                    ],
                   ),
                   IconButton(
                     icon: const Icon(Icons.close),
@@ -248,7 +528,7 @@ class _LandingMobileDrawer extends StatelessWidget {
                 },
               ),
               ListTile(
-                leading: Icon(isDark ? Icons.light_mode : Icons.dark_mode),
+                leading: Icon(isDark ? Icons.light_mode_outlined : Icons.dark_mode_outlined),
                 title: Text(isDark ? 'Light Theme' : 'Dark Theme'),
                 onTap: () {
                   prefs.setThemeMode(isDark ? ThemeMode.light : ThemeMode.dark);
@@ -283,121 +563,21 @@ class _LandingMobileDrawer extends StatelessWidget {
                   onSignIn();
                 },
                 style: ElevatedButton.styleFrom(
+                  backgroundColor: scheme.primary,
+                  foregroundColor: scheme.onPrimary,
                   minimumSize: const Size.fromHeight(48),
-                ),
-                child: const Text('Get Started'),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _LandingHeroContent extends StatelessWidget {
-  const _LandingHeroContent({
-    required this.onSignIn,
-    required this.isDark,
-    required this.scheme,
-  });
-
-  final Future<void> Function() onSignIn;
-  final bool isDark;
-  final ColorScheme scheme;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(36),
-      decoration: BoxDecoration(
-        color: scheme.surface,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: scheme.outline.withValues(alpha: isDark ? 0.35 : 0.6),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: isDark ? 0.35 : 0.06),
-            blurRadius: 30,
-            offset: const Offset(0, 10),
-          ),
-        ],
-      ),
-      child: Stack(
-        clipBehavior: Clip.none,
-        children: [
-          // Micro Crosshairs at container corners
-          const Positioned(top: -42, left: -42, child: _Crosshair()),
-          const Positioned(top: -42, right: -42, child: _Crosshair()),
-          const Positioned(bottom: -42, left: -42, child: _Crosshair()),
-          const Positioned(bottom: -42, right: -42, child: _Crosshair()),
-
-          Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Center(
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: scheme.surfaceContainerHighest,
-                    borderRadius: BorderRadius.circular(4),
-                    border: Border.all(
-                      color: scheme.outline.withValues(alpha: 0.3),
-                    ),
-                  ),
-                  child: Text(
-                    'TIER 0 // AUTONOMOUS WORKSPACE',
-                    style: TextStyle(
-                      fontFamily: 'monospace',
-                      fontSize: 10,
-                      fontWeight: FontWeight.w600,
-                      letterSpacing: 1.0,
-                      color: scheme.onSurface.withValues(alpha: 0.7),
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 24),
-              Text(
-                'CORTEX',
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      fontWeight: FontWeight.w800,
-                      letterSpacing: -0.5,
-                    ),
-              ),
-              const SizedBox(height: 12),
-              Text(
-                'Autonomous agent workspace built with high-determinism execution and unified memory orchestration.',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 14,
-                  height: 1.5,
-                  color: scheme.onSurface.withValues(alpha: 0.7),
-                ),
-              ),
-              const SizedBox(height: 32),
-              ElevatedButton(
-                onPressed: () => onSignIn(),
-                style: ElevatedButton.styleFrom(
-                  minimumSize: const Size.fromHeight(50),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(6),
                   ),
                 ),
                 child: const Text(
                   '[ Get Started ]',
-                  style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    letterSpacing: 0.5,
-                  ),
+                  style: TextStyle(fontWeight: FontWeight.w600),
                 ),
               ),
             ],
           ),
-        ],
+        ),
       ),
     );
   }
@@ -413,9 +593,8 @@ class _Crosshair extends StatelessWidget {
       style: TextStyle(
         fontFamily: 'monospace',
         fontSize: 12,
-        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.3),
+        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4),
       ),
     );
   }
 }
-
