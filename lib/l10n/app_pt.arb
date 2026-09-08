@@ -66,9 +66,11 @@
   "removeAttachment": "Remover anexo",
   "documentAttachmentBackendGap": "A ingestão de documentos ainda não é suportada pelo backend: hoje só imagens são aceitas.",
 
-  "voiceStartRecording": "Iniciar gravação de voz",
-  "voiceStopRecording": "Parar gravação e inserir transcrição",
+  "voiceStartRecording": "Gravar uma mensagem de voz",
+  "voiceCancelRecording": "Cancelar gravação",
+  "voiceSendRecording": "Enviar mensagem de voz",
   "micPermissionDenied": "O acesso ao microfone está indisponível ou foi negado.",
+  "voiceMessageTooShort": "A gravação foi curta demais para ser enviada.",
 
   "incognitoModeTitle": "Chat incógnito",
   "incognitoModeSubtitle": "Sessão efêmera: nenhum histórico é salvo e a memória fica explicitamente desligada",

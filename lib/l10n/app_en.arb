@@ -79,9 +79,11 @@
   "removeAttachment": "Remove attachment",
   "documentAttachmentBackendGap": "Document ingestion is not supported by the backend yet: only images are accepted today.",
 
-  "voiceStartRecording": "Start voice recording",
-  "voiceStopRecording": "Stop recording and insert transcript",
+  "voiceStartRecording": "Record a voice message",
+  "voiceCancelRecording": "Cancel recording",
+  "voiceSendRecording": "Send voice message",
   "micPermissionDenied": "Microphone access is unavailable or was denied.",
+  "voiceMessageTooShort": "Recording was too short to send.",
 
   "incognitoModeTitle": "Incognito chat",
   "incognitoModeSubtitle": "Ephemeral session: no history is saved and memory is explicitly off",

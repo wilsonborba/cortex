@@ -194,14 +194,20 @@ class AppLocalizationsTh extends AppLocalizations {
       'ระบบหลังบ้านยังไม่รองรับการนำเข้าเอกสาร วันนี้รองรับเฉพาะรูปภาพเท่านั้น';
 
   @override
-  String get voiceStartRecording => 'เริ่มบันทึกเสียง';
+  String get voiceStartRecording => 'บันทึกข้อความเสียง';
 
   @override
-  String get voiceStopRecording => 'หยุดบันทึกและแทรกข้อความที่ถอดเสียง';
+  String get voiceCancelRecording => 'ยกเลิกการบันทึก';
+
+  @override
+  String get voiceSendRecording => 'ส่งข้อความเสียง';
 
   @override
   String get micPermissionDenied =>
       'ไม่สามารถใช้งานไมโครโฟนได้ หรือการเข้าถึงถูกปฏิเสธ';
+
+  @override
+  String get voiceMessageTooShort => 'การบันทึกสั้นเกินไปที่จะส่ง';
 
   @override
   String get incognitoModeTitle => 'แชทไม่ระบุตัวตน';

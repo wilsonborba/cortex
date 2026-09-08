@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 
+import '../../../domain/models/attachment.dart';
 import '../../../domain/models/chat_message.dart';
+import 'audio_message_player.dart';
 import 'code_block_view.dart';
 import 'continue_generation_chip.dart';
 import 'sources_card.dart';
@@ -113,23 +115,43 @@ class MessageBubble extends StatelessWidget {
                           ),
                         ),
                       ),
-                      child: MarkdownBody(
-                        data: message.content,
-                        selectable: true,
-                        builders: {'pre': CodeBlockElementBuilder()},
-                        styleSheet: MarkdownStyleSheet(
-                          p: TextStyle(
-                            color: textColor,
-                            height: 1.5,
-                            fontSize: 13.5,
-                          ),
-                          code: TextStyle(
-                            color: textColor,
-                            fontFamily: 'monospace',
-                            backgroundColor:
-                                scheme.onSurface.withValues(alpha: 0.08),
-                          ),
-                        ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (message.attachments.isNotEmpty)
+                            Padding(
+                              padding: EdgeInsets.only(
+                                bottom: message.content.trim().isEmpty ? 0 : 8,
+                              ),
+                              child: Wrap(
+                                spacing: 8,
+                                runSpacing: 8,
+                                children: message.attachments
+                                    .map((a) => _MessageAttachment(attachment: a))
+                                    .toList(),
+                              ),
+                            ),
+                          if (message.content.trim().isNotEmpty)
+                            MarkdownBody(
+                              data: message.content,
+                              selectable: true,
+                              builders: {'pre': CodeBlockElementBuilder()},
+                              styleSheet: MarkdownStyleSheet(
+                                p: TextStyle(
+                                  color: textColor,
+                                  height: 1.5,
+                                  fontSize: 13.5,
+                                ),
+                                code: TextStyle(
+                                  color: textColor,
+                                  fontFamily: 'monospace',
+                                  backgroundColor:
+                                      scheme.onSurface.withValues(alpha: 0.08),
+                                ),
+                              ),
+                            ),
+                        ],
                       ),
                     ),
                     if (!isUser && message.sources.isNotEmpty)
@@ -162,6 +184,58 @@ class MessageBubble extends StatelessWidget {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+/// One attachment rendered inline in a sent/received bubble (issue #11):
+/// a thumbnail for an image, an interactive player for a voice message, or
+/// a filename chip for anything else.
+class _MessageAttachment extends StatelessWidget {
+  const _MessageAttachment({required this.attachment});
+
+  final ChatAttachment attachment;
+
+  @override
+  Widget build(BuildContext context) {
+    if (attachment.isAudio) {
+      return AudioMessagePlayer(attachment: attachment);
+    }
+    if (attachment.isImage) {
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(8),
+        child: Image.memory(
+          attachment.bytes,
+          width: 160,
+          height: 160,
+          fit: BoxFit.cover,
+        ),
+      );
+    }
+    final scheme = Theme.of(context).colorScheme;
+    return Container(
+      constraints: const BoxConstraints(maxWidth: 200),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      decoration: BoxDecoration(
+        color: scheme.onSurface.withValues(alpha: 0.06),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: scheme.onSurface.withValues(alpha: 0.12)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.description_outlined, size: 16, color: scheme.onSurface),
+          const SizedBox(width: 6),
+          Flexible(
+            child: Text(
+              attachment.filename,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(fontSize: 11),
+            ),
+          ),
+        ],
       ),
     );
   }

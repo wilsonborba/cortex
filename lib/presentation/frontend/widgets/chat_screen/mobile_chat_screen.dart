@@ -319,6 +319,7 @@ class _MobileChatScreenState extends State<MobileChatScreen> {
                 conversationId: props.selectedConversation.id,
                 draftText: props.draftText,
                 onDraftChanged: props.onDraftChanged,
+                onSendVoiceMessage: props.onSendVoiceMessage,
               ),
             ),
           ],

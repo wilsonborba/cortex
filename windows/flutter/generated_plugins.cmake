@@ -3,7 +3,8 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
-  speech_to_text_windows
+  audioplayers_windows
+  record_windows
   url_launcher_windows
 )
 

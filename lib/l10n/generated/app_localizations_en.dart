@@ -193,14 +193,20 @@ class AppLocalizationsEn extends AppLocalizations {
       'Document ingestion is not supported by the backend yet: only images are accepted today.';
 
   @override
-  String get voiceStartRecording => 'Start voice recording';
+  String get voiceStartRecording => 'Record a voice message';
 
   @override
-  String get voiceStopRecording => 'Stop recording and insert transcript';
+  String get voiceCancelRecording => 'Cancel recording';
+
+  @override
+  String get voiceSendRecording => 'Send voice message';
 
   @override
   String get micPermissionDenied =>
       'Microphone access is unavailable or was denied.';
+
+  @override
+  String get voiceMessageTooShort => 'Recording was too short to send.';
 
   @override
   String get incognitoModeTitle => 'Incognito chat';

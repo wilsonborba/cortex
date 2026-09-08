@@ -20,6 +20,7 @@ class ChatAttachment {
     required this.filename,
     required this.mimeType,
     required this.bytes,
+    this.audioDuration,
   });
 
   final String id;
@@ -27,7 +28,13 @@ class ChatAttachment {
   final String mimeType;
   final Uint8List bytes;
 
+  /// Recorded length of a voice message (issue #11), null for every other
+  /// attachment kind. Drives the duration label/waveform in [MessageBubble]
+  /// and [VoiceRecordingBar] without needing to decode the audio client-side.
+  final Duration? audioDuration;
+
   bool get isImage => mimeType.startsWith('image/');
+  bool get isAudio => mimeType.startsWith('audio/');
 
   /// Whether cortex_api's current ingestion step is expected to accept
   /// this mime type (`image/...` or `audio/...` only, per the real

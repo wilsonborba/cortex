@@ -5,7 +5,7 @@ import '../../../domain/models/tier.dart';
 import '../../../domain/services/attachment_service.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import 'attachment_preview_strip.dart';
-import 'voice_recorder_button.dart';
+import 'voice_recording_bar.dart';
 
 /// Floating, bottom-anchored glass prompt input.
 ///
@@ -29,6 +29,7 @@ class PromptDock extends StatefulWidget {
     this.conversationId,
     this.draftText = '',
     this.onDraftChanged,
+    this.onSendVoiceMessage,
   });
 
   final ValueChanged<String> onSubmit;
@@ -70,6 +71,10 @@ class PromptDock extends StatefulWidget {
   final ValueChanged<List<ChatAttachment>>? onAddAttachments;
   final ValueChanged<String>? onRemoveAttachment;
 
+  /// Called with the finished clip when the recording bar's send button is
+  /// tapped (issue #11: record and send a voice message, not dictation).
+  final ValueChanged<ChatAttachment>? onSendVoiceMessage;
+
   @override
   State<PromptDock> createState() => _PromptDockState();
 }
@@ -78,6 +83,7 @@ class _PromptDockState extends State<PromptDock> {
   late final _controller = TextEditingController(text: widget.draftText);
   final _focusNode = FocusNode();
   final _attachmentService = const AttachmentService();
+  bool _isRecordingVoice = false;
 
   @override
   void didUpdateWidget(PromptDock oldWidget) {
@@ -105,21 +111,6 @@ class _PromptDockState extends State<PromptDock> {
     if (text.isEmpty || widget.isBusy) return;
     widget.onSubmit(text);
     _controller.clear();
-    _focusNode.requestFocus();
-  }
-
-  void _insertTranscript(String transcript) {
-    final selection = _controller.selection;
-    final text = _controller.text;
-    final insertAt = selection.isValid ? selection.start : text.length;
-    final needsSpace =
-        insertAt > 0 && text.isNotEmpty && text[insertAt - 1] != ' ';
-    final toInsert = (needsSpace ? ' ' : '') + transcript;
-    final newText = text.replaceRange(insertAt, insertAt, toInsert);
-    _controller.value = TextEditingValue(
-      text: newText,
-      selection: TextSelection.collapsed(offset: insertAt + toInsert.length),
-    );
     _focusNode.requestFocus();
   }
 
@@ -179,7 +170,7 @@ class _PromptDockState extends State<PromptDock> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (widget.pendingAttachments.isNotEmpty)
+          if (!_isRecordingVoice && widget.pendingAttachments.isNotEmpty)
             Padding(
               padding: const EdgeInsets.fromLTRB(12, 10, 12, 0),
               child: AttachmentPreviewStrip(
@@ -187,83 +178,104 @@ class _PromptDockState extends State<PromptDock> {
                 onRemove: widget.onRemoveAttachment ?? (_) {},
               ),
             ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(14, 10, 14, 4),
-            child: TextField(
-              controller: _controller,
-              focusNode: _focusNode,
-              minLines: 1,
-              maxLines: 6,
-              style: const TextStyle(fontSize: 14),
-              decoration: InputDecoration(
-                isDense: true,
-                hintText: l10n.messageHint,
-                border: InputBorder.none,
-                contentPadding: EdgeInsets.zero,
+          if (_isRecordingVoice)
+            VoiceRecordingBar(
+              onSend: (attachment) {
+                setState(() => _isRecordingVoice = false);
+                widget.onSendVoiceMessage?.call(attachment);
+              },
+              onCancelled: () => setState(() => _isRecordingVoice = false),
+            )
+          else ...[
+            Padding(
+              padding: const EdgeInsets.fromLTRB(14, 10, 14, 4),
+              child: TextField(
+                controller: _controller,
+                focusNode: _focusNode,
+                minLines: 1,
+                maxLines: 6,
+                style: const TextStyle(fontSize: 14),
+                decoration: InputDecoration(
+                  isDense: true,
+                  hintText: l10n.messageHint,
+                  border: InputBorder.none,
+                  contentPadding: EdgeInsets.zero,
+                ),
+                onSubmitted: (_) => _submit(),
+                onChanged: widget.onDraftChanged,
               ),
-              onSubmitted: (_) => _submit(),
-              onChanged: widget.onDraftChanged,
             ),
-          ),
-          const Divider(height: 12, thickness: 1),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(10, 2, 10, 8),
-            child: Row(
-              children: [
-                Expanded(
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        // Attach button
-                        _DockToolButton(
-                          icon: Icons.attach_file,
-                          tooltip: l10n.attachTooltip,
-                          onPressed: widget.onAddAttachments == null
-                              ? null
-                              : _openAttachMenu,
-                        ),
-                        const SizedBox(width: 6),
-                        // Web Search Pill
-                        _DockPill(
-                          icon: Icons.language,
-                          label: l10n.webResearchPill,
-                          active: widget.needsWeb,
-                          onPressed: widget.onToggleNeedsWeb == null
-                              ? null
-                              : () => widget.onToggleNeedsWeb!(!widget.needsWeb),
-                        ),
-                        const SizedBox(width: 6),
-                        // Memory Engine Pill
-                        _DockPill(
-                          icon: Icons.memory,
-                          label: l10n.memoryEnginePill,
-                          active: widget.useMemory,
-                          onPressed: widget.onToggleMemory == null
-                              ? null
-                              : () => widget.onToggleMemory!(!widget.useMemory),
-                        ),
-                      ],
+            const Divider(height: 12, thickness: 1),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(10, 2, 10, 8),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          // Attach button
+                          _DockToolButton(
+                            icon: Icons.attach_file,
+                            tooltip: l10n.attachTooltip,
+                            onPressed: widget.onAddAttachments == null
+                                ? null
+                                : _openAttachMenu,
+                          ),
+                          const SizedBox(width: 6),
+                          // Web Search Pill
+                          _DockPill(
+                            icon: Icons.language,
+                            label: l10n.webResearchPill,
+                            active: widget.needsWeb,
+                            onPressed: widget.onToggleNeedsWeb == null
+                                ? null
+                                : () => widget.onToggleNeedsWeb!(!widget.needsWeb),
+                          ),
+                          const SizedBox(width: 6),
+                          // Memory Engine Pill
+                          _DockPill(
+                            icon: Icons.memory,
+                            label: l10n.memoryEnginePill,
+                            active: widget.useMemory,
+                            onPressed: widget.onToggleMemory == null
+                                ? null
+                                : () => widget.onToggleMemory!(!widget.useMemory),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-                const SizedBox(width: 6),
-                // Voice input recorder
-                VoiceRecorderButton(onTranscript: _insertTranscript),
-                const SizedBox(width: 6),
-                // Send button
-                Container(
-                  width: 32,
-                  height: 32,
-                  decoration: BoxDecoration(
-                    color: scheme.primary,
-                    borderRadius: BorderRadius.circular(6),
+                  const SizedBox(width: 6),
+                  // Voice message recorder (issue #11): tapping transitions
+                  // this dock into VoiceRecordingBar above.
+                  Tooltip(
+                    message: l10n.voiceStartRecording,
+                    child: IconButton(
+                      onPressed: widget.onSendVoiceMessage == null
+                          ? null
+                          : () => setState(() => _isRecordingVoice = true),
+                      icon: Icon(
+                        Icons.mic_none_outlined,
+                        color: scheme.onSurface.withValues(alpha: 0.7),
+                      ),
+                    ),
                   ),
-                  child: InkWell(
-                    borderRadius: BorderRadius.circular(6),
-                    onTap: widget.isBusy ? null : _submit,
-                    child: Icon(
+                  const SizedBox(width: 6),
+                  // Send button
+                  Container(
+                    width: 32,
+                    height: 32,
+                    decoration: BoxDecoration(
+                      color: scheme.primary,
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(6),
+                      onTap: widget.isBusy ? null : _submit,
+                      child: Icon(
                       widget.isBusy ? Icons.stop : Icons.arrow_upward,
                       size: 16,
                       color: scheme.onPrimary,
@@ -273,6 +285,7 @@ class _PromptDockState extends State<PromptDock> {
               ],
             ),
           ),
+          ],
         ],
       ),
     );

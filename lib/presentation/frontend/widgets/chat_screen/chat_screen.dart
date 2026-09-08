@@ -65,6 +65,16 @@ class _ChatScreenState extends State<ChatScreen> {
     setState(() {});
   }
 
+  /// Sends a finished voice recording as its own message (issue #11: an
+  /// actual playable voice message, not speech-to-text dictation), with no
+  /// accompanying text.
+  Future<void> _onSendVoiceMessage(ChatAttachment attachment) async {
+    _flowHandler.addPendingAttachment(attachment);
+    await _flowHandler.submit('');
+    _conversationHandler.refresh();
+    setState(() {});
+  }
+
   Future<void> _onContinueGeneration(String replyMessageId) async {
     await _flowHandler.continueGeneration(replyMessageId);
     _conversationHandler.refresh();
@@ -107,6 +117,7 @@ class _ChatScreenState extends State<ChatScreen> {
           onClearAllConversations: () => _conversationHandler.clearAll(),
           onDeleteConversation: (id) => _conversationHandler.delete(id),
           onSubmit: _onSubmit,
+          onSendVoiceMessage: _onSendVoiceMessage,
           draftText: _flowHandler.draftText,
           onDraftChanged: _flowHandler.updateDraft,
           onContinueGeneration: _onContinueGeneration,
@@ -139,6 +150,7 @@ class ChatScreenProps {
     required this.onClearAllConversations,
     required this.onDeleteConversation,
     required this.onSubmit,
+    required this.onSendVoiceMessage,
     required this.draftText,
     required this.onDraftChanged,
     required this.onContinueGeneration,
@@ -174,6 +186,9 @@ class ChatScreenProps {
   final VoidCallback onStartIncognitoChat;
   final ValueChanged<String> onSelectConversation;
   final ValueChanged<String> onSubmit;
+
+  /// Sends a finished voice recording (issue #11) as its own message.
+  final ValueChanged<ChatAttachment> onSendVoiceMessage;
 
   /// Current in-progress, unsent draft for [selectedConversation] (issue
   /// #7), restored from `DraftStore` and kept in sync as the user types.

@@ -195,14 +195,21 @@ class AppLocalizationsPt extends AppLocalizations {
       'A ingestão de documentos ainda não é suportada pelo backend: hoje só imagens são aceitas.';
 
   @override
-  String get voiceStartRecording => 'Iniciar gravação de voz';
+  String get voiceStartRecording => 'Gravar uma mensagem de voz';
 
   @override
-  String get voiceStopRecording => 'Parar gravação e inserir transcrição';
+  String get voiceCancelRecording => 'Cancelar gravação';
+
+  @override
+  String get voiceSendRecording => 'Enviar mensagem de voz';
 
   @override
   String get micPermissionDenied =>
       'O acesso ao microfone está indisponível ou foi negado.';
+
+  @override
+  String get voiceMessageTooShort =>
+      'A gravação foi curta demais para ser enviada.';
 
   @override
   String get incognitoModeTitle => 'Chat incógnito';

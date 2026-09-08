@@ -66,9 +66,11 @@
   "removeAttachment": "ลบไฟล์แนบ",
   "documentAttachmentBackendGap": "ระบบหลังบ้านยังไม่รองรับการนำเข้าเอกสาร วันนี้รองรับเฉพาะรูปภาพเท่านั้น",
 
-  "voiceStartRecording": "เริ่มบันทึกเสียง",
-  "voiceStopRecording": "หยุดบันทึกและแทรกข้อความที่ถอดเสียง",
+  "voiceStartRecording": "บันทึกข้อความเสียง",
+  "voiceCancelRecording": "ยกเลิกการบันทึก",
+  "voiceSendRecording": "ส่งข้อความเสียง",
   "micPermissionDenied": "ไม่สามารถใช้งานไมโครโฟนได้ หรือการเข้าถึงถูกปฏิเสธ",
+  "voiceMessageTooShort": "การบันทึกสั้นเกินไปที่จะส่ง",
 
   "incognitoModeTitle": "แชทไม่ระบุตัวตน",
   "incognitoModeSubtitle": "เซสชันชั่วคราว ไม่บันทึกประวัติและปิดใช้งานความจำอย่างชัดเจน",

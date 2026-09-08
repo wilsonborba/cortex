@@ -433,20 +433,32 @@ abstract class AppLocalizations {
   /// No description provided for @voiceStartRecording.
   ///
   /// In en, this message translates to:
-  /// **'Start voice recording'**
+  /// **'Record a voice message'**
   String get voiceStartRecording;
 
-  /// No description provided for @voiceStopRecording.
+  /// No description provided for @voiceCancelRecording.
   ///
   /// In en, this message translates to:
-  /// **'Stop recording and insert transcript'**
-  String get voiceStopRecording;
+  /// **'Cancel recording'**
+  String get voiceCancelRecording;
+
+  /// No description provided for @voiceSendRecording.
+  ///
+  /// In en, this message translates to:
+  /// **'Send voice message'**
+  String get voiceSendRecording;
 
   /// No description provided for @micPermissionDenied.
   ///
   /// In en, this message translates to:
   /// **'Microphone access is unavailable or was denied.'**
   String get micPermissionDenied;
+
+  /// No description provided for @voiceMessageTooShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Recording was too short to send.'**
+  String get voiceMessageTooShort;
 
   /// No description provided for @incognitoModeTitle.
   ///

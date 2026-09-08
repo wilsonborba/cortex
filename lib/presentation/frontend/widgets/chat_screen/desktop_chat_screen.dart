@@ -446,6 +446,7 @@ class _DesktopChatScreenState extends State<DesktopChatScreen> {
                           conversationId: props.selectedConversation.id,
                           draftText: props.draftText,
                           onDraftChanged: props.onDraftChanged,
+                          onSendVoiceMessage: props.onSendVoiceMessage,
                         ),
                       ),
                     ),

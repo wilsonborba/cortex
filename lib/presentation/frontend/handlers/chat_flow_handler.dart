@@ -130,7 +130,9 @@ class ChatFlowHandler extends ChangeNotifier {
   }
 
   Future<void> submit(String text) async {
-    if (text.trim().isEmpty || isBusy) return;
+    // A voice message (issue #11) sends with empty text and just the
+    // recorded attachment, so this only bails when there's neither.
+    if ((text.trim().isEmpty && pendingAttachments.isEmpty) || isBusy) return;
     isBusy = true;
     error = null;
     final attachments = pendingAttachments;
