@@ -39,6 +39,18 @@ class ConversationHandler extends ChangeNotifier {
     notifyListeners();
   }
 
+  void rename(String id, String newTitle) {
+    _chatService.renameConversation(id, newTitle);
+    conversations = _chatService.listConversations();
+    notifyListeners();
+  }
+
+  void togglePin(String id) {
+    _chatService.togglePinConversation(id);
+    conversations = _chatService.listConversations();
+    notifyListeners();
+  }
+
   void delete(String id) {
     _chatService.deleteConversation(id);
     conversations = _chatService.listConversations();

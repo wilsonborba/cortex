@@ -264,24 +264,27 @@ class _PromptDockState extends State<PromptDock> {
                     ),
                   ),
                   const SizedBox(width: 6),
-                  // Send button
-                  Container(
-                    width: 32,
-                    height: 32,
-                    decoration: BoxDecoration(
-                      color: scheme.primary,
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    child: InkWell(
-                      borderRadius: BorderRadius.circular(6),
-                      onTap: widget.isBusy ? null : _submit,
-                      child: Icon(
-                      widget.isBusy ? Icons.stop : Icons.arrow_upward,
-                      size: 16,
-                      color: scheme.onPrimary,
+                  // Send / Stop button
+                  Tooltip(
+                    message: widget.isBusy ? 'Stop generation' : 'Send message (Enter)',
+                    child: Container(
+                      width: 32,
+                      height: 32,
+                      decoration: BoxDecoration(
+                        color: scheme.primary,
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(6),
+                        onTap: widget.isBusy ? null : _submit,
+                        child: Icon(
+                          widget.isBusy ? Icons.stop : Icons.arrow_upward,
+                          size: 16,
+                          color: scheme.onPrimary,
+                        ),
+                      ),
                     ),
                   ),
-                ),
               ],
             ),
           ),

@@ -54,17 +54,44 @@ class ChatService {
       id: 'convo-${now.millisecondsSinceEpoch}',
       title: title,
       messages: const [],
+      createdAt: now,
+      updatedAt: now,
     );
     _conversations.insert(0, convo);
     return convo;
   }
 
+  void renameConversation(String id, String newTitle) {
+    final index = _conversations.indexWhere((c) => c.id == id);
+    if (index != -1) {
+      final convo = _conversations[index];
+      _conversations[index] = convo.copyWith(
+        title: newTitle.trim().isEmpty ? convo.title : newTitle.trim(),
+        updatedAt: DateTime.now(),
+      );
+    }
+  }
+
+  void togglePinConversation(String id) {
+    final index = _conversations.indexWhere((c) => c.id == id);
+    if (index != -1) {
+      final convo = _conversations[index];
+      _conversations[index] = convo.copyWith(
+        isPinned: !convo.isPinned,
+        updatedAt: DateTime.now(),
+      );
+    }
+  }
+
   void clearAllConversations() {
     _conversations.clear();
+    final now = DateTime.now();
     final fresh = Conversation(
-      id: 'convo-${DateTime.now().millisecondsSinceEpoch}',
+      id: 'convo-${now.millisecondsSinceEpoch}',
       title: 'New Conversation',
       messages: const [],
+      createdAt: now,
+      updatedAt: now,
     );
     _conversations.add(fresh);
   }
@@ -72,11 +99,14 @@ class ChatService {
   void deleteConversation(String id) {
     _conversations.removeWhere((c) => c.id == id);
     if (_conversations.isEmpty) {
+      final now = DateTime.now();
       _conversations.add(
         Conversation(
-          id: 'convo-${DateTime.now().millisecondsSinceEpoch}',
+          id: 'convo-${now.millisecondsSinceEpoch}',
           title: 'New Conversation',
           messages: const [],
+          createdAt: now,
+          updatedAt: now,
         ),
       );
     }
@@ -462,12 +492,17 @@ class ChatService {
   }
 
   static List<Conversation> _mockConversations() {
-    final base = DateTime.now().subtract(const Duration(minutes: 20));
+    final now = DateTime.now();
+    final today = now.subtract(const Duration(minutes: 20));
+    final prev7Days = now.subtract(const Duration(days: 2));
+    final older = now.subtract(const Duration(days: 12));
     return [
       Conversation(
         id: 'conv-1',
         title: 'Welcome to Cortex',
         isPinned: true,
+        createdAt: today,
+        updatedAt: today,
         messages: [
           ChatMessage(
             id: 'm1',
@@ -475,19 +510,21 @@ class ChatService {
             content:
                 'Hi, I am Cortex running on Tier 0 (free and fast models). '
                 'Ask me anything to get started.',
-            createdAt: base,
+            createdAt: today,
           ),
         ],
       ),
       Conversation(
         id: 'conv-2',
         title: 'Trip planning ideas',
+        createdAt: prev7Days,
+        updatedAt: prev7Days,
         messages: [
           ChatMessage(
             id: 'm2',
             role: MessageRole.user,
             content: 'Give me a three day itinerary for Lisbon.',
-            createdAt: base.add(const Duration(minutes: 2)),
+            createdAt: prev7Days.add(const Duration(minutes: 2)),
           ),
           ChatMessage(
             id: 'm3',
@@ -495,19 +532,21 @@ class ChatService {
             content:
                 'Day 1: Alfama and the castle. Day 2: Belem and the '
                 'monastery. Day 3: a day trip to Sintra.',
-            createdAt: base.add(const Duration(minutes: 3)),
+            createdAt: prev7Days.add(const Duration(minutes: 3)),
           ),
         ],
       ),
       Conversation(
         id: 'conv-3',
         title: 'Refactor notes',
+        createdAt: older,
+        updatedAt: older,
         messages: [
           ChatMessage(
             id: 'm4',
             role: MessageRole.user,
             content: 'Summarize the changes needed for the new adapter.',
-            createdAt: base.add(const Duration(minutes: 10)),
+            createdAt: older.add(const Duration(minutes: 10)),
           ),
         ],
       ),

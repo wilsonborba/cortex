@@ -104,10 +104,21 @@ class _AudioMessagePlayerState extends State<AudioMessagePlayer> {
           ),
           const SizedBox(width: 8),
           Expanded(
-            child: _StaticWaveform(
-              progress: progress,
-              activeColor: scheme.primary,
-              inactiveColor: scheme.outline.withValues(alpha: 0.4),
+            child: GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTapDown: (details) {
+                if (total.inMilliseconds == 0) return;
+                final box = context.findRenderObject() as RenderBox?;
+                final width = box?.size.width ?? 120.0;
+                final ratio = (details.localPosition.dx / width).clamp(0.0, 1.0);
+                final seekTo = Duration(milliseconds: (total.inMilliseconds * ratio).round());
+                _player.seek(seekTo);
+              },
+              child: _StaticWaveform(
+                progress: progress,
+                activeColor: scheme.primary,
+                inactiveColor: scheme.outline.withValues(alpha: 0.4),
+              ),
             ),
           ),
           const SizedBox(width: 8),

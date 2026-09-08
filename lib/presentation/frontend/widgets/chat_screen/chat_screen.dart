@@ -116,6 +116,8 @@ class _ChatScreenState extends State<ChatScreen> {
           onNewConversation: () => _conversationHandler.createNew(),
           onClearAllConversations: () => _conversationHandler.clearAll(),
           onDeleteConversation: (id) => _conversationHandler.delete(id),
+          onRenameConversation: (id, title) => _conversationHandler.rename(id, title),
+          onTogglePinConversation: (id) => _conversationHandler.togglePin(id),
           onSubmit: _onSubmit,
           onSendVoiceMessage: _onSendVoiceMessage,
           draftText: _flowHandler.draftText,
@@ -149,6 +151,8 @@ class ChatScreenProps {
     required this.onNewConversation,
     required this.onClearAllConversations,
     required this.onDeleteConversation,
+    required this.onRenameConversation,
+    required this.onTogglePinConversation,
     required this.onSubmit,
     required this.onSendVoiceMessage,
     required this.draftText,
@@ -163,6 +167,8 @@ class ChatScreenProps {
   final VoidCallback onNewConversation;
   final VoidCallback onClearAllConversations;
   final ValueChanged<String> onDeleteConversation;
+  final void Function(String id, String newTitle) onRenameConversation;
+  final ValueChanged<String> onTogglePinConversation;
 
   /// Whether the next [onSubmit] should route through cortex_api's native
   /// `/execute` with `capabilities.memory = true` instead of the streamed

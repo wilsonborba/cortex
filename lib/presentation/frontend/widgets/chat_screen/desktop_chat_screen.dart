@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../domain/models/conversation.dart';
 import '../../../../l10n/generated/app_localizations.dart';
 import '../../components/app_settings_sheet.dart';
 import '../../components/conversation_tile.dart';
@@ -223,23 +224,9 @@ class _DesktopChatScreenState extends State<DesktopChatScreen> {
                             ],
                           ),
                         ),
-                        // Conversation List
+                        // Conversation List with date grouping
                         Expanded(
-                          child: ListView.builder(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                            itemCount: props.conversations.length,
-                            itemBuilder: (context, index) {
-                              final conversation = props.conversations[index];
-                              return ConversationTile(
-                                conversation: conversation,
-                                isSelected: conversation.id ==
-                                    props.selectedConversation.id,
-                                onTap: () => props.onSelectConversation(
-                                  conversation.id,
-                                ),
-                              );
-                            },
-                          ),
+                          child: _buildGroupedConversationList(context, props, scheme),
                         ),
                         // User Profile Footer
                         Container(
@@ -381,50 +368,52 @@ class _DesktopChatScreenState extends State<DesktopChatScreen> {
                     child: Center(
                       child: ConstrainedBox(
                         constraints: const BoxConstraints(maxWidth: 860),
-                        child: Stack(
-                          alignment: Alignment.bottomCenter,
-                          children: [
-                            NotificationListener<ScrollNotification>(
-                              onNotification: (notification) {
-                                if (_scroll.handleNotification(notification)) {
-                                  setState(() {});
-                                }
-                                return false;
-                              },
-                              child: ListView.builder(
-                                controller: _scroll.controller,
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 16,
-                                  vertical: 16,
-                                ),
-                                itemCount:
-                                    props.selectedConversation.messages.length,
-                                itemBuilder: (context, index) {
-                                  final message = props
-                                      .selectedConversation
-                                      .messages[index];
-                                  return MessageBubble(
-                                    message: message,
-                                    onContinueGeneration: () =>
-                                        props.onContinueGeneration(message.id),
-                                    isContinuingGeneration:
-                                        props.continuingMessageId == message.id,
-                                  );
-                                },
+                        child: props.selectedConversation.messages.isEmpty
+                            ? _buildEmptyState(context, props, scheme)
+                            : Stack(
+                                alignment: Alignment.bottomCenter,
+                                children: [
+                                  NotificationListener<ScrollNotification>(
+                                    onNotification: (notification) {
+                                      if (_scroll.handleNotification(notification)) {
+                                        setState(() {});
+                                      }
+                                      return false;
+                                    },
+                                    child: ListView.builder(
+                                      controller: _scroll.controller,
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 16,
+                                        vertical: 16,
+                                      ),
+                                      itemCount:
+                                          props.selectedConversation.messages.length,
+                                      itemBuilder: (context, index) {
+                                        final message = props
+                                            .selectedConversation
+                                            .messages[index];
+                                        return MessageBubble(
+                                          message: message,
+                                          onContinueGeneration: () =>
+                                              props.onContinueGeneration(message.id),
+                                          isContinuingGeneration:
+                                              props.continuingMessageId == message.id,
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                  if (!_scroll.isSticky)
+                                    Padding(
+                                      padding: const EdgeInsets.only(bottom: 12),
+                                      child: ScrollToBottomButton(
+                                        onPressed: () {
+                                          _scroll.scrollToBottom();
+                                          setState(() {});
+                                        },
+                                      ),
+                                    ),
+                                ],
                               ),
-                            ),
-                            if (!_scroll.isSticky)
-                              Padding(
-                                padding: const EdgeInsets.only(bottom: 12),
-                                child: ScrollToBottomButton(
-                                  onPressed: () {
-                                    _scroll.scrollToBottom();
-                                    setState(() {});
-                                  },
-                                ),
-                              ),
-                          ],
-                        ),
                       ),
                     ),
                   ),
@@ -451,6 +440,217 @@ class _DesktopChatScreenState extends State<DesktopChatScreen> {
                       ),
                     ),
                   ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildGroupedConversationList(
+    BuildContext context,
+    ChatScreenProps props,
+    ColorScheme scheme,
+  ) {
+    final now = DateTime.now();
+    final todayStart = DateTime(now.year, now.month, now.day);
+    final sevenDaysAgo = todayStart.subtract(const Duration(days: 7));
+
+    final pinned = props.conversations.where((c) => c.isPinned).toList();
+    final unpinned = props.conversations.where((c) => !c.isPinned).toList();
+
+    final today = unpinned.where((c) => c.updatedAt.isAfter(todayStart)).toList();
+    final prev7Days = unpinned
+        .where((c) =>
+            c.updatedAt.isBefore(todayStart) &&
+            c.updatedAt.isAfter(sevenDaysAgo))
+        .toList();
+    final older =
+        unpinned.where((c) => c.updatedAt.isBefore(sevenDaysAgo)).toList();
+
+    Widget buildSectionHeader(String label) {
+      return Padding(
+        padding: const EdgeInsets.fromLTRB(12, 12, 12, 4),
+        child: Text(
+          label,
+          style: TextStyle(
+            fontSize: 10,
+            fontFamily: 'monospace',
+            fontWeight: FontWeight.w600,
+            letterSpacing: 0.8,
+            color: scheme.onSurface.withValues(alpha: 0.4),
+          ),
+        ),
+      );
+    }
+
+    Widget buildTile(Conversation conv) {
+      return ConversationTile(
+        conversation: conv,
+        isSelected: conv.id == props.selectedConversation.id,
+        onTap: () => props.onSelectConversation(conv.id),
+        onRename: (newTitle) => props.onRenameConversation(conv.id, newTitle),
+        onTogglePin: () => props.onTogglePinConversation(conv.id),
+        onDelete: () => props.onDeleteConversation(conv.id),
+      );
+    }
+
+    return ListView(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      children: [
+        if (pinned.isNotEmpty) ...[
+          buildSectionHeader('PINNED'),
+          ...pinned.map(buildTile),
+        ],
+        if (today.isNotEmpty) ...[
+          buildSectionHeader('TODAY'),
+          ...today.map(buildTile),
+        ],
+        if (prev7Days.isNotEmpty) ...[
+          buildSectionHeader('PREVIOUS 7 DAYS'),
+          ...prev7Days.map(buildTile),
+        ],
+        if (older.isNotEmpty) ...[
+          buildSectionHeader('OLDER'),
+          ...older.map(buildTile),
+        ],
+      ],
+    );
+  }
+
+  Widget _buildEmptyState(
+    BuildContext context,
+    ChatScreenProps props,
+    ColorScheme scheme,
+  ) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardBg = isDark ? const Color(0xFF111318) : const Color(0xFFFFFFFF);
+
+    final suggestions = [
+      {
+        'tag': '01 // ANALYSIS',
+        'title': 'Analyze system telemetry logs',
+        'prompt': 'Analyze current system metrics and identify memory/latency bottlenecks.',
+      },
+      {
+        'tag': '02 // REASONING',
+        'title': 'Explore architecture tradeoffs',
+        'prompt': 'Explain the architectural tradeoffs between token streaming facades vs RPC execute.',
+      },
+      {
+        'tag': '03 // CODE',
+        'title': 'Draft an async API pipeline',
+        'prompt': 'Write a Python FastAPI service connecting to an isolated AI gateway with health checks.',
+      },
+    ];
+
+    return Center(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                color: scheme.surfaceContainerHighest,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                  color: scheme.outline.withValues(alpha: 0.3),
+                ),
+              ),
+              child: Center(
+                child: Image.asset(
+                  'lib/presentation/assets/img/logo.png',
+                  width: 28,
+                  height: 28,
+                  fit: BoxFit.contain,
+                  errorBuilder: (_, __, ___) => const Icon(Icons.hub, size: 24),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'CORTEX NEURAL WORKSPACE',
+              style: TextStyle(
+                fontFamily: 'monospace',
+                fontSize: 12,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 1.5,
+                color: scheme.onSurface.withValues(alpha: 0.6),
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'High-focus reasoning & persistent execution.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w500,
+                color: scheme.onSurface.withValues(alpha: 0.85),
+              ),
+            ),
+            const SizedBox(height: 24),
+            ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 580),
+              child: Column(
+                children: [
+                  for (final item in suggestions)
+                    Container(
+                      margin: const EdgeInsets.only(bottom: 8),
+                      decoration: BoxDecoration(
+                        color: cardBg,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: scheme.outline.withValues(alpha: isDark ? 0.3 : 0.6),
+                        ),
+                      ),
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(8),
+                        onTap: () => props.onSubmit(item['prompt']!),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      item['tag']!,
+                                      style: TextStyle(
+                                        fontFamily: 'monospace',
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.w600,
+                                        color: scheme.onSurface.withValues(alpha: 0.45),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 3),
+                                    Text(
+                                      item['title']!,
+                                      style: TextStyle(
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w500,
+                                        color: scheme.onSurface,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Icon(
+                                Icons.arrow_forward,
+                                size: 14,
+                                color: scheme.onSurface.withValues(alpha: 0.4),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
                 ],
               ),
             ),
