@@ -124,7 +124,7 @@ void main() {
         final request = client.lastRequest! as http.Request;
         expect(
           request.url.toString(),
-          'http://test.local/cortex/v1/v1/chat/completions',
+          'http://test.local/apps/cortex/v1/v1/chat/completions',
         );
         final body = jsonDecode(request.body) as Map<String, dynamic>;
         expect(body['model'], 'cortex-t0');
@@ -229,7 +229,10 @@ void main() {
       'posts to the double-prefixed /execute path and parses the response',
       () async {
         final client = _FakeHttpClient((request) async {
-          expect(request.url.toString(), 'http://test.local/cortex/v1/execute');
+          expect(
+            request.url.toString(),
+            'http://test.local/apps/cortex/v1/execute',
+          );
           return http.StreamedResponse(
             Stream.value(
               utf8.encode(

@@ -28,16 +28,8 @@ class AppSettings {
   /// documented local-dev-only shortcut, gated by [enableLiveLogStreaming].
   static const String cortexApiBaseUrl = 'http://127.0.0.1:8003';
 
-  /// Prefix `api_for_apps` mounts its public Cortex proxy under (see its
-  /// `src/presentation/routes/cortex_route.py`, `cortex_proxy_v1 =
-  /// APIRouter(prefix="/cortex/v1")`). Every path segment after this prefix
-  /// is forwarded as-is to cortex_api, so `POST` to
-  /// `$apiForAppsBaseUrl$cortexProxyPrefix/v1/chat/completions` reaches
-  /// cortex_api's own `POST /v1/chat/completions` (the "double v1" is real,
-  /// not a typo: one `/v1` is the proxy mount, the other is cortex_api's own
-  /// OpenAI-facade router prefix), and `$cortexProxyPrefix/execute` reaches
-  /// cortex_api's native `POST /execute`.
-  static const String cortexProxyPrefix = '/cortex/v1';
+  /// Prefix `api_for_apps` mounts its apps proxy under (/apps/cortex/v1).
+  static const String cortexProxyPrefix = '/apps/cortex/v1';
 
   /// Virtual model name that is always forced Tier 0. The proxy rewrites
   /// `model` to this value server-side regardless of what is sent (see
