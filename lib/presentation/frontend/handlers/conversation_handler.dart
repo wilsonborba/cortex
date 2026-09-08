@@ -25,6 +25,29 @@ class ConversationHandler extends ChangeNotifier {
     notifyListeners();
   }
 
+  void createNew({String title = 'New Conversation'}) {
+    final created = _chatService.newConversation(title: title);
+    conversations = _chatService.listConversations();
+    selectedId = created.id;
+    notifyListeners();
+  }
+
+  void clearAll() {
+    _chatService.clearAllConversations();
+    conversations = _chatService.listConversations();
+    selectedId = conversations.first.id;
+    notifyListeners();
+  }
+
+  void delete(String id) {
+    _chatService.deleteConversation(id);
+    conversations = _chatService.listConversations();
+    if (!conversations.any((c) => c.id == selectedId)) {
+      selectedId = conversations.first.id;
+    }
+    notifyListeners();
+  }
+
   void refresh() {
     conversations = _chatService.listConversations();
     notifyListeners();

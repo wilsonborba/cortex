@@ -8,44 +8,50 @@ import 'package:google_fonts/google_fonts.dart';
 class AppTheme {
   AppTheme._();
 
-  static const Color _lightInk = Color(0xFF0D0D0D);
-  static const Color _lightSurface = Color(0xFFF7F7F7);
-  static const Color _lightBackground = Color(0xFFE2E2E2);
+  static const Color _lightInk = Color(0xFF000000);
+  static const Color _lightSurface = Color(0xFFFFFFFF);
+  static const Color _lightSurfaceSubtle = Color(0xFFF4F4F6);
+  static const Color _lightBackground = Color(0xFFECECEC);
+  static const Color _lightBorder = Color(0xFFC8C8CC);
 
-  static const Color _darkInk = Color(0xFFF5F5F5);
-  static const Color _darkSurfaceHigh = Color(0xFF242424);
-  static const Color _darkSurface = Color(0xFF111111);
+  static const Color _darkInk = Color(0xFFECEFF4);
+  static const Color _darkSurface = Color(0xFF111318);
+  static const Color _darkSurfaceSubtle = Color(0xFF16181F);
+  static const Color _darkBackground = Color(0xFF090A0C);
+  static const Color _darkBorder = Color(0xFF232730);
 
   /// Radius used by buttons, text fields and the prompt dock.
-  static const double controlRadius = 14;
+  static const double controlRadius = 8;
 
   /// Radius used by cards and larger containers.
-  static const double cardRadius = 22;
+  static const double cardRadius = 12;
 
   static ThemeData light() {
-    final colorScheme = ColorScheme.fromSeed(
-      seedColor: _lightInk,
-      brightness: Brightness.light,
+    final colorScheme = ColorScheme.light(
       primary: _lightInk,
       onPrimary: _lightSurface,
+      secondary: const Color(0xFF3A3A3C),
+      onSecondary: _lightSurface,
       surface: _lightSurface,
       onSurface: _lightInk,
-      surfaceContainerHighest: Colors.white.withValues(alpha: 0.6),
+      surfaceContainerHighest: _lightSurfaceSubtle,
+      outline: _lightBorder,
     );
     return _base(colorScheme, _lightBackground);
   }
 
   static ThemeData dark() {
-    final colorScheme = ColorScheme.fromSeed(
-      seedColor: _darkInk,
-      brightness: Brightness.dark,
+    final colorScheme = ColorScheme.dark(
       primary: _darkInk,
-      onPrimary: _darkSurface,
-      surface: _darkSurfaceHigh,
+      onPrimary: _darkBackground,
+      secondary: const Color(0xFF8892B0),
+      onSecondary: _darkInk,
+      surface: _darkSurface,
       onSurface: _darkInk,
-      surfaceContainerHighest: Colors.white.withValues(alpha: 0.06),
+      surfaceContainerHighest: _darkSurfaceSubtle,
+      outline: _darkBorder,
     );
-    return _base(colorScheme, _darkSurface);
+    return _base(colorScheme, _darkBackground);
   }
 
   static ThemeData _base(ColorScheme colorScheme, Color scaffoldBackground) {

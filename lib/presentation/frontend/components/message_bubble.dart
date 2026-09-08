@@ -37,59 +37,130 @@ class MessageBubble extends StatelessWidget {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     final isUser = message.role == MessageRole.user;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    final bubbleColor = isUser
-        ? scheme.onSurface.withValues(alpha: 0.92)
-        : scheme.surface.withValues(alpha: 0.6);
-    final textColor = isUser ? scheme.surface : scheme.onSurface;
+    final bubbleBg = isUser
+        ? (isDark ? const Color(0xFF181B22) : const Color(0xFFE2E2E7))
+        : (isDark ? const Color(0xFF111318) : const Color(0xFFFFFFFF));
+    final textColor = scheme.onSurface;
 
     return Align(
       alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
       child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 640),
-        child: Column(
-          crossAxisAlignment: isUser
-              ? CrossAxisAlignment.end
-              : CrossAxisAlignment.start,
-          children: [
-            Container(
-              margin: const EdgeInsets.symmetric(vertical: 6),
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              decoration: BoxDecoration(
-                color: bubbleColor,
-                borderRadius: BorderRadius.only(
-                  topLeft: const Radius.circular(18),
-                  topRight: const Radius.circular(18),
-                  bottomLeft: Radius.circular(isUser ? 18 : 4),
-                  bottomRight: Radius.circular(isUser ? 4 : 18),
-                ),
-                border: isUser
-                    ? null
-                    : Border.all(
-                        color: scheme.onSurface.withValues(alpha: 0.10),
-                      ),
-              ),
-              child: MarkdownBody(
-                data: message.content,
-                selectable: true,
-                builders: {'pre': CodeBlockElementBuilder()},
-                styleSheet: MarkdownStyleSheet(
-                  p: TextStyle(color: textColor, height: 1.4),
-                  code: TextStyle(
-                    color: textColor,
-                    backgroundColor: textColor.withValues(alpha: 0.08),
+        constraints: const BoxConstraints(maxWidth: 720),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment:
+                isUser ? MainAxisAlignment.end : MainAxisAlignment.start,
+            children: [
+              if (!isUser) ...[
+                Container(
+                  width: 28,
+                  height: 28,
+                  margin: const EdgeInsets.only(right: 12, top: 4),
+                  decoration: BoxDecoration(
+                    color: scheme.surfaceContainerHighest,
+                    borderRadius: BorderRadius.circular(6),
+                    border: Border.all(
+                      color: scheme.outline.withValues(alpha: 0.3),
+                    ),
+                  ),
+                  child: Center(
+                    child: Image.asset(
+                      'lib/presentation/assets/img/logo.png',
+                      width: 16,
+                      height: 16,
+                      fit: BoxFit.contain,
+                      errorBuilder: (_, __, ___) =>
+                          const Icon(Icons.hub, size: 14),
+                    ),
                   ),
                 ),
+              ],
+              Flexible(
+                child: Column(
+                  crossAxisAlignment:
+                      isUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+                  children: [
+                    // Role and Timestamp Header
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 4, left: 2, right: 2),
+                      child: Text(
+                        isUser
+                            ? 'WILSON // USER'
+                            : 'CORTEX.AI // MODEL-01',
+                        style: TextStyle(
+                          fontFamily: 'monospace',
+                          fontSize: 10,
+                          fontWeight: FontWeight.w600,
+                          color: scheme.onSurface.withValues(alpha: 0.5),
+                        ),
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 14,
+                      ),
+                      decoration: BoxDecoration(
+                        color: bubbleBg,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: scheme.outline.withValues(
+                            alpha: isDark ? 0.35 : 0.6,
+                          ),
+                        ),
+                      ),
+                      child: MarkdownBody(
+                        data: message.content,
+                        selectable: true,
+                        builders: {'pre': CodeBlockElementBuilder()},
+                        styleSheet: MarkdownStyleSheet(
+                          p: TextStyle(
+                            color: textColor,
+                            height: 1.5,
+                            fontSize: 13.5,
+                          ),
+                          code: TextStyle(
+                            color: textColor,
+                            fontFamily: 'monospace',
+                            backgroundColor:
+                                scheme.onSurface.withValues(alpha: 0.08),
+                          ),
+                        ),
+                      ),
+                    ),
+                    if (!isUser && message.sources.isNotEmpty)
+                      SourcesCard(sources: message.sources),
+                    if (!isUser &&
+                        message.interrupted &&
+                        onContinueGeneration != null)
+                      ContinueGenerationChip(
+                        onPressed: onContinueGeneration!,
+                        isBusy: isContinuingGeneration,
+                      ),
+                  ],
+                ),
               ),
-            ),
-            if (!isUser && message.sources.isNotEmpty)
-              SourcesCard(sources: message.sources),
-            if (!isUser && message.interrupted && onContinueGeneration != null)
-              ContinueGenerationChip(
-                onPressed: onContinueGeneration!,
-                isBusy: isContinuingGeneration,
-              ),
-          ],
+              if (isUser) ...[
+                const SizedBox(width: 12),
+                CircleAvatar(
+                  radius: 14,
+                  backgroundColor: scheme.surfaceContainerHighest,
+                  child: Text(
+                    'W',
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                      color: scheme.onSurface,
+                    ),
+                  ),
+                ),
+              ],
+            ],
+          ),
         ),
       ),
     );

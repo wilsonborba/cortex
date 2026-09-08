@@ -4,9 +4,7 @@ import '../../../domain/models/attachment.dart';
 import '../../../domain/models/tier.dart';
 import '../../../domain/services/attachment_service.dart';
 import '../../../l10n/generated/app_localizations.dart';
-import 'app_theme.dart';
 import 'attachment_preview_strip.dart';
-import 'tier_badge.dart';
 import 'voice_recorder_button.dart';
 
 /// Floating, bottom-anchored glass prompt input.
@@ -157,106 +155,123 @@ class _PromptDockState extends State<PromptDock> {
   }
 
   @override
+  @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    final l10n = AppLocalizations.of(context);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Container(
-      padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
-      decoration: AppTheme.glassDecoration(
-        context,
-        radius: AppTheme.cardRadius,
-        fillOpacity: 0.72,
+      decoration: BoxDecoration(
+        color: scheme.surface,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(
+          color: scheme.outline.withValues(alpha: isDark ? 0.35 : 0.6),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.05),
+            blurRadius: 16,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          if (widget.pendingAttachments.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(12, 10, 12, 0),
+              child: AttachmentPreviewStrip(
+                attachments: widget.pendingAttachments,
+                onRemove: widget.onRemoveAttachment ?? (_) {},
+              ),
+            ),
           Padding(
-            padding: const EdgeInsets.only(left: 4, bottom: 8),
-            child: TierBadge(tier: widget.tier, dense: true),
-          ),
-          AttachmentPreviewStrip(
-            attachments: widget.pendingAttachments,
-            onRemove: widget.onRemoveAttachment ?? (_) {},
-          ),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              _DockIconButton(
-                icon: Icons.add,
-                tooltip: l10n.attachFile,
-                onPressed: widget.onAddAttachments == null
-                    ? null
-                    : _openAttachMenu,
+            padding: const EdgeInsets.fromLTRB(14, 10, 14, 4),
+            child: TextField(
+              controller: _controller,
+              focusNode: _focusNode,
+              minLines: 1,
+              maxLines: 6,
+              style: const TextStyle(fontSize: 14),
+              decoration: const InputDecoration(
+                isDense: true,
+                hintText: 'Message Cortex (Tier 0)...',
+                border: InputBorder.none,
+                contentPadding: EdgeInsets.zero,
               ),
-              const SizedBox(width: 4),
-              Expanded(
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxHeight: 120),
-                  child: TextField(
-                    controller: _controller,
-                    focusNode: _focusNode,
-                    minLines: 1,
-                    maxLines: 5,
-                    textInputAction: TextInputAction.newline,
-                    decoration: InputDecoration(
-                      isDense: true,
-                      hintText: l10n.messageHint,
-                      border: InputBorder.none,
-                      contentPadding: EdgeInsets.symmetric(
-                        vertical: 12,
-                        horizontal: 8,
-                      ),
+              onSubmitted: (_) => _submit(),
+              onChanged: widget.onDraftChanged,
+            ),
+          ),
+          const Divider(height: 12, thickness: 1),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(10, 2, 10, 8),
+            child: Row(
+              children: [
+                Expanded(
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        // Attach button
+                        _DockToolButton(
+                          icon: Icons.attach_file,
+                          tooltip: 'Attach files or images',
+                          onPressed: widget.onAddAttachments == null
+                              ? null
+                              : _openAttachMenu,
+                        ),
+                        const SizedBox(width: 6),
+                        // Web Search Pill
+                        _DockPill(
+                          icon: Icons.language,
+                          label: 'Web Research',
+                          active: widget.needsWeb,
+                          onPressed: widget.onToggleNeedsWeb == null
+                              ? null
+                              : () => widget.onToggleNeedsWeb!(!widget.needsWeb),
+                        ),
+                        const SizedBox(width: 6),
+                        // Memory Engine Pill
+                        _DockPill(
+                          icon: Icons.memory,
+                          label: 'Memory Engine',
+                          active: widget.useMemory,
+                          onPressed: widget.onToggleMemory == null
+                              ? null
+                              : () => widget.onToggleMemory!(!widget.useMemory),
+                        ),
+                      ],
                     ),
-                    onSubmitted: (_) => _submit(),
-                    onChanged: widget.onDraftChanged,
                   ),
                 ),
-              ),
-              const SizedBox(width: 4),
-              VoiceRecorderButton(onTranscript: _insertTranscript),
-              const SizedBox(width: 4),
-              _DockIconButton(
-                icon: Icons.public,
-                tooltip: widget.needsWeb
-                    ? l10n.webSearchOnTooltip
-                    : l10n.webSearchOffTooltip,
-                onPressed: widget.onToggleNeedsWeb == null
-                    ? null
-                    : () => widget.onToggleNeedsWeb!(!widget.needsWeb),
-                active: widget.needsWeb,
-              ),
-              const SizedBox(width: 4),
-              _DockIconButton(
-                icon: Icons.psychology_alt_outlined,
-                tooltip: widget.useMemory
-                    ? l10n.memoryRecallOnTooltip
-                    : l10n.memoryRecallOffTooltip,
-                onPressed: widget.onToggleMemory == null
-                    ? null
-                    : () => widget.onToggleMemory!(!widget.useMemory),
-                active: widget.useMemory,
-              ),
-              const SizedBox(width: 4),
-              Material(
-                color: scheme.onSurface,
-                shape: const CircleBorder(),
-                child: InkWell(
-                  customBorder: const CircleBorder(),
-                  onTap: widget.isBusy ? null : _submit,
-                  child: SizedBox(
-                    width: 48,
-                    height: 48,
+                const SizedBox(width: 6),
+                // Voice input recorder
+                VoiceRecorderButton(onTranscript: _insertTranscript),
+                const SizedBox(width: 6),
+                // Send button
+                Container(
+                  width: 32,
+                  height: 32,
+                  decoration: BoxDecoration(
+                    color: scheme.primary,
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(6),
+                    onTap: widget.isBusy ? null : _submit,
                     child: Icon(
-                      widget.isBusy ? Icons.stop_rounded : Icons.arrow_upward,
-                      color: scheme.surface,
-                      size: 20,
+                      widget.isBusy ? Icons.stop : Icons.arrow_upward,
+                      size: 16,
+                      color: scheme.onPrimary,
                     ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ],
       ),
@@ -264,35 +279,100 @@ class _PromptDockState extends State<PromptDock> {
   }
 }
 
-class _DockIconButton extends StatelessWidget {
-  const _DockIconButton({
+class _DockToolButton extends StatelessWidget {
+  const _DockToolButton({
     required this.icon,
     required this.tooltip,
     required this.onPressed,
-    this.active = false,
   });
 
   final IconData icon;
   final String tooltip;
   final VoidCallback? onPressed;
-  final bool active;
 
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     return Tooltip(
       message: tooltip,
-      child: SizedBox(
-        width: 48,
-        height: 48,
-        child: IconButton(
-          onPressed: onPressed,
-          icon: Icon(
+      child: Container(
+        width: 30,
+        height: 30,
+        decoration: BoxDecoration(
+          border: Border.all(
+            color: scheme.outline.withValues(alpha: 0.3),
+          ),
+          borderRadius: BorderRadius.circular(6),
+        ),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(6),
+          onTap: onPressed,
+          child: Icon(
             icon,
+            size: 15,
+            color: scheme.onSurface.withValues(alpha: 0.7),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _DockPill extends StatelessWidget {
+  const _DockPill({
+    required this.icon,
+    required this.label,
+    required this.active,
+    required this.onPressed,
+  });
+
+  final IconData icon;
+  final String label;
+  final bool active;
+  final VoidCallback? onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return InkWell(
+      onTap: onPressed,
+      borderRadius: BorderRadius.circular(4),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+        decoration: BoxDecoration(
+          color: active
+              ? scheme.surfaceContainerHighest
+              : scheme.surfaceContainerHighest.withValues(alpha: 0.5),
+          borderRadius: BorderRadius.circular(4),
+          border: Border.all(
             color: active
                 ? scheme.primary
-                : scheme.onSurface.withValues(alpha: 0.7),
+                : scheme.outline.withValues(alpha: 0.3),
           ),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              icon,
+              size: 13,
+              color: active
+                  ? scheme.primary
+                  : scheme.onSurface.withValues(alpha: 0.7),
+            ),
+            const SizedBox(width: 4),
+            Text(
+              label,
+              style: TextStyle(
+                fontFamily: 'monospace',
+                fontSize: 11,
+                fontWeight: active ? FontWeight.w600 : FontWeight.w400,
+                color: active
+                    ? scheme.primary
+                    : scheme.onSurface.withValues(alpha: 0.7),
+              ),
+            ),
+          ],
         ),
       ),
     );

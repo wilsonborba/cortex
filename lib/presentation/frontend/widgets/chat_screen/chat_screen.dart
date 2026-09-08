@@ -103,6 +103,9 @@ class _ChatScreenState extends State<ChatScreen> {
           onRemoveAttachment: _flowHandler.removePendingAttachment,
           onStartIncognitoChat: _onStartIncognitoChat,
           onSelectConversation: _onSelectConversation,
+          onNewConversation: () => _conversationHandler.createNew(),
+          onClearAllConversations: () => _conversationHandler.clearAll(),
+          onDeleteConversation: (id) => _conversationHandler.delete(id),
           onSubmit: _onSubmit,
           draftText: _flowHandler.draftText,
           onDraftChanged: _flowHandler.updateDraft,
@@ -132,6 +135,9 @@ class ChatScreenProps {
     required this.onRemoveAttachment,
     required this.onStartIncognitoChat,
     required this.onSelectConversation,
+    required this.onNewConversation,
+    required this.onClearAllConversations,
+    required this.onDeleteConversation,
     required this.onSubmit,
     required this.draftText,
     required this.onDraftChanged,
@@ -142,6 +148,9 @@ class ChatScreenProps {
   final List<Conversation> conversations;
   final Conversation selectedConversation;
   final bool isBusy;
+  final VoidCallback onNewConversation;
+  final VoidCallback onClearAllConversations;
+  final ValueChanged<String> onDeleteConversation;
 
   /// Whether the next [onSubmit] should route through cortex_api's native
   /// `/execute` with `capabilities.memory = true` instead of the streamed

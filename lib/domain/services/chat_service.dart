@@ -48,6 +48,40 @@ class ChatService {
     return null;
   }
 
+  Conversation newConversation({String title = 'New Conversation'}) {
+    final now = DateTime.now();
+    final convo = Conversation(
+      id: 'convo-${now.millisecondsSinceEpoch}',
+      title: title,
+      messages: const [],
+    );
+    _conversations.insert(0, convo);
+    return convo;
+  }
+
+  void clearAllConversations() {
+    _conversations.clear();
+    final fresh = Conversation(
+      id: 'convo-${DateTime.now().millisecondsSinceEpoch}',
+      title: 'New Conversation',
+      messages: const [],
+    );
+    _conversations.add(fresh);
+  }
+
+  void deleteConversation(String id) {
+    _conversations.removeWhere((c) => c.id == id);
+    if (_conversations.isEmpty) {
+      _conversations.add(
+        Conversation(
+          id: 'convo-${DateTime.now().millisecondsSinceEpoch}',
+          title: 'New Conversation',
+          messages: const [],
+        ),
+      );
+    }
+  }
+
   /// Builds a brand-new, never-persisted conversation for incognito mode.
   /// It is intentionally not added to `_conversations`: it never appears in
   /// `listConversations()` and is lost as soon as the caller stops holding
