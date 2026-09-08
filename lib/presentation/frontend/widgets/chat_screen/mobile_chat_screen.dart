@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../l10n/generated/app_localizations.dart';
 import '../../components/app_settings_sheet.dart';
 import '../../components/conversation_tile.dart';
 import '../../components/message_bubble.dart';
@@ -32,6 +33,7 @@ class _MobileChatScreenState extends State<MobileChatScreen> {
 
   void _showClearAllConfirmation() {
     final scheme = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     showDialog<void>(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -40,12 +42,12 @@ class _MobileChatScreenState extends State<MobileChatScreen> {
           borderRadius: BorderRadius.circular(8),
           side: BorderSide(color: scheme.outline.withValues(alpha: 0.3)),
         ),
-        title: const Text(
-          'Delete All Conversations?',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+        title: Text(
+          l10n.clearAllTitle,
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
         ),
         content: Text(
-          'This action will permanently delete all session history and cached executions. This action cannot be undone.',
+          l10n.clearAllConfirmation,
           style: TextStyle(
             fontSize: 13,
             color: scheme.onSurface.withValues(alpha: 0.7),
@@ -55,7 +57,7 @@ class _MobileChatScreenState extends State<MobileChatScreen> {
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
             child: Text(
-              'Cancel',
+              l10n.cancel,
               style: TextStyle(color: scheme.onSurface),
             ),
           ),
@@ -68,7 +70,7 @@ class _MobileChatScreenState extends State<MobileChatScreen> {
               backgroundColor: const Color(0xFFC53030),
               foregroundColor: Colors.white,
             ),
-            child: const Text('Confirm Delete'),
+            child: Text(l10n.delete),
           ),
         ],
       ),
@@ -79,6 +81,7 @@ class _MobileChatScreenState extends State<MobileChatScreen> {
   Widget build(BuildContext context) {
     final props = widget.props;
     final scheme = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     WidgetsBinding.instance.addPostFrameCallback(
       (_) => _scroll.maybeAutoScroll(),
     );
@@ -180,7 +183,7 @@ class _MobileChatScreenState extends State<MobileChatScreen> {
                       borderRadius: BorderRadius.circular(6),
                     ),
                   ),
-                  child: const Text('+ New Conversation'),
+                  child: Text('+ ${l10n.newConversation}'),
                 ),
               ),
               const SizedBox(height: 12),
@@ -191,7 +194,7 @@ class _MobileChatScreenState extends State<MobileChatScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      'HISTORY',
+                      l10n.history,
                       style: TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.w600,
@@ -217,7 +220,7 @@ class _MobileChatScreenState extends State<MobileChatScreen> {
                             ),
                             const SizedBox(width: 4),
                             Text(
-                              'Clear All',
+                              l10n.clearAll,
                               style: TextStyle(
                                 fontSize: 11,
                                 fontFamily: 'monospace',

@@ -12,18 +12,102 @@ class AppLocalizationsTh extends AppLocalizations {
   String get appTitle => 'Cortex';
 
   @override
-  String get landingTagline =>
-      'พื้นที่สงบสีขาวดำสำหรับคิดออกเสียง โดยมีสีสันพลิ้วไหวอยู่เบื้องหลัง';
+  String get landingTag => 'พื้นที่ประสาทอัตโนมัติ';
 
   @override
-  String get signInWithAsodya => 'เข้าสู่ระบบด้วย Asodya';
+  String get landingHeroTitle => 'ความชาญฉลาดที่ไร้สิ่งรบกวน';
 
   @override
-  String get continueAsGuest => 'ดำเนินการต่อในฐานะผู้เยี่ยมชม';
+  String get landingHeroSubtitle =>
+      'การให้เหตุผลปริมาณงานสูงและพื้นที่ทำงานแชทแบบถาวร สร้างขึ้นเพื่อการโฟกัสลึกโดยไม่มีข้อมูลส่งกลับ';
 
   @override
-  String get guestModeNotice =>
-      'โหมดผู้เยี่ยมชมข้ามการเข้าสู่ระบบทั้งหมด เป็นเพียงทางลัดในเครื่อง ไม่ใช่บัญชี Asodya';
+  String get getStarted => 'เริ่มต้นใช้งาน';
+
+  @override
+  String get ssoAuthHint => '[ ซิงเกิลไซน์ออน • ต้องมีบัญชี ]';
+
+  @override
+  String get aboutAsodya => 'เกี่ยวกับ Asodya';
+
+  @override
+  String get logIn => 'เข้าสู่ระบบ';
+
+  @override
+  String get signUp => 'ลงทะเบียน';
+
+  @override
+  String get footerWorkspace => 'ASODYA CORTEX // พื้นที่ทำงานระดับ 0';
+
+  @override
+  String get allRightsReserved => '© 2026 ASODYA. สงวนลิขสิทธิ์ทั้งหมด';
+
+  @override
+  String get card1Number => '01 / สถาปัตยกรรม';
+
+  @override
+  String get card1Title => 'ระบบประสาทประมวลผล';
+
+  @override
+  String get card1Description =>
+      'การสตรีมบริบทแบบไร้ความหน่วง สนับสนุนโดยการอนุมานระดับ 0 ในเครื่องและพารามิเตอร์การประมวลผลแบบแยกส่วน';
+
+  @override
+  String get card2Number => '02 / ความสมบูรณ์';
+
+  @override
+  String get card2Title => 'ไร้การรั่วไหลของข้อมูล';
+
+  @override
+  String get card2Description =>
+      'ข้อมูลระบบได้รับการแยกส่วนที่ขอบเขตโครงสร้างพื้นฐาน คำสั่งและการสนทนาของผู้ใช้จะยังคงเป็นส่วนตัวอย่างสมบูรณ์';
+
+  @override
+  String get card3Number => '03 / ความต่อเนื่อง';
+
+  @override
+  String get card3Title => 'ร่างข้อความถาวร';
+
+  @override
+  String get card3Description =>
+      'การแคชข้อความร่างในเครื่องและการกู้คืนเซสชันอย่างยืดหยุ่นในทุกอุปกรณ์ผ่านการแลกเปลี่ยนโทเค็น SSO แบบรวมศูนย์';
+
+  @override
+  String get newConversation => 'การสนทนาใหม่';
+
+  @override
+  String get history => 'ประวัติการใช้งาน';
+
+  @override
+  String get clearAll => 'ล้างทั้งหมด';
+
+  @override
+  String get clearAllTitle => 'ล้างการสนทนาทั้งหมด';
+
+  @override
+  String get clearAllConfirmation =>
+      'คุณแน่ใจหรือไม่ว่าต้องการลบการสนทนาทั้งหมดอย่างถาวร? การดำเนินการนี้ไม่สามารถยกเลิกได้';
+
+  @override
+  String get cancel => 'ยกเลิก';
+
+  @override
+  String get delete => 'ลบ';
+
+  @override
+  String get webResearchPill => 'ค้นหาเว็บ';
+
+  @override
+  String get memoryEnginePill => 'ระบบความจำ';
+
+  @override
+  String get attachTooltip => 'แนบไฟล์หรือรูปภาพ';
+
+  @override
+  String get userBadgePro => 'PRO // ASODYA AUTH';
+
+  @override
+  String get tier0Badge => 'ระดับ 0 // CORTEX-T0';
 
   @override
   String get collapseSidebar => 'ย่อแถบด้านข้าง';
@@ -41,7 +125,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get tierZeroLabel => 'ระดับ 0 - ฟรีและรวดเร็ว';
 
   @override
-  String get messageHint => 'ส่งข้อความถึง Cortex...';
+  String get messageHint => 'ส่งข้อความถึง Cortex (ระดับ 0)...';
 
   @override
   String lockedFeatureNotice(String tier) {

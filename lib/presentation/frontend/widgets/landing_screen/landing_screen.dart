@@ -3,6 +3,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/settings.dart';
 import '../../../../core/utils/responsive.dart';
+import '../../../../l10n/generated/app_localizations.dart';
 import '../../handlers/app_preferences_scope.dart';
 import 'my_background.dart';
 
@@ -26,6 +27,7 @@ class LandingScreen extends StatelessWidget {
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
     final isDark = theme.brightness == Brightness.dark;
+    final l10n = AppLocalizations.of(context);
 
     return Scaffold(
       endDrawer: isMobile ? _LandingMobileDrawer(onSignIn: onSignIn, onAbout: _openAbout) : null,
@@ -66,7 +68,7 @@ class LandingScreen extends StatelessWidget {
                                   ),
                                 ),
                                 child: Text(
-                                  'AUTONOMOUS NEURAL WORKSPACE',
+                                  l10n.landingTag,
                                   style: TextStyle(
                                     fontFamily: 'monospace',
                                     fontSize: 11,
@@ -79,7 +81,7 @@ class LandingScreen extends StatelessWidget {
                               const SizedBox(height: 24),
                               // Hero Title
                               Text(
-                                'Intelligence without distraction.',
+                                l10n.landingHeroTitle,
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
                                   fontSize: isMobile ? 32 : 54,
@@ -94,7 +96,7 @@ class LandingScreen extends StatelessWidget {
                               ConstrainedBox(
                                 constraints: const BoxConstraints(maxWidth: 580),
                                 child: Text(
-                                  'High-throughput reasoning and persistent chat workspace. Built for deep focus with zero telemetry leakage.',
+                                  l10n.landingHeroSubtitle,
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
                                     fontSize: isMobile ? 15 : 18,
@@ -119,9 +121,9 @@ class LandingScreen extends StatelessWidget {
                                 child: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    const Text(
-                                      '[ Get Started ]',
-                                      style: TextStyle(
+                                    Text(
+                                      '[ ${l10n.getStarted} ]',
+                                      style: const TextStyle(
                                         fontSize: 15,
                                         fontWeight: FontWeight.w600,
                                         letterSpacing: 0.5,
@@ -138,7 +140,7 @@ class LandingScreen extends StatelessWidget {
                               ),
                               const SizedBox(height: 12),
                               Text(
-                                '[ Single Sign-On • Requires Account ]',
+                                l10n.ssoAuthHint,
                                 style: TextStyle(
                                   fontFamily: 'monospace',
                                   fontSize: 11,
@@ -161,7 +163,7 @@ class LandingScreen extends StatelessWidget {
                                   runSpacing: 8,
                                   children: [
                                     Text(
-                                      'ASODYA CORTEX // TIER 0 WORKSPACE (${AppSettings.buildVersion})',
+                                      '${l10n.footerWorkspace} (${AppSettings.buildVersion})',
                                       style: TextStyle(
                                         fontFamily: 'monospace',
                                         fontSize: 11,
@@ -169,7 +171,7 @@ class LandingScreen extends StatelessWidget {
                                       ),
                                     ),
                                     Text(
-                                      '© 2026 ASODYA. ALL RIGHTS RESERVED.',
+                                      l10n.allRightsReserved,
                                       style: TextStyle(
                                         fontFamily: 'monospace',
                                         fontSize: 11,
@@ -210,6 +212,7 @@ class _LandingNavBar extends StatelessWidget {
     final scheme = Theme.of(context).colorScheme;
     final prefs = AppPreferencesScope.of(context);
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final l10n = AppLocalizations.of(context);
 
     return Container(
       padding: EdgeInsets.symmetric(
@@ -259,13 +262,13 @@ class _LandingNavBar extends StatelessWidget {
             TextButton(
               onPressed: onAbout,
               child: Text(
-                'About',
+                l10n.aboutAsodya,
                 style: TextStyle(color: scheme.onSurface.withValues(alpha: 0.7)),
               ),
             ),
             const SizedBox(width: 8),
             IconButton(
-              tooltip: isDark ? 'Light Theme' : 'Dark Theme',
+              tooltip: isDark ? l10n.themeLight : l10n.themeDark,
               icon: Icon(isDark ? Icons.light_mode_outlined : Icons.dark_mode_outlined, size: 18),
               onPressed: () {
                 prefs.setThemeMode(isDark ? ThemeMode.light : ThemeMode.dark);
@@ -282,7 +285,7 @@ class _LandingNavBar extends StatelessWidget {
                 ),
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               ),
-              child: const Text('Log in'),
+              child: Text(l10n.logIn),
             ),
           ],
         ],
@@ -301,15 +304,16 @@ class _LanguageDropdown extends StatelessWidget {
     final currentCode = prefs.locale?.languageCode ?? 'en';
     final scheme = Theme.of(context).colorScheme;
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final l10n = AppLocalizations.of(context);
 
     final languages = [
-      (code: 'en', label: 'English', native: 'English'),
-      (code: 'pt', label: 'Português', native: 'Português'),
-      (code: 'th', label: 'Thai', native: 'ไทย'),
+      (code: 'en', label: l10n.languageEnglish, native: 'English'),
+      (code: 'pt', label: l10n.languagePortuguese, native: 'Português'),
+      (code: 'th', label: l10n.languageThai, native: 'ไทย'),
     ];
 
     return PopupMenuButton<String>(
-      tooltip: 'Language',
+      tooltip: l10n.languageLabel,
       initialValue: currentCode,
       elevation: 6,
       color: scheme.surface,
@@ -397,24 +401,22 @@ class _FeatureCardsGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final cards = [
-      const _FeatureCardData(
-        num: '01 / ARCHITECTURE',
-        title: 'Neural Engine',
-        description:
-            'Zero-latency contextual streaming backed by local Tier 0 inference and isolated execution parameters.',
+      _FeatureCardData(
+        num: l10n.card1Number,
+        title: l10n.card1Title,
+        description: l10n.card1Description,
       ),
-      const _FeatureCardData(
-        num: '02 / INTEGRITY',
-        title: 'Zero Telemetry Leak',
-        description:
-            'System telemetry is isolated at the infrastructure boundary. User prompts and conversations remain private.',
+      _FeatureCardData(
+        num: l10n.card2Number,
+        title: l10n.card2Title,
+        description: l10n.card2Description,
       ),
-      const _FeatureCardData(
-        num: '03 / CONTINUITY',
-        title: 'Persistent Drafts',
-        description:
-            'Local draft caching and resilient session recovery across devices through unified SSO token exchange.',
+      _FeatureCardData(
+        num: l10n.card3Number,
+        title: l10n.card3Title,
+        description: l10n.card3Description,
       ),
     ];
 
@@ -540,11 +542,12 @@ class _LandingMobileDrawer extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final scheme = Theme.of(context).colorScheme;
     final currentCode = prefs.locale?.languageCode ?? 'en';
+    final l10n = AppLocalizations.of(context);
 
     final languages = [
-      (code: 'en', label: 'English', native: 'English'),
-      (code: 'pt', label: 'Português', native: 'Português'),
-      (code: 'th', label: 'Thai', native: 'ไทย'),
+      (code: 'en', label: l10n.languageEnglish, native: 'English'),
+      (code: 'pt', label: l10n.languagePortuguese, native: 'Português'),
+      (code: 'th', label: l10n.languageThai, native: 'ไทย'),
     ];
 
     return Drawer(
@@ -587,7 +590,7 @@ class _LandingMobileDrawer extends StatelessWidget {
               const Divider(height: 32),
               ListTile(
                 leading: const Icon(Icons.info_outline),
-                title: const Text('About Asodya'),
+                title: Text(l10n.aboutAsodya),
                 onTap: () {
                   Navigator.of(context).pop();
                   onAbout();
@@ -595,7 +598,7 @@ class _LandingMobileDrawer extends StatelessWidget {
               ),
               ListTile(
                 leading: Icon(isDark ? Icons.light_mode_outlined : Icons.dark_mode_outlined),
-                title: Text(isDark ? 'Light Theme' : 'Dark Theme'),
+                title: Text(isDark ? l10n.themeLight : l10n.themeDark),
                 onTap: () {
                   prefs.setThemeMode(isDark ? ThemeMode.light : ThemeMode.dark);
                 },
@@ -604,7 +607,7 @@ class _LandingMobileDrawer extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 4),
                 child: Text(
-                  'LANGUAGE',
+                  l10n.languageLabel.toUpperCase(),
                   style: TextStyle(
                     fontSize: 11,
                     fontFamily: 'monospace',
@@ -694,9 +697,9 @@ class _LandingMobileDrawer extends StatelessWidget {
                     borderRadius: BorderRadius.circular(6),
                   ),
                 ),
-                child: const Text(
-                  '[ Get Started ]',
-                  style: TextStyle(fontWeight: FontWeight.w600),
+                child: Text(
+                  '[ ${l10n.getStarted} ]',
+                  style: const TextStyle(fontWeight: FontWeight.w600),
                 ),
               ),
             ],

@@ -2,10 +2,42 @@
   "@@locale": "pt",
   "appTitle": "Cortex",
 
-  "landingTagline": "Um lugar calmo e monocromático para pensar em voz alta, com a cor correndo solta logo atrás.",
-  "signInWithAsodya": "Entrar com a Asodya",
-  "continueAsGuest": "Continuar como convidado",
-  "guestModeNotice": "O modo convidado dispensa o login: é um atalho local, não uma conta Asodya.",
+  "landingTag": "ESPAÇO NEURAL AUTÔNOMO",
+  "landingHeroTitle": "Inteligência sem distração.",
+  "landingHeroSubtitle": "Raciocínio de alto rendimento e espaço de chat persistente. Construído para foco profundo sem vazamento de telemetria.",
+  "getStarted": "Começar",
+  "ssoAuthHint": "[ Logon Único • Requer Conta ]",
+  "aboutAsodya": "Sobre a Asodya",
+  "logIn": "Entrar",
+  "signUp": "Cadastrar",
+  "footerWorkspace": "ASODYA CORTEX // ESPAÇO NÍVEL 0",
+  "allRightsReserved": "© 2026 ASODYA. TODOS OS DIREITOS RESERVADOS.",
+
+  "card1Number": "01 / ARQUITETURA",
+  "card1Title": "Motor Neural",
+  "card1Description": "Transmissão contextual de latência zero alimentada por inferência local de Nível 0 e parâmetros de execução isolados.",
+
+  "card2Number": "02 / INTEGRIDADE",
+  "card2Title": "Zero Vazamento de Telemetria",
+  "card2Description": "A telemetria do sistema é isolada na fronteira da infraestrutura. Prompts e conversas permanecem estritamente privados.",
+
+  "card3Number": "03 / CONTINUIDADE",
+  "card3Title": "Rascunhos Persistentes",
+  "card3Description": "Cache local de rascunhos e recuperação resiliente de sessão em múltiplos dispositivos por troca de token SSO unificada.",
+
+  "newConversation": "Nova Conversa",
+  "history": "HISTÓRICO",
+  "clearAll": "Limpar Tudo",
+  "clearAllTitle": "Limpar Todas as Conversas",
+  "clearAllConfirmation": "Tem certeza de que deseja excluir permanentemente todas as conversas? Esta ação não pode ser desfeita.",
+  "cancel": "Cancelar",
+  "delete": "Excluir",
+
+  "webResearchPill": "Pesquisa Web",
+  "memoryEnginePill": "Motor de Memória",
+  "attachTooltip": "Anexar arquivos ou imagens",
+  "userBadgePro": "PRO // ASODYA AUTH",
+  "tier0Badge": "NÍVEL 0 // CORTEX-T0",
 
   "collapseSidebar": "Recolher barra lateral",
   "expandSidebar": "Expandir barra lateral",
@@ -14,7 +46,7 @@
 
   "tierZeroLabel": "Nível 0 - Grátis e rápido",
 
-  "messageHint": "Envie uma mensagem para o Cortex...",
+  "messageHint": "Envie uma mensagem para o Cortex (Nível 0)...",
   "lockedFeatureNotice": "{tier}: este recurso é liberado em um nível superior.",
   "attachFileLocked": "Anexar arquivo (bloqueado no {tier})",
   "webBrowsingLocked": "Navegação na web (bloqueada no {tier})",

@@ -3,10 +3,42 @@
   "appTitle": "Cortex",
   "@appTitle": {"description": "Brand name, kept the same across all languages."},
 
-  "landingTagline": "A calm, monochrome place to think out loud, backed by the colour running wild behind it.",
-  "signInWithAsodya": "Sign in with Asodya",
-  "continueAsGuest": "Continue as Guest",
-  "guestModeNotice": "Guest mode skips sign-in entirely: it is a local shortcut, not an Asodya account.",
+  "landingTag": "AUTONOMOUS NEURAL WORKSPACE",
+  "landingHeroTitle": "Intelligence without distraction.",
+  "landingHeroSubtitle": "High-throughput reasoning and persistent chat workspace. Built for deep focus with zero telemetry leakage.",
+  "getStarted": "Get Started",
+  "ssoAuthHint": "[ Single Sign-On • Requires Account ]",
+  "aboutAsodya": "About Asodya",
+  "logIn": "Log in",
+  "signUp": "Sign up",
+  "footerWorkspace": "ASODYA CORTEX // TIER 0 WORKSPACE",
+  "allRightsReserved": "© 2026 ASODYA. ALL RIGHTS RESERVED.",
+
+  "card1Number": "01 / ARCHITECTURE",
+  "card1Title": "Neural Engine",
+  "card1Description": "Zero-latency contextual streaming backed by local Tier 0 inference and isolated execution parameters.",
+
+  "card2Number": "02 / INTEGRITY",
+  "card2Title": "Zero Telemetry Leak",
+  "card2Description": "System telemetry is isolated at the infrastructure boundary. User prompts and conversations remain private.",
+
+  "card3Number": "03 / CONTINUITY",
+  "card3Title": "Persistent Drafts",
+  "card3Description": "Local draft caching and resilient session recovery across devices through unified SSO token exchange.",
+
+  "newConversation": "New Conversation",
+  "history": "HISTORY",
+  "clearAll": "Clear All",
+  "clearAllTitle": "Clear All Conversations",
+  "clearAllConfirmation": "Are you sure you want to permanently delete all conversations? This action cannot be undone.",
+  "cancel": "Cancel",
+  "delete": "Delete",
+
+  "webResearchPill": "Web Research",
+  "memoryEnginePill": "Memory Engine",
+  "attachTooltip": "Attach files or images",
+  "userBadgePro": "PRO // ASODYA AUTH",
+  "tier0Badge": "TIER 0 // CORTEX-T0",
 
   "collapseSidebar": "Collapse sidebar",
   "expandSidebar": "Expand sidebar",
@@ -15,7 +47,7 @@
 
   "tierZeroLabel": "Tier 0 - Free & Fast",
 
-  "messageHint": "Message Cortex...",
+  "messageHint": "Message Cortex (Tier 0)...",
   "lockedFeatureNotice": "{tier}: this feature unlocks on a higher tier.",
   "@lockedFeatureNotice": {
     "placeholders": {"tier": {"type": "String"}}

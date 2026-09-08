@@ -12,18 +12,102 @@ class AppLocalizationsEn extends AppLocalizations {
   String get appTitle => 'Cortex';
 
   @override
-  String get landingTagline =>
-      'A calm, monochrome place to think out loud, backed by the colour running wild behind it.';
+  String get landingTag => 'AUTONOMOUS NEURAL WORKSPACE';
 
   @override
-  String get signInWithAsodya => 'Sign in with Asodya';
+  String get landingHeroTitle => 'Intelligence without distraction.';
 
   @override
-  String get continueAsGuest => 'Continue as Guest';
+  String get landingHeroSubtitle =>
+      'High-throughput reasoning and persistent chat workspace. Built for deep focus with zero telemetry leakage.';
 
   @override
-  String get guestModeNotice =>
-      'Guest mode skips sign-in entirely: it is a local shortcut, not an Asodya account.';
+  String get getStarted => 'Get Started';
+
+  @override
+  String get ssoAuthHint => '[ Single Sign-On • Requires Account ]';
+
+  @override
+  String get aboutAsodya => 'About Asodya';
+
+  @override
+  String get logIn => 'Log in';
+
+  @override
+  String get signUp => 'Sign up';
+
+  @override
+  String get footerWorkspace => 'ASODYA CORTEX // TIER 0 WORKSPACE';
+
+  @override
+  String get allRightsReserved => '© 2026 ASODYA. ALL RIGHTS RESERVED.';
+
+  @override
+  String get card1Number => '01 / ARCHITECTURE';
+
+  @override
+  String get card1Title => 'Neural Engine';
+
+  @override
+  String get card1Description =>
+      'Zero-latency contextual streaming backed by local Tier 0 inference and isolated execution parameters.';
+
+  @override
+  String get card2Number => '02 / INTEGRITY';
+
+  @override
+  String get card2Title => 'Zero Telemetry Leak';
+
+  @override
+  String get card2Description =>
+      'System telemetry is isolated at the infrastructure boundary. User prompts and conversations remain private.';
+
+  @override
+  String get card3Number => '03 / CONTINUITY';
+
+  @override
+  String get card3Title => 'Persistent Drafts';
+
+  @override
+  String get card3Description =>
+      'Local draft caching and resilient session recovery across devices through unified SSO token exchange.';
+
+  @override
+  String get newConversation => 'New Conversation';
+
+  @override
+  String get history => 'HISTORY';
+
+  @override
+  String get clearAll => 'Clear All';
+
+  @override
+  String get clearAllTitle => 'Clear All Conversations';
+
+  @override
+  String get clearAllConfirmation =>
+      'Are you sure you want to permanently delete all conversations? This action cannot be undone.';
+
+  @override
+  String get cancel => 'Cancel';
+
+  @override
+  String get delete => 'Delete';
+
+  @override
+  String get webResearchPill => 'Web Research';
+
+  @override
+  String get memoryEnginePill => 'Memory Engine';
+
+  @override
+  String get attachTooltip => 'Attach files or images';
+
+  @override
+  String get userBadgePro => 'PRO // ASODYA AUTH';
+
+  @override
+  String get tier0Badge => 'TIER 0 // CORTEX-T0';
 
   @override
   String get collapseSidebar => 'Collapse sidebar';
@@ -41,7 +125,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get tierZeroLabel => 'Tier 0 - Free & Fast';
 
   @override
-  String get messageHint => 'Message Cortex...';
+  String get messageHint => 'Message Cortex (Tier 0)...';
 
   @override
   String lockedFeatureNotice(String tier) {

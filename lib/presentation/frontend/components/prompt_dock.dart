@@ -155,10 +155,10 @@ class _PromptDockState extends State<PromptDock> {
   }
 
   @override
-  @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final l10n = AppLocalizations.of(context);
 
     return Container(
       decoration: BoxDecoration(
@@ -195,9 +195,9 @@ class _PromptDockState extends State<PromptDock> {
               minLines: 1,
               maxLines: 6,
               style: const TextStyle(fontSize: 14),
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 isDense: true,
-                hintText: 'Message Cortex (Tier 0)...',
+                hintText: l10n.messageHint,
                 border: InputBorder.none,
                 contentPadding: EdgeInsets.zero,
               ),
@@ -219,7 +219,7 @@ class _PromptDockState extends State<PromptDock> {
                         // Attach button
                         _DockToolButton(
                           icon: Icons.attach_file,
-                          tooltip: 'Attach files or images',
+                          tooltip: l10n.attachTooltip,
                           onPressed: widget.onAddAttachments == null
                               ? null
                               : _openAttachMenu,
@@ -228,7 +228,7 @@ class _PromptDockState extends State<PromptDock> {
                         // Web Search Pill
                         _DockPill(
                           icon: Icons.language,
-                          label: 'Web Research',
+                          label: l10n.webResearchPill,
                           active: widget.needsWeb,
                           onPressed: widget.onToggleNeedsWeb == null
                               ? null
@@ -238,7 +238,7 @@ class _PromptDockState extends State<PromptDock> {
                         // Memory Engine Pill
                         _DockPill(
                           icon: Icons.memory,
-                          label: 'Memory Engine',
+                          label: l10n.memoryEnginePill,
                           active: widget.useMemory,
                           onPressed: widget.onToggleMemory == null
                               ? null

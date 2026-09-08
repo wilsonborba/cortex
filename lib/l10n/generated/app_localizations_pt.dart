@@ -12,18 +12,103 @@ class AppLocalizationsPt extends AppLocalizations {
   String get appTitle => 'Cortex';
 
   @override
-  String get landingTagline =>
-      'Um lugar calmo e monocromático para pensar em voz alta, com a cor correndo solta logo atrás.';
+  String get landingTag => 'ESPAÇO NEURAL AUTÔNOMO';
 
   @override
-  String get signInWithAsodya => 'Entrar com a Asodya';
+  String get landingHeroTitle => 'Inteligência sem distração.';
 
   @override
-  String get continueAsGuest => 'Continuar como convidado';
+  String get landingHeroSubtitle =>
+      'Raciocínio de alto rendimento e espaço de chat persistente. Construído para foco profundo sem vazamento de telemetria.';
 
   @override
-  String get guestModeNotice =>
-      'O modo convidado dispensa o login: é um atalho local, não uma conta Asodya.';
+  String get getStarted => 'Começar';
+
+  @override
+  String get ssoAuthHint => '[ Logon Único • Requer Conta ]';
+
+  @override
+  String get aboutAsodya => 'Sobre a Asodya';
+
+  @override
+  String get logIn => 'Entrar';
+
+  @override
+  String get signUp => 'Cadastrar';
+
+  @override
+  String get footerWorkspace => 'ASODYA CORTEX // ESPAÇO NÍVEL 0';
+
+  @override
+  String get allRightsReserved =>
+      '© 2026 ASODYA. TODOS OS DIREITOS RESERVADOS.';
+
+  @override
+  String get card1Number => '01 / ARQUITETURA';
+
+  @override
+  String get card1Title => 'Motor Neural';
+
+  @override
+  String get card1Description =>
+      'Transmissão contextual de latência zero alimentada por inferência local de Nível 0 e parâmetros de execução isolados.';
+
+  @override
+  String get card2Number => '02 / INTEGRIDADE';
+
+  @override
+  String get card2Title => 'Zero Vazamento de Telemetria';
+
+  @override
+  String get card2Description =>
+      'A telemetria do sistema é isolada na fronteira da infraestrutura. Prompts e conversas permanecem estritamente privados.';
+
+  @override
+  String get card3Number => '03 / CONTINUIDADE';
+
+  @override
+  String get card3Title => 'Rascunhos Persistentes';
+
+  @override
+  String get card3Description =>
+      'Cache local de rascunhos e recuperação resiliente de sessão em múltiplos dispositivos por troca de token SSO unificada.';
+
+  @override
+  String get newConversation => 'Nova Conversa';
+
+  @override
+  String get history => 'HISTÓRICO';
+
+  @override
+  String get clearAll => 'Limpar Tudo';
+
+  @override
+  String get clearAllTitle => 'Limpar Todas as Conversas';
+
+  @override
+  String get clearAllConfirmation =>
+      'Tem certeza de que deseja excluir permanentemente todas as conversas? Esta ação não pode ser desfeita.';
+
+  @override
+  String get cancel => 'Cancelar';
+
+  @override
+  String get delete => 'Excluir';
+
+  @override
+  String get webResearchPill => 'Pesquisa Web';
+
+  @override
+  String get memoryEnginePill => 'Motor de Memória';
+
+  @override
+  String get attachTooltip => 'Anexar arquivos ou imagens';
+
+  @override
+  String get userBadgePro => 'PRO // ASODYA AUTH';
+
+  @override
+  String get tier0Badge => 'NÍVEL 0 // CORTEX-T0';
 
   @override
   String get collapseSidebar => 'Recolher barra lateral';
@@ -41,7 +126,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get tierZeroLabel => 'Nível 0 - Grátis e rápido';
 
   @override
-  String get messageHint => 'Envie uma mensagem para o Cortex...';
+  String get messageHint => 'Envie uma mensagem para o Cortex (Nível 0)...';
 
   @override
   String lockedFeatureNotice(String tier) {
