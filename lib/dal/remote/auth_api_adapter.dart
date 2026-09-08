@@ -75,7 +75,7 @@ class AuthApiAdapter {
   /// return route) for a real session. On success `api_for_apps` sets the
   /// `sid` cookie via `Set-Cookie`; this method reports only success/failure.
   Future<bool> exchangeToken(String authExchangeToken) async {
-    final uri = Uri.parse('$apiForAppsBaseUrl/v1/exchange');
+    final uri = Uri.parse('$apiForAppsBaseUrl/apps/api/v1/exchange');
     try {
       final response = await _httpClient.post(
         uri,
