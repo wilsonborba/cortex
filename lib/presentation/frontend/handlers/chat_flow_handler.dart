@@ -65,6 +65,9 @@ class ChatFlowHandler extends ChangeNotifier {
   Object? error;
 
   Future<void> _loadDraftForCurrentConversation() async {
+    // An incognito conversation is never persisted anywhere (issue #6's
+    // guarantee): never touch DraftStore for it, not even to read.
+    if (conversation.isEphemeral) return;
     final conversationId = conversation.id;
     final draft = await _draftStore.loadDraft(conversationId);
     // The user may have already switched conversations again by the time
@@ -79,6 +82,9 @@ class ChatFlowHandler extends ChangeNotifier {
   void updateDraft(String text) {
     draftText = text;
     _draftSaveDebounce?.cancel();
+    // Incognito drafts must never reach disk: this is the one guarantee
+    // incognito mode makes.
+    if (conversation.isEphemeral) return;
     final conversationId = conversation.id;
     _draftSaveDebounce = Timer(const Duration(milliseconds: 400), () {
       _draftStore.saveDraft(conversationId, text);
@@ -145,28 +151,35 @@ class ChatFlowHandler extends ChangeNotifier {
 
     try {
       if (conversation.isEphemeral) {
-        conversation = await _chatService.sendEphemeralMessage(
+        final result = await _chatService.sendEphemeralMessage(
           conversation: conversation,
           content: text,
           needsWeb: needsWeb,
           attachments: attachments,
           onUpdate: (updated) {
+            // The user may have switched to a different conversation while
+            // this stream was in flight: never let its tokens overwrite
+            // whatever is now actually being displayed.
+            if (conversation.id != sentConversationId) return;
             conversation = updated;
             notifyListeners();
           },
         );
+        if (conversation.id == sentConversationId) conversation = result;
       } else {
-        conversation = await _chatService.sendMessage(
+        final result = await _chatService.sendMessage(
           conversationId: conversation.id,
           content: text,
           useMemory: useMemory,
           needsWeb: needsWeb,
           attachments: attachments,
           onUpdate: (updated) {
+            if (conversation.id != sentConversationId) return;
             conversation = updated;
             notifyListeners();
           },
         );
+        if (conversation.id == sentConversationId) conversation = result;
       }
     } catch (e) {
       error = e;
@@ -202,18 +215,21 @@ class ChatFlowHandler extends ChangeNotifier {
     if (continuingMessageId != null) return;
     continuingMessageId = replyMessageId;
     error = null;
+    final retryConversationId = conversation.id;
     notifyListeners();
 
     try {
-      conversation = await _chatService.continueGeneration(
+      final result = await _chatService.continueGeneration(
         conversation: conversation,
         replyMessageId: replyMessageId,
         needsWeb: needsWeb,
         onUpdate: (updated) {
+          if (conversation.id != retryConversationId) return;
           conversation = updated;
           notifyListeners();
         },
       );
+      if (conversation.id == retryConversationId) conversation = result;
     } catch (e) {
       error = e;
     } finally {
