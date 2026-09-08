@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 
 import '../../core/logs.dart';
 import '../../core/settings.dart';
+import '../../domain/services/client_telemetry_service.dart';
 import 'credentials_client.dart';
 
 /// Remote adapter for Asodya's unified authentication:
@@ -92,12 +93,31 @@ class AuthApiAdapter {
         'Auth exchange failed with status ${response.statusCode}: '
         '${response.body}',
       );
+      ClientTelemetryService.instance.reportHandledError(
+        title: 'Auth Exchange Failed',
+        error: 'HTTP ${response.statusCode}',
+        errorCode: 'AUTH_EXCHANGE_${response.statusCode}',
+        route: AppSettings.authSyncPath,
+        details: {
+          'status_code': response.statusCode,
+          'response_body': response.body,
+          'exchange_uri': uri.toString(),
+        },
+      );
       return false;
     } catch (e, stackTrace) {
       AppLogger.error(
         'Auth exchange request failed',
         error: e,
         stackTrace: stackTrace,
+      );
+      ClientTelemetryService.instance.reportHandledError(
+        title: 'Auth Exchange Request Failed',
+        error: e,
+        stackTrace: stackTrace,
+        errorCode: 'AUTH_EXCHANGE_EXCEPTION',
+        route: AppSettings.authSyncPath,
+        details: {'exchange_uri': uri.toString()},
       );
       return false;
     }
