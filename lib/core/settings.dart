@@ -8,6 +8,12 @@ class AppSettings {
   /// Flips structured logging verbosity. See `lib/core/logs.dart`.
   static const bool isDevelopment = true;
 
+  /// Build / deployment timestamp displayed in footers and info views
+  static const String buildVersion = String.fromEnvironment(
+    'BUILD_TIMESTAMP',
+    defaultValue: '2026-09-08 23:50 +07',
+  );
+
   /// Base URL for the Cortex backend facade itself (cortex_api). The app
   /// never calls this directly for chat/execute traffic (see
   /// [apiForAppsBaseUrl] and [cortexProxyPrefix] below): every chat request

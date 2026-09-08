@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../../../core/settings.dart';
 import '../../../../core/utils/responsive.dart';
 import '../../handlers/app_preferences_scope.dart';
 import 'my_background.dart';
 
-/// Neural Grid Landing Page matching the exact Asodya monochromatic design language from the preview.
+/// Neural Grid Landing Page matching the exact Asodya monochromatic design language.
 class LandingScreen extends StatelessWidget {
   const LandingScreen({
     super.key,
@@ -160,7 +161,7 @@ class LandingScreen extends StatelessWidget {
                                   runSpacing: 8,
                                   children: [
                                     Text(
-                                      'ASODYA CORTEX // TIER 0 WORKSPACE',
+                                      'ASODYA CORTEX // TIER 0 WORKSPACE (${AppSettings.buildVersion})',
                                       style: TextStyle(
                                         fontFamily: 'monospace',
                                         fontSize: 11,
@@ -299,34 +300,92 @@ class _LanguageDropdown extends StatelessWidget {
   Widget build(BuildContext context) {
     final currentCode = prefs.locale?.languageCode ?? 'en';
     final scheme = Theme.of(context).colorScheme;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    final languages = [
+      (code: 'en', label: 'English', native: 'English'),
+      (code: 'pt', label: 'Português', native: 'Português'),
+      (code: 'th', label: 'Thai', native: 'ไทย'),
+    ];
 
     return PopupMenuButton<String>(
       tooltip: 'Language',
       initialValue: currentCode,
+      elevation: 6,
+      color: scheme.surface,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+        side: BorderSide(
+          color: scheme.outline.withValues(alpha: isDark ? 0.35 : 0.6),
+        ),
+      ),
       onSelected: (code) => prefs.setLocale(Locale(code)),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(6),
+          border: Border.all(
+            color: scheme.outline.withValues(alpha: isDark ? 0.25 : 0.45),
+          ),
+        ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
+            Icon(Icons.language_rounded, size: 15, color: scheme.onSurface.withValues(alpha: 0.8)),
+            const SizedBox(width: 6),
             Text(
               currentCode.toUpperCase(),
               style: TextStyle(
-                fontWeight: FontWeight.w600,
+                fontFamily: 'monospace',
+                fontWeight: FontWeight.w700,
                 fontSize: 12,
                 color: scheme.onSurface,
               ),
             ),
             const SizedBox(width: 4),
-            Icon(Icons.arrow_drop_down, size: 16, color: scheme.onSurface),
+            Icon(Icons.keyboard_arrow_down, size: 15, color: scheme.onSurface.withValues(alpha: 0.6)),
           ],
         ),
       ),
-      itemBuilder: (context) => [
-        const PopupMenuItem(value: 'en', child: Text('English (EN)')),
-        const PopupMenuItem(value: 'pt', child: Text('Português (PT)')),
-        const PopupMenuItem(value: 'th', child: Text('ไทย (TH)')),
-      ],
+      itemBuilder: (context) => languages.map((lang) {
+        final isSelected = currentCode == lang.code;
+        return PopupMenuItem<String>(
+          value: lang.code,
+          child: Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      lang.label,
+                      style: TextStyle(
+                        fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                        fontSize: 13,
+                        color: scheme.onSurface,
+                      ),
+                    ),
+                    Text(
+                      lang.native,
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: scheme.onSurface.withValues(alpha: 0.5),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              if (isSelected)
+                Icon(
+                  Icons.check,
+                  size: 16,
+                  color: scheme.primary,
+                ),
+            ],
+          ),
+        );
+      }).toList(),
     );
   }
 }
@@ -480,6 +539,13 @@ class _LandingMobileDrawer extends StatelessWidget {
     final prefs = AppPreferencesScope.of(context);
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final scheme = Theme.of(context).colorScheme;
+    final currentCode = prefs.locale?.languageCode ?? 'en';
+
+    final languages = [
+      (code: 'en', label: 'English', native: 'English'),
+      (code: 'pt', label: 'Português', native: 'Português'),
+      (code: 'th', label: 'Thai', native: 'ไทย'),
+    ];
 
     return Drawer(
       backgroundColor: scheme.surface,
@@ -534,29 +600,87 @@ class _LandingMobileDrawer extends StatelessWidget {
                   prefs.setThemeMode(isDark ? ThemeMode.light : ThemeMode.dark);
                 },
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 16),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
+                padding: const EdgeInsets.symmetric(horizontal: 4),
                 child: Text(
                   'LANGUAGE',
                   style: TextStyle(
                     fontSize: 11,
                     fontFamily: 'monospace',
+                    fontWeight: FontWeight.w600,
                     color: scheme.onSurface.withValues(alpha: 0.5),
                   ),
                 ),
               ),
-              const SizedBox(height: 6),
-              SegmentedButton<String>(
-                segments: const [
-                  ButtonSegment(value: 'en', label: Text('EN')),
-                  ButtonSegment(value: 'pt', label: Text('PT')),
-                  ButtonSegment(value: 'th', label: Text('TH')),
-                ],
-                selected: {prefs.locale?.languageCode ?? 'en'},
-                onSelectionChanged: (val) => prefs.setLocale(Locale(val.first)),
+              const SizedBox(height: 8),
+              Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: scheme.outline.withValues(alpha: isDark ? 0.3 : 0.5),
+                  ),
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: Column(
+                    children: languages.map((lang) {
+                      final isSelected = currentCode == lang.code;
+                      return InkWell(
+                        onTap: () => prefs.setLocale(Locale(lang.code)),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                          decoration: BoxDecoration(
+                            color: isSelected
+                                ? scheme.surfaceContainerHighest
+                                : Colors.transparent,
+                            border: lang != languages.last
+                                ? Border(
+                                    bottom: BorderSide(
+                                      color: scheme.outline.withValues(alpha: 0.2),
+                                    ),
+                                  )
+                                : null,
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.language_rounded,
+                                size: 16,
+                                color: scheme.onSurface.withValues(alpha: 0.7),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Text(
+                                  '${lang.label} (${lang.native})',
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    fontWeight: isSelected ? FontWeight.w700 : FontWeight.w400,
+                                    color: scheme.onSurface,
+                                  ),
+                                ),
+                              ),
+                              if (isSelected)
+                                Icon(Icons.check, size: 16, color: scheme.primary),
+                            ],
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                ),
               ),
               const Spacer(),
+              Text(
+                'BUILD // ${AppSettings.buildVersion}',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontFamily: 'monospace',
+                  fontSize: 10,
+                  color: scheme.onSurface.withValues(alpha: 0.35),
+                ),
+              ),
+              const SizedBox(height: 12),
               ElevatedButton(
                 onPressed: () {
                   Navigator.of(context).pop();
