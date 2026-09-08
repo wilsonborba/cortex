@@ -5,8 +5,9 @@
 class AppSettings {
   AppSettings._();
 
-  /// Flips structured logging verbosity. See `lib/core/logs.dart`.
-  static const bool isDevelopment = true;
+  /// Flips structured logging verbosity and local LAN endpoint routing.
+  /// Defaults to false (production / live Asodya cloud endpoints).
+  static const bool isDevelopment = bool.fromEnvironment('DEVELOPMENT_MODE', defaultValue: false);
 
   /// Build / deployment timestamp displayed in footers and info views
   static const String buildVersion = String.fromEnvironment(
