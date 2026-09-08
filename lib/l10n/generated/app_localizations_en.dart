@@ -12,14 +12,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get appTitle => 'Cortex';
 
   @override
-  String get landingTag => 'AUTONOMOUS NEURAL WORKSPACE';
+  String get landingTag => 'EXPERIMENTAL NEURAL MVP';
 
   @override
   String get landingHeroTitle => 'Intelligence without distraction.';
 
   @override
   String get landingHeroSubtitle =>
-      'High-throughput reasoning and persistent chat workspace. Built for deep focus with zero telemetry leakage.';
+      'An early-stage, experimental workspace for high-focus reasoning and persistent chat. Designed for deep thinking with strict privacy.';
 
   @override
   String get getStarted => 'Get Started';
@@ -37,7 +37,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get signUp => 'Sign up';
 
   @override
-  String get footerWorkspace => 'ASODYA CORTEX // TIER 0 WORKSPACE';
+  String get footerWorkspace => 'ASODYA CORTEX // EXPERIMENTAL MVP (TIER 0)';
 
   @override
   String get allRightsReserved => '© 2026 ASODYA. ALL RIGHTS RESERVED.';
@@ -46,21 +46,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get card1Number => '01 / ARCHITECTURE';
 
   @override
-  String get card1Title => 'Neural Engine';
+  String get card1Title => 'Neural Reasoning';
 
   @override
   String get card1Description =>
-      'Zero-latency contextual streaming backed by local Tier 0 inference and isolated execution parameters.';
+      'Real-time contextual token streaming powered by lightweight Tier 0 models and isolated execution parameters.';
 
   @override
   String get card2Number => '02 / INTEGRITY';
 
   @override
-  String get card2Title => 'Zero Telemetry Leak';
+  String get card2Title => 'Privacy by Default';
 
   @override
   String get card2Description =>
-      'System telemetry is isolated at the infrastructure boundary. User prompts and conversations remain private.';
+      'System telemetry is strictly isolated at the infrastructure boundary. Your prompts and conversations remain private.';
 
   @override
   String get card3Number => '03 / CONTINUITY';
@@ -70,7 +70,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get card3Description =>
-      'Local draft caching and resilient session recovery across devices through unified SSO token exchange.';
+      'Local draft caching and resilient session recovery across devices through unified Asodya SSO token exchange.';
 
   @override
   String get newConversation => 'New Conversation';

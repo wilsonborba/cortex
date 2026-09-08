@@ -109,7 +109,7 @@ abstract class AppLocalizations {
   /// No description provided for @landingTag.
   ///
   /// In en, this message translates to:
-  /// **'AUTONOMOUS NEURAL WORKSPACE'**
+  /// **'EXPERIMENTAL NEURAL MVP'**
   String get landingTag;
 
   /// No description provided for @landingHeroTitle.
@@ -121,7 +121,7 @@ abstract class AppLocalizations {
   /// No description provided for @landingHeroSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'High-throughput reasoning and persistent chat workspace. Built for deep focus with zero telemetry leakage.'**
+  /// **'An early-stage, experimental workspace for high-focus reasoning and persistent chat. Designed for deep thinking with strict privacy.'**
   String get landingHeroSubtitle;
 
   /// No description provided for @getStarted.
@@ -157,7 +157,7 @@ abstract class AppLocalizations {
   /// No description provided for @footerWorkspace.
   ///
   /// In en, this message translates to:
-  /// **'ASODYA CORTEX // TIER 0 WORKSPACE'**
+  /// **'ASODYA CORTEX // EXPERIMENTAL MVP (TIER 0)'**
   String get footerWorkspace;
 
   /// No description provided for @allRightsReserved.
@@ -175,13 +175,13 @@ abstract class AppLocalizations {
   /// No description provided for @card1Title.
   ///
   /// In en, this message translates to:
-  /// **'Neural Engine'**
+  /// **'Neural Reasoning'**
   String get card1Title;
 
   /// No description provided for @card1Description.
   ///
   /// In en, this message translates to:
-  /// **'Zero-latency contextual streaming backed by local Tier 0 inference and isolated execution parameters.'**
+  /// **'Real-time contextual token streaming powered by lightweight Tier 0 models and isolated execution parameters.'**
   String get card1Description;
 
   /// No description provided for @card2Number.
@@ -193,13 +193,13 @@ abstract class AppLocalizations {
   /// No description provided for @card2Title.
   ///
   /// In en, this message translates to:
-  /// **'Zero Telemetry Leak'**
+  /// **'Privacy by Default'**
   String get card2Title;
 
   /// No description provided for @card2Description.
   ///
   /// In en, this message translates to:
-  /// **'System telemetry is isolated at the infrastructure boundary. User prompts and conversations remain private.'**
+  /// **'System telemetry is strictly isolated at the infrastructure boundary. Your prompts and conversations remain private.'**
   String get card2Description;
 
   /// No description provided for @card3Number.
@@ -217,7 +217,7 @@ abstract class AppLocalizations {
   /// No description provided for @card3Description.
   ///
   /// In en, this message translates to:
-  /// **'Local draft caching and resilient session recovery across devices through unified SSO token exchange.'**
+  /// **'Local draft caching and resilient session recovery across devices through unified Asodya SSO token exchange.'**
   String get card3Description;
 
   /// No description provided for @newConversation.

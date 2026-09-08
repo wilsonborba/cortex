@@ -12,14 +12,14 @@ class AppLocalizationsTh extends AppLocalizations {
   String get appTitle => 'Cortex';
 
   @override
-  String get landingTag => 'พื้นที่ประสาทอัตโนมัติ';
+  String get landingTag => 'MVP ระบบประสาทขั้นทดลอง';
 
   @override
   String get landingHeroTitle => 'ความชาญฉลาดที่ไร้สิ่งรบกวน';
 
   @override
   String get landingHeroSubtitle =>
-      'การให้เหตุผลปริมาณงานสูงและพื้นที่ทำงานแชทแบบถาวร สร้างขึ้นเพื่อการโฟกัสลึกโดยไม่มีข้อมูลส่งกลับ';
+      'พื้นที่ทำงานขั้นทดลองในระยะเริ่มต้นสำหรับการให้เหตุผลและการสนทนาแบบถาวร สร้างขึ้นเพื่อการโฟกัสลึกพร้อมการปกป้องความเป็นส่วนตัว';
 
   @override
   String get getStarted => 'เริ่มต้นใช้งาน';
@@ -37,7 +37,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get signUp => 'ลงทะเบียน';
 
   @override
-  String get footerWorkspace => 'ASODYA CORTEX // พื้นที่ทำงานระดับ 0';
+  String get footerWorkspace => 'ASODYA CORTEX // MVP ขั้นทดลอง (ระดับ 0)';
 
   @override
   String get allRightsReserved => '© 2026 ASODYA. สงวนลิขสิทธิ์ทั้งหมด';
@@ -46,21 +46,21 @@ class AppLocalizationsTh extends AppLocalizations {
   String get card1Number => '01 / สถาปัตยกรรม';
 
   @override
-  String get card1Title => 'ระบบประสาทประมวลผล';
+  String get card1Title => 'การประมวลผลเชิงเหตุผล';
 
   @override
   String get card1Description =>
-      'การสตรีมบริบทแบบไร้ความหน่วง สนับสนุนโดยการอนุมานระดับ 0 ในเครื่องและพารามิเตอร์การประมวลผลแบบแยกส่วน';
+      'การสตรีมข้อความตอบกลับตามบริบทแบบเรียลไทม์ ขับเคลื่อนโดยโมเดลระดับ 0 น้ำหนักเบาและสภาพแวดล้อมที่แยกส่วน';
 
   @override
-  String get card2Number => '02 / ความสมบูรณ์';
+  String get card2Number => '02 / ความเป็นส่วนตัว';
 
   @override
-  String get card2Title => 'ไร้การรั่วไหลของข้อมูล';
+  String get card2Title => 'ความเป็นส่วนตัวเป็นหลัก';
 
   @override
   String get card2Description =>
-      'ข้อมูลระบบได้รับการแยกส่วนที่ขอบเขตโครงสร้างพื้นฐาน คำสั่งและการสนทนาของผู้ใช้จะยังคงเป็นส่วนตัวอย่างสมบูรณ์';
+      'ข้อมูลระบบได้รับการแยกส่วนอย่างเคร่งครัดที่ระดับโครงสร้างพื้นฐาน คำสั่งและการสนทนาของคุณจะคงความเป็นส่วนตัวอย่างสมบูรณ์';
 
   @override
   String get card3Number => '03 / ความต่อเนื่อง';
@@ -70,7 +70,7 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get card3Description =>
-      'การแคชข้อความร่างในเครื่องและการกู้คืนเซสชันอย่างยืดหยุ่นในทุกอุปกรณ์ผ่านการแลกเปลี่ยนโทเค็น SSO แบบรวมศูนย์';
+      'การแคชข้อความร่างในเครื่องและการกู้คืนเซสชันในทุกอุปกรณ์ผ่านระบบยืนยันตัวตน Asodya SSO';
 
   @override
   String get newConversation => 'การสนทนาใหม่';

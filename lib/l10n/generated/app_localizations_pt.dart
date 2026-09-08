@@ -12,14 +12,14 @@ class AppLocalizationsPt extends AppLocalizations {
   String get appTitle => 'Cortex';
 
   @override
-  String get landingTag => 'ESPAÇO NEURAL AUTÔNOMO';
+  String get landingTag => 'MVP NEURAL EXPERIMENTAL';
 
   @override
   String get landingHeroTitle => 'Inteligência sem distração.';
 
   @override
   String get landingHeroSubtitle =>
-      'Raciocínio de alto rendimento e espaço de chat persistente. Construído para foco profundo sem vazamento de telemetria.';
+      'Um espaço experimental em estágio inicial para raciocínio focado e chat persistente. Criado para reflexão profunda com total privacidade.';
 
   @override
   String get getStarted => 'Começar';
@@ -37,7 +37,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get signUp => 'Cadastrar';
 
   @override
-  String get footerWorkspace => 'ASODYA CORTEX // ESPAÇO NÍVEL 0';
+  String get footerWorkspace => 'ASODYA CORTEX // MVP EXPERIMENTAL (NÍVEL 0)';
 
   @override
   String get allRightsReserved =>
@@ -47,21 +47,21 @@ class AppLocalizationsPt extends AppLocalizations {
   String get card1Number => '01 / ARQUITETURA';
 
   @override
-  String get card1Title => 'Motor Neural';
+  String get card1Title => 'Raciocínio Neural';
 
   @override
   String get card1Description =>
-      'Transmissão contextual de latência zero alimentada por inferência local de Nível 0 e parâmetros de execução isolados.';
+      'Transmissão contextual contínua alimentada por modelos leves de Nível 0 e parâmetros de execução isolados.';
 
   @override
   String get card2Number => '02 / INTEGRIDADE';
 
   @override
-  String get card2Title => 'Zero Vazamento de Telemetria';
+  String get card2Title => 'Privacidade por Padrão';
 
   @override
   String get card2Description =>
-      'A telemetria do sistema é isolada na fronteira da infraestrutura. Prompts e conversas permanecem estritamente privados.';
+      'A telemetria do sistema é estritamente isolada na infraestrutura. Seus prompts e conversas permanecem privados.';
 
   @override
   String get card3Number => '03 / CONTINUIDADE';
@@ -71,7 +71,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get card3Description =>
-      'Cache local de rascunhos e recuperação resiliente de sessão em múltiplos dispositivos por troca de token SSO unificada.';
+      'Cache local de rascunhos e recuperação resiliente de sessão em múltiplos dispositivos via autenticação Asodya SSO.';
 
   @override
   String get newConversation => 'Nova Conversa';
