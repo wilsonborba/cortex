@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 import '../../core/logs.dart';
 import '../../core/settings.dart';
 import '../../core/utils/app_proof.dart';
+import '../../core/utils/csrf.dart';
 import '../../domain/models/chat_message.dart';
 import '../../domain/models/execute_request.dart';
 import '../../domain/models/execute_response.dart';
@@ -47,6 +48,19 @@ class CortexApiAdapter {
     }
   }
 
+  /// Attaches the CSRF header every authenticated mutating request to
+  /// `api_for_apps` must carry (issue #16), same mechanism `certifications`
+  /// already uses: without it, `verify_auth` rejects the request with a 403
+  /// ("Missing Authentications Parameters"), which is exactly what every
+  /// chat message failed with before this existed.
+  void _addCsrfHeader(Map<String, String> headers) {
+    final csrfToken = readCsrfToken();
+    if (csrfToken != null && csrfToken.isNotEmpty) {
+      headers.putIfAbsent('X-CSRF-Token', () => csrfToken);
+      headers.putIfAbsent('X-CSRFToken', () => csrfToken);
+    }
+  }
+
   /// Streams assistant reply tokens for [messages] via cortex_api's OpenAI
   /// facade, `POST $cortexProxyPrefix/v1/chat/completions` with
   /// `stream: true`. Parses the upstream `text/event-stream` response
@@ -78,6 +92,7 @@ class CortexApiAdapter {
         'needs_web': needsWeb,
       });
     _addAppProofHeader(request.headers);
+    _addCsrfHeader(request.headers);
 
     final http.StreamedResponse streamedResponse;
     try {
@@ -157,6 +172,7 @@ class CortexApiAdapter {
     try {
       final headers = {'Content-Type': 'application/json'};
       _addAppProofHeader(headers);
+      _addCsrfHeader(headers);
       response = await _httpClient.post(
         _executeUri,
         headers: headers,
