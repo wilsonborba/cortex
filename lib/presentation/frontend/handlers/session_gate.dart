@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
 
+import '../../../dal/local/local_storage_adapter.dart';
 import '../../../dal/remote/auth_api_adapter.dart';
 import '../../../domain/models/session_status.dart';
 import '../../../domain/services/auth_service.dart';
@@ -18,11 +19,7 @@ import '../widgets/landing_screen/landing_screen.dart';
 /// return route first, then the locally persisted flags), and hands the
 /// result down as a simple `canEnterChat` boolean.
 class SessionGate extends StatefulWidget {
-  const SessionGate({super.key, this.sessionCookieReader});
-
-  /// Test-only seam, forwarded from [CortexApp]/tests directly; see
-  /// [SessionService]'s doc comment for why this exists.
-  final String? Function()? sessionCookieReader;
+  const SessionGate({super.key});
 
   @override
   State<SessionGate> createState() => _SessionGateState();
@@ -35,7 +32,8 @@ class _SessionGateState extends State<SessionGate> {
   @override
   void initState() {
     super.initState();
-    final sessionService = SessionService(cookieReader: widget.sessionCookieReader);
+    const storage = LocalStorageAdapter();
+    final sessionService = SessionService(storage);
     _authService = AuthService(AuthApiAdapter(), sessionService);
     _resolveInitialStatus(sessionService);
   }

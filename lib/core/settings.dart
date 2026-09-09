@@ -74,6 +74,10 @@ class AppSettings {
   static const String appContextFernetKey =
       'mEt5jdm9aTbUYnjhQM_tY_CTQL-JvXe0u9VdKEM2KmY=';
 
+  /// Local storage key used by the authenticated session flag (see
+  /// `SessionService`).
+  static const String sessionActiveStorageKey = 'session_active';
+
   // --- X-Asodya-App-Proof attestation (api_for_apps issue #19, cortex
   // issue #8) ---
 
