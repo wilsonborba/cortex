@@ -106,29 +106,191 @@ abstract class AppLocalizations {
   /// **'Cortex'**
   String get appTitle;
 
-  /// No description provided for @landingTagline.
+  /// No description provided for @landingTag.
   ///
   /// In en, this message translates to:
-  /// **'A calm, monochrome place to think out loud, backed by the colour running wild behind it.'**
-  String get landingTagline;
+  /// **'EXPERIMENTAL NEURAL MVP'**
+  String get landingTag;
 
-  /// No description provided for @signInWithAsodya.
+  /// No description provided for @landingHeroTitle.
   ///
   /// In en, this message translates to:
-  /// **'Sign in with Asodya'**
-  String get signInWithAsodya;
+  /// **'Intelligence without distraction.'**
+  String get landingHeroTitle;
 
-  /// No description provided for @continueAsGuest.
+  /// No description provided for @landingHeroSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Continue as Guest'**
-  String get continueAsGuest;
+  /// **'An early-stage, experimental workspace for high-focus reasoning and persistent chat. Designed for deep thinking with strict privacy.'**
+  String get landingHeroSubtitle;
 
-  /// No description provided for @guestModeNotice.
+  /// No description provided for @getStarted.
   ///
   /// In en, this message translates to:
-  /// **'Guest mode skips sign-in entirely: it is a local shortcut, not an Asodya account.'**
-  String get guestModeNotice;
+  /// **'Get Started'**
+  String get getStarted;
+
+  /// No description provided for @ssoAuthHint.
+  ///
+  /// In en, this message translates to:
+  /// **'[ Single Sign-On • Requires Account ]'**
+  String get ssoAuthHint;
+
+  /// No description provided for @aboutAsodya.
+  ///
+  /// In en, this message translates to:
+  /// **'About Asodya'**
+  String get aboutAsodya;
+
+  /// No description provided for @logIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Log in'**
+  String get logIn;
+
+  /// No description provided for @signUp.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign up'**
+  String get signUp;
+
+  /// No description provided for @footerWorkspace.
+  ///
+  /// In en, this message translates to:
+  /// **'ASODYA CORTEX // EXPERIMENTAL MVP (TIER 0)'**
+  String get footerWorkspace;
+
+  /// No description provided for @allRightsReserved.
+  ///
+  /// In en, this message translates to:
+  /// **'© 2026 ASODYA. ALL RIGHTS RESERVED.'**
+  String get allRightsReserved;
+
+  /// No description provided for @card1Number.
+  ///
+  /// In en, this message translates to:
+  /// **'01 / ARCHITECTURE'**
+  String get card1Number;
+
+  /// No description provided for @card1Title.
+  ///
+  /// In en, this message translates to:
+  /// **'Neural Reasoning'**
+  String get card1Title;
+
+  /// No description provided for @card1Description.
+  ///
+  /// In en, this message translates to:
+  /// **'Real-time contextual token streaming powered by lightweight Tier 0 models and isolated execution parameters.'**
+  String get card1Description;
+
+  /// No description provided for @card2Number.
+  ///
+  /// In en, this message translates to:
+  /// **'02 / INTEGRITY'**
+  String get card2Number;
+
+  /// No description provided for @card2Title.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy by Default'**
+  String get card2Title;
+
+  /// No description provided for @card2Description.
+  ///
+  /// In en, this message translates to:
+  /// **'System telemetry is strictly isolated at the infrastructure boundary. Your prompts and conversations remain private.'**
+  String get card2Description;
+
+  /// No description provided for @card3Number.
+  ///
+  /// In en, this message translates to:
+  /// **'03 / CONTINUITY'**
+  String get card3Number;
+
+  /// No description provided for @card3Title.
+  ///
+  /// In en, this message translates to:
+  /// **'Persistent Drafts'**
+  String get card3Title;
+
+  /// No description provided for @card3Description.
+  ///
+  /// In en, this message translates to:
+  /// **'Local draft caching and resilient session recovery across devices through unified Asodya SSO token exchange.'**
+  String get card3Description;
+
+  /// No description provided for @newConversation.
+  ///
+  /// In en, this message translates to:
+  /// **'New Conversation'**
+  String get newConversation;
+
+  /// No description provided for @history.
+  ///
+  /// In en, this message translates to:
+  /// **'HISTORY'**
+  String get history;
+
+  /// No description provided for @clearAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear All'**
+  String get clearAll;
+
+  /// No description provided for @clearAllTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear All Conversations'**
+  String get clearAllTitle;
+
+  /// No description provided for @clearAllConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to permanently delete all conversations? This action cannot be undone.'**
+  String get clearAllConfirmation;
+
+  /// No description provided for @cancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancel;
+
+  /// No description provided for @delete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get delete;
+
+  /// No description provided for @webResearchPill.
+  ///
+  /// In en, this message translates to:
+  /// **'Web Research'**
+  String get webResearchPill;
+
+  /// No description provided for @memoryEnginePill.
+  ///
+  /// In en, this message translates to:
+  /// **'Memory Engine'**
+  String get memoryEnginePill;
+
+  /// No description provided for @attachTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Attach files or images'**
+  String get attachTooltip;
+
+  /// No description provided for @userBadgePro.
+  ///
+  /// In en, this message translates to:
+  /// **'PRO // ASODYA AUTH'**
+  String get userBadgePro;
+
+  /// No description provided for @tier0Badge.
+  ///
+  /// In en, this message translates to:
+  /// **'TIER 0 // CORTEX-T0'**
+  String get tier0Badge;
 
   /// No description provided for @collapseSidebar.
   ///
@@ -163,7 +325,7 @@ abstract class AppLocalizations {
   /// No description provided for @messageHint.
   ///
   /// In en, this message translates to:
-  /// **'Message Cortex...'**
+  /// **'Message Cortex (Tier 0)...'**
   String get messageHint;
 
   /// No description provided for @lockedFeatureNotice.
@@ -271,20 +433,32 @@ abstract class AppLocalizations {
   /// No description provided for @voiceStartRecording.
   ///
   /// In en, this message translates to:
-  /// **'Start voice recording'**
+  /// **'Record a voice message'**
   String get voiceStartRecording;
 
-  /// No description provided for @voiceStopRecording.
+  /// No description provided for @voiceCancelRecording.
   ///
   /// In en, this message translates to:
-  /// **'Stop recording and insert transcript'**
-  String get voiceStopRecording;
+  /// **'Cancel recording'**
+  String get voiceCancelRecording;
+
+  /// No description provided for @voiceSendRecording.
+  ///
+  /// In en, this message translates to:
+  /// **'Send voice message'**
+  String get voiceSendRecording;
 
   /// No description provided for @micPermissionDenied.
   ///
   /// In en, this message translates to:
   /// **'Microphone access is unavailable or was denied.'**
   String get micPermissionDenied;
+
+  /// No description provided for @voiceMessageTooShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Recording was too short to send.'**
+  String get voiceMessageTooShort;
 
   /// No description provided for @incognitoModeTitle.
   ///
@@ -303,36 +477,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Start incognito chat'**
   String get newIncognitoChat;
-
-  /// No description provided for @liveLogsTooltip.
-  ///
-  /// In en, this message translates to:
-  /// **'Live logs (local dev only)'**
-  String get liveLogsTooltip;
-
-  /// No description provided for @liveLogsTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Cortex live logs'**
-  String get liveLogsTitle;
-
-  /// No description provided for @liveLogsDescription.
-  ///
-  /// In en, this message translates to:
-  /// **'Local dev only: connects directly to cortex_api\'s /logs/stream, this bypasses the api_for_apps proxy (it cannot carry a WebSocket).'**
-  String get liveLogsDescription;
-
-  /// No description provided for @liveLogsConnectionError.
-  ///
-  /// In en, this message translates to:
-  /// **'Could not connect: {error}'**
-  String liveLogsConnectionError(String error);
-
-  /// No description provided for @liveLogsWaiting.
-  ///
-  /// In en, this message translates to:
-  /// **'Waiting for log lines...'**
-  String get liveLogsWaiting;
 
   /// No description provided for @couldNotSendMessage.
   ///
@@ -429,6 +573,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Thai'**
   String get languageThai;
+
+  /// No description provided for @improveInputLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Improve my input'**
+  String get improveInputLabel;
+
+  /// No description provided for @improveInputSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Automatically rewrites and clarifies prompts with local reasoning model before generation'**
+  String get improveInputSubtitle;
+
+  /// No description provided for @incognitoBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'INCOGNITO'**
+  String get incognitoBadge;
+
+  /// No description provided for @startIncognito.
+  ///
+  /// In en, this message translates to:
+  /// **'Start Incognito Chat'**
+  String get startIncognito;
+
+  /// No description provided for @exitIncognito.
+  ///
+  /// In en, this message translates to:
+  /// **'Exit Incognito'**
+  String get exitIncognito;
 }
 
 class _AppLocalizationsDelegate

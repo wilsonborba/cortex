@@ -2,10 +2,42 @@
   "@@locale": "th",
   "appTitle": "Cortex",
 
-  "landingTagline": "พื้นที่สงบสีขาวดำสำหรับคิดออกเสียง โดยมีสีสันพลิ้วไหวอยู่เบื้องหลัง",
-  "signInWithAsodya": "เข้าสู่ระบบด้วย Asodya",
-  "continueAsGuest": "ดำเนินการต่อในฐานะผู้เยี่ยมชม",
-  "guestModeNotice": "โหมดผู้เยี่ยมชมข้ามการเข้าสู่ระบบทั้งหมด เป็นเพียงทางลัดในเครื่อง ไม่ใช่บัญชี Asodya",
+  "landingTag": "MVP ระบบประสาทขั้นทดลอง",
+  "landingHeroTitle": "ความชาญฉลาดที่ไร้สิ่งรบกวน",
+  "landingHeroSubtitle": "พื้นที่ทำงานขั้นทดลองในระยะเริ่มต้นสำหรับการให้เหตุผลและการสนทนาแบบถาวร สร้างขึ้นเพื่อการโฟกัสลึกพร้อมการปกป้องความเป็นส่วนตัว",
+  "getStarted": "เริ่มต้นใช้งาน",
+  "ssoAuthHint": "[ ซิงเกิลไซน์ออน • ต้องมีบัญชี ]",
+  "aboutAsodya": "เกี่ยวกับ Asodya",
+  "logIn": "เข้าสู่ระบบ",
+  "signUp": "ลงทะเบียน",
+  "footerWorkspace": "ASODYA CORTEX // MVP ขั้นทดลอง (ระดับ 0)",
+  "allRightsReserved": "© 2026 ASODYA. สงวนลิขสิทธิ์ทั้งหมด",
+
+  "card1Number": "01 / สถาปัตยกรรม",
+  "card1Title": "การประมวลผลเชิงเหตุผล",
+  "card1Description": "การสตรีมข้อความตอบกลับตามบริบทแบบเรียลไทม์ ขับเคลื่อนโดยโมเดลระดับ 0 น้ำหนักเบาและสภาพแวดล้อมที่แยกส่วน",
+
+  "card2Number": "02 / ความเป็นส่วนตัว",
+  "card2Title": "ความเป็นส่วนตัวเป็นหลัก",
+  "card2Description": "ข้อมูลระบบได้รับการแยกส่วนอย่างเคร่งครัดที่ระดับโครงสร้างพื้นฐาน คำสั่งและการสนทนาของคุณจะคงความเป็นส่วนตัวอย่างสมบูรณ์",
+
+  "card3Number": "03 / ความต่อเนื่อง",
+  "card3Title": "ร่างข้อความถาวร",
+  "card3Description": "การแคชข้อความร่างในเครื่องและการกู้คืนเซสชันในทุกอุปกรณ์ผ่านระบบยืนยันตัวตน Asodya SSO",
+
+  "newConversation": "การสนทนาใหม่",
+  "history": "ประวัติการใช้งาน",
+  "clearAll": "ล้างทั้งหมด",
+  "clearAllTitle": "ล้างการสนทนาทั้งหมด",
+  "clearAllConfirmation": "คุณแน่ใจหรือไม่ว่าต้องการลบการสนทนาทั้งหมดอย่างถาวร? การดำเนินการนี้ไม่สามารถยกเลิกได้",
+  "cancel": "ยกเลิก",
+  "delete": "ลบ",
+
+  "webResearchPill": "ค้นหาเว็บ",
+  "memoryEnginePill": "ระบบความจำ",
+  "attachTooltip": "แนบไฟล์หรือรูปภาพ",
+  "userBadgePro": "PRO // ASODYA AUTH",
+  "tier0Badge": "ระดับ 0 // CORTEX-T0",
 
   "collapseSidebar": "ย่อแถบด้านข้าง",
   "expandSidebar": "ขยายแถบด้านข้าง",
@@ -14,7 +46,7 @@
 
   "tierZeroLabel": "ระดับ 0 - ฟรีและรวดเร็ว",
 
-  "messageHint": "ส่งข้อความถึง Cortex...",
+  "messageHint": "ส่งข้อความถึง Cortex (ระดับ 0)...",
   "lockedFeatureNotice": "{tier}: ฟีเจอร์นี้จะปลดล็อกในระดับที่สูงขึ้น",
   "attachFileLocked": "แนบไฟล์ (ล็อกอยู่ที่ {tier})",
   "webBrowsingLocked": "การท่องเว็บ (ล็อกอยู่ที่ {tier})",
@@ -34,19 +66,16 @@
   "removeAttachment": "ลบไฟล์แนบ",
   "documentAttachmentBackendGap": "ระบบหลังบ้านยังไม่รองรับการนำเข้าเอกสาร วันนี้รองรับเฉพาะรูปภาพเท่านั้น",
 
-  "voiceStartRecording": "เริ่มบันทึกเสียง",
-  "voiceStopRecording": "หยุดบันทึกและแทรกข้อความที่ถอดเสียง",
+  "voiceStartRecording": "บันทึกข้อความเสียง",
+  "voiceCancelRecording": "ยกเลิกการบันทึก",
+  "voiceSendRecording": "ส่งข้อความเสียง",
   "micPermissionDenied": "ไม่สามารถใช้งานไมโครโฟนได้ หรือการเข้าถึงถูกปฏิเสธ",
+  "voiceMessageTooShort": "การบันทึกสั้นเกินไปที่จะส่ง",
 
   "incognitoModeTitle": "แชทไม่ระบุตัวตน",
   "incognitoModeSubtitle": "เซสชันชั่วคราว ไม่บันทึกประวัติและปิดใช้งานความจำอย่างชัดเจน",
   "newIncognitoChat": "เริ่มแชทไม่ระบุตัวตน",
 
-  "liveLogsTooltip": "บันทึกสด (สำหรับการพัฒนาในเครื่องเท่านั้น)",
-  "liveLogsTitle": "บันทึกสดของ Cortex",
-  "liveLogsDescription": "สำหรับการพัฒนาในเครื่องเท่านั้น: เชื่อมต่อโดยตรงกับ /logs/stream ของ cortex_api ซึ่งข้ามพร็อกซีของ api_for_apps (ที่ไม่รองรับ WebSocket)",
-  "liveLogsConnectionError": "ไม่สามารถเชื่อมต่อได้: {error}",
-  "liveLogsWaiting": "กำลังรอบรรทัดบันทึก...",
 
   "couldNotSendMessage": "ไม่สามารถส่งข้อความได้: {error}",
 
@@ -67,5 +96,10 @@
   "languageLabel": "ภาษา",
   "languageEnglish": "อังกฤษ",
   "languagePortuguese": "โปรตุเกส",
-  "languageThai": "ไทย"
+  "languageThai": "ไทย",
+  "improveInputLabel": "ปรับปรุงข้อความนำเข้า",
+  "improveInputSubtitle": "เขียนและปรับความชัดเจนของคำสั่งโดยอัตโนมัติด้วยโมเดลให้เหตุผลในเครื่องก่อนเริ่มสร้างคำตอบ",
+  "incognitoBadge": "ไม่ระบุตัวตน",
+  "startIncognito": "เริ่มการสนทนาแบบไม่ระบุตัวตน",
+  "exitIncognito": "ออกจากการสนทนาไม่ระบุตัวตน"
 }

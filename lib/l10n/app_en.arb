@@ -3,10 +3,42 @@
   "appTitle": "Cortex",
   "@appTitle": {"description": "Brand name, kept the same across all languages."},
 
-  "landingTagline": "A calm, monochrome place to think out loud, backed by the colour running wild behind it.",
-  "signInWithAsodya": "Sign in with Asodya",
-  "continueAsGuest": "Continue as Guest",
-  "guestModeNotice": "Guest mode skips sign-in entirely: it is a local shortcut, not an Asodya account.",
+  "landingTag": "EXPERIMENTAL NEURAL MVP",
+  "landingHeroTitle": "Intelligence without distraction.",
+  "landingHeroSubtitle": "An early-stage, experimental workspace for high-focus reasoning and persistent chat. Designed for deep thinking with strict privacy.",
+  "getStarted": "Get Started",
+  "ssoAuthHint": "[ Single Sign-On • Requires Account ]",
+  "aboutAsodya": "About Asodya",
+  "logIn": "Log in",
+  "signUp": "Sign up",
+  "footerWorkspace": "ASODYA CORTEX // EXPERIMENTAL MVP (TIER 0)",
+  "allRightsReserved": "© 2026 ASODYA. ALL RIGHTS RESERVED.",
+
+  "card1Number": "01 / ARCHITECTURE",
+  "card1Title": "Neural Reasoning",
+  "card1Description": "Real-time contextual token streaming powered by lightweight Tier 0 models and isolated execution parameters.",
+
+  "card2Number": "02 / INTEGRITY",
+  "card2Title": "Privacy by Default",
+  "card2Description": "System telemetry is strictly isolated at the infrastructure boundary. Your prompts and conversations remain private.",
+
+  "card3Number": "03 / CONTINUITY",
+  "card3Title": "Persistent Drafts",
+  "card3Description": "Local draft caching and resilient session recovery across devices through unified Asodya SSO token exchange.",
+
+  "newConversation": "New Conversation",
+  "history": "HISTORY",
+  "clearAll": "Clear All",
+  "clearAllTitle": "Clear All Conversations",
+  "clearAllConfirmation": "Are you sure you want to permanently delete all conversations? This action cannot be undone.",
+  "cancel": "Cancel",
+  "delete": "Delete",
+
+  "webResearchPill": "Web Research",
+  "memoryEnginePill": "Memory Engine",
+  "attachTooltip": "Attach files or images",
+  "userBadgePro": "PRO // ASODYA AUTH",
+  "tier0Badge": "TIER 0 // CORTEX-T0",
 
   "collapseSidebar": "Collapse sidebar",
   "expandSidebar": "Expand sidebar",
@@ -15,7 +47,7 @@
 
   "tierZeroLabel": "Tier 0 - Free & Fast",
 
-  "messageHint": "Message Cortex...",
+  "messageHint": "Message Cortex (Tier 0)...",
   "lockedFeatureNotice": "{tier}: this feature unlocks on a higher tier.",
   "@lockedFeatureNotice": {
     "placeholders": {"tier": {"type": "String"}}
@@ -47,22 +79,15 @@
   "removeAttachment": "Remove attachment",
   "documentAttachmentBackendGap": "Document ingestion is not supported by the backend yet: only images are accepted today.",
 
-  "voiceStartRecording": "Start voice recording",
-  "voiceStopRecording": "Stop recording and insert transcript",
+  "voiceStartRecording": "Record a voice message",
+  "voiceCancelRecording": "Cancel recording",
+  "voiceSendRecording": "Send voice message",
   "micPermissionDenied": "Microphone access is unavailable or was denied.",
+  "voiceMessageTooShort": "Recording was too short to send.",
 
   "incognitoModeTitle": "Incognito chat",
   "incognitoModeSubtitle": "Ephemeral session: no history is saved and memory is explicitly off",
   "newIncognitoChat": "Start incognito chat",
-
-  "liveLogsTooltip": "Live logs (local dev only)",
-  "liveLogsTitle": "Cortex live logs",
-  "liveLogsDescription": "Local dev only: connects directly to cortex_api's /logs/stream, this bypasses the api_for_apps proxy (it cannot carry a WebSocket).",
-  "liveLogsConnectionError": "Could not connect: {error}",
-  "@liveLogsConnectionError": {
-    "placeholders": {"error": {"type": "String"}}
-  },
-  "liveLogsWaiting": "Waiting for log lines...",
 
   "couldNotSendMessage": "Could not send message: {error}",
   "@couldNotSendMessage": {
@@ -86,5 +111,10 @@
   "languageLabel": "Language",
   "languageEnglish": "English",
   "languagePortuguese": "Portuguese",
-  "languageThai": "Thai"
+  "languageThai": "Thai",
+  "improveInputLabel": "Improve my input",
+  "improveInputSubtitle": "Automatically rewrites and clarifies prompts with local reasoning model before generation",
+  "incognitoBadge": "INCOGNITO",
+  "startIncognito": "Start Incognito Chat",
+  "exitIncognito": "Exit Incognito"
 }

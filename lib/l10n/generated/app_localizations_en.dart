@@ -12,18 +12,102 @@ class AppLocalizationsEn extends AppLocalizations {
   String get appTitle => 'Cortex';
 
   @override
-  String get landingTagline =>
-      'A calm, monochrome place to think out loud, backed by the colour running wild behind it.';
+  String get landingTag => 'EXPERIMENTAL NEURAL MVP';
 
   @override
-  String get signInWithAsodya => 'Sign in with Asodya';
+  String get landingHeroTitle => 'Intelligence without distraction.';
 
   @override
-  String get continueAsGuest => 'Continue as Guest';
+  String get landingHeroSubtitle =>
+      'An early-stage, experimental workspace for high-focus reasoning and persistent chat. Designed for deep thinking with strict privacy.';
 
   @override
-  String get guestModeNotice =>
-      'Guest mode skips sign-in entirely: it is a local shortcut, not an Asodya account.';
+  String get getStarted => 'Get Started';
+
+  @override
+  String get ssoAuthHint => '[ Single Sign-On • Requires Account ]';
+
+  @override
+  String get aboutAsodya => 'About Asodya';
+
+  @override
+  String get logIn => 'Log in';
+
+  @override
+  String get signUp => 'Sign up';
+
+  @override
+  String get footerWorkspace => 'ASODYA CORTEX // EXPERIMENTAL MVP (TIER 0)';
+
+  @override
+  String get allRightsReserved => '© 2026 ASODYA. ALL RIGHTS RESERVED.';
+
+  @override
+  String get card1Number => '01 / ARCHITECTURE';
+
+  @override
+  String get card1Title => 'Neural Reasoning';
+
+  @override
+  String get card1Description =>
+      'Real-time contextual token streaming powered by lightweight Tier 0 models and isolated execution parameters.';
+
+  @override
+  String get card2Number => '02 / INTEGRITY';
+
+  @override
+  String get card2Title => 'Privacy by Default';
+
+  @override
+  String get card2Description =>
+      'System telemetry is strictly isolated at the infrastructure boundary. Your prompts and conversations remain private.';
+
+  @override
+  String get card3Number => '03 / CONTINUITY';
+
+  @override
+  String get card3Title => 'Persistent Drafts';
+
+  @override
+  String get card3Description =>
+      'Local draft caching and resilient session recovery across devices through unified Asodya SSO token exchange.';
+
+  @override
+  String get newConversation => 'New Conversation';
+
+  @override
+  String get history => 'HISTORY';
+
+  @override
+  String get clearAll => 'Clear All';
+
+  @override
+  String get clearAllTitle => 'Clear All Conversations';
+
+  @override
+  String get clearAllConfirmation =>
+      'Are you sure you want to permanently delete all conversations? This action cannot be undone.';
+
+  @override
+  String get cancel => 'Cancel';
+
+  @override
+  String get delete => 'Delete';
+
+  @override
+  String get webResearchPill => 'Web Research';
+
+  @override
+  String get memoryEnginePill => 'Memory Engine';
+
+  @override
+  String get attachTooltip => 'Attach files or images';
+
+  @override
+  String get userBadgePro => 'PRO // ASODYA AUTH';
+
+  @override
+  String get tier0Badge => 'TIER 0 // CORTEX-T0';
 
   @override
   String get collapseSidebar => 'Collapse sidebar';
@@ -41,7 +125,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get tierZeroLabel => 'Tier 0 - Free & Fast';
 
   @override
-  String get messageHint => 'Message Cortex...';
+  String get messageHint => 'Message Cortex (Tier 0)...';
 
   @override
   String lockedFeatureNotice(String tier) {
@@ -109,14 +193,20 @@ class AppLocalizationsEn extends AppLocalizations {
       'Document ingestion is not supported by the backend yet: only images are accepted today.';
 
   @override
-  String get voiceStartRecording => 'Start voice recording';
+  String get voiceStartRecording => 'Record a voice message';
 
   @override
-  String get voiceStopRecording => 'Stop recording and insert transcript';
+  String get voiceCancelRecording => 'Cancel recording';
+
+  @override
+  String get voiceSendRecording => 'Send voice message';
 
   @override
   String get micPermissionDenied =>
       'Microphone access is unavailable or was denied.';
+
+  @override
+  String get voiceMessageTooShort => 'Recording was too short to send.';
 
   @override
   String get incognitoModeTitle => 'Incognito chat';
@@ -127,24 +217,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get newIncognitoChat => 'Start incognito chat';
-
-  @override
-  String get liveLogsTooltip => 'Live logs (local dev only)';
-
-  @override
-  String get liveLogsTitle => 'Cortex live logs';
-
-  @override
-  String get liveLogsDescription =>
-      'Local dev only: connects directly to cortex_api\'s /logs/stream, this bypasses the api_for_apps proxy (it cannot carry a WebSocket).';
-
-  @override
-  String liveLogsConnectionError(String error) {
-    return 'Could not connect: $error';
-  }
-
-  @override
-  String get liveLogsWaiting => 'Waiting for log lines...';
 
   @override
   String couldNotSendMessage(String error) {
@@ -196,4 +268,20 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get languageThai => 'Thai';
+
+  @override
+  String get improveInputLabel => 'Improve my input';
+
+  @override
+  String get improveInputSubtitle =>
+      'Automatically rewrites and clarifies prompts with local reasoning model before generation';
+
+  @override
+  String get incognitoBadge => 'INCOGNITO';
+
+  @override
+  String get startIncognito => 'Start Incognito Chat';
+
+  @override
+  String get exitIncognito => 'Exit Incognito';
 }

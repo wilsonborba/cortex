@@ -79,6 +79,9 @@ class CortexApiAdapter {
   Stream<String> streamChatCompletion({
     required List<ChatMessage> messages,
     bool needsWeb = false,
+    bool normalizePrompt = true,
+    String? conversationId,
+    bool temporary = false,
   }) async* {
     final request = http.Request('POST', _chatCompletionsUri)
       ..headers['Content-Type'] = 'application/json'
@@ -90,6 +93,9 @@ class CortexApiAdapter {
             .toList(),
         'stream': true,
         'needs_web': needsWeb,
+        'normalize_prompt': normalizePrompt,
+        if (conversationId != null) 'conversation_id': conversationId,
+        'temporary': temporary,
       });
     _addAppProofHeader(request.headers);
     _addCsrfHeader(request.headers);
@@ -197,6 +203,50 @@ class CortexApiAdapter {
     return ExecuteResponse.fromJson(
       jsonDecode(response.body) as Map<String, dynamic>,
     );
+  }
+
+  /// Fetches conversation summaries from cortex_api (`GET /conversations`).
+  Future<List<Map<String, dynamic>>> fetchConversations({
+    String tenantId = 'default',
+  }) async {
+    final uri = Uri.parse(
+      '$apiForAppsBaseUrl${AppSettings.cortexProxyPrefix}/conversations?tenant_id=$tenantId',
+    );
+    final headers = <String, String>{};
+    _addAppProofHeader(headers);
+    try {
+      final response = await _httpClient.get(uri, headers: headers);
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        if (data is List) {
+          return data.map((e) => Map<String, dynamic>.from(e as Map)).toList();
+        }
+      }
+    } catch (e, stackTrace) {
+      AppLogger.warning('Failed to fetch remote conversations: $e');
+    }
+    return [];
+  }
+
+  /// Fetches full conversation turn details from cortex_api (`GET /conversations/{id}`).
+  Future<Map<String, dynamic>?> fetchConversation(
+    String conversationId, {
+    String tenantId = 'default',
+  }) async {
+    final uri = Uri.parse(
+      '$apiForAppsBaseUrl${AppSettings.cortexProxyPrefix}/conversations/$conversationId?tenant_id=$tenantId',
+    );
+    final headers = <String, String>{};
+    _addAppProofHeader(headers);
+    try {
+      final response = await _httpClient.get(uri, headers: headers);
+      if (response.statusCode == 200) {
+        return Map<String, dynamic>.from(jsonDecode(response.body) as Map);
+      }
+    } catch (e) {
+      AppLogger.warning('Failed to fetch conversation $conversationId: $e');
+    }
+    return null;
   }
 
   String _roleName(MessageRole role) {

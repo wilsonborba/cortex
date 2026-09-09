@@ -19,6 +19,7 @@ class ExecuteRequest {
     this.useMemory = false,
     this.needsWeb = false,
     this.temporary = false,
+    this.conversationId,
     this.attachments = const [],
     this.attachmentJobId,
   });
@@ -26,6 +27,7 @@ class ExecuteRequest {
   final String prompt;
   final String tenantId;
   final String taskType;
+  final String? conversationId;
 
   /// When true, requests memory-aware execution (server-side memory
   /// recall). Sent both as the top-level `use_memory` flag and inside
@@ -66,6 +68,7 @@ class ExecuteRequest {
     'task_type': taskType,
     'use_memory': useMemory,
     'needs_web': needsWeb,
+    if (conversationId != null) 'conversation_id': conversationId,
     'capabilities': {
       'memory': useMemory,
       'web': needsWeb,

@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 
 import '../../core/logs.dart';
 import '../../core/settings.dart';
+import '../../domain/services/client_telemetry_service.dart';
 import 'credentials_client.dart';
 
 /// Remote adapter for Asodya's unified authentication:
@@ -40,14 +41,16 @@ class AuthApiAdapter {
   /// once login completes.
   Uri buildSsoRedirectUri({required String returnOrigin}) {
     final appContext = <String, dynamic>{
-      'name': AppSettings.appIdentifier,
-      'description': 'Cortex chat',
-      'logo_image_url': '',
+      'name': 'Cortex',
+      'description':
+          'Intelligent neural workspace with autonomous multi-agent reasoning, deep research, and high-performance workflow execution.',
+      'logo_image_url':
+          'https://res.cloudinary.com/dhncdmb2t/image/upload/v1761907623/temp_logo_tw3grt.png',
       'url_app': returnOrigin,
       'two_fa_auth': false,
       'primary_color': '#0D0D0D',
-      'secondary_color': '#F7F7F7',
-      'tertiary_color': '#E2E2E2',
+      'secondary_color': '#1A1A1A',
+      'tertiary_color': '#FFFFFF',
       'quartary_color': null,
       'created_at': DateTime.now().toUtc().toIso8601String(),
     };
@@ -73,7 +76,7 @@ class AuthApiAdapter {
   /// return route) for a real session. On success `api_for_apps` sets the
   /// `sid` cookie via `Set-Cookie`; this method reports only success/failure.
   Future<bool> exchangeToken(String authExchangeToken) async {
-    final uri = Uri.parse('$apiForAppsBaseUrl/v1/exchange');
+    final uri = Uri.parse('$apiForAppsBaseUrl/apps/api/v1/exchange');
     try {
       final response = await _httpClient.post(
         uri,
@@ -90,12 +93,31 @@ class AuthApiAdapter {
         'Auth exchange failed with status ${response.statusCode}: '
         '${response.body}',
       );
+      ClientTelemetryService.instance.reportHandledError(
+        title: 'Auth Exchange Failed',
+        error: 'HTTP ${response.statusCode}',
+        errorCode: 'AUTH_EXCHANGE_${response.statusCode}',
+        route: AppSettings.authSyncPath,
+        details: {
+          'status_code': response.statusCode,
+          'response_body': response.body,
+          'exchange_uri': uri.toString(),
+        },
+      );
       return false;
     } catch (e, stackTrace) {
       AppLogger.error(
         'Auth exchange request failed',
         error: e,
         stackTrace: stackTrace,
+      );
+      ClientTelemetryService.instance.reportHandledError(
+        title: 'Auth Exchange Request Failed',
+        error: e,
+        stackTrace: stackTrace,
+        errorCode: 'AUTH_EXCHANGE_EXCEPTION',
+        route: AppSettings.authSyncPath,
+        details: {'exchange_uri': uri.toString()},
       );
       return false;
     }

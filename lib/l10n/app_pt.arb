@@ -2,10 +2,42 @@
   "@@locale": "pt",
   "appTitle": "Cortex",
 
-  "landingTagline": "Um lugar calmo e monocromático para pensar em voz alta, com a cor correndo solta logo atrás.",
-  "signInWithAsodya": "Entrar com a Asodya",
-  "continueAsGuest": "Continuar como convidado",
-  "guestModeNotice": "O modo convidado dispensa o login: é um atalho local, não uma conta Asodya.",
+  "landingTag": "MVP NEURAL EXPERIMENTAL",
+  "landingHeroTitle": "Inteligência sem distração.",
+  "landingHeroSubtitle": "Um espaço experimental em estágio inicial para raciocínio focado e chat persistente. Criado para reflexão profunda com total privacidade.",
+  "getStarted": "Começar",
+  "ssoAuthHint": "[ Logon Único • Requer Conta ]",
+  "aboutAsodya": "Sobre a Asodya",
+  "logIn": "Entrar",
+  "signUp": "Cadastrar",
+  "footerWorkspace": "ASODYA CORTEX // MVP EXPERIMENTAL (NÍVEL 0)",
+  "allRightsReserved": "© 2026 ASODYA. TODOS OS DIREITOS RESERVADOS.",
+
+  "card1Number": "01 / ARQUITETURA",
+  "card1Title": "Raciocínio Neural",
+  "card1Description": "Transmissão contextual contínua alimentada por modelos leves de Nível 0 e parâmetros de execução isolados.",
+
+  "card2Number": "02 / INTEGRIDADE",
+  "card2Title": "Privacidade por Padrão",
+  "card2Description": "A telemetria do sistema é estritamente isolada na infraestrutura. Seus prompts e conversas permanecem privados.",
+
+  "card3Number": "03 / CONTINUIDADE",
+  "card3Title": "Rascunhos Persistentes",
+  "card3Description": "Cache local de rascunhos e recuperação resiliente de sessão em múltiplos dispositivos via autenticação Asodya SSO.",
+
+  "newConversation": "Nova Conversa",
+  "history": "HISTÓRICO",
+  "clearAll": "Limpar Tudo",
+  "clearAllTitle": "Limpar Todas as Conversas",
+  "clearAllConfirmation": "Tem certeza de que deseja excluir permanentemente todas as conversas? Esta ação não pode ser desfeita.",
+  "cancel": "Cancelar",
+  "delete": "Excluir",
+
+  "webResearchPill": "Pesquisa Web",
+  "memoryEnginePill": "Motor de Memória",
+  "attachTooltip": "Anexar arquivos ou imagens",
+  "userBadgePro": "PRO // ASODYA AUTH",
+  "tier0Badge": "NÍVEL 0 // CORTEX-T0",
 
   "collapseSidebar": "Recolher barra lateral",
   "expandSidebar": "Expandir barra lateral",
@@ -14,7 +46,7 @@
 
   "tierZeroLabel": "Nível 0 - Grátis e rápido",
 
-  "messageHint": "Envie uma mensagem para o Cortex...",
+  "messageHint": "Envie uma mensagem para o Cortex (Nível 0)...",
   "lockedFeatureNotice": "{tier}: este recurso é liberado em um nível superior.",
   "attachFileLocked": "Anexar arquivo (bloqueado no {tier})",
   "webBrowsingLocked": "Navegação na web (bloqueada no {tier})",
@@ -34,19 +66,16 @@
   "removeAttachment": "Remover anexo",
   "documentAttachmentBackendGap": "A ingestão de documentos ainda não é suportada pelo backend: hoje só imagens são aceitas.",
 
-  "voiceStartRecording": "Iniciar gravação de voz",
-  "voiceStopRecording": "Parar gravação e inserir transcrição",
+  "voiceStartRecording": "Gravar uma mensagem de voz",
+  "voiceCancelRecording": "Cancelar gravação",
+  "voiceSendRecording": "Enviar mensagem de voz",
   "micPermissionDenied": "O acesso ao microfone está indisponível ou foi negado.",
+  "voiceMessageTooShort": "A gravação foi curta demais para ser enviada.",
 
   "incognitoModeTitle": "Chat incógnito",
   "incognitoModeSubtitle": "Sessão efêmera: nenhum histórico é salvo e a memória fica explicitamente desligada",
   "newIncognitoChat": "Iniciar chat incógnito",
 
-  "liveLogsTooltip": "Logs ao vivo (somente desenvolvimento local)",
-  "liveLogsTitle": "Logs ao vivo do Cortex",
-  "liveLogsDescription": "Somente para desenvolvimento local: conecta diretamente ao /logs/stream do cortex_api, contornando o proxy do api_for_apps (que não suporta WebSocket).",
-  "liveLogsConnectionError": "Não foi possível conectar: {error}",
-  "liveLogsWaiting": "Aguardando linhas de log...",
 
   "couldNotSendMessage": "Não foi possível enviar a mensagem: {error}",
 
@@ -67,5 +96,10 @@
   "languageLabel": "Idioma",
   "languageEnglish": "Inglês",
   "languagePortuguese": "Português",
-  "languageThai": "Tailandês"
+  "languageThai": "Tailandês",
+  "improveInputLabel": "Melhorar minha entrada",
+  "improveInputSubtitle": "Reescreve e clarifica prompts automaticamente com modelo de raciocínio local antes da geração",
+  "incognitoBadge": "ANÔNIMO",
+  "startIncognito": "Iniciar conversa anônima",
+  "exitIncognito": "Sair do anônimo"
 }

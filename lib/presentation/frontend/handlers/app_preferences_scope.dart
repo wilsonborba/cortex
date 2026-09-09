@@ -21,6 +21,7 @@ class AppPreferencesController extends ChangeNotifier {
 
   ThemeMode _themeMode = ThemeMode.system;
   Locale? _locale;
+  bool _improveInput = true;
 
   ThemeMode get themeMode => _themeMode;
 
@@ -28,12 +29,23 @@ class AppPreferencesController extends ChangeNotifier {
   /// `localeResolutionCallback`/`supportedLocales` in `MaterialApp`.
   Locale? get locale => _locale;
 
+  bool get improveInput => _improveInput;
+
   Future<void> _load() async {
     final mode = await _service.readThemeMode();
     final localeCode = await _service.readLocaleCode();
+    final improveInput = await _service.readImproveInput();
     _themeMode = mode;
     _locale = localeCode == null ? null : Locale(localeCode);
+    _improveInput = improveInput;
     notifyListeners();
+  }
+
+  Future<void> setImproveInput(bool value) async {
+    if (_improveInput == value) return;
+    _improveInput = value;
+    notifyListeners();
+    await _service.writeImproveInput(value);
   }
 
   Future<void> setThemeMode(ThemeMode mode) async {

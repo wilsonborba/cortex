@@ -14,9 +14,6 @@ import 'session_service.dart';
 /// 3. [tryConsumeReturnUri] (called once at startup) recognizes that route,
 ///    redeems the token via `/v1/exchange`, and persists the resulting
 ///    session flag locally.
-///
-/// [continueAsGuest] is the other, much simpler path: a purely client-side
-/// flag with no server round trip at all (see [SessionService] doc comment).
 class AuthService {
   AuthService(this._adapter, this._sessionService);
 
@@ -37,15 +34,6 @@ class AuthService {
       webOnlyWindowName: '_self',
       mode: LaunchMode.platformDefault,
     );
-  }
-
-  /// Client-side-only guest mode: no `auth_apps`/`api_for_apps` call is made.
-  /// Neither service has a concept of an anonymous session, so this only
-  /// sets a local flag that [SessionGate] treats as "may enter chat". Any
-  /// backend request made afterward relies on the `api_for_apps` public,
-  /// login-free `/cortex/v1/*` proxy (issue #3), not on a real session.
-  Future<void> continueAsGuest() async {
-    await _sessionService.markGuest();
   }
 
   /// If [uri] is the `/sync` return route with an `auth_exchange_token`,

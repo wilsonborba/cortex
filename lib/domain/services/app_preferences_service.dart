@@ -15,12 +15,23 @@ class AppPreferencesService {
 
   static const String _themeModeKey = 'app_theme_mode';
   static const String _localeKey = 'app_locale';
+  static const String _improveInputKey = 'app_improve_input';
 
   /// Locale codes this app ships translations for, in the order they should
   /// be offered in the settings UI. Kept here (rather than only in
   /// `AppLocalizations.supportedLocales`) so the domain layer does not need
   /// to depend on the generated localizations package.
   static const List<String> supportedLocaleCodes = ['en', 'pt', 'th'];
+
+  Future<bool> readImproveInput() async {
+    final raw = await _storage.readString(_improveInputKey);
+    if (raw == null) return true; // default true matching backend schema
+    return raw == 'true';
+  }
+
+  Future<void> writeImproveInput(bool value) async {
+    await _storage.writeString(_improveInputKey, value.toString());
+  }
 
   Future<ThemeMode> readThemeMode() async {
     final raw = await _storage.readString(_themeModeKey);

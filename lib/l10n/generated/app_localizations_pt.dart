@@ -12,18 +12,103 @@ class AppLocalizationsPt extends AppLocalizations {
   String get appTitle => 'Cortex';
 
   @override
-  String get landingTagline =>
-      'Um lugar calmo e monocromático para pensar em voz alta, com a cor correndo solta logo atrás.';
+  String get landingTag => 'MVP NEURAL EXPERIMENTAL';
 
   @override
-  String get signInWithAsodya => 'Entrar com a Asodya';
+  String get landingHeroTitle => 'Inteligência sem distração.';
 
   @override
-  String get continueAsGuest => 'Continuar como convidado';
+  String get landingHeroSubtitle =>
+      'Um espaço experimental em estágio inicial para raciocínio focado e chat persistente. Criado para reflexão profunda com total privacidade.';
 
   @override
-  String get guestModeNotice =>
-      'O modo convidado dispensa o login: é um atalho local, não uma conta Asodya.';
+  String get getStarted => 'Começar';
+
+  @override
+  String get ssoAuthHint => '[ Logon Único • Requer Conta ]';
+
+  @override
+  String get aboutAsodya => 'Sobre a Asodya';
+
+  @override
+  String get logIn => 'Entrar';
+
+  @override
+  String get signUp => 'Cadastrar';
+
+  @override
+  String get footerWorkspace => 'ASODYA CORTEX // MVP EXPERIMENTAL (NÍVEL 0)';
+
+  @override
+  String get allRightsReserved =>
+      '© 2026 ASODYA. TODOS OS DIREITOS RESERVADOS.';
+
+  @override
+  String get card1Number => '01 / ARQUITETURA';
+
+  @override
+  String get card1Title => 'Raciocínio Neural';
+
+  @override
+  String get card1Description =>
+      'Transmissão contextual contínua alimentada por modelos leves de Nível 0 e parâmetros de execução isolados.';
+
+  @override
+  String get card2Number => '02 / INTEGRIDADE';
+
+  @override
+  String get card2Title => 'Privacidade por Padrão';
+
+  @override
+  String get card2Description =>
+      'A telemetria do sistema é estritamente isolada na infraestrutura. Seus prompts e conversas permanecem privados.';
+
+  @override
+  String get card3Number => '03 / CONTINUIDADE';
+
+  @override
+  String get card3Title => 'Rascunhos Persistentes';
+
+  @override
+  String get card3Description =>
+      'Cache local de rascunhos e recuperação resiliente de sessão em múltiplos dispositivos via autenticação Asodya SSO.';
+
+  @override
+  String get newConversation => 'Nova Conversa';
+
+  @override
+  String get history => 'HISTÓRICO';
+
+  @override
+  String get clearAll => 'Limpar Tudo';
+
+  @override
+  String get clearAllTitle => 'Limpar Todas as Conversas';
+
+  @override
+  String get clearAllConfirmation =>
+      'Tem certeza de que deseja excluir permanentemente todas as conversas? Esta ação não pode ser desfeita.';
+
+  @override
+  String get cancel => 'Cancelar';
+
+  @override
+  String get delete => 'Excluir';
+
+  @override
+  String get webResearchPill => 'Pesquisa Web';
+
+  @override
+  String get memoryEnginePill => 'Motor de Memória';
+
+  @override
+  String get attachTooltip => 'Anexar arquivos ou imagens';
+
+  @override
+  String get userBadgePro => 'PRO // ASODYA AUTH';
+
+  @override
+  String get tier0Badge => 'NÍVEL 0 // CORTEX-T0';
 
   @override
   String get collapseSidebar => 'Recolher barra lateral';
@@ -41,7 +126,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get tierZeroLabel => 'Nível 0 - Grátis e rápido';
 
   @override
-  String get messageHint => 'Envie uma mensagem para o Cortex...';
+  String get messageHint => 'Envie uma mensagem para o Cortex (Nível 0)...';
 
   @override
   String lockedFeatureNotice(String tier) {
@@ -110,14 +195,21 @@ class AppLocalizationsPt extends AppLocalizations {
       'A ingestão de documentos ainda não é suportada pelo backend: hoje só imagens são aceitas.';
 
   @override
-  String get voiceStartRecording => 'Iniciar gravação de voz';
+  String get voiceStartRecording => 'Gravar uma mensagem de voz';
 
   @override
-  String get voiceStopRecording => 'Parar gravação e inserir transcrição';
+  String get voiceCancelRecording => 'Cancelar gravação';
+
+  @override
+  String get voiceSendRecording => 'Enviar mensagem de voz';
 
   @override
   String get micPermissionDenied =>
       'O acesso ao microfone está indisponível ou foi negado.';
+
+  @override
+  String get voiceMessageTooShort =>
+      'A gravação foi curta demais para ser enviada.';
 
   @override
   String get incognitoModeTitle => 'Chat incógnito';
@@ -128,24 +220,6 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get newIncognitoChat => 'Iniciar chat incógnito';
-
-  @override
-  String get liveLogsTooltip => 'Logs ao vivo (somente desenvolvimento local)';
-
-  @override
-  String get liveLogsTitle => 'Logs ao vivo do Cortex';
-
-  @override
-  String get liveLogsDescription =>
-      'Somente para desenvolvimento local: conecta diretamente ao /logs/stream do cortex_api, contornando o proxy do api_for_apps (que não suporta WebSocket).';
-
-  @override
-  String liveLogsConnectionError(String error) {
-    return 'Não foi possível conectar: $error';
-  }
-
-  @override
-  String get liveLogsWaiting => 'Aguardando linhas de log...';
 
   @override
   String couldNotSendMessage(String error) {
@@ -197,4 +271,20 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get languageThai => 'Tailandês';
+
+  @override
+  String get improveInputLabel => 'Melhorar minha entrada';
+
+  @override
+  String get improveInputSubtitle =>
+      'Reescreve e clarifica prompts automaticamente com modelo de raciocínio local antes da geração';
+
+  @override
+  String get incognitoBadge => 'ANÔNIMO';
+
+  @override
+  String get startIncognito => 'Iniciar conversa anônima';
+
+  @override
+  String get exitIncognito => 'Sair do anônimo';
 }

@@ -5,52 +5,24 @@
 class AppSettings {
   AppSettings._();
 
-  /// Flips structured logging verbosity. See `lib/core/logs.dart`.
-  static const bool isDevelopment = true;
+  /// Flips structured logging verbosity and local LAN endpoint routing.
+  /// Defaults to false (production / live Asodya cloud endpoints).
+  static const bool isDevelopment = bool.fromEnvironment('DEVELOPMENT_MODE', defaultValue: false);
 
-  /// Base URL for the Cortex backend facade itself (cortex_api). The app
-  /// never calls this directly for chat/execute traffic (see
-  /// [apiForAppsBaseUrl] and [cortexProxyPrefix] below): every chat request
-  /// must go through the `api_for_apps` public proxy, which force-locks
-  /// model/tier to Tier 0 server-side (api_for_apps issue #19).
-  ///
-  /// This value is only used for [cortexLogsWebSocketUrl]: api_for_apps'
-  /// proxy is a plain HTTP forwarder (`httpx.AsyncClient` request/response),
-  /// it has no WebSocket upgrade support, so live log streaming cannot be
-  /// carried through it. Connecting straight to cortex_api's websocket is a
-  /// documented local-dev-only shortcut, gated by [enableLiveLogStreaming].
-  static const String cortexApiBaseUrl = 'http://127.0.0.1:8003';
+  /// Build / deployment timestamp displayed in footers and info views
+  static const String buildVersion = String.fromEnvironment(
+    'BUILD_TIMESTAMP',
+    defaultValue: '2026-09-08 23:50 +07',
+  );
 
-  /// Prefix `api_for_apps` mounts its public Cortex proxy under (see its
-  /// `src/presentation/routes/cortex_route.py`, `cortex_proxy_v1 =
-  /// APIRouter(prefix="/cortex/v1")`). Every path segment after this prefix
-  /// is forwarded as-is to cortex_api, so `POST` to
-  /// `$apiForAppsBaseUrl$cortexProxyPrefix/v1/chat/completions` reaches
-  /// cortex_api's own `POST /v1/chat/completions` (the "double v1" is real,
-  /// not a typo: one `/v1` is the proxy mount, the other is cortex_api's own
-  /// OpenAI-facade router prefix), and `$cortexProxyPrefix/execute` reaches
-  /// cortex_api's native `POST /execute`.
-  static const String cortexProxyPrefix = '/cortex/v1';
+  /// Prefix `api_for_apps` mounts its apps proxy under (/apps/cortex/v1).
+  static const String cortexProxyPrefix = '/apps/cortex/v1';
 
   /// Virtual model name that is always forced Tier 0. The proxy rewrites
   /// `model` to this value server-side regardless of what is sent (see
   /// `sanitize_cortex_payload` in api_for_apps), so the client sends it only
   /// to be explicit and never offers any other model in its UI.
   static const String cortexTier0Model = 'cortex-t0';
-
-  /// Local-dev-only flag: when true, [cortexLogsWebSocketUrl] is reachable
-  /// and the debug telemetry panel may attempt to connect. api_for_apps'
-  /// proxy cannot carry a WebSocket upgrade (see [cortexApiBaseUrl]'s doc),
-  /// so this always points straight at cortex_api and must stay off (or the
-  /// panel must stay hidden) outside local development.
-  static const bool enableLiveLogStreaming = isDevelopment;
-
-  /// Direct WebSocket URL for cortex_api's `/logs/stream` (see its
-  /// `lib/presentation/api/routes/logs_stream.py`). Bypasses api_for_apps
-  /// entirely: this is a local-dev-only shortcut, not a production path, see
-  /// [enableLiveLogStreaming].
-  static String get cortexLogsWebSocketUrl =>
-      '${cortexApiBaseUrl.replaceFirst('http', 'ws')}/logs/stream';
 
   /// Default access tier for a freshly opened session. Tier 0 is the only
   /// tier implemented so far: free and fast models, no premium features.
@@ -74,9 +46,7 @@ class AppSettings {
 
   /// Base URL of `api_for_apps`, the gateway that exchanges a short-lived
   /// `auth_exchange_token` for a real session (`POST /v1/exchange`, sets the
-  /// `sid` cookie). Distinct from [cortexApiBaseUrl]: that one is the direct
-  /// Cortex model-serving facade, this one is Asodya's shared auth/session
-  /// gateway.
+  /// `sid` cookie).
   static const String apiForAppsBaseUrl = isDevelopment
       ? 'http://192.168.1.103:8101'
       : 'https://api.asodya.com';
@@ -104,10 +74,9 @@ class AppSettings {
   static const String appContextFernetKey =
       'mEt5jdm9aTbUYnjhQM_tY_CTQL-JvXe0u9VdKEM2KmY=';
 
-  /// Local storage keys used by the session/guest flags (see
-  /// `SessionService` and `AuthService`).
+  /// Local storage key used by the authenticated session flag (see
+  /// `SessionService`).
   static const String sessionActiveStorageKey = 'session_active';
-  static const String guestModeStorageKey = 'guest_mode';
 
   // --- X-Asodya-App-Proof attestation (api_for_apps issue #19, cortex
   // issue #8) ---
@@ -131,6 +100,8 @@ class AppSettings {
     'CORTEX_PROOF_SECRET',
     defaultValue: '',
   );
+
+
 
   /// App identifier included in the attestation HMAC message. Must match
   /// api_for_apps' `CORTEX_APP_ID` setting for this deployment, which

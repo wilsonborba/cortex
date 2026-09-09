@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 
 import '../../../domain/models/attachment.dart';
 import '../../../domain/models/conversation.dart';
+import '../../../domain/services/app_preferences_service.dart';
 import '../../../domain/services/chat_service.dart';
 import '../../../domain/services/draft_store_service.dart';
 
@@ -21,26 +22,31 @@ import '../../../domain/services/draft_store_service.dart';
 ///   on the outgoing request, on whichever route is used;
 /// - `pendingAttachments` (issue #6): files picked from the prompt dock
 ///   that will be sent with the next [submit] and cleared afterwards;
-/// - incognito mode (issue #6): [startIncognitoConversation] swaps
+/// - incognito mode (issue #6, #18): [startIncognitoConversation] swaps
 ///   [conversation] for a brand-new, never-persisted one; while
 ///   `conversation.isEphemeral` is true, [submit] routes through
 ///   [ChatService.sendEphemeralMessage], which forces memory off and
-///   `capabilities.temporary = true` unconditionally.
+///   `capabilities.temporary = true` unconditionally; [exitIncognitoConversation]
+///   swaps back to a persisted conversation.
 class ChatFlowHandler extends ChangeNotifier {
   ChatFlowHandler(
     this._chatService,
     Conversation initialConversation, {
     DraftStoreService? draftStore,
+    AppPreferencesService? preferencesService,
   }) : conversation = initialConversation,
-       _draftStore = draftStore ?? const DraftStoreService() {
+       _draftStore = draftStore ?? const DraftStoreService(),
+       _preferencesService = preferencesService {
     _loadDraftForCurrentConversation();
   }
 
   final ChatService _chatService;
   final DraftStoreService _draftStore;
+  final AppPreferencesService? _preferencesService;
   Timer? _draftSaveDebounce;
 
   Conversation conversation;
+  Conversation? _previousPersistedConversation;
   bool isBusy = false;
   bool useMemory = false;
   bool needsWeb = false;
@@ -124,6 +130,9 @@ class ChatFlowHandler extends ChangeNotifier {
   /// `ConversationHandler`'s sidebar list, an ephemeral conversation is
   /// never part of it.
   void startIncognitoConversation() {
+    if (!conversation.isEphemeral) {
+      _previousPersistedConversation = conversation;
+    }
     conversation = _chatService.newEphemeralConversation(
       title: 'Incognito chat',
     );
@@ -135,8 +144,19 @@ class ChatFlowHandler extends ChangeNotifier {
     _loadDraftForCurrentConversation();
   }
 
+  /// Exits incognito/temporary mode (issue #18), returning to the previous
+  /// active conversation (or [fallback] if none was remembered).
+  void exitIncognitoConversation({Conversation? fallback}) {
+    if (!conversation.isEphemeral) return;
+    final target = _previousPersistedConversation ?? fallback ?? _chatService.listConversations().first;
+    _previousPersistedConversation = null;
+    switchConversation(target);
+  }
+
   Future<void> submit(String text) async {
-    if (text.trim().isEmpty || isBusy) return;
+    // A voice message (issue #11) sends with empty text and just the
+    // recorded attachment, so this only bails when there's neither.
+    if ((text.trim().isEmpty && pendingAttachments.isEmpty) || isBusy) return;
     isBusy = true;
     error = null;
     final attachments = pendingAttachments;
@@ -149,12 +169,17 @@ class ChatFlowHandler extends ChangeNotifier {
     unawaited(_draftStore.clearDraft(sentConversationId));
     notifyListeners();
 
+    final normalizePrompt = _preferencesService == null
+        ? true
+        : await _preferencesService!.readImproveInput();
+
     try {
       if (conversation.isEphemeral) {
         final result = await _chatService.sendEphemeralMessage(
           conversation: conversation,
           content: text,
           needsWeb: needsWeb,
+          normalizePrompt: normalizePrompt,
           attachments: attachments,
           onUpdate: (updated) {
             // The user may have switched to a different conversation while
@@ -172,6 +197,7 @@ class ChatFlowHandler extends ChangeNotifier {
           content: text,
           useMemory: useMemory,
           needsWeb: needsWeb,
+          normalizePrompt: normalizePrompt,
           attachments: attachments,
           onUpdate: (updated) {
             if (conversation.id != sentConversationId) return;

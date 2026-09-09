@@ -52,13 +52,6 @@ class _SessionGateState extends State<SessionGate> {
     setState(() => _status = status);
   }
 
-  void _onGuestContinue() {
-    _authService.continueAsGuest().then((_) {
-      if (!mounted) return;
-      setState(() => _status = SessionStatus.guest);
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     final status = _status;
@@ -72,7 +65,6 @@ class _SessionGateState extends State<SessionGate> {
 
     return LandingScreen(
       onSignIn: _authService.signInWithSso,
-      onContinueAsGuest: _onGuestContinue,
     );
   }
 }

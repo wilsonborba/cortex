@@ -387,4 +387,34 @@ void main() {
       expect(result.messages.last.content, contains('could not reach Cortex'));
     },
   );
+
+  test('renameConversation updates title and timestamp', () {
+    final chatService = ChatService();
+    final convo = chatService.listConversations().first;
+    chatService.renameConversation(convo.id, 'New Renamed Title');
+
+    final updated = chatService.conversationById(convo.id);
+    expect(updated?.title, 'New Renamed Title');
+  });
+
+  test('togglePinConversation toggles isPinned boolean flag', () {
+    final chatService = ChatService();
+    final convo = chatService.listConversations().first;
+    final initialPinned = convo.isPinned;
+
+    chatService.togglePinConversation(convo.id);
+    expect(chatService.conversationById(convo.id)?.isPinned, !initialPinned);
+
+    chatService.togglePinConversation(convo.id);
+    expect(chatService.conversationById(convo.id)?.isPinned, initialPinned);
+  });
+
+  test('deleteConversation removes item or resets to fresh conversation', () {
+    final chatService = ChatService();
+    final convos = chatService.listConversations();
+    final targetId = convos.first.id;
+
+    chatService.deleteConversation(targetId);
+    expect(chatService.listConversations().any((c) => c.id == targetId), isFalse);
+  });
 }

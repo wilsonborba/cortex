@@ -12,18 +12,102 @@ class AppLocalizationsTh extends AppLocalizations {
   String get appTitle => 'Cortex';
 
   @override
-  String get landingTagline =>
-      'พื้นที่สงบสีขาวดำสำหรับคิดออกเสียง โดยมีสีสันพลิ้วไหวอยู่เบื้องหลัง';
+  String get landingTag => 'MVP ระบบประสาทขั้นทดลอง';
 
   @override
-  String get signInWithAsodya => 'เข้าสู่ระบบด้วย Asodya';
+  String get landingHeroTitle => 'ความชาญฉลาดที่ไร้สิ่งรบกวน';
 
   @override
-  String get continueAsGuest => 'ดำเนินการต่อในฐานะผู้เยี่ยมชม';
+  String get landingHeroSubtitle =>
+      'พื้นที่ทำงานขั้นทดลองในระยะเริ่มต้นสำหรับการให้เหตุผลและการสนทนาแบบถาวร สร้างขึ้นเพื่อการโฟกัสลึกพร้อมการปกป้องความเป็นส่วนตัว';
 
   @override
-  String get guestModeNotice =>
-      'โหมดผู้เยี่ยมชมข้ามการเข้าสู่ระบบทั้งหมด เป็นเพียงทางลัดในเครื่อง ไม่ใช่บัญชี Asodya';
+  String get getStarted => 'เริ่มต้นใช้งาน';
+
+  @override
+  String get ssoAuthHint => '[ ซิงเกิลไซน์ออน • ต้องมีบัญชี ]';
+
+  @override
+  String get aboutAsodya => 'เกี่ยวกับ Asodya';
+
+  @override
+  String get logIn => 'เข้าสู่ระบบ';
+
+  @override
+  String get signUp => 'ลงทะเบียน';
+
+  @override
+  String get footerWorkspace => 'ASODYA CORTEX // MVP ขั้นทดลอง (ระดับ 0)';
+
+  @override
+  String get allRightsReserved => '© 2026 ASODYA. สงวนลิขสิทธิ์ทั้งหมด';
+
+  @override
+  String get card1Number => '01 / สถาปัตยกรรม';
+
+  @override
+  String get card1Title => 'การประมวลผลเชิงเหตุผล';
+
+  @override
+  String get card1Description =>
+      'การสตรีมข้อความตอบกลับตามบริบทแบบเรียลไทม์ ขับเคลื่อนโดยโมเดลระดับ 0 น้ำหนักเบาและสภาพแวดล้อมที่แยกส่วน';
+
+  @override
+  String get card2Number => '02 / ความเป็นส่วนตัว';
+
+  @override
+  String get card2Title => 'ความเป็นส่วนตัวเป็นหลัก';
+
+  @override
+  String get card2Description =>
+      'ข้อมูลระบบได้รับการแยกส่วนอย่างเคร่งครัดที่ระดับโครงสร้างพื้นฐาน คำสั่งและการสนทนาของคุณจะคงความเป็นส่วนตัวอย่างสมบูรณ์';
+
+  @override
+  String get card3Number => '03 / ความต่อเนื่อง';
+
+  @override
+  String get card3Title => 'ร่างข้อความถาวร';
+
+  @override
+  String get card3Description =>
+      'การแคชข้อความร่างในเครื่องและการกู้คืนเซสชันในทุกอุปกรณ์ผ่านระบบยืนยันตัวตน Asodya SSO';
+
+  @override
+  String get newConversation => 'การสนทนาใหม่';
+
+  @override
+  String get history => 'ประวัติการใช้งาน';
+
+  @override
+  String get clearAll => 'ล้างทั้งหมด';
+
+  @override
+  String get clearAllTitle => 'ล้างการสนทนาทั้งหมด';
+
+  @override
+  String get clearAllConfirmation =>
+      'คุณแน่ใจหรือไม่ว่าต้องการลบการสนทนาทั้งหมดอย่างถาวร? การดำเนินการนี้ไม่สามารถยกเลิกได้';
+
+  @override
+  String get cancel => 'ยกเลิก';
+
+  @override
+  String get delete => 'ลบ';
+
+  @override
+  String get webResearchPill => 'ค้นหาเว็บ';
+
+  @override
+  String get memoryEnginePill => 'ระบบความจำ';
+
+  @override
+  String get attachTooltip => 'แนบไฟล์หรือรูปภาพ';
+
+  @override
+  String get userBadgePro => 'PRO // ASODYA AUTH';
+
+  @override
+  String get tier0Badge => 'ระดับ 0 // CORTEX-T0';
 
   @override
   String get collapseSidebar => 'ย่อแถบด้านข้าง';
@@ -41,7 +125,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get tierZeroLabel => 'ระดับ 0 - ฟรีและรวดเร็ว';
 
   @override
-  String get messageHint => 'ส่งข้อความถึง Cortex...';
+  String get messageHint => 'ส่งข้อความถึง Cortex (ระดับ 0)...';
 
   @override
   String lockedFeatureNotice(String tier) {
@@ -110,14 +194,20 @@ class AppLocalizationsTh extends AppLocalizations {
       'ระบบหลังบ้านยังไม่รองรับการนำเข้าเอกสาร วันนี้รองรับเฉพาะรูปภาพเท่านั้น';
 
   @override
-  String get voiceStartRecording => 'เริ่มบันทึกเสียง';
+  String get voiceStartRecording => 'บันทึกข้อความเสียง';
 
   @override
-  String get voiceStopRecording => 'หยุดบันทึกและแทรกข้อความที่ถอดเสียง';
+  String get voiceCancelRecording => 'ยกเลิกการบันทึก';
+
+  @override
+  String get voiceSendRecording => 'ส่งข้อความเสียง';
 
   @override
   String get micPermissionDenied =>
       'ไม่สามารถใช้งานไมโครโฟนได้ หรือการเข้าถึงถูกปฏิเสธ';
+
+  @override
+  String get voiceMessageTooShort => 'การบันทึกสั้นเกินไปที่จะส่ง';
 
   @override
   String get incognitoModeTitle => 'แชทไม่ระบุตัวตน';
@@ -128,24 +218,6 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get newIncognitoChat => 'เริ่มแชทไม่ระบุตัวตน';
-
-  @override
-  String get liveLogsTooltip => 'บันทึกสด (สำหรับการพัฒนาในเครื่องเท่านั้น)';
-
-  @override
-  String get liveLogsTitle => 'บันทึกสดของ Cortex';
-
-  @override
-  String get liveLogsDescription =>
-      'สำหรับการพัฒนาในเครื่องเท่านั้น: เชื่อมต่อโดยตรงกับ /logs/stream ของ cortex_api ซึ่งข้ามพร็อกซีของ api_for_apps (ที่ไม่รองรับ WebSocket)';
-
-  @override
-  String liveLogsConnectionError(String error) {
-    return 'ไม่สามารถเชื่อมต่อได้: $error';
-  }
-
-  @override
-  String get liveLogsWaiting => 'กำลังรอบรรทัดบันทึก...';
 
   @override
   String couldNotSendMessage(String error) {
@@ -197,4 +269,20 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get languageThai => 'ไทย';
+
+  @override
+  String get improveInputLabel => 'ปรับปรุงข้อความนำเข้า';
+
+  @override
+  String get improveInputSubtitle =>
+      'เขียนและปรับความชัดเจนของคำสั่งโดยอัตโนมัติด้วยโมเดลให้เหตุผลในเครื่องก่อนเริ่มสร้างคำตอบ';
+
+  @override
+  String get incognitoBadge => 'ไม่ระบุตัวตน';
+
+  @override
+  String get startIncognito => 'เริ่มการสนทนาแบบไม่ระบุตัวตน';
+
+  @override
+  String get exitIncognito => 'ออกจากการสนทนาไม่ระบุตัวตน';
 }

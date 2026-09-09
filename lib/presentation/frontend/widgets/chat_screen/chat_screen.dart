@@ -65,6 +65,16 @@ class _ChatScreenState extends State<ChatScreen> {
     setState(() {});
   }
 
+  /// Sends a finished voice recording as its own message (issue #11: an
+  /// actual playable voice message, not speech-to-text dictation), with no
+  /// accompanying text.
+  Future<void> _onSendVoiceMessage(ChatAttachment attachment) async {
+    _flowHandler.addPendingAttachment(attachment);
+    await _flowHandler.submit('');
+    _conversationHandler.refresh();
+    setState(() {});
+  }
+
   Future<void> _onContinueGeneration(String replyMessageId) async {
     await _flowHandler.continueGeneration(replyMessageId);
     _conversationHandler.refresh();
@@ -102,8 +112,18 @@ class _ChatScreenState extends State<ChatScreen> {
           onAddAttachments: _flowHandler.addPendingAttachments,
           onRemoveAttachment: _flowHandler.removePendingAttachment,
           onStartIncognitoChat: _onStartIncognitoChat,
+          onExitIncognitoChat: () {
+            _flowHandler.exitIncognitoConversation();
+            setState(() {});
+          },
           onSelectConversation: _onSelectConversation,
+          onNewConversation: () => _conversationHandler.createNew(),
+          onClearAllConversations: () => _conversationHandler.clearAll(),
+          onDeleteConversation: (id) => _conversationHandler.delete(id),
+          onRenameConversation: (id, title) => _conversationHandler.rename(id, title),
+          onTogglePinConversation: (id) => _conversationHandler.togglePin(id),
           onSubmit: _onSubmit,
+          onSendVoiceMessage: _onSendVoiceMessage,
           draftText: _flowHandler.draftText,
           onDraftChanged: _flowHandler.updateDraft,
           onContinueGeneration: _onContinueGeneration,
@@ -131,8 +151,15 @@ class ChatScreenProps {
     required this.onAddAttachments,
     required this.onRemoveAttachment,
     required this.onStartIncognitoChat,
+    required this.onExitIncognitoChat,
     required this.onSelectConversation,
+    required this.onNewConversation,
+    required this.onClearAllConversations,
+    required this.onDeleteConversation,
+    required this.onRenameConversation,
+    required this.onTogglePinConversation,
     required this.onSubmit,
+    required this.onSendVoiceMessage,
     required this.draftText,
     required this.onDraftChanged,
     required this.onContinueGeneration,
@@ -142,6 +169,11 @@ class ChatScreenProps {
   final List<Conversation> conversations;
   final Conversation selectedConversation;
   final bool isBusy;
+  final VoidCallback onNewConversation;
+  final VoidCallback onClearAllConversations;
+  final ValueChanged<String> onDeleteConversation;
+  final void Function(String id, String newTitle) onRenameConversation;
+  final ValueChanged<String> onTogglePinConversation;
 
   /// Whether the next [onSubmit] should route through cortex_api's native
   /// `/execute` with `capabilities.memory = true` instead of the streamed
@@ -163,8 +195,15 @@ class ChatScreenProps {
   /// Starts a brand-new incognito/temporary conversation (issue #6): no
   /// persisted history, memory explicitly off.
   final VoidCallback onStartIncognitoChat;
+
+  /// Exits the current incognito/temporary conversation and restores the
+  /// previously active conversation.
+  final VoidCallback onExitIncognitoChat;
   final ValueChanged<String> onSelectConversation;
   final ValueChanged<String> onSubmit;
+
+  /// Sends a finished voice recording (issue #11) as its own message.
+  final ValueChanged<ChatAttachment> onSendVoiceMessage;
 
   /// Current in-progress, unsent draft for [selectedConversation] (issue
   /// #7), restored from `DraftStore` and kept in sync as the user types.

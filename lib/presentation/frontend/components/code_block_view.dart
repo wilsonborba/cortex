@@ -38,58 +38,115 @@ class _CodeBlockViewState extends State<CodeBlockView> {
     final hasLanguage = widget.language != null && widget.language!.isNotEmpty;
     final label = hasLanguage ? widget.language! : l10n.codeBlockPlainLabel;
 
+    final lineCount = widget.code.split('\n').length;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final containerBg = isDark ? const Color(0xFF101014) : const Color(0xFFF3F3F6);
+    final headerBg = isDark ? const Color(0xFF16161C) : const Color(0xFFE9E9EE);
+
     return Container(
       width: double.infinity,
-      margin: const EdgeInsets.symmetric(vertical: 6),
+      margin: const EdgeInsets.symmetric(vertical: 8),
       decoration: BoxDecoration(
-        color: scheme.onSurface.withValues(alpha: 0.05),
+        color: containerBg,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: scheme.onSurface.withValues(alpha: 0.10)),
+        border: Border.all(
+          color: scheme.outline.withValues(alpha: isDark ? 0.28 : 0.4),
+        ),
       ),
       clipBehavior: Clip.antiAlias,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-            color: scheme.onSurface.withValues(alpha: 0.06),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            decoration: BoxDecoration(
+              color: headerBg,
+              border: Border(
+                bottom: BorderSide(
+                  color: scheme.outline.withValues(alpha: isDark ? 0.2 : 0.3),
+                ),
+              ),
+            ),
             child: Row(
               children: [
-                Expanded(
-                  child: Text(
-                    label,
-                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                      color: scheme.onSurface.withValues(alpha: 0.6),
-                      fontFamily: 'monospace',
-                    ),
+                Container(
+                  width: 7,
+                  height: 7,
+                  decoration: BoxDecoration(
+                    color: scheme.onSurface.withValues(alpha: 0.25),
+                    shape: BoxShape.circle,
                   ),
                 ),
-                TextButton.icon(
-                  onPressed: _copy,
-                  icon: Icon(
-                    _copied ? Icons.check : Icons.copy_all_outlined,
-                    size: 14,
+                const SizedBox(width: 4),
+                Container(
+                  width: 7,
+                  height: 7,
+                  decoration: BoxDecoration(
+                    color: scheme.onSurface.withValues(alpha: 0.25),
+                    shape: BoxShape.circle,
                   ),
-                  label: Text(
-                    _copied
-                        ? l10n.codeBlockCopiedLabel
-                        : l10n.codeBlockCopyLabel,
-                    style: const TextStyle(fontSize: 12),
+                ),
+                const SizedBox(width: 4),
+                Container(
+                  width: 7,
+                  height: 7,
+                  decoration: BoxDecoration(
+                    color: scheme.onSurface.withValues(alpha: 0.25),
+                    shape: BoxShape.circle,
                   ),
-                  style: TextButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    minimumSize: const Size(0, 28),
-                    visualDensity: VisualDensity.compact,
-                    foregroundColor: _copied
-                        ? Colors.green
-                        : scheme.onSurface.withValues(alpha: 0.7),
+                ),
+                const SizedBox(width: 10),
+                Text(
+                  label.toUpperCase(),
+                  style: TextStyle(
+                    color: scheme.onSurface.withValues(alpha: 0.8),
+                    fontFamily: 'monospace',
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 0.6,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  '// $lineCount lines',
+                  style: TextStyle(
+                    color: scheme.onSurface.withValues(alpha: 0.4),
+                    fontFamily: 'monospace',
+                    fontSize: 10,
+                  ),
+                ),
+                const Spacer(),
+                InkWell(
+                  onTap: _copy,
+                  borderRadius: BorderRadius.circular(6),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          _copied ? Icons.check : Icons.copy_all_rounded,
+                          size: 13,
+                          color: _copied ? scheme.primary : scheme.onSurface.withValues(alpha: 0.7),
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          _copied ? l10n.codeBlockCopiedLabel : l10n.codeBlockCopyLabel,
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w500,
+                            color: _copied ? scheme.primary : scheme.onSurface.withValues(alpha: 0.7),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ],
             ),
           ),
           Padding(
-            padding: const EdgeInsets.all(12),
+            padding: const EdgeInsets.all(14),
             child: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Text(
@@ -97,7 +154,7 @@ class _CodeBlockViewState extends State<CodeBlockView> {
                 style: const TextStyle(
                   fontFamily: 'monospace',
                   fontSize: 13,
-                  height: 1.4,
+                  height: 1.45,
                 ),
               ),
             ),
