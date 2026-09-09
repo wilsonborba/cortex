@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 
 import '../../core/logs.dart';
 import '../../core/settings.dart';
+import '../../core/utils/csrf.dart';
 import '../../domain/services/client_telemetry_service.dart';
 import 'credentials_client.dart';
 
@@ -87,6 +88,20 @@ class AuthApiAdapter {
         }),
       );
       if (response.statusCode == 200) {
+        // Diagnostic only (issue #21): confirm whether sid/csrf actually
+        // landed in the browser's cookie jar right after a successful
+        // exchange, without needing anyone to open DevTools manually.
+        ClientTelemetryService.instance.reportHandledError(
+          title: 'Auth Exchange Cookie Diagnostic',
+          error: 'diagnostic, not an error',
+          errorCode: 'AUTH_EXCHANGE_COOKIE_DIAGNOSTIC',
+          route: AppSettings.authSyncPath,
+          details: {
+            'cookie_names_present': cookieNamesPresent(),
+            'response_headers': response.headers.keys.toList(),
+            'has_set_cookie_header': response.headers.containsKey('set-cookie'),
+          },
+        );
         return true;
       }
       AppLogger.warning(

@@ -12,3 +12,18 @@ String? readCookie(String name) {
   }
   return null;
 }
+
+/// Diagnostic only (issue #21): the *names* of every cookie the browser
+/// currently has for this origin (never values, `csrf`'s value isn't
+/// sensitive but no need to ship it either), so a report sent right after
+/// the exchange call can show whether `sid`/`csrf` actually landed in the
+/// browser's cookie jar, without needing anyone to open DevTools manually.
+List<String> cookieNamesPresent() {
+  final cookies = web.document.cookie;
+  if (cookies.isEmpty) return const [];
+  return cookies
+      .split(';')
+      .map((c) => c.trim().split('=').first)
+      .where((name) => name.isNotEmpty)
+      .toList();
+}
