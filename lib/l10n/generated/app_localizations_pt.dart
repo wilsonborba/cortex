@@ -222,24 +222,6 @@ class AppLocalizationsPt extends AppLocalizations {
   String get newIncognitoChat => 'Iniciar chat incógnito';
 
   @override
-  String get liveLogsTooltip => 'Logs ao vivo (somente desenvolvimento local)';
-
-  @override
-  String get liveLogsTitle => 'Logs ao vivo do Cortex';
-
-  @override
-  String get liveLogsDescription =>
-      'Somente para desenvolvimento local: conecta diretamente ao /logs/stream do cortex_api, contornando o proxy do api_for_apps (que não suporta WebSocket).';
-
-  @override
-  String liveLogsConnectionError(String error) {
-    return 'Não foi possível conectar: $error';
-  }
-
-  @override
-  String get liveLogsWaiting => 'Aguardando linhas de log...';
-
-  @override
   String couldNotSendMessage(String error) {
     return 'Não foi possível enviar a mensagem: $error';
   }
@@ -289,4 +271,20 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get languageThai => 'Tailandês';
+
+  @override
+  String get improveInputLabel => 'Melhorar minha entrada';
+
+  @override
+  String get improveInputSubtitle =>
+      'Reescreve e clarifica prompts automaticamente com modelo de raciocínio local antes da geração';
+
+  @override
+  String get incognitoBadge => 'ANÔNIMO';
+
+  @override
+  String get startIncognito => 'Iniciar conversa anônima';
+
+  @override
+  String get exitIncognito => 'Sair do anônimo';
 }

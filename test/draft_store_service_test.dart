@@ -7,6 +7,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:cortex/dal/remote/cortex_api_adapter.dart';
+import 'package:cortex/domain/models/conversation.dart';
 import 'package:cortex/domain/services/chat_service.dart';
 import 'package:cortex/domain/services/draft_store_service.dart';
 import 'package:cortex/presentation/frontend/handlers/chat_flow_handler.dart';
@@ -55,6 +56,22 @@ ChatService _chatServiceWithFakeStream() {
       apiForAppsBaseUrl: 'http://test.local',
       httpClient: client,
     ),
+    initialConversations: [
+      Conversation(
+        id: 'conv-1',
+        title: 'Conversation 1',
+        messages: const [],
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      ),
+      Conversation(
+        id: 'conv-2',
+        title: 'Conversation 2',
+        messages: const [],
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      ),
+    ],
   );
 }
 

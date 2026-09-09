@@ -48,8 +48,29 @@ class _VoiceRecordingBarState extends State<VoiceRecordingBar> {
 
   Future<void> _startRecording() async {
     final l10n = AppLocalizations.of(context);
-    final available = await _service.hasPermission();
-    if (!available) {
+    try {
+      final available = await _service.hasPermission();
+      if (!available) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(l10n.micPermissionDenied),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+        widget.onCancelled();
+        return;
+      }
+
+      await _service.start(
+        onAmplitude: (level) {
+          if (mounted) setState(() => _amplitude = level);
+        },
+      );
+      _tickTimer = Timer.periodic(const Duration(milliseconds: 200), (_) {
+        if (mounted) setState(() => _elapsed = _service.elapsed);
+      });
+    } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -58,17 +79,7 @@ class _VoiceRecordingBarState extends State<VoiceRecordingBar> {
         ),
       );
       widget.onCancelled();
-      return;
     }
-
-    await _service.start(
-      onAmplitude: (level) {
-        if (mounted) setState(() => _amplitude = level);
-      },
-    );
-    _tickTimer = Timer.periodic(const Duration(milliseconds: 200), (_) {
-      if (mounted) setState(() => _elapsed = _service.elapsed);
-    });
   }
 
   @override

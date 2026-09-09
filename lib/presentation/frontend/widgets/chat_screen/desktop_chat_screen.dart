@@ -7,7 +7,6 @@ import '../../components/conversation_tile.dart';
 import '../../components/message_bubble.dart';
 import '../../components/prompt_dock.dart';
 import '../../components/scroll_to_bottom_button.dart';
-import '../../components/telemetry_panel.dart';
 import 'chat_screen.dart';
 
 /// Desktop / wide-viewport layout: a collapsible master sidebar of
@@ -112,31 +111,44 @@ class _DesktopChatScreenState extends State<DesktopChatScreen> {
                       children: [
                         // Sidebar Header
                         Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                           child: Row(
                             children: [
-                              Image.asset(
-                                'lib/presentation/assets/img/logo.png',
-                                width: 22,
-                                height: 22,
-                                fit: BoxFit.contain,
-                                errorBuilder: (_, __, ___) =>
-                                    const Icon(Icons.hub, size: 20),
+                              Container(
+                                width: 28,
+                                height: 28,
+                                decoration: BoxDecoration(
+                                  color: scheme.surfaceContainerHighest,
+                                  borderRadius: BorderRadius.circular(8),
+                                  border: Border.all(
+                                    color: scheme.outline.withValues(alpha: 0.25),
+                                  ),
+                                ),
+                                child: Center(
+                                  child: Image.asset(
+                                    'lib/presentation/assets/img/logo.png',
+                                    width: 16,
+                                    height: 16,
+                                    fit: BoxFit.contain,
+                                    errorBuilder: (_, __, ___) =>
+                                        const Icon(Icons.hub, size: 16),
+                                  ),
+                                ),
                               ),
-                              const SizedBox(width: 8),
+                              const SizedBox(width: 10),
                               Text(
                                 'CORTEX',
                                 style: TextStyle(
                                   fontWeight: FontWeight.w700,
-                                  letterSpacing: 1.2,
-                                  fontSize: 14,
+                                  letterSpacing: 1.1,
+                                  fontSize: 13,
                                   color: scheme.onSurface,
                                 ),
                               ),
                               const Spacer(),
                               IconButton(
                                 tooltip: 'Collapse Sidebar',
-                                icon: const Icon(Icons.menu_open, size: 18),
+                                icon: const Icon(Icons.keyboard_double_arrow_left_rounded, size: 18),
                                 onPressed: () =>
                                     setState(() => _sidebarCollapsed = true),
                               ),
@@ -149,30 +161,48 @@ class _DesktopChatScreenState extends State<DesktopChatScreen> {
                           child: OutlinedButton(
                             onPressed: props.onNewConversation,
                             style: OutlinedButton.styleFrom(
+                              backgroundColor: scheme.surfaceContainerHighest.withValues(alpha: 0.4),
                               padding: const EdgeInsets.symmetric(
                                 horizontal: 14,
-                                vertical: 12,
+                                vertical: 11,
                               ),
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(6),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              side: BorderSide(
+                                color: scheme.outline.withValues(alpha: 0.25),
                               ),
                             ),
                             child: Row(
                               children: [
+                                Icon(Icons.add_rounded, size: 16, color: scheme.onSurface),
+                                const SizedBox(width: 8),
                                 Expanded(
                                   child: Text(
-                                    '+ ${l10n.newConversation}',
+                                    l10n.newConversation,
+                                    style: TextStyle(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w600,
+                                      color: scheme.onSurface,
+                                    ),
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                   ),
                                 ),
-                                const SizedBox(width: 6),
-                                Text(
-                                  '⌘N',
-                                  style: TextStyle(
-                                    fontSize: 11,
-                                    fontFamily: 'monospace',
-                                    color: scheme.onSurface.withValues(alpha: 0.5),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                                  decoration: BoxDecoration(
+                                    color: scheme.onSurface.withValues(alpha: 0.08),
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                  child: Text(
+                                    '⌘N',
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                      fontFamily: 'monospace',
+                                      fontWeight: FontWeight.w600,
+                                      color: scheme.onSurface.withValues(alpha: 0.5),
+                                    ),
                                   ),
                                 ),
                               ],
@@ -187,24 +217,24 @@ class _DesktopChatScreenState extends State<DesktopChatScreen> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                l10n.history,
+                                l10n.history.toUpperCase(),
                                 style: TextStyle(
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.w600,
-                                  fontFamily: 'monospace',
-                                  color: scheme.onSurface.withValues(alpha: 0.5),
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w700,
+                                  letterSpacing: 0.8,
+                                  color: scheme.onSurface.withValues(alpha: 0.45),
                                 ),
                               ),
                               InkWell(
                                 onTap: _showClearAllConfirmation,
-                                borderRadius: BorderRadius.circular(4),
+                                borderRadius: BorderRadius.circular(6),
                                 child: Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
                                   child: Row(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
                                       Icon(
-                                        Icons.delete_outline,
+                                        Icons.delete_outline_rounded,
                                         size: 13,
                                         color: scheme.onSurface.withValues(alpha: 0.5),
                                       ),
@@ -213,7 +243,7 @@ class _DesktopChatScreenState extends State<DesktopChatScreen> {
                                         l10n.clearAll,
                                         style: TextStyle(
                                           fontSize: 11,
-                                          fontFamily: 'monospace',
+                                          fontWeight: FontWeight.w500,
                                           color: scheme.onSurface.withValues(alpha: 0.5),
                                         ),
                                       ),
@@ -230,7 +260,7 @@ class _DesktopChatScreenState extends State<DesktopChatScreen> {
                         ),
                         // User Profile Footer
                         Container(
-                          padding: const EdgeInsets.all(14),
+                          padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
                             border: Border(
                               top: BorderSide(
@@ -241,13 +271,13 @@ class _DesktopChatScreenState extends State<DesktopChatScreen> {
                           child: Row(
                             children: [
                               CircleAvatar(
-                                radius: 14,
-                                backgroundColor: scheme.surfaceContainerHighest,
+                                radius: 15,
+                                backgroundColor: scheme.onSurface.withValues(alpha: 0.12),
                                 child: Text(
                                   'W',
                                   style: TextStyle(
                                     fontSize: 12,
-                                    fontWeight: FontWeight.w600,
+                                    fontWeight: FontWeight.w700,
                                     color: scheme.onSurface,
                                   ),
                                 ),
@@ -266,11 +296,12 @@ class _DesktopChatScreenState extends State<DesktopChatScreen> {
                                       ),
                                     ),
                                     Text(
-                                      'PRO // ASODYA AUTH',
+                                      'PRO ACCOUNT',
                                       style: TextStyle(
                                         fontSize: 9,
-                                        fontFamily: 'monospace',
-                                        color: scheme.onSurface.withValues(alpha: 0.5),
+                                        fontWeight: FontWeight.w600,
+                                        letterSpacing: 0.5,
+                                        color: scheme.onSurface.withValues(alpha: 0.45),
                                       ),
                                     ),
                                   ],
@@ -278,7 +309,7 @@ class _DesktopChatScreenState extends State<DesktopChatScreen> {
                               ),
                               IconButton(
                                 tooltip: 'Settings',
-                                icon: const Icon(Icons.settings_outlined, size: 16),
+                                icon: const Icon(Icons.settings_outlined, size: 17),
                                 onPressed: () => AppSettingsSheet.show(context),
                               ),
                             ],
@@ -295,6 +326,7 @@ class _DesktopChatScreenState extends State<DesktopChatScreen> {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                     decoration: BoxDecoration(
+                      color: scheme.surface,
                       border: Border(
                         bottom: BorderSide(
                           color: scheme.outline.withValues(alpha: 0.15),
@@ -306,7 +338,7 @@ class _DesktopChatScreenState extends State<DesktopChatScreen> {
                         if (_sidebarCollapsed)
                           IconButton(
                             tooltip: 'Expand Sidebar',
-                            icon: const Icon(Icons.menu, size: 18),
+                            icon: const Icon(Icons.keyboard_double_arrow_right_rounded, size: 18),
                             onPressed: () =>
                                 setState(() => _sidebarCollapsed = false),
                           ),
@@ -322,40 +354,109 @@ class _DesktopChatScreenState extends State<DesktopChatScreen> {
                                   style: const TextStyle(
                                     fontWeight: FontWeight.w600,
                                     fontSize: 14,
+                                    letterSpacing: -0.1,
                                   ),
                                 ),
                               ),
-                              const SizedBox(width: 8),
+                              const SizedBox(width: 10),
                               Container(
                                 padding: const EdgeInsets.symmetric(
                                   horizontal: 8,
                                   vertical: 3,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: scheme.surfaceContainerHighest,
-                                  borderRadius: BorderRadius.circular(4),
+                                  color: scheme.onSurface.withValues(alpha: 0.06),
+                                  borderRadius: BorderRadius.circular(20),
                                   border: Border.all(
-                                    color: scheme.outline.withValues(alpha: 0.3),
+                                    color: scheme.outline.withValues(alpha: 0.2),
                                   ),
                                 ),
-                                child: Text(
-                                  'TIER 0 // CORTEX-T0',
-                                  style: TextStyle(
-                                    fontFamily: 'monospace',
-                                    fontSize: 10,
-                                    color: scheme.onSurface.withValues(alpha: 0.6),
-                                  ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Container(
+                                      width: 6,
+                                      height: 6,
+                                      decoration: BoxDecoration(
+                                        color: scheme.primary,
+                                        shape: BoxShape.circle,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 5),
+                                    Text(
+                                      'TIER 0',
+                                      style: TextStyle(
+                                        fontFamily: 'monospace',
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 10,
+                                        color: scheme.onSurface.withValues(alpha: 0.65),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
                             ],
                           ),
                         ),
-                        IconButton(
-                          tooltip: 'Start Incognito Chat',
-                          icon: const Icon(Icons.visibility_off_outlined, size: 18),
-                          onPressed: props.onStartIncognitoChat,
-                        ),
-                        const TelemetryPanelButton(),
+                        if (props.selectedConversation.isEphemeral) ...[
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: scheme.surfaceContainerHighest,
+                              borderRadius: BorderRadius.circular(20),
+                              border: Border.all(
+                                color: scheme.outline.withValues(alpha: 0.3),
+                              ),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.visibility_off_outlined,
+                                  size: 13,
+                                  color: scheme.onSurface.withValues(alpha: 0.8),
+                                ),
+                                const SizedBox(width: 6),
+                                Text(
+                                  l10n.incognitoBadge,
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w600,
+                                    color: scheme.onSurface.withValues(alpha: 0.8),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          OutlinedButton.icon(
+                            onPressed: props.onExitIncognitoChat,
+                            icon: const Icon(Icons.close, size: 13),
+                            label: Text(
+                              l10n.exitIncognito,
+                              style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w500),
+                            ),
+                            style: OutlinedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 6,
+                              ),
+                              minimumSize: Size.zero,
+                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                          ),
+                        ] else
+                          IconButton(
+                            tooltip: l10n.startIncognito,
+                            icon: const Icon(Icons.visibility_off_outlined, size: 18),
+                            onPressed: props.onStartIncognitoChat,
+                          ),
                         IconButton(
                           tooltip: 'Settings',
                           icon: const Icon(Icons.tune_outlined, size: 18),
@@ -526,41 +627,47 @@ class _DesktopChatScreenState extends State<DesktopChatScreen> {
     ColorScheme scheme,
   ) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final cardBg = isDark ? const Color(0xFF111318) : const Color(0xFFFFFFFF);
+    final cardBg = isDark ? const Color(0xFF141416) : const Color(0xFFFFFFFF);
 
     final suggestions = [
       {
-        'tag': '01 // ANALYSIS',
-        'title': 'Analyze system telemetry logs',
+        'tag': 'SYSTEM ANALYSIS',
+        'title': 'Analyze system telemetry & bottlenecks',
+        'subtitle': 'Identify latency bottlenecks and profile memory usage.',
+        'icon': Icons.insights_rounded,
         'prompt': 'Analyze current system metrics and identify memory/latency bottlenecks.',
       },
       {
-        'tag': '02 // REASONING',
-        'title': 'Explore architecture tradeoffs',
+        'tag': 'ARCHITECTURE',
+        'title': 'Explore distributed architecture tradeoffs',
+        'subtitle': 'Compare streaming facades against batch execution models.',
+        'icon': Icons.account_tree_outlined,
         'prompt': 'Explain the architectural tradeoffs between token streaming facades vs RPC execute.',
       },
       {
-        'tag': '03 // CODE',
-        'title': 'Draft an async API pipeline',
+        'tag': 'PIPELINE CODE',
+        'title': 'Draft an asynchronous API gateway',
+        'subtitle': 'Build a resilient service with streaming SSE & health guards.',
+        'icon': Icons.terminal_rounded,
         'prompt': 'Write a Python FastAPI service connecting to an isolated AI gateway with health checks.',
       },
     ];
 
     return Center(
       child: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 36),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Container(
-              width: 48,
-              height: 48,
+              width: 52,
+              height: 52,
               decoration: BoxDecoration(
-                color: scheme.surfaceContainerHighest,
-                borderRadius: BorderRadius.circular(10),
+                color: isDark ? const Color(0xFF1A1A1E) : const Color(0xFFEDEDF2),
+                borderRadius: BorderRadius.circular(14),
                 border: Border.all(
-                  color: scheme.outline.withValues(alpha: 0.3),
+                  color: scheme.outline.withValues(alpha: isDark ? 0.3 : 0.4),
                 ),
               ),
               child: Center(
@@ -569,82 +676,128 @@ class _DesktopChatScreenState extends State<DesktopChatScreen> {
                   width: 28,
                   height: 28,
                   fit: BoxFit.contain,
-                  errorBuilder: (_, __, ___) => const Icon(Icons.hub, size: 24),
+                  errorBuilder: (_, __, ___) => const Icon(Icons.hub_rounded, size: 26),
                 ),
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 18),
             Text(
-              'CORTEX NEURAL WORKSPACE',
+              'CORTEX WORKSPACE',
               style: TextStyle(
                 fontFamily: 'monospace',
-                fontSize: 12,
+                fontSize: 11,
                 fontWeight: FontWeight.w700,
-                letterSpacing: 1.5,
-                color: scheme.onSurface.withValues(alpha: 0.6),
+                letterSpacing: 1.4,
+                color: scheme.onSurface.withValues(alpha: 0.5),
               ),
             ),
             const SizedBox(height: 8),
             Text(
-              'High-focus reasoning & persistent execution.',
+              'How can I help you today?',
               textAlign: TextAlign.center,
               style: TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w500,
-                color: scheme.onSurface.withValues(alpha: 0.85),
+                fontSize: 22,
+                fontWeight: FontWeight.w700,
+                letterSpacing: -0.4,
+                color: scheme.onSurface,
               ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 6),
+            Text(
+              'High-precision reasoning, persistent context, and neural tools.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w400,
+                color: scheme.onSurface.withValues(alpha: 0.6),
+              ),
+            ),
+            const SizedBox(height: 32),
             ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 580),
+              constraints: const BoxConstraints(maxWidth: 620),
               child: Column(
                 children: [
                   for (final item in suggestions)
                     Container(
-                      margin: const EdgeInsets.only(bottom: 8),
+                      margin: const EdgeInsets.only(bottom: 10),
                       decoration: BoxDecoration(
                         color: cardBg,
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(14),
                         border: Border.all(
-                          color: scheme.outline.withValues(alpha: isDark ? 0.3 : 0.6),
+                          color: scheme.outline.withValues(alpha: isDark ? 0.25 : 0.45),
                         ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.03),
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
                       ),
                       child: InkWell(
-                        borderRadius: BorderRadius.circular(8),
-                        onTap: () => props.onSubmit(item['prompt']!),
+                        borderRadius: BorderRadius.circular(14),
+                        onTap: () => props.onSubmit(item['prompt']! as String),
                         child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                           child: Row(
                             children: [
+                              Container(
+                                width: 36,
+                                height: 36,
+                                decoration: BoxDecoration(
+                                  color: scheme.primary.withValues(alpha: isDark ? 0.12 : 0.08),
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: Icon(
+                                  item['icon']! as IconData,
+                                  size: 18,
+                                  color: scheme.primary,
+                                ),
+                              ),
+                              const SizedBox(width: 14),
                               Expanded(
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text(
-                                      item['tag']!,
-                                      style: TextStyle(
-                                        fontFamily: 'monospace',
-                                        fontSize: 10,
-                                        fontWeight: FontWeight.w600,
-                                        color: scheme.onSurface.withValues(alpha: 0.45),
-                                      ),
+                                    Row(
+                                      children: [
+                                        Text(
+                                          item['tag']! as String,
+                                          style: TextStyle(
+                                            fontFamily: 'monospace',
+                                            fontSize: 9.5,
+                                            fontWeight: FontWeight.w700,
+                                            letterSpacing: 0.5,
+                                            color: scheme.onSurface.withValues(alpha: 0.45),
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                     const SizedBox(height: 3),
                                     Text(
-                                      item['title']!,
+                                      item['title']! as String,
                                       style: TextStyle(
-                                        fontSize: 13,
-                                        fontWeight: FontWeight.w500,
+                                        fontSize: 13.5,
+                                        fontWeight: FontWeight.w600,
                                         color: scheme.onSurface,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 2),
+                                    Text(
+                                      item['subtitle']! as String,
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: scheme.onSurface.withValues(alpha: 0.55),
                                       ),
                                     ),
                                   ],
                                 ),
                               ),
+                              const SizedBox(width: 8),
                               Icon(
-                                Icons.arrow_forward,
-                                size: 14,
-                                color: scheme.onSurface.withValues(alpha: 0.4),
+                                Icons.arrow_forward_ios_rounded,
+                                size: 13,
+                                color: scheme.onSurface.withValues(alpha: 0.35),
                               ),
                             ],
                           ),

@@ -89,15 +89,6 @@
   "incognitoModeSubtitle": "Ephemeral session: no history is saved and memory is explicitly off",
   "newIncognitoChat": "Start incognito chat",
 
-  "liveLogsTooltip": "Live logs (local dev only)",
-  "liveLogsTitle": "Cortex live logs",
-  "liveLogsDescription": "Local dev only: connects directly to cortex_api's /logs/stream, this bypasses the api_for_apps proxy (it cannot carry a WebSocket).",
-  "liveLogsConnectionError": "Could not connect: {error}",
-  "@liveLogsConnectionError": {
-    "placeholders": {"error": {"type": "String"}}
-  },
-  "liveLogsWaiting": "Waiting for log lines...",
-
   "couldNotSendMessage": "Could not send message: {error}",
   "@couldNotSendMessage": {
     "placeholders": {"error": {"type": "String"}}
@@ -120,5 +111,10 @@
   "languageLabel": "Language",
   "languageEnglish": "English",
   "languagePortuguese": "Portuguese",
-  "languageThai": "Thai"
+  "languageThai": "Thai",
+  "improveInputLabel": "Improve my input",
+  "improveInputSubtitle": "Automatically rewrites and clarifies prompts with local reasoning model before generation",
+  "incognitoBadge": "INCOGNITO",
+  "startIncognito": "Start Incognito Chat",
+  "exitIncognito": "Exit Incognito"
 }

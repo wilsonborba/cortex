@@ -478,36 +478,6 @@ abstract class AppLocalizations {
   /// **'Start incognito chat'**
   String get newIncognitoChat;
 
-  /// No description provided for @liveLogsTooltip.
-  ///
-  /// In en, this message translates to:
-  /// **'Live logs (local dev only)'**
-  String get liveLogsTooltip;
-
-  /// No description provided for @liveLogsTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Cortex live logs'**
-  String get liveLogsTitle;
-
-  /// No description provided for @liveLogsDescription.
-  ///
-  /// In en, this message translates to:
-  /// **'Local dev only: connects directly to cortex_api\'s /logs/stream, this bypasses the api_for_apps proxy (it cannot carry a WebSocket).'**
-  String get liveLogsDescription;
-
-  /// No description provided for @liveLogsConnectionError.
-  ///
-  /// In en, this message translates to:
-  /// **'Could not connect: {error}'**
-  String liveLogsConnectionError(String error);
-
-  /// No description provided for @liveLogsWaiting.
-  ///
-  /// In en, this message translates to:
-  /// **'Waiting for log lines...'**
-  String get liveLogsWaiting;
-
   /// No description provided for @couldNotSendMessage.
   ///
   /// In en, this message translates to:
@@ -603,6 +573,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Thai'**
   String get languageThai;
+
+  /// No description provided for @improveInputLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Improve my input'**
+  String get improveInputLabel;
+
+  /// No description provided for @improveInputSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Automatically rewrites and clarifies prompts with local reasoning model before generation'**
+  String get improveInputSubtitle;
+
+  /// No description provided for @incognitoBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'INCOGNITO'**
+  String get incognitoBadge;
+
+  /// No description provided for @startIncognito.
+  ///
+  /// In en, this message translates to:
+  /// **'Start Incognito Chat'**
+  String get startIncognito;
+
+  /// No description provided for @exitIncognito.
+  ///
+  /// In en, this message translates to:
+  /// **'Exit Incognito'**
+  String get exitIncognito;
 }
 
 class _AppLocalizationsDelegate

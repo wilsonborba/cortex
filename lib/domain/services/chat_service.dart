@@ -32,14 +32,110 @@ import '../models/execute_request.dart';
 /// written to `LocalStorageAdapter`), and it always forces memory off and
 /// `capabilities.temporary = true`.
 class ChatService {
-  ChatService({CortexApiAdapter? cortexApiAdapter})
-    : _cortexApi = cortexApiAdapter ?? CortexApiAdapter(),
-      _conversations = _mockConversations();
+  ChatService({
+    CortexApiAdapter? cortexApiAdapter,
+    List<Conversation>? initialConversations,
+  }) : _cortexApi = cortexApiAdapter ?? CortexApiAdapter(),
+       _conversations = (initialConversations != null && initialConversations.isNotEmpty)
+           ? List.of(initialConversations)
+           : [
+               Conversation(
+                 id: 'convo-${DateTime.now().microsecondsSinceEpoch}',
+                 title: 'New Conversation',
+                 messages: const [],
+                 createdAt: DateTime.now(),
+                 updatedAt: DateTime.now(),
+               ),
+             ];
+
+  static int _convoIdCounter = 0;
+  static String _nextConvoId() {
+    _convoIdCounter++;
+    return 'convo-${DateTime.now().microsecondsSinceEpoch}-$_convoIdCounter';
+  }
 
   final CortexApiAdapter _cortexApi;
   final List<Conversation> _conversations;
 
   List<Conversation> listConversations() => List.unmodifiable(_conversations);
+
+  /// Fetches real conversation history from cortex_api's `GET /conversations`.
+  Future<List<Conversation>> loadRemoteConversations({String tenantId = 'default'}) async {
+    try {
+      final remoteList = await _cortexApi.fetchConversations(tenantId: tenantId);
+      if (remoteList.isNotEmpty) {
+        _conversations.clear();
+        for (final item in remoteList) {
+          final id = item['id'] as String? ?? 'convo-${DateTime.now().millisecondsSinceEpoch}';
+          final title = item['title'] as String? ?? 'Conversation';
+          final createdAt = DateTime.tryParse(item['created_at'] as String? ?? '') ?? DateTime.now();
+          final updatedAt = DateTime.tryParse(item['updated_at'] as String? ?? '') ?? createdAt;
+          _conversations.add(
+            Conversation(
+              id: id,
+              title: title,
+              messages: const [],
+              createdAt: createdAt,
+              updatedAt: updatedAt,
+            ),
+          );
+        }
+      }
+    } catch (_) {}
+    if (_conversations.isEmpty) {
+      _conversations.add(
+        Conversation(
+          id: 'convo-${DateTime.now().millisecondsSinceEpoch}',
+          title: 'New Conversation',
+          messages: const [],
+          createdAt: DateTime.now(),
+          updatedAt: DateTime.now(),
+        ),
+      );
+    }
+    return listConversations();
+  }
+
+  /// Loads full turn details for a specific conversation from cortex_api `GET /conversations/{id}`.
+  Future<Conversation?> loadRemoteConversation(String id, {String tenantId = 'default'}) async {
+    try {
+      final data = await _cortexApi.fetchConversation(id, tenantId: tenantId);
+      if (data != null) {
+        final messagesData = data['messages'] as List<dynamic>? ?? [];
+        final messages = messagesData.map((m) {
+          final roleStr = m['role'] as String? ?? 'user';
+          final role = roleStr == 'assistant'
+              ? MessageRole.assistant
+              : (roleStr == 'system' ? MessageRole.system : MessageRole.user);
+          return ChatMessage(
+            id: m['id'] as String? ?? 'msg-${DateTime.now().microsecondsSinceEpoch}',
+            role: role,
+            content: m['content'] as String? ?? '',
+            createdAt: DateTime.tryParse(m['created_at'] as String? ?? '') ?? DateTime.now(),
+          );
+        }).toList();
+
+        final index = _conversations.indexWhere((c) => c.id == id);
+        if (index != -1) {
+          final existing = _conversations[index];
+          final updated = existing.copyWith(messages: messages);
+          _conversations[index] = updated;
+          return updated;
+        } else {
+          final created = Conversation(
+            id: id,
+            title: data['title'] as String? ?? 'Conversation $id',
+            messages: messages,
+            createdAt: DateTime.tryParse(data['created_at'] as String? ?? '') ?? DateTime.now(),
+            updatedAt: DateTime.tryParse(data['updated_at'] as String? ?? '') ?? DateTime.now(),
+          );
+          _conversations.insert(0, created);
+          return created;
+        }
+      }
+    } catch (_) {}
+    return conversationById(id);
+  }
 
   Conversation? conversationById(String id) {
     for (final conversation in _conversations) {
@@ -51,7 +147,7 @@ class ChatService {
   Conversation newConversation({String title = 'New Conversation'}) {
     final now = DateTime.now();
     final convo = Conversation(
-      id: 'convo-${now.millisecondsSinceEpoch}',
+      id: _nextConvoId(),
       title: title,
       messages: const [],
       createdAt: now,
@@ -87,7 +183,7 @@ class ChatService {
     _conversations.clear();
     final now = DateTime.now();
     final fresh = Conversation(
-      id: 'convo-${now.millisecondsSinceEpoch}',
+      id: _nextConvoId(),
       title: 'New Conversation',
       messages: const [],
       createdAt: now,
@@ -102,7 +198,7 @@ class ChatService {
       final now = DateTime.now();
       _conversations.add(
         Conversation(
-          id: 'convo-${now.millisecondsSinceEpoch}',
+          id: _nextConvoId(),
           title: 'New Conversation',
           messages: const [],
           createdAt: now,
@@ -141,6 +237,7 @@ class ChatService {
     required String content,
     bool useMemory = false,
     bool needsWeb = false,
+    bool normalizePrompt = true,
     List<ChatAttachment> attachments = const [],
     void Function(Conversation conversation)? onUpdate,
   }) async {
@@ -155,6 +252,7 @@ class ChatService {
       content: content,
       useMemory: useMemory,
       needsWeb: needsWeb,
+      normalizePrompt: normalizePrompt,
       temporary: false,
       attachments: attachments,
       onUpdate: (c) {
@@ -176,6 +274,7 @@ class ChatService {
     required Conversation conversation,
     required String content,
     bool needsWeb = false,
+    bool normalizePrompt = true,
     List<ChatAttachment> attachments = const [],
     void Function(Conversation conversation)? onUpdate,
   }) {
@@ -184,6 +283,7 @@ class ChatService {
       content: content,
       useMemory: false,
       needsWeb: needsWeb,
+      normalizePrompt: normalizePrompt,
       temporary: true,
       attachments: attachments,
       onUpdate: onUpdate,
@@ -195,6 +295,7 @@ class ChatService {
     required String content,
     required bool useMemory,
     required bool needsWeb,
+    required bool normalizePrompt,
     required bool temporary,
     required List<ChatAttachment> attachments,
     void Function(Conversation conversation)? onUpdate,
@@ -234,6 +335,7 @@ class ChatService {
         updated,
         replyId,
         needsWeb: needsWeb,
+        normalizePrompt: normalizePrompt,
         onUpdate: onUpdate,
       );
     }
@@ -245,6 +347,7 @@ class ChatService {
     Conversation conversation,
     String replyId, {
     required bool needsWeb,
+    bool normalizePrompt = true,
     void Function(Conversation conversation)? onUpdate,
   }) async {
     final createdAt = DateTime.now();
@@ -255,6 +358,9 @@ class ChatService {
       await for (final tokenDelta in _cortexApi.streamChatCompletion(
         messages: conversation.messages,
         needsWeb: needsWeb,
+        normalizePrompt: normalizePrompt,
+        conversationId: conversation.isEphemeral ? null : conversation.id,
+        temporary: conversation.isEphemeral,
       )) {
         buffer.write(tokenDelta);
         updated = _withAppendedReply(
@@ -315,6 +421,7 @@ class ChatService {
     required Conversation conversation,
     required String replyMessageId,
     bool needsWeb = false,
+    bool normalizePrompt = true,
     void Function(Conversation conversation)? onUpdate,
   }) async {
     final replyIndex = conversation.messages.indexWhere(
@@ -345,6 +452,7 @@ class ChatService {
       await for (final tokenDelta in _cortexApi.streamChatCompletion(
         messages: promptMessages,
         needsWeb: needsWeb,
+        normalizePrompt: normalizePrompt,
       )) {
         buffer.write(tokenDelta);
         updated = _withReplacedReply(
@@ -395,6 +503,7 @@ class ChatService {
           useMemory: useMemory,
           needsWeb: needsWeb,
           temporary: temporary,
+          conversationId: temporary ? null : conversation.id,
           attachments: attachments,
         ),
       );
@@ -489,67 +598,5 @@ class ChatService {
       if (seen.add(url)) sources.add(url);
     }
     return sources;
-  }
-
-  static List<Conversation> _mockConversations() {
-    final now = DateTime.now();
-    final today = now.subtract(const Duration(minutes: 20));
-    final prev7Days = now.subtract(const Duration(days: 2));
-    final older = now.subtract(const Duration(days: 12));
-    return [
-      Conversation(
-        id: 'conv-1',
-        title: 'Welcome to Cortex',
-        isPinned: true,
-        createdAt: today,
-        updatedAt: today,
-        messages: [
-          ChatMessage(
-            id: 'm1',
-            role: MessageRole.assistant,
-            content:
-                'Hi, I am Cortex running on Tier 0 (free and fast models). '
-                'Ask me anything to get started.',
-            createdAt: today,
-          ),
-        ],
-      ),
-      Conversation(
-        id: 'conv-2',
-        title: 'Trip planning ideas',
-        createdAt: prev7Days,
-        updatedAt: prev7Days,
-        messages: [
-          ChatMessage(
-            id: 'm2',
-            role: MessageRole.user,
-            content: 'Give me a three day itinerary for Lisbon.',
-            createdAt: prev7Days.add(const Duration(minutes: 2)),
-          ),
-          ChatMessage(
-            id: 'm3',
-            role: MessageRole.assistant,
-            content:
-                'Day 1: Alfama and the castle. Day 2: Belem and the '
-                'monastery. Day 3: a day trip to Sintra.',
-            createdAt: prev7Days.add(const Duration(minutes: 3)),
-          ),
-        ],
-      ),
-      Conversation(
-        id: 'conv-3',
-        title: 'Refactor notes',
-        createdAt: older,
-        updatedAt: older,
-        messages: [
-          ChatMessage(
-            id: 'm4',
-            role: MessageRole.user,
-            content: 'Summarize the changes needed for the new adapter.',
-            createdAt: older.add(const Duration(minutes: 10)),
-          ),
-        ],
-      ),
-    ];
   }
 }

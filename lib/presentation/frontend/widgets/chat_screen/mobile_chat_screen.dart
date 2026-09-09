@@ -7,7 +7,6 @@ import '../../components/conversation_tile.dart';
 import '../../components/message_bubble.dart';
 import '../../components/prompt_dock.dart';
 import '../../components/scroll_to_bottom_button.dart';
-import '../../components/telemetry_panel.dart';
 import 'chat_screen.dart';
 
 /// Mobile / narrow-viewport layout: a single chat view with a sliding
@@ -117,12 +116,18 @@ class _MobileChatScreenState extends State<MobileChatScreen> {
           ],
         ),
         actions: [
-          IconButton(
-            tooltip: 'Incognito',
-            icon: const Icon(Icons.visibility_off_outlined, size: 18),
-            onPressed: props.onStartIncognitoChat,
-          ),
-          const TelemetryPanelButton(),
+          if (props.selectedConversation.isEphemeral)
+            IconButton(
+              tooltip: l10n.exitIncognito,
+              icon: const Icon(Icons.close, size: 18),
+              onPressed: props.onExitIncognitoChat,
+            )
+          else
+            IconButton(
+              tooltip: l10n.startIncognito,
+              icon: const Icon(Icons.visibility_off_outlined, size: 18),
+              onPressed: props.onStartIncognitoChat,
+            ),
           IconButton(
             tooltip: 'Settings',
             icon: const Icon(Icons.tune_outlined, size: 18),
@@ -138,30 +143,43 @@ class _MobileChatScreenState extends State<MobileChatScreen> {
             children: [
               // Drawer Header
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                 child: Row(
                   children: [
-                    Image.asset(
-                      'lib/presentation/assets/img/logo.png',
-                      width: 20,
-                      height: 20,
-                      fit: BoxFit.contain,
-                      errorBuilder: (_, __, ___) =>
-                          const Icon(Icons.hub, size: 18),
+                    Container(
+                      width: 28,
+                      height: 28,
+                      decoration: BoxDecoration(
+                        color: scheme.surfaceContainerHighest,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: scheme.outline.withValues(alpha: 0.25),
+                        ),
+                      ),
+                      child: Center(
+                        child: Image.asset(
+                          'lib/presentation/assets/img/logo.png',
+                          width: 16,
+                          height: 16,
+                          fit: BoxFit.contain,
+                          errorBuilder: (_, __, ___) =>
+                              const Icon(Icons.hub, size: 16),
+                        ),
+                      ),
                     ),
-                    const SizedBox(width: 8),
+                    const SizedBox(width: 10),
                     Text(
                       'CORTEX',
                       style: TextStyle(
                         fontWeight: FontWeight.w700,
-                        letterSpacing: 1.2,
-                        fontSize: 14,
+                        letterSpacing: 1.1,
+                        fontSize: 13,
                         color: scheme.onSurface,
                       ),
                     ),
                     const Spacer(),
                     IconButton(
-                      icon: const Icon(Icons.close, size: 18),
+                      icon: const Icon(Icons.close_rounded, size: 18),
                       onPressed: () => Navigator.of(context).pop(),
                     ),
                   ],
@@ -176,15 +194,32 @@ class _MobileChatScreenState extends State<MobileChatScreen> {
                     props.onNewConversation();
                   },
                   style: OutlinedButton.styleFrom(
+                    backgroundColor: scheme.surfaceContainerHighest.withValues(alpha: 0.4),
                     padding: const EdgeInsets.symmetric(
                       horizontal: 14,
-                      vertical: 12,
+                      vertical: 11,
                     ),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(6),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    side: BorderSide(
+                      color: scheme.outline.withValues(alpha: 0.25),
                     ),
                   ),
-                  child: Text('+ ${l10n.newConversation}'),
+                  child: Row(
+                    children: [
+                      Icon(Icons.add_rounded, size: 16, color: scheme.onSurface),
+                      const SizedBox(width: 8),
+                      Text(
+                        l10n.newConversation,
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          color: scheme.onSurface,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
               const SizedBox(height: 12),
@@ -195,12 +230,12 @@ class _MobileChatScreenState extends State<MobileChatScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      l10n.history,
+                      l10n.history.toUpperCase(),
                       style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w600,
-                        fontFamily: 'monospace',
-                        color: scheme.onSurface.withValues(alpha: 0.5),
+                        fontSize: 10,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 0.8,
+                        color: scheme.onSurface.withValues(alpha: 0.45),
                       ),
                     ),
                     InkWell(
@@ -208,14 +243,14 @@ class _MobileChatScreenState extends State<MobileChatScreen> {
                         Navigator.of(context).pop();
                         _showClearAllConfirmation();
                       },
-                      borderRadius: BorderRadius.circular(4),
+                      borderRadius: BorderRadius.circular(6),
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Icon(
-                              Icons.delete_outline,
+                              Icons.delete_outline_rounded,
                               size: 13,
                               color: scheme.onSurface.withValues(alpha: 0.5),
                             ),
@@ -224,7 +259,7 @@ class _MobileChatScreenState extends State<MobileChatScreen> {
                               l10n.clearAll,
                               style: TextStyle(
                                 fontSize: 11,
-                                fontFamily: 'monospace',
+                                fontWeight: FontWeight.w500,
                                 color: scheme.onSurface.withValues(alpha: 0.5),
                               ),
                             ),
@@ -396,22 +431,25 @@ class _MobileChatScreenState extends State<MobileChatScreen> {
     ColorScheme scheme,
   ) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final cardBg = isDark ? const Color(0xFF111318) : const Color(0xFFFFFFFF);
+    final cardBg = isDark ? const Color(0xFF141416) : const Color(0xFFFFFFFF);
 
     final suggestions = [
       {
-        'tag': '01 // ANALYSIS',
-        'title': 'Analyze system telemetry logs',
+        'tag': 'SYSTEM ANALYSIS',
+        'title': 'Analyze system telemetry & bottlenecks',
+        'icon': Icons.insights_rounded,
         'prompt': 'Analyze current system metrics and identify memory/latency bottlenecks.',
       },
       {
-        'tag': '02 // REASONING',
+        'tag': 'ARCHITECTURE',
         'title': 'Explore architecture tradeoffs',
+        'icon': Icons.account_tree_outlined,
         'prompt': 'Explain the architectural tradeoffs between token streaming facades vs RPC execute.',
       },
       {
-        'tag': '03 // CODE',
+        'tag': 'PIPELINE CODE',
         'title': 'Draft an async API pipeline',
+        'icon': Icons.terminal_rounded,
         'prompt': 'Write a Python FastAPI service connecting to an isolated AI gateway with health checks.',
       },
     ];
@@ -424,13 +462,13 @@ class _MobileChatScreenState extends State<MobileChatScreen> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Container(
-              width: 44,
-              height: 44,
+              width: 48,
+              height: 48,
               decoration: BoxDecoration(
-                color: scheme.surfaceContainerHighest,
-                borderRadius: BorderRadius.circular(10),
+                color: isDark ? const Color(0xFF1A1A1E) : const Color(0xFFEDEDF2),
+                borderRadius: BorderRadius.circular(14),
                 border: Border.all(
-                  color: scheme.outline.withValues(alpha: 0.3),
+                  color: scheme.outline.withValues(alpha: isDark ? 0.3 : 0.4),
                 ),
               ),
               child: Center(
@@ -439,32 +477,43 @@ class _MobileChatScreenState extends State<MobileChatScreen> {
                   width: 24,
                   height: 24,
                   fit: BoxFit.contain,
-                  errorBuilder: (_, __, ___) => const Icon(Icons.hub, size: 20),
+                  errorBuilder: (_, __, ___) => const Icon(Icons.hub_rounded, size: 22),
                 ),
               ),
             ),
             const SizedBox(height: 14),
             Text(
-              'CORTEX NEURAL WORKSPACE',
+              'CORTEX WORKSPACE',
               style: TextStyle(
                 fontFamily: 'monospace',
-                fontSize: 11,
+                fontSize: 10.5,
                 fontWeight: FontWeight.w700,
-                letterSpacing: 1.5,
-                color: scheme.onSurface.withValues(alpha: 0.6),
+                letterSpacing: 1.3,
+                color: scheme.onSurface.withValues(alpha: 0.5),
               ),
             ),
             const SizedBox(height: 6),
             Text(
-              'High-focus reasoning & persistent execution.',
+              'How can I help you today?',
               textAlign: TextAlign.center,
               style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: scheme.onSurface.withValues(alpha: 0.85),
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
+                letterSpacing: -0.3,
+                color: scheme.onSurface,
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 4),
+            Text(
+              'High-precision reasoning & neural tools.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 12.5,
+                fontWeight: FontWeight.w400,
+                color: scheme.onSurface.withValues(alpha: 0.6),
+              ),
+            ),
+            const SizedBox(height: 24),
             Column(
               children: [
                 for (final item in suggestions)
@@ -472,37 +521,59 @@ class _MobileChatScreenState extends State<MobileChatScreen> {
                     margin: const EdgeInsets.only(bottom: 8),
                     decoration: BoxDecoration(
                       color: cardBg,
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(12),
                       border: Border.all(
-                        color: scheme.outline.withValues(alpha: isDark ? 0.3 : 0.6),
+                        color: scheme.outline.withValues(alpha: isDark ? 0.25 : 0.4),
                       ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.03),
+                          blurRadius: 6,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
                     ),
                     child: InkWell(
-                      borderRadius: BorderRadius.circular(8),
-                      onTap: () => props.onSubmit(item['prompt']!),
+                      borderRadius: BorderRadius.circular(12),
+                      onTap: () => props.onSubmit(item['prompt']! as String),
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                         child: Row(
                           children: [
+                            Container(
+                              width: 32,
+                              height: 32,
+                              decoration: BoxDecoration(
+                                color: scheme.primary.withValues(alpha: isDark ? 0.12 : 0.08),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Icon(
+                                item['icon']! as IconData,
+                                size: 16,
+                                color: scheme.primary,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    item['tag']!,
+                                    item['tag']! as String,
                                     style: TextStyle(
                                       fontFamily: 'monospace',
                                       fontSize: 9,
-                                      fontWeight: FontWeight.w600,
+                                      fontWeight: FontWeight.w700,
+                                      letterSpacing: 0.5,
                                       color: scheme.onSurface.withValues(alpha: 0.45),
                                     ),
                                   ),
                                   const SizedBox(height: 2),
                                   Text(
-                                    item['title']!,
+                                    item['title']! as String,
                                     style: TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w500,
+                                      fontSize: 12.5,
+                                      fontWeight: FontWeight.w600,
                                       color: scheme.onSurface,
                                     ),
                                   ),
@@ -510,9 +581,9 @@ class _MobileChatScreenState extends State<MobileChatScreen> {
                               ),
                             ),
                             Icon(
-                              Icons.arrow_forward,
-                              size: 13,
-                              color: scheme.onSurface.withValues(alpha: 0.4),
+                              Icons.arrow_forward_ios_rounded,
+                              size: 11,
+                              color: scheme.onSurface.withValues(alpha: 0.35),
                             ),
                           ],
                         ),

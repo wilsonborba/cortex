@@ -86,104 +86,73 @@ class MessageBubble extends StatelessWidget {
                   crossAxisAlignment:
                       isUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
                   children: [
-                    // Role and Timestamp Header
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 4, left: 2, right: 2),
-                      child: Text(
-                        isUser
-                            ? 'WILSON // USER'
-                            : 'CORTEX.AI // MODEL-01',
-                        style: TextStyle(
-                          fontFamily: 'monospace',
-                          fontSize: 10,
-                          fontWeight: FontWeight.w600,
-                          color: scheme.onSurface.withValues(alpha: 0.5),
-                        ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
                       ),
-                    ),
-                    Stack(
-                      clipBehavior: Clip.none,
-                      children: [
-                        if (!isUser) ...[
-                          Positioned(
-                            top: -6,
-                            left: -4,
-                            child: Text(
-                              '+',
-                              style: TextStyle(
-                                fontFamily: 'monospace',
-                                fontSize: 10,
-                                color: scheme.onSurface.withValues(alpha: 0.35),
-                              ),
-                            ),
+                      decoration: BoxDecoration(
+                        color: bubbleBg,
+                        borderRadius: BorderRadius.only(
+                          topLeft: const Radius.circular(16),
+                          topRight: const Radius.circular(16),
+                          bottomLeft: Radius.circular(isUser ? 16 : 4),
+                          bottomRight: Radius.circular(isUser ? 4 : 16),
+                        ),
+                        border: Border.all(
+                          color: scheme.outline.withValues(
+                            alpha: isDark ? 0.35 : 0.65,
                           ),
-                          Positioned(
-                            bottom: -6,
-                            right: -4,
-                            child: Text(
-                              '+',
-                              style: TextStyle(
-                                fontFamily: 'monospace',
-                                fontSize: 10,
-                                color: scheme.onSurface.withValues(alpha: 0.35),
-                              ),
-                            ),
+                          width: 1,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.02),
+                            blurRadius: 10,
+                            offset: const Offset(0, 2),
                           ),
                         ],
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 14,
-                          ),
-                          decoration: BoxDecoration(
-                            color: bubbleBg,
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(
-                              color: scheme.outline.withValues(
-                                alpha: isDark ? 0.35 : 0.6,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (message.attachments.isNotEmpty)
+                            Padding(
+                              padding: EdgeInsets.only(
+                                bottom: message.content.trim().isEmpty ? 0 : 8,
+                              ),
+                              child: Wrap(
+                                spacing: 8,
+                                runSpacing: 8,
+                                children: message.attachments
+                                    .map((a) => _MessageAttachment(attachment: a))
+                                    .toList(),
                               ),
                             ),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              if (message.attachments.isNotEmpty)
-                                Padding(
-                                  padding: EdgeInsets.only(
-                                    bottom: message.content.trim().isEmpty ? 0 : 8,
-                                  ),
-                                  child: Wrap(
-                                    spacing: 8,
-                                    runSpacing: 8,
-                                    children: message.attachments
-                                        .map((a) => _MessageAttachment(attachment: a))
-                                        .toList(),
-                                  ),
+                          if (message.content.trim().isNotEmpty)
+                            MarkdownBody(
+                              data: message.content,
+                              selectable: true,
+                              builders: {'pre': CodeBlockElementBuilder()},
+                              styleSheet: MarkdownStyleSheet(
+                                p: TextStyle(
+                                  color: textColor,
+                                  height: 1.5,
+                                  fontSize: 14,
+                                  letterSpacing: -0.1,
                                 ),
-                              if (message.content.trim().isNotEmpty)
-                                MarkdownBody(
-                                  data: message.content,
-                                  selectable: true,
-                                  builders: {'pre': CodeBlockElementBuilder()},
-                                  styleSheet: MarkdownStyleSheet(
-                                    p: TextStyle(
-                                      color: textColor,
-                                      height: 1.5,
-                                      fontSize: 13.5,
-                                    ),
-                                    code: TextStyle(
-                                      color: textColor,
-                                      fontFamily: 'monospace',
-                                      backgroundColor:
-                                          scheme.onSurface.withValues(alpha: 0.08),
-                                    ),
-                                  ),
+                                code: TextStyle(
+                                  color: textColor,
+                                  fontFamily: 'monospace',
+                                  fontSize: 13,
+                                  backgroundColor:
+                                      scheme.onSurface.withValues(alpha: 0.06),
                                 ),
-                            ],
-                          ),
-                        ),
-                      ],
+                              ),
+                            ),
+                        ],
+                      ),
                     ),
                     if (!isUser && message.sources.isNotEmpty)
                       SourcesCard(sources: message.sources),

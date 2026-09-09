@@ -219,24 +219,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get newIncognitoChat => 'Start incognito chat';
 
   @override
-  String get liveLogsTooltip => 'Live logs (local dev only)';
-
-  @override
-  String get liveLogsTitle => 'Cortex live logs';
-
-  @override
-  String get liveLogsDescription =>
-      'Local dev only: connects directly to cortex_api\'s /logs/stream, this bypasses the api_for_apps proxy (it cannot carry a WebSocket).';
-
-  @override
-  String liveLogsConnectionError(String error) {
-    return 'Could not connect: $error';
-  }
-
-  @override
-  String get liveLogsWaiting => 'Waiting for log lines...';
-
-  @override
   String couldNotSendMessage(String error) {
     return 'Could not send message: $error';
   }
@@ -286,4 +268,20 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get languageThai => 'Thai';
+
+  @override
+  String get improveInputLabel => 'Improve my input';
+
+  @override
+  String get improveInputSubtitle =>
+      'Automatically rewrites and clarifies prompts with local reasoning model before generation';
+
+  @override
+  String get incognitoBadge => 'INCOGNITO';
+
+  @override
+  String get startIncognito => 'Start Incognito Chat';
+
+  @override
+  String get exitIncognito => 'Exit Incognito';
 }

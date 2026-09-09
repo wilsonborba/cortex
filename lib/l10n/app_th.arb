@@ -76,11 +76,6 @@
   "incognitoModeSubtitle": "เซสชันชั่วคราว ไม่บันทึกประวัติและปิดใช้งานความจำอย่างชัดเจน",
   "newIncognitoChat": "เริ่มแชทไม่ระบุตัวตน",
 
-  "liveLogsTooltip": "บันทึกสด (สำหรับการพัฒนาในเครื่องเท่านั้น)",
-  "liveLogsTitle": "บันทึกสดของ Cortex",
-  "liveLogsDescription": "สำหรับการพัฒนาในเครื่องเท่านั้น: เชื่อมต่อโดยตรงกับ /logs/stream ของ cortex_api ซึ่งข้ามพร็อกซีของ api_for_apps (ที่ไม่รองรับ WebSocket)",
-  "liveLogsConnectionError": "ไม่สามารถเชื่อมต่อได้: {error}",
-  "liveLogsWaiting": "กำลังรอบรรทัดบันทึก...",
 
   "couldNotSendMessage": "ไม่สามารถส่งข้อความได้: {error}",
 
@@ -101,5 +96,10 @@
   "languageLabel": "ภาษา",
   "languageEnglish": "อังกฤษ",
   "languagePortuguese": "โปรตุเกส",
-  "languageThai": "ไทย"
+  "languageThai": "ไทย",
+  "improveInputLabel": "ปรับปรุงข้อความนำเข้า",
+  "improveInputSubtitle": "เขียนและปรับความชัดเจนของคำสั่งโดยอัตโนมัติด้วยโมเดลให้เหตุผลในเครื่องก่อนเริ่มสร้างคำตอบ",
+  "incognitoBadge": "ไม่ระบุตัวตน",
+  "startIncognito": "เริ่มการสนทนาแบบไม่ระบุตัวตน",
+  "exitIncognito": "ออกจากการสนทนาไม่ระบุตัวตน"
 }

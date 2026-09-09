@@ -76,11 +76,6 @@
   "incognitoModeSubtitle": "Sessão efêmera: nenhum histórico é salvo e a memória fica explicitamente desligada",
   "newIncognitoChat": "Iniciar chat incógnito",
 
-  "liveLogsTooltip": "Logs ao vivo (somente desenvolvimento local)",
-  "liveLogsTitle": "Logs ao vivo do Cortex",
-  "liveLogsDescription": "Somente para desenvolvimento local: conecta diretamente ao /logs/stream do cortex_api, contornando o proxy do api_for_apps (que não suporta WebSocket).",
-  "liveLogsConnectionError": "Não foi possível conectar: {error}",
-  "liveLogsWaiting": "Aguardando linhas de log...",
 
   "couldNotSendMessage": "Não foi possível enviar a mensagem: {error}",
 
@@ -101,5 +96,10 @@
   "languageLabel": "Idioma",
   "languageEnglish": "Inglês",
   "languagePortuguese": "Português",
-  "languageThai": "Tailandês"
+  "languageThai": "Tailandês",
+  "improveInputLabel": "Melhorar minha entrada",
+  "improveInputSubtitle": "Reescreve e clarifica prompts automaticamente com modelo de raciocínio local antes da geração",
+  "incognitoBadge": "ANÔNIMO",
+  "startIncognito": "Iniciar conversa anônima",
+  "exitIncognito": "Sair do anônimo"
 }

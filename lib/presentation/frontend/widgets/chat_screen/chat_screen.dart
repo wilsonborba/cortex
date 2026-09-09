@@ -112,6 +112,10 @@ class _ChatScreenState extends State<ChatScreen> {
           onAddAttachments: _flowHandler.addPendingAttachments,
           onRemoveAttachment: _flowHandler.removePendingAttachment,
           onStartIncognitoChat: _onStartIncognitoChat,
+          onExitIncognitoChat: () {
+            _flowHandler.exitIncognitoConversation();
+            setState(() {});
+          },
           onSelectConversation: _onSelectConversation,
           onNewConversation: () => _conversationHandler.createNew(),
           onClearAllConversations: () => _conversationHandler.clearAll(),
@@ -147,6 +151,7 @@ class ChatScreenProps {
     required this.onAddAttachments,
     required this.onRemoveAttachment,
     required this.onStartIncognitoChat,
+    required this.onExitIncognitoChat,
     required this.onSelectConversation,
     required this.onNewConversation,
     required this.onClearAllConversations,
@@ -190,6 +195,10 @@ class ChatScreenProps {
   /// Starts a brand-new incognito/temporary conversation (issue #6): no
   /// persisted history, memory explicitly off.
   final VoidCallback onStartIncognitoChat;
+
+  /// Exits the current incognito/temporary conversation and restores the
+  /// previously active conversation.
+  final VoidCallback onExitIncognitoChat;
   final ValueChanged<String> onSelectConversation;
   final ValueChanged<String> onSubmit;
 

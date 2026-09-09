@@ -220,24 +220,6 @@ class AppLocalizationsTh extends AppLocalizations {
   String get newIncognitoChat => 'เริ่มแชทไม่ระบุตัวตน';
 
   @override
-  String get liveLogsTooltip => 'บันทึกสด (สำหรับการพัฒนาในเครื่องเท่านั้น)';
-
-  @override
-  String get liveLogsTitle => 'บันทึกสดของ Cortex';
-
-  @override
-  String get liveLogsDescription =>
-      'สำหรับการพัฒนาในเครื่องเท่านั้น: เชื่อมต่อโดยตรงกับ /logs/stream ของ cortex_api ซึ่งข้ามพร็อกซีของ api_for_apps (ที่ไม่รองรับ WebSocket)';
-
-  @override
-  String liveLogsConnectionError(String error) {
-    return 'ไม่สามารถเชื่อมต่อได้: $error';
-  }
-
-  @override
-  String get liveLogsWaiting => 'กำลังรอบรรทัดบันทึก...';
-
-  @override
   String couldNotSendMessage(String error) {
     return 'ไม่สามารถส่งข้อความได้: $error';
   }
@@ -287,4 +269,20 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get languageThai => 'ไทย';
+
+  @override
+  String get improveInputLabel => 'ปรับปรุงข้อความนำเข้า';
+
+  @override
+  String get improveInputSubtitle =>
+      'เขียนและปรับความชัดเจนของคำสั่งโดยอัตโนมัติด้วยโมเดลให้เหตุผลในเครื่องก่อนเริ่มสร้างคำตอบ';
+
+  @override
+  String get incognitoBadge => 'ไม่ระบุตัวตน';
+
+  @override
+  String get startIncognito => 'เริ่มการสนทนาแบบไม่ระบุตัวตน';
+
+  @override
+  String get exitIncognito => 'ออกจากการสนทนาไม่ระบุตัวตน';
 }

@@ -142,50 +142,55 @@ class _ConversationTileState extends State<ConversationTile> {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final isSelected = widget.isSelected;
     final conversation = widget.conversation;
+
+    final selectedBg = isDark
+        ? scheme.surfaceContainerHighest.withValues(alpha: 0.95)
+        : scheme.primary.withValues(alpha: 0.08);
+    final hoverBg = isDark
+        ? scheme.surfaceContainerHighest.withValues(alpha: 0.5)
+        : scheme.primary.withValues(alpha: 0.04);
 
     return MouseRegion(
       onEnter: (_) => setState(() => _isHovered = true),
       onExit: (_) => setState(() => _isHovered = false),
-      child: Container(
-        margin: const EdgeInsets.symmetric(vertical: 2),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 140),
+        margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 4),
         decoration: BoxDecoration(
-          color: isSelected ? scheme.surfaceContainerHighest : Colors.transparent,
-          borderRadius: BorderRadius.circular(6),
+          color: isSelected
+              ? selectedBg
+              : (_isHovered ? hoverBg : Colors.transparent),
+          borderRadius: BorderRadius.circular(10),
           border: isSelected
-              ? Border.all(color: scheme.outline.withValues(alpha: 0.3))
-              : null,
+              ? Border.all(
+                  color: scheme.outline.withValues(alpha: isDark ? 0.35 : 0.6),
+                  width: 1,
+                )
+              : Border.all(color: Colors.transparent, width: 1),
         ),
         child: Material(
           color: Colors.transparent,
-          borderRadius: BorderRadius.circular(6),
+          borderRadius: BorderRadius.circular(10),
           child: InkWell(
-            borderRadius: BorderRadius.circular(6),
+            borderRadius: BorderRadius.circular(10),
             onTap: widget.onTap,
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
               child: Row(
                 children: [
-                  if (isSelected)
-                    Container(
-                      width: 3,
-                      height: 16,
-                      margin: const EdgeInsets.only(right: 8),
-                      decoration: BoxDecoration(
-                        color: scheme.primary,
-                        borderRadius: BorderRadius.circular(2),
-                      ),
-                    ),
-                  if (conversation.isPinned)
-                    Padding(
-                      padding: const EdgeInsets.only(right: 6),
-                      child: Icon(
-                        Icons.push_pin_outlined,
-                        size: 13,
-                        color: scheme.onSurface.withValues(alpha: 0.5),
-                      ),
-                    ),
+                  Icon(
+                    conversation.isPinned
+                        ? Icons.push_pin_rounded
+                        : Icons.chat_bubble_outline_rounded,
+                    size: 15,
+                    color: isSelected
+                        ? scheme.primary
+                        : scheme.onSurface.withValues(alpha: 0.5),
+                  ),
+                  const SizedBox(width: 10),
                   Expanded(
                     child: Text(
                       conversation.title,
@@ -193,10 +198,11 @@ class _ConversationTileState extends State<ConversationTile> {
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                         fontSize: 13,
+                        letterSpacing: -0.1,
                         fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
                         color: isSelected
                             ? scheme.onSurface
-                            : scheme.onSurface.withValues(alpha: 0.75),
+                            : scheme.onSurface.withValues(alpha: 0.8),
                       ),
                     ),
                   ),
@@ -206,11 +212,19 @@ class _ConversationTileState extends State<ConversationTile> {
                       iconSize: 16,
                       splashRadius: 14,
                       icon: Icon(
-                        Icons.more_horiz,
+                        Icons.more_horiz_rounded,
                         size: 16,
-                        color: scheme.onSurface.withValues(alpha: 0.5),
+                        color: scheme.onSurface.withValues(alpha: 0.6),
                       ),
                       tooltip: 'Options',
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        side: BorderSide(
+                          color: scheme.outline.withValues(alpha: isDark ? 0.35 : 0.6),
+                        ),
+                      ),
+                      color: scheme.surface,
+                      elevation: 8,
                       onSelected: (action) {
                         if (action == 'rename') {
                           _showRenameDialog();
@@ -223,31 +237,31 @@ class _ConversationTileState extends State<ConversationTile> {
                       itemBuilder: (context) => [
                         PopupMenuItem(
                           value: 'rename',
-                          height: 32,
+                          height: 36,
                           child: Row(
                             children: [
-                              Icon(Icons.edit_outlined, size: 14, color: scheme.onSurface),
-                              const SizedBox(width: 8),
-                              const Text('Rename', style: TextStyle(fontSize: 12)),
+                              Icon(Icons.edit_outlined, size: 15, color: scheme.onSurface),
+                              const SizedBox(width: 10),
+                              const Text('Rename', style: TextStyle(fontSize: 13)),
                             ],
                           ),
                         ),
                         PopupMenuItem(
                           value: 'pin',
-                          height: 32,
+                          height: 36,
                           child: Row(
                             children: [
                               Icon(
                                 conversation.isPinned
                                     ? Icons.push_pin_outlined
-                                    : Icons.push_pin,
-                                size: 14,
+                                    : Icons.push_pin_rounded,
+                                size: 15,
                                 color: scheme.onSurface,
                               ),
-                              const SizedBox(width: 8),
+                              const SizedBox(width: 10),
                               Text(
                                 conversation.isPinned ? 'Unpin' : 'Pin',
-                                style: const TextStyle(fontSize: 12),
+                                style: const TextStyle(fontSize: 13),
                               ),
                             ],
                           ),
@@ -255,14 +269,14 @@ class _ConversationTileState extends State<ConversationTile> {
                         const PopupMenuDivider(height: 1),
                         PopupMenuItem(
                           value: 'delete',
-                          height: 32,
+                          height: 36,
                           child: Row(
                             children: const [
-                              Icon(Icons.delete_outline, size: 14, color: Color(0xFFE53E3E)),
-                              SizedBox(width: 8),
+                              Icon(Icons.delete_outline_rounded, size: 15, color: Color(0xFFE53E3E)),
+                              SizedBox(width: 10),
                               Text(
                                 'Delete',
-                                style: TextStyle(fontSize: 12, color: Color(0xFFE53E3E)),
+                                style: TextStyle(fontSize: 13, color: Color(0xFFE53E3E), fontWeight: FontWeight.w500),
                               ),
                             ],
                           ),

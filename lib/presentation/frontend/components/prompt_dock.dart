@@ -154,15 +154,16 @@ class _PromptDockState extends State<PromptDock> {
     return Container(
       decoration: BoxDecoration(
         color: scheme.surface,
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: scheme.outline.withValues(alpha: isDark ? 0.35 : 0.6),
+          color: scheme.outline.withValues(alpha: isDark ? 0.4 : 0.7),
+          width: 1,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.05),
-            blurRadius: 16,
-            offset: const Offset(0, 4),
+            color: Colors.black.withValues(alpha: isDark ? 0.35 : 0.05),
+            blurRadius: 24,
+            offset: const Offset(0, 6),
           ),
         ],
       ),
@@ -172,7 +173,7 @@ class _PromptDockState extends State<PromptDock> {
         children: [
           if (!_isRecordingVoice && widget.pendingAttachments.isNotEmpty)
             Padding(
-              padding: const EdgeInsets.fromLTRB(12, 10, 12, 0),
+              padding: const EdgeInsets.fromLTRB(14, 12, 14, 0),
               child: AttachmentPreviewStrip(
                 attachments: widget.pendingAttachments,
                 onRemove: widget.onRemoveAttachment ?? (_) {},
@@ -188,26 +189,32 @@ class _PromptDockState extends State<PromptDock> {
             )
           else ...[
             Padding(
-              padding: const EdgeInsets.fromLTRB(14, 10, 14, 4),
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 6),
               child: TextField(
                 controller: _controller,
                 focusNode: _focusNode,
                 minLines: 1,
                 maxLines: 6,
-                style: const TextStyle(fontSize: 14),
+                style: const TextStyle(fontSize: 14.5, height: 1.4),
                 decoration: InputDecoration(
                   isDense: true,
                   hintText: l10n.messageHint,
                   border: InputBorder.none,
+                  enabledBorder: InputBorder.none,
+                  focusedBorder: InputBorder.none,
+                  filled: false,
                   contentPadding: EdgeInsets.zero,
+                  hintStyle: TextStyle(
+                    color: scheme.onSurface.withValues(alpha: 0.45),
+                    fontSize: 14.5,
+                  ),
                 ),
                 onSubmitted: (_) => _submit(),
                 onChanged: widget.onDraftChanged,
               ),
             ),
-            const Divider(height: 12, thickness: 1),
             Padding(
-              padding: const EdgeInsets.fromLTRB(10, 2, 10, 8),
+              padding: const EdgeInsets.fromLTRB(10, 2, 10, 10),
               child: Row(
                 children: [
                   Expanded(
@@ -218,76 +225,81 @@ class _PromptDockState extends State<PromptDock> {
                         children: [
                           // Attach button
                           _DockToolButton(
-                            icon: Icons.attach_file,
+                            icon: Icons.add_rounded,
                             tooltip: l10n.attachTooltip,
                             onPressed: widget.onAddAttachments == null
                                 ? null
                                 : _openAttachMenu,
                           ),
-                          const SizedBox(width: 6),
+                          const SizedBox(width: 8),
                           // Web Search Pill
                           _DockPill(
-                            icon: Icons.language,
+                            icon: Icons.travel_explore_rounded,
                             label: l10n.webResearchPill,
                             active: widget.needsWeb,
                             onPressed: widget.onToggleNeedsWeb == null
                                 ? null
                                 : () => widget.onToggleNeedsWeb!(!widget.needsWeb),
                           ),
-                          const SizedBox(width: 6),
-                          // Memory Engine Pill
-                          _DockPill(
-                            icon: Icons.memory,
-                            label: l10n.memoryEnginePill,
-                            active: widget.useMemory,
-                            onPressed: widget.onToggleMemory == null
-                                ? null
-                                : () => widget.onToggleMemory!(!widget.useMemory),
-                          ),
                         ],
                       ),
                     ),
                   ),
-                  const SizedBox(width: 6),
+                  const SizedBox(width: 8),
                   // Voice message recorder (issue #11): tapping transitions
                   // this dock into VoiceRecordingBar above.
                   Tooltip(
                     message: l10n.voiceStartRecording,
-                    child: IconButton(
-                      onPressed: widget.onSendVoiceMessage == null
-                          ? null
-                          : () => setState(() => _isRecordingVoice = true),
-                      icon: Icon(
-                        Icons.mic_none_outlined,
-                        color: scheme.onSurface.withValues(alpha: 0.7),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 6),
-                  // Send / Stop button
-                  Tooltip(
-                    message: widget.isBusy ? 'Stop generation' : 'Send message (Enter)',
-                    child: Container(
-                      width: 32,
-                      height: 32,
-                      decoration: BoxDecoration(
-                        color: scheme.primary,
-                        borderRadius: BorderRadius.circular(6),
-                      ),
+                    child: Material(
+                      color: Colors.transparent,
+                      borderRadius: BorderRadius.circular(10),
                       child: InkWell(
-                        borderRadius: BorderRadius.circular(6),
-                        onTap: widget.isBusy ? null : _submit,
-                        child: Icon(
-                          widget.isBusy ? Icons.stop : Icons.arrow_upward,
-                          size: 16,
-                          color: scheme.onPrimary,
+                        borderRadius: BorderRadius.circular(10),
+                        onTap: widget.onSendVoiceMessage == null
+                            ? null
+                            : () => setState(() => _isRecordingVoice = true),
+                        child: Padding(
+                          padding: const EdgeInsets.all(6),
+                          child: Icon(
+                            Icons.mic_none_rounded,
+                            size: 20,
+                            color: scheme.onSurface.withValues(alpha: 0.7),
+                          ),
                         ),
                       ),
                     ),
                   ),
-              ],
+                  const SizedBox(width: 8),
+                  // Send / Stop button
+                  Tooltip(
+                    message: widget.isBusy ? 'Stop generation' : 'Send message (Enter)',
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(18),
+                        onTap: widget.isBusy ? null : _submit,
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 140),
+                          width: 34,
+                          height: 34,
+                          decoration: BoxDecoration(
+                            color: scheme.primary,
+                            shape: BoxShape.circle,
+                          ),
+                          child: Center(
+                            child: Icon(
+                              widget.isBusy ? Icons.stop_rounded : Icons.arrow_upward_rounded,
+                              size: 18,
+                              color: scheme.onPrimary,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
           ],
         ],
       ),
@@ -309,24 +321,30 @@ class _DockToolButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Tooltip(
       message: tooltip,
-      child: Container(
-        width: 30,
-        height: 30,
-        decoration: BoxDecoration(
-          border: Border.all(
-            color: scheme.outline.withValues(alpha: 0.3),
-          ),
-          borderRadius: BorderRadius.circular(6),
-        ),
+      child: Material(
+        color: scheme.surfaceContainerHighest.withValues(alpha: 0.7),
+        borderRadius: BorderRadius.circular(10),
         child: InkWell(
-          borderRadius: BorderRadius.circular(6),
+          borderRadius: BorderRadius.circular(10),
           onTap: onPressed,
-          child: Icon(
-            icon,
-            size: 15,
-            color: scheme.onSurface.withValues(alpha: 0.7),
+          child: Container(
+            width: 32,
+            height: 32,
+            decoration: BoxDecoration(
+              border: Border.all(
+                color: scheme.outline.withValues(alpha: isDark ? 0.35 : 0.6),
+                width: 1,
+              ),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Icon(
+              icon,
+              size: 18,
+              color: scheme.onSurface.withValues(alpha: 0.8),
+            ),
           ),
         ),
       ),
@@ -350,45 +368,51 @@ class _DockPill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    return InkWell(
-      onTap: onPressed,
-      borderRadius: BorderRadius.circular(4),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
-        decoration: BoxDecoration(
-          color: active
-              ? scheme.surfaceContainerHighest
-              : scheme.surfaceContainerHighest.withValues(alpha: 0.5),
-          borderRadius: BorderRadius.circular(4),
-          border: Border.all(
-            color: active
-                ? scheme.primary
-                : scheme.outline.withValues(alpha: 0.3),
-          ),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              icon,
-              size: 13,
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return Material(
+      color: active
+          ? (isDark ? scheme.surfaceContainerHighest : scheme.primary.withValues(alpha: 0.1))
+          : scheme.surfaceContainerHighest.withValues(alpha: 0.5),
+      borderRadius: BorderRadius.circular(20),
+      child: InkWell(
+        onTap: onPressed,
+        borderRadius: BorderRadius.circular(20),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 140),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
               color: active
                   ? scheme.primary
-                  : scheme.onSurface.withValues(alpha: 0.7),
+                  : scheme.outline.withValues(alpha: isDark ? 0.35 : 0.6),
+              width: 1,
             ),
-            const SizedBox(width: 4),
-            Text(
-              label,
-              style: TextStyle(
-                fontFamily: 'monospace',
-                fontSize: 11,
-                fontWeight: active ? FontWeight.w600 : FontWeight.w400,
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                icon,
+                size: 14,
                 color: active
                     ? scheme.primary
-                    : scheme.onSurface.withValues(alpha: 0.7),
+                    : scheme.onSurface.withValues(alpha: 0.75),
               ),
-            ),
-          ],
+              const SizedBox(width: 6),
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 12,
+                  letterSpacing: -0.1,
+                  fontWeight: active ? FontWeight.w600 : FontWeight.w500,
+                  color: active
+                      ? scheme.primary
+                      : scheme.onSurface.withValues(alpha: 0.8),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

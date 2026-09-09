@@ -14,9 +14,6 @@ import 'session_service.dart';
 /// 3. [tryConsumeReturnUri] (called once at startup) recognizes that route,
 ///    redeems the token via `/v1/exchange`, and persists the resulting
 ///    session flag locally.
-///
-/// [continueAsGuest] is the other, much simpler path: a purely client-side
-/// flag with no server round trip at all (see [SessionService] doc comment).
 class AuthService {
   AuthService(this._adapter, this._sessionService);
 
