@@ -209,7 +209,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get documentAttachmentBackendGap =>
-      'Esse tipo de arquivo pode não ser totalmente suportado ainda e o processamento pode falhar.';
+      'Esse tipo de arquivo pode não ser suportado. Suportados: imagens, áudio, PDF, Word (.docx) e arquivos de texto simples/JSON/XML.';
 
   @override
   String get voiceStartRecording => 'Gravar uma mensagem de voz';

@@ -208,7 +208,7 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get documentAttachmentBackendGap =>
-      'ไฟล์ประเภทนี้อาจยังไม่ได้รับการรองรับอย่างสมบูรณ์ และอาจประมวลผลไม่สำเร็จ';
+      'ไฟล์ประเภทนี้อาจไม่รองรับ รองรับ: รูปภาพ, เสียง, PDF, Word (.docx) และไฟล์ข้อความ/JSON/XML ทั่วไป';
 
   @override
   String get voiceStartRecording => 'บันทึกข้อความเสียง';
