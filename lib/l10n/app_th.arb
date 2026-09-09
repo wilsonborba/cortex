@@ -121,5 +121,12 @@
   "improveInputSubtitle": "เขียนและปรับความชัดเจนของคำสั่งโดยอัตโนมัติด้วยโมเดลให้เหตุผลในเครื่องก่อนเริ่มสร้างคำตอบ",
   "incognitoBadge": "ไม่ระบุตัวตน",
   "startIncognito": "เริ่มการสนทนาแบบไม่ระบุตัวตน",
-  "exitIncognito": "ออกจากการสนทนาไม่ระบุตัวตน"
+  "exitIncognito": "ออกจากการสนทนาไม่ระบุตัวตน",
+
+  "memoryGraphTooltip": "กราฟความทรงจำ",
+  "memoryGraphTitle": "กราฟความทรงจำ",
+  "memoryGraphEmptyTitle": "ยังไม่มีความทรงจำ",
+  "memoryGraphEmptyBody": "เมื่อ Cortex จดจำบางสิ่ง มันจะแสดงที่นี่เป็นกราฟ",
+  "memoryGraphTruncatedNotice": "มุมมองนี้ไม่ได้แสดงกราฟทั้งหมด บางโหนดถูกละไว้",
+  "memoryGraphNoContextAvailable": "ไม่มีบริบทสำหรับโหนดนี้"
 }

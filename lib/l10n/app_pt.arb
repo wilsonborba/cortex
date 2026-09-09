@@ -121,5 +121,12 @@
   "improveInputSubtitle": "Reescreve e clarifica prompts automaticamente com modelo de raciocínio local antes da geração",
   "incognitoBadge": "ANÔNIMO",
   "startIncognito": "Iniciar conversa anônima",
-  "exitIncognito": "Sair do anônimo"
+  "exitIncognito": "Sair do anônimo",
+
+  "memoryGraphTooltip": "Grafo de memórias",
+  "memoryGraphTitle": "Grafo de memórias",
+  "memoryGraphEmptyTitle": "Nenhuma memória ainda",
+  "memoryGraphEmptyBody": "Assim que o Cortex guardar alguma memória, ela aparece aqui como um grafo.",
+  "memoryGraphTruncatedNotice": "Esta visualização não mostra o grafo completo, alguns nós ficaram de fora.",
+  "memoryGraphNoContextAvailable": "Nenhum contexto disponível para este nó."
 }

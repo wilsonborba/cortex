@@ -10,6 +10,7 @@ import '../../components/conversation_tile.dart';
 import '../../components/message_bubble.dart';
 import '../../components/prompt_dock.dart';
 import '../../components/scroll_to_bottom_button.dart';
+import '../memory_graph_screen/memory_graph_screen.dart';
 import 'chat_screen.dart';
 
 /// Mobile / narrow-viewport layout: a single chat view with a sliding
@@ -145,6 +146,13 @@ class _MobileChatScreenState extends State<MobileChatScreen> {
               icon: const Icon(Icons.download_outlined, size: 18),
               onPressed: () => _exportConversation(props.selectedConversation),
             ),
+          IconButton(
+            tooltip: l10n.memoryGraphTooltip,
+            icon: const Icon(Icons.hub_outlined, size: 18),
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => const MemoryGraphScreen()),
+            ),
+          ),
           IconButton(
             tooltip: 'Settings',
             icon: const Icon(Icons.tune_outlined, size: 18),

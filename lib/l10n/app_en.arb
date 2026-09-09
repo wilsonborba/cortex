@@ -136,5 +136,12 @@
   "improveInputSubtitle": "Automatically rewrites and clarifies prompts with local reasoning model before generation",
   "incognitoBadge": "INCOGNITO",
   "startIncognito": "Start Incognito Chat",
-  "exitIncognito": "Exit Incognito"
+  "exitIncognito": "Exit Incognito",
+
+  "memoryGraphTooltip": "Memory graph",
+  "memoryGraphTitle": "Memory graph",
+  "memoryGraphEmptyTitle": "No memories yet",
+  "memoryGraphEmptyBody": "Once Cortex remembers something, it will show up here as a graph.",
+  "memoryGraphTruncatedNotice": "This view does not show the full graph, some nodes were left out.",
+  "memoryGraphNoContextAvailable": "No context available for this node."
 }

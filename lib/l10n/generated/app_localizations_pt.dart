@@ -355,4 +355,25 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get exitIncognito => 'Sair do anônimo';
+
+  @override
+  String get memoryGraphTooltip => 'Grafo de memórias';
+
+  @override
+  String get memoryGraphTitle => 'Grafo de memórias';
+
+  @override
+  String get memoryGraphEmptyTitle => 'Nenhuma memória ainda';
+
+  @override
+  String get memoryGraphEmptyBody =>
+      'Assim que o Cortex guardar alguma memória, ela aparece aqui como um grafo.';
+
+  @override
+  String get memoryGraphTruncatedNotice =>
+      'Esta visualização não mostra o grafo completo, alguns nós ficaram de fora.';
+
+  @override
+  String get memoryGraphNoContextAvailable =>
+      'Nenhum contexto disponível para este nó.';
 }

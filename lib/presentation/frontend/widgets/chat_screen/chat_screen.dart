@@ -15,7 +15,13 @@ import 'mobile_chat_screen.dart';
 /// drawer layout depending on the available width, and owns the handlers
 /// both layouts share.
 class ChatScreen extends StatefulWidget {
-  const ChatScreen({super.key});
+  const ChatScreen({super.key, this.initialAttachment});
+
+  /// Seeds a brand-new draft conversation with this attachment already
+  /// pending above the composer (e.g. a memory graph node's context),
+  /// exactly like a user-picked file attachment. The composer itself stays
+  /// empty: nothing is auto-sent.
+  final ChatAttachment? initialAttachment;
 
   @override
   State<ChatScreen> createState() => _ChatScreenState();
@@ -28,6 +34,13 @@ class _ChatScreenState extends State<ChatScreen> {
   Object? _lastShownError;
   String? _userEmail;
 
+  /// One-shot guard: the very first automatic sync from
+  /// [ConversationHandler] (its own async remote-conversation load
+  /// finishing) must not clobber a freshly seeded draft conversation before
+  /// the user has even seen it. Any later, user-triggered conversation
+  /// switch (sidebar tap) is unaffected.
+  bool _suppressNextAutoSwitch = false;
+
   @override
   void initState() {
     super.initState();
@@ -35,6 +48,12 @@ class _ChatScreenState extends State<ChatScreen> {
     _flowHandler = ChatFlowHandler(_chatService, _conversationHandler.selected);
     _conversationHandler.addListener(_onConversationChanged);
     _loadUserInfo();
+
+    if (widget.initialAttachment != null) {
+      _flowHandler.switchConversation(_chatService.newDraftConversation());
+      _flowHandler.addPendingAttachment(widget.initialAttachment!);
+      _suppressNextAutoSwitch = true;
+    }
   }
 
   Future<void> _loadUserInfo() async {
@@ -59,6 +78,10 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   void _onConversationChanged() {
+    if (_suppressNextAutoSwitch) {
+      _suppressNextAutoSwitch = false;
+      return;
+    }
     _flowHandler.switchConversation(_conversationHandler.selected);
   }
 

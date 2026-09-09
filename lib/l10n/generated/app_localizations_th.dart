@@ -351,4 +351,24 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get exitIncognito => 'ออกจากการสนทนาไม่ระบุตัวตน';
+
+  @override
+  String get memoryGraphTooltip => 'กราฟความทรงจำ';
+
+  @override
+  String get memoryGraphTitle => 'กราฟความทรงจำ';
+
+  @override
+  String get memoryGraphEmptyTitle => 'ยังไม่มีความทรงจำ';
+
+  @override
+  String get memoryGraphEmptyBody =>
+      'เมื่อ Cortex จดจำบางสิ่ง มันจะแสดงที่นี่เป็นกราฟ';
+
+  @override
+  String get memoryGraphTruncatedNotice =>
+      'มุมมองนี้ไม่ได้แสดงกราฟทั้งหมด บางโหนดถูกละไว้';
+
+  @override
+  String get memoryGraphNoContextAvailable => 'ไม่มีบริบทสำหรับโหนดนี้';
 }

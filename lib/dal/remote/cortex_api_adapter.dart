@@ -10,6 +10,7 @@ import '../../core/utils/csrf.dart';
 import '../../domain/models/chat_message.dart';
 import '../../domain/models/execute_request.dart';
 import '../../domain/models/execute_response.dart';
+import '../../domain/models/memory_graph.dart';
 import 'credentials_client.dart';
 
 /// Remote adapter for cortex_api, reached exclusively through api_for_apps'
@@ -245,6 +246,47 @@ class CortexApiAdapter {
       }
     } catch (e) {
       AppLogger.warning('Failed to fetch conversation $conversationId: $e');
+    }
+    return null;
+  }
+
+  /// Fetches the tenant-scoped memory graph (`GET /memory-graph`). Identity
+  /// is derived server-side from the session cookie via the proxy, exactly
+  /// like every other authenticated GET here, no `tenant_id` query param.
+  Future<MemoryGraph?> fetchMemoryGraph({int limit = 40, int depth = 1}) async {
+    final uri = Uri.parse(
+      '$apiForAppsBaseUrl${AppSettings.cortexProxyPrefix}/memory-graph?limit=$limit&depth=$depth',
+    );
+    final headers = <String, String>{};
+    _addAppProofHeader(headers);
+    try {
+      final response = await _httpClient.get(uri, headers: headers);
+      if (response.statusCode == 200) {
+        return MemoryGraph.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
+      }
+    } catch (e) {
+      AppLogger.warning('Failed to fetch memory graph: $e');
+    }
+    return null;
+  }
+
+  /// Fetches a single node's context (`GET /memory-graph/nodes/{node_id}/context`),
+  /// used to seed a new conversation's first attachment when a graph node is
+  /// tapped. 404 (not found / not this tenant's) surfaces as null, same as
+  /// every other not-found case in this adapter.
+  Future<Map<String, dynamic>?> fetchNodeContext(String nodeId) async {
+    final uri = Uri.parse(
+      '$apiForAppsBaseUrl${AppSettings.cortexProxyPrefix}/memory-graph/nodes/$nodeId/context',
+    );
+    final headers = <String, String>{};
+    _addAppProofHeader(headers);
+    try {
+      final response = await _httpClient.get(uri, headers: headers);
+      if (response.statusCode == 200) {
+        return Map<String, dynamic>.from(jsonDecode(response.body) as Map);
+      }
+    } catch (e) {
+      AppLogger.warning('Failed to fetch node context for $nodeId: $e');
     }
     return null;
   }

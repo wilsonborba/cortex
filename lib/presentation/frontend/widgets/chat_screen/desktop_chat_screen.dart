@@ -10,6 +10,7 @@ import '../../components/conversation_tile.dart';
 import '../../components/message_bubble.dart';
 import '../../components/prompt_dock.dart';
 import '../../components/scroll_to_bottom_button.dart';
+import '../memory_graph_screen/memory_graph_screen.dart';
 import 'chat_screen.dart';
 
 /// Desktop / wide-viewport layout: a collapsible master sidebar of
@@ -320,6 +321,13 @@ class _DesktopChatScreenState extends State<DesktopChatScreen> {
                                     fontWeight: FontWeight.w600,
                                     color: scheme.onSurface,
                                   ),
+                                ),
+                              ),
+                              IconButton(
+                                tooltip: l10n.memoryGraphTooltip,
+                                icon: const Icon(Icons.hub_outlined, size: 17),
+                                onPressed: () => Navigator.of(context).push(
+                                  MaterialPageRoute(builder: (_) => const MemoryGraphScreen()),
                                 ),
                               ),
                               IconButton(

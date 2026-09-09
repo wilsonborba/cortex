@@ -717,6 +717,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Exit Incognito'**
   String get exitIncognito;
+
+  /// No description provided for @memoryGraphTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Memory graph'**
+  String get memoryGraphTooltip;
+
+  /// No description provided for @memoryGraphTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Memory graph'**
+  String get memoryGraphTitle;
+
+  /// No description provided for @memoryGraphEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No memories yet'**
+  String get memoryGraphEmptyTitle;
+
+  /// No description provided for @memoryGraphEmptyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Once Cortex remembers something, it will show up here as a graph.'**
+  String get memoryGraphEmptyBody;
+
+  /// No description provided for @memoryGraphTruncatedNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'This view does not show the full graph, some nodes were left out.'**
+  String get memoryGraphTruncatedNotice;
+
+  /// No description provided for @memoryGraphNoContextAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'No context available for this node.'**
+  String get memoryGraphNoContextAvailable;
 }
 
 class _AppLocalizationsDelegate

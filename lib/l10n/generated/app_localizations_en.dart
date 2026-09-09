@@ -350,4 +350,25 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get exitIncognito => 'Exit Incognito';
+
+  @override
+  String get memoryGraphTooltip => 'Memory graph';
+
+  @override
+  String get memoryGraphTitle => 'Memory graph';
+
+  @override
+  String get memoryGraphEmptyTitle => 'No memories yet';
+
+  @override
+  String get memoryGraphEmptyBody =>
+      'Once Cortex remembers something, it will show up here as a graph.';
+
+  @override
+  String get memoryGraphTruncatedNotice =>
+      'This view does not show the full graph, some nodes were left out.';
+
+  @override
+  String get memoryGraphNoContextAvailable =>
+      'No context available for this node.';
 }
