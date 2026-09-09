@@ -2,6 +2,7 @@ import 'dart:math' as math;
 import 'dart:ui' show Offset;
 
 import '../../../../domain/models/memory_graph.dart';
+import 'memory_graph_painter.dart';
 
 /// A graph node together with its computed 2D position on the layout
 /// canvas.
@@ -44,8 +45,22 @@ GraphLayout computeForceDirectedLayout(
 
   // Scale the canvas with node count so dense graphs don't pile up.
   final side = math.max(900.0, 220.0 * math.sqrt(n.toDouble()));
-  final width = side;
-  final height = side;
+
+  // Half of the largest card footprint across every node type, plus a small
+  // safety buffer for the glass card's own drop shadow bleed. Every node
+  // position is later clamped to stay at least this far from each canvas
+  // edge (see the clamp below), so no card - regardless of its type's real
+  // size - can ever be positioned close enough to the raw canvas edge to
+  // clip against the Stack's bounds. `width`/`height` are then padded so
+  // that clamp range is always valid (lower <= upper) even for a single-node
+  // graph, whose `side` would otherwise be far bigger than needed but still
+  // must exceed twice the margin.
+  const shadowBleed = 20.0;
+  final maxCardSize = MemoryGraphNodeStyle.maxSize;
+  final marginX = maxCardSize.width / 2 + shadowBleed;
+  final marginY = maxCardSize.height / 2 + shadowBleed;
+  final width = math.max(side, marginX * 2 + 100);
+  final height = math.max(side, marginY * 2 + 100);
   final center = Offset(width / 2, height / 2);
 
   // Seeded so layout is stable across rebuilds/tests, not truly random.
@@ -111,8 +126,8 @@ GraphLayout computeForceDirectedLayout(
       final capped = disp / distance * math.min(distance, temperature);
       var next = positions[id]! + capped;
       next = Offset(
-        next.dx.clamp(40.0, width - 40.0),
-        next.dy.clamp(40.0, height - 40.0),
+        next.dx.clamp(marginX, width - marginX),
+        next.dy.clamp(marginY, height - marginY),
       );
       positions[id] = next;
     }

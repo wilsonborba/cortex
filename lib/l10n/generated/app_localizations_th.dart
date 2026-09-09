@@ -371,4 +371,45 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get memoryGraphNoContextAvailable => 'ไม่มีบริบทสำหรับโหนดนี้';
+
+  @override
+  String get memoryGraphTimeJustNow => 'เมื่อสักครู่';
+
+  @override
+  String memoryGraphTimeMinutesAgo(int count) {
+    return '$count นาทีที่แล้ว';
+  }
+
+  @override
+  String memoryGraphTimeHoursAgo(int count) {
+    return '$count ชั่วโมงที่แล้ว';
+  }
+
+  @override
+  String memoryGraphTimeDaysAgo(int count) {
+    return '$count วันที่แล้ว';
+  }
+
+  @override
+  String get memoryGraphTypeMemory => 'ความทรงจำ';
+
+  @override
+  String get memoryGraphTypeAttachment => 'ไฟล์แนบ';
+
+  @override
+  String get memoryGraphTypeTag => 'แท็ก';
+
+  @override
+  String get memoryGraphTypeEntity => 'เอนทิตี';
+
+  @override
+  String get memoryGraphTypeResource => 'แหล่งข้อมูล';
+
+  @override
+  String get memoryGraphTypeCluster => 'กลุ่ม';
+
+  @override
+  String memoryGraphClusterCount(int count) {
+    return 'อีก $count รายการ';
+  }
 }

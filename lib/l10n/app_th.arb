@@ -128,5 +128,28 @@
   "memoryGraphEmptyTitle": "ยังไม่มีความทรงจำ",
   "memoryGraphEmptyBody": "เมื่อ Cortex จดจำบางสิ่ง มันจะแสดงที่นี่เป็นกราฟ",
   "memoryGraphTruncatedNotice": "มุมมองนี้ไม่ได้แสดงกราฟทั้งหมด บางโหนดถูกละไว้",
-  "memoryGraphNoContextAvailable": "ไม่มีบริบทสำหรับโหนดนี้"
+  "memoryGraphNoContextAvailable": "ไม่มีบริบทสำหรับโหนดนี้",
+  "memoryGraphTimeJustNow": "เมื่อสักครู่",
+  "memoryGraphTimeMinutesAgo": "{count} นาทีที่แล้ว",
+  "@memoryGraphTimeMinutesAgo": {
+    "placeholders": {"count": {"type": "int"}}
+  },
+  "memoryGraphTimeHoursAgo": "{count} ชั่วโมงที่แล้ว",
+  "@memoryGraphTimeHoursAgo": {
+    "placeholders": {"count": {"type": "int"}}
+  },
+  "memoryGraphTimeDaysAgo": "{count} วันที่แล้ว",
+  "@memoryGraphTimeDaysAgo": {
+    "placeholders": {"count": {"type": "int"}}
+  },
+  "memoryGraphTypeMemory": "ความทรงจำ",
+  "memoryGraphTypeAttachment": "ไฟล์แนบ",
+  "memoryGraphTypeTag": "แท็ก",
+  "memoryGraphTypeEntity": "เอนทิตี",
+  "memoryGraphTypeResource": "แหล่งข้อมูล",
+  "memoryGraphTypeCluster": "กลุ่ม",
+  "memoryGraphClusterCount": "อีก {count} รายการ",
+  "@memoryGraphClusterCount": {
+    "placeholders": {"count": {"type": "int"}}
+  }
 }

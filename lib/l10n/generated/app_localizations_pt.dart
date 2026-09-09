@@ -376,4 +376,45 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get memoryGraphNoContextAvailable =>
       'Nenhum contexto disponível para este nó.';
+
+  @override
+  String get memoryGraphTimeJustNow => 'Agora mesmo';
+
+  @override
+  String memoryGraphTimeMinutesAgo(int count) {
+    return 'há ${count}min';
+  }
+
+  @override
+  String memoryGraphTimeHoursAgo(int count) {
+    return 'há ${count}h';
+  }
+
+  @override
+  String memoryGraphTimeDaysAgo(int count) {
+    return 'há ${count}d';
+  }
+
+  @override
+  String get memoryGraphTypeMemory => 'Memória';
+
+  @override
+  String get memoryGraphTypeAttachment => 'Anexo';
+
+  @override
+  String get memoryGraphTypeTag => 'Etiqueta';
+
+  @override
+  String get memoryGraphTypeEntity => 'Entidade';
+
+  @override
+  String get memoryGraphTypeResource => 'Recurso';
+
+  @override
+  String get memoryGraphTypeCluster => 'Agrupamento';
+
+  @override
+  String memoryGraphClusterCount(int count) {
+    return 'mais $count';
+  }
 }

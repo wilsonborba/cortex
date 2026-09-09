@@ -753,6 +753,72 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No context available for this node.'**
   String get memoryGraphNoContextAvailable;
+
+  /// No description provided for @memoryGraphTimeJustNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Just now'**
+  String get memoryGraphTimeJustNow;
+
+  /// No description provided for @memoryGraphTimeMinutesAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{count}m ago'**
+  String memoryGraphTimeMinutesAgo(int count);
+
+  /// No description provided for @memoryGraphTimeHoursAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{count}h ago'**
+  String memoryGraphTimeHoursAgo(int count);
+
+  /// No description provided for @memoryGraphTimeDaysAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{count}d ago'**
+  String memoryGraphTimeDaysAgo(int count);
+
+  /// No description provided for @memoryGraphTypeMemory.
+  ///
+  /// In en, this message translates to:
+  /// **'Memory'**
+  String get memoryGraphTypeMemory;
+
+  /// No description provided for @memoryGraphTypeAttachment.
+  ///
+  /// In en, this message translates to:
+  /// **'Attachment'**
+  String get memoryGraphTypeAttachment;
+
+  /// No description provided for @memoryGraphTypeTag.
+  ///
+  /// In en, this message translates to:
+  /// **'Tag'**
+  String get memoryGraphTypeTag;
+
+  /// No description provided for @memoryGraphTypeEntity.
+  ///
+  /// In en, this message translates to:
+  /// **'Entity'**
+  String get memoryGraphTypeEntity;
+
+  /// No description provided for @memoryGraphTypeResource.
+  ///
+  /// In en, this message translates to:
+  /// **'Resource'**
+  String get memoryGraphTypeResource;
+
+  /// No description provided for @memoryGraphTypeCluster.
+  ///
+  /// In en, this message translates to:
+  /// **'Cluster'**
+  String get memoryGraphTypeCluster;
+
+  /// No description provided for @memoryGraphClusterCount.
+  ///
+  /// In en, this message translates to:
+  /// **'+{count} more'**
+  String memoryGraphClusterCount(int count);
 }
 
 class _AppLocalizationsDelegate

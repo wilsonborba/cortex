@@ -371,4 +371,45 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get memoryGraphNoContextAvailable =>
       'No context available for this node.';
+
+  @override
+  String get memoryGraphTimeJustNow => 'Just now';
+
+  @override
+  String memoryGraphTimeMinutesAgo(int count) {
+    return '${count}m ago';
+  }
+
+  @override
+  String memoryGraphTimeHoursAgo(int count) {
+    return '${count}h ago';
+  }
+
+  @override
+  String memoryGraphTimeDaysAgo(int count) {
+    return '${count}d ago';
+  }
+
+  @override
+  String get memoryGraphTypeMemory => 'Memory';
+
+  @override
+  String get memoryGraphTypeAttachment => 'Attachment';
+
+  @override
+  String get memoryGraphTypeTag => 'Tag';
+
+  @override
+  String get memoryGraphTypeEntity => 'Entity';
+
+  @override
+  String get memoryGraphTypeResource => 'Resource';
+
+  @override
+  String get memoryGraphTypeCluster => 'Cluster';
+
+  @override
+  String memoryGraphClusterCount(int count) {
+    return '+$count more';
+  }
 }

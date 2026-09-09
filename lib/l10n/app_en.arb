@@ -143,5 +143,28 @@
   "memoryGraphEmptyTitle": "No memories yet",
   "memoryGraphEmptyBody": "Once Cortex remembers something, it will show up here as a graph.",
   "memoryGraphTruncatedNotice": "This view does not show the full graph, some nodes were left out.",
-  "memoryGraphNoContextAvailable": "No context available for this node."
+  "memoryGraphNoContextAvailable": "No context available for this node.",
+  "memoryGraphTimeJustNow": "Just now",
+  "memoryGraphTimeMinutesAgo": "{count}m ago",
+  "@memoryGraphTimeMinutesAgo": {
+    "placeholders": {"count": {"type": "int"}}
+  },
+  "memoryGraphTimeHoursAgo": "{count}h ago",
+  "@memoryGraphTimeHoursAgo": {
+    "placeholders": {"count": {"type": "int"}}
+  },
+  "memoryGraphTimeDaysAgo": "{count}d ago",
+  "@memoryGraphTimeDaysAgo": {
+    "placeholders": {"count": {"type": "int"}}
+  },
+  "memoryGraphTypeMemory": "Memory",
+  "memoryGraphTypeAttachment": "Attachment",
+  "memoryGraphTypeTag": "Tag",
+  "memoryGraphTypeEntity": "Entity",
+  "memoryGraphTypeResource": "Resource",
+  "memoryGraphTypeCluster": "Cluster",
+  "memoryGraphClusterCount": "+{count} more",
+  "@memoryGraphClusterCount": {
+    "placeholders": {"count": {"type": "int"}}
+  }
 }

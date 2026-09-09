@@ -128,5 +128,28 @@
   "memoryGraphEmptyTitle": "Nenhuma memória ainda",
   "memoryGraphEmptyBody": "Assim que o Cortex guardar alguma memória, ela aparece aqui como um grafo.",
   "memoryGraphTruncatedNotice": "Esta visualização não mostra o grafo completo, alguns nós ficaram de fora.",
-  "memoryGraphNoContextAvailable": "Nenhum contexto disponível para este nó."
+  "memoryGraphNoContextAvailable": "Nenhum contexto disponível para este nó.",
+  "memoryGraphTimeJustNow": "Agora mesmo",
+  "memoryGraphTimeMinutesAgo": "há {count}min",
+  "@memoryGraphTimeMinutesAgo": {
+    "placeholders": {"count": {"type": "int"}}
+  },
+  "memoryGraphTimeHoursAgo": "há {count}h",
+  "@memoryGraphTimeHoursAgo": {
+    "placeholders": {"count": {"type": "int"}}
+  },
+  "memoryGraphTimeDaysAgo": "há {count}d",
+  "@memoryGraphTimeDaysAgo": {
+    "placeholders": {"count": {"type": "int"}}
+  },
+  "memoryGraphTypeMemory": "Memória",
+  "memoryGraphTypeAttachment": "Anexo",
+  "memoryGraphTypeTag": "Etiqueta",
+  "memoryGraphTypeEntity": "Entidade",
+  "memoryGraphTypeResource": "Recurso",
+  "memoryGraphTypeCluster": "Agrupamento",
+  "memoryGraphClusterCount": "mais {count}",
+  "@memoryGraphClusterCount": {
+    "placeholders": {"count": {"type": "int"}}
+  }
 }

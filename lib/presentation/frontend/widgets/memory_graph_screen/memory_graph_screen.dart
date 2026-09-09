@@ -4,6 +4,7 @@ import 'dart:math' as math;
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
+import '../../../../core/utils/responsive.dart';
 import '../../../../dal/remote/cortex_api_adapter.dart';
 import '../../../../domain/models/attachment.dart';
 import '../../../../domain/models/memory_graph.dart';
@@ -120,9 +121,15 @@ class _MemoryGraphScreenState extends State<MemoryGraphScreen> {
     final scheme = Theme.of(context).colorScheme;
     final l10n = AppLocalizations.of(context);
 
+    // Desktop relies on the browser's own back/forward buttons for
+    // navigation (product feedback), so no in-app back arrow there; mobile
+    // has no browser chrome, so it keeps Flutter's default auto-generated one.
+    final isMobile = Responsive.isMobile(context);
+
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.memoryGraphTitle),
+        automaticallyImplyLeading: isMobile,
       ),
       body: Stack(
         children: [
@@ -163,7 +170,12 @@ class _MemoryGraphScreenState extends State<MemoryGraphScreen> {
         child: SizedBox(
           width: width,
           height: height,
+          // `Clip.none`: the layout already reserves a margin (see
+          // `computeForceDirectedLayout`) so no card sits near the canvas
+          // edge, this is just an extra safety net against the Stack's
+          // default hard clip cutting a card in half (the prior reported bug).
           child: Stack(
+            clipBehavior: Clip.none,
             children: [
               Positioned.fill(
                 child: CustomPaint(
@@ -175,9 +187,13 @@ class _MemoryGraphScreenState extends State<MemoryGraphScreen> {
                 ),
               ),
               for (final p in _layout.positions)
+                // Center each card on its node's position using that exact
+                // type's own known footprint (single source of truth:
+                // `MemoryGraphNodeStyle.sizeForType`), never a fixed guessed
+                // offset.
                 Positioned(
-                  left: p.position.dx - 75,
-                  top: p.position.dy - 18,
+                  left: p.position.dx - MemoryGraphNodeStyle.sizeForType(p.node.nodeType).width / 2,
+                  top: p.position.dy - MemoryGraphNodeStyle.sizeForType(p.node.nodeType).height / 2,
                   child: MemoryGraphNodeWidget(
                     node: p.node,
                     onTap: () => _onNodeTap(p.node),
