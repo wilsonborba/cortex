@@ -1,11 +1,11 @@
 {
-    "name": "cortex",
-    "short_name": "cortex",
+    "name": "Cortex",
+    "short_name": "Cortex",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "background_color": "#0A0A0C",
+    "theme_color": "#0A0A0C",
+    "description": "Cortex, an AI chat workspace for fast, focused conversations with your assistant.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [
