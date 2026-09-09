@@ -3,3 +3,5 @@
 String? readCookie(String name) => null;
 
 List<String> cookieNamesPresent() => const [];
+
+void deleteCookie(String name) {}

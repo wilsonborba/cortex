@@ -13,6 +13,9 @@ String? readCookie(String name) => impl.readCookie(name);
 /// Diagnostic only (issue #21): names of every cookie present right now.
 List<String> cookieNamesPresent() => impl.cookieNamesPresent();
 
+/// Expires the named cookie client-side (best-effort; see `csrf_web.dart`).
+void deleteCookie(String name) => impl.deleteCookie(name);
+
 /// The CSRF token every authenticated POST/PUT/PATCH/DELETE to `api_for_apps`
 /// must echo back as `X-CSRF-Token` (and `X-CSRFToken`), or `verify_auth`
 /// rejects the request with a 403 ("Missing Authentications Parameters").
