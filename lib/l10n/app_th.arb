@@ -156,5 +156,34 @@
   "@memoryGraphClusterExpandedCount": {
     "placeholders": {"count": {"type": "int"}}
   },
-  "memoryGraphResetPositionsTooltip": "รีเซ็ตตำแหน่ง"
+  "memoryGraphResetPositionsTooltip": "รีเซ็ตตำแหน่ง",
+
+  "supportTitle": "ฝ่ายสนับสนุน",
+  "newTicketAction": "สร้างเรื่องใหม่",
+  "noSupportTicketsYetTitle": "ยังไม่มีเรื่องแจ้งฝ่ายสนับสนุน",
+  "noSupportTicketsYetBody": "สร้างเรื่องใหม่หากคุณต้องการความช่วยเหลือหรือต้องการแจ้งปัญหา",
+  "ticketStatusOpen": "เปิดอยู่",
+  "ticketStatusPending": "รอดำเนินการ",
+  "ticketStatusResolved": "แก้ไขแล้ว",
+  "ticketStatusClosed": "ปิดแล้ว",
+  "ticketSubjectLabel": "หัวข้อ",
+  "ticketSubjectHint": "เรื่องนี้เกี่ยวกับอะไร (ไม่บังคับ)",
+  "ticketBodyLabel": "ข้อความ",
+  "ticketReplyHint": "พิมพ์ข้อความของคุณ...",
+  "attachImageAction": "แนบรูปภาพ",
+  "submitAction": "ส่ง",
+  "supportTicketDetailTitle": "เรื่องแจ้งฝ่ายสนับสนุน",
+  "ticketThreadUnavailableNotice": "ประวัติข้อความไม่พร้อมใช้งานชั่วคราว เรื่องของคุณยังเปิดอยู่",
+  "supportTeamLabel": "ทีมสนับสนุน",
+  "youLabel": "คุณ",
+  "attachmentLabel": "ไฟล์แนบ",
+  "tryAgainAction": "ลองอีกครั้ง",
+  "errorLoadingTicketsMessage": "ไม่สามารถโหลดเรื่องแจ้งฝ่ายสนับสนุนของคุณได้",
+  "ticketActionFailedMessage": "เกิดข้อผิดพลาด กรุณาลองอีกครั้ง",
+
+  "genericErrorTitle": "เกิดข้อผิดพลาดบางอย่าง",
+  "genericErrorMessage": "เราพบปัญหาที่ไม่คาดคิด คุณสามารถแจ้งให้เราทราบเพื่อตรวจสอบได้",
+  "contactSupportAction": "ติดต่อฝ่ายสนับสนุน",
+  "errorReportTicketSubject": "ข้อผิดพลาดที่ไม่คาดคิดใน Cortex",
+  "errorReportTicketBodyIntro": "ฉันพบปัญหาที่ไม่คาดคิดขณะใช้งาน Cortex รายละเอียดทางเทคนิคด้านล่างอาจช่วยได้:"
 }

@@ -156,5 +156,34 @@
   "@memoryGraphClusterExpandedCount": {
     "placeholders": {"count": {"type": "int"}}
   },
-  "memoryGraphResetPositionsTooltip": "Restaurar posições"
+  "memoryGraphResetPositionsTooltip": "Restaurar posições",
+
+  "supportTitle": "Suporte",
+  "newTicketAction": "Novo chamado",
+  "noSupportTicketsYetTitle": "Nenhum chamado de suporte ainda",
+  "noSupportTicketsYetBody": "Abra um novo chamado se precisar de ajuda ou quiser relatar algo.",
+  "ticketStatusOpen": "Aberto",
+  "ticketStatusPending": "Pendente",
+  "ticketStatusResolved": "Resolvido",
+  "ticketStatusClosed": "Fechado",
+  "ticketSubjectLabel": "Assunto",
+  "ticketSubjectHint": "Sobre o que é isso? (opcional)",
+  "ticketBodyLabel": "Mensagem",
+  "ticketReplyHint": "Digite sua mensagem...",
+  "attachImageAction": "Anexar imagem",
+  "submitAction": "Enviar",
+  "supportTicketDetailTitle": "Chamado de suporte",
+  "ticketThreadUnavailableNotice": "O histórico de mensagens está temporariamente indisponível. Seu chamado continua aberto.",
+  "supportTeamLabel": "Equipe de suporte",
+  "youLabel": "Você",
+  "attachmentLabel": "Anexo",
+  "tryAgainAction": "Tentar novamente",
+  "errorLoadingTicketsMessage": "Não foi possível carregar seus chamados de suporte.",
+  "ticketActionFailedMessage": "Algo deu errado. Tente novamente.",
+
+  "genericErrorTitle": "Algo deu errado",
+  "genericErrorMessage": "Encontramos um problema inesperado. Você pode nos avisar para que possamos investigar.",
+  "contactSupportAction": "Contatar suporte",
+  "errorReportTicketSubject": "Erro inesperado no Cortex",
+  "errorReportTicketBodyIntro": "Encontrei um problema inesperado ao usar o Cortex. Aqui estão alguns detalhes técnicos que podem ajudar:"
 }

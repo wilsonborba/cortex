@@ -420,4 +420,90 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get memoryGraphResetPositionsTooltip => 'รีเซ็ตตำแหน่ง';
+
+  @override
+  String get supportTitle => 'ฝ่ายสนับสนุน';
+
+  @override
+  String get newTicketAction => 'สร้างเรื่องใหม่';
+
+  @override
+  String get noSupportTicketsYetTitle => 'ยังไม่มีเรื่องแจ้งฝ่ายสนับสนุน';
+
+  @override
+  String get noSupportTicketsYetBody =>
+      'สร้างเรื่องใหม่หากคุณต้องการความช่วยเหลือหรือต้องการแจ้งปัญหา';
+
+  @override
+  String get ticketStatusOpen => 'เปิดอยู่';
+
+  @override
+  String get ticketStatusPending => 'รอดำเนินการ';
+
+  @override
+  String get ticketStatusResolved => 'แก้ไขแล้ว';
+
+  @override
+  String get ticketStatusClosed => 'ปิดแล้ว';
+
+  @override
+  String get ticketSubjectLabel => 'หัวข้อ';
+
+  @override
+  String get ticketSubjectHint => 'เรื่องนี้เกี่ยวกับอะไร (ไม่บังคับ)';
+
+  @override
+  String get ticketBodyLabel => 'ข้อความ';
+
+  @override
+  String get ticketReplyHint => 'พิมพ์ข้อความของคุณ...';
+
+  @override
+  String get attachImageAction => 'แนบรูปภาพ';
+
+  @override
+  String get submitAction => 'ส่ง';
+
+  @override
+  String get supportTicketDetailTitle => 'เรื่องแจ้งฝ่ายสนับสนุน';
+
+  @override
+  String get ticketThreadUnavailableNotice =>
+      'ประวัติข้อความไม่พร้อมใช้งานชั่วคราว เรื่องของคุณยังเปิดอยู่';
+
+  @override
+  String get supportTeamLabel => 'ทีมสนับสนุน';
+
+  @override
+  String get youLabel => 'คุณ';
+
+  @override
+  String get attachmentLabel => 'ไฟล์แนบ';
+
+  @override
+  String get tryAgainAction => 'ลองอีกครั้ง';
+
+  @override
+  String get errorLoadingTicketsMessage =>
+      'ไม่สามารถโหลดเรื่องแจ้งฝ่ายสนับสนุนของคุณได้';
+
+  @override
+  String get ticketActionFailedMessage => 'เกิดข้อผิดพลาด กรุณาลองอีกครั้ง';
+
+  @override
+  String get genericErrorTitle => 'เกิดข้อผิดพลาดบางอย่าง';
+
+  @override
+  String get genericErrorMessage =>
+      'เราพบปัญหาที่ไม่คาดคิด คุณสามารถแจ้งให้เราทราบเพื่อตรวจสอบได้';
+
+  @override
+  String get contactSupportAction => 'ติดต่อฝ่ายสนับสนุน';
+
+  @override
+  String get errorReportTicketSubject => 'ข้อผิดพลาดที่ไม่คาดคิดใน Cortex';
+
+  @override
+  String get errorReportTicketBodyIntro =>
+      'ฉันพบปัญหาที่ไม่คาดคิดขณะใช้งาน Cortex รายละเอียดทางเทคนิคด้านล่างอาจช่วยได้:';
 }

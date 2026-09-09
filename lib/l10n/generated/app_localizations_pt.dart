@@ -425,4 +425,90 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get memoryGraphResetPositionsTooltip => 'Restaurar posições';
+
+  @override
+  String get supportTitle => 'Suporte';
+
+  @override
+  String get newTicketAction => 'Novo chamado';
+
+  @override
+  String get noSupportTicketsYetTitle => 'Nenhum chamado de suporte ainda';
+
+  @override
+  String get noSupportTicketsYetBody =>
+      'Abra um novo chamado se precisar de ajuda ou quiser relatar algo.';
+
+  @override
+  String get ticketStatusOpen => 'Aberto';
+
+  @override
+  String get ticketStatusPending => 'Pendente';
+
+  @override
+  String get ticketStatusResolved => 'Resolvido';
+
+  @override
+  String get ticketStatusClosed => 'Fechado';
+
+  @override
+  String get ticketSubjectLabel => 'Assunto';
+
+  @override
+  String get ticketSubjectHint => 'Sobre o que é isso? (opcional)';
+
+  @override
+  String get ticketBodyLabel => 'Mensagem';
+
+  @override
+  String get ticketReplyHint => 'Digite sua mensagem...';
+
+  @override
+  String get attachImageAction => 'Anexar imagem';
+
+  @override
+  String get submitAction => 'Enviar';
+
+  @override
+  String get supportTicketDetailTitle => 'Chamado de suporte';
+
+  @override
+  String get ticketThreadUnavailableNotice =>
+      'O histórico de mensagens está temporariamente indisponível. Seu chamado continua aberto.';
+
+  @override
+  String get supportTeamLabel => 'Equipe de suporte';
+
+  @override
+  String get youLabel => 'Você';
+
+  @override
+  String get attachmentLabel => 'Anexo';
+
+  @override
+  String get tryAgainAction => 'Tentar novamente';
+
+  @override
+  String get errorLoadingTicketsMessage =>
+      'Não foi possível carregar seus chamados de suporte.';
+
+  @override
+  String get ticketActionFailedMessage => 'Algo deu errado. Tente novamente.';
+
+  @override
+  String get genericErrorTitle => 'Algo deu errado';
+
+  @override
+  String get genericErrorMessage =>
+      'Encontramos um problema inesperado. Você pode nos avisar para que possamos investigar.';
+
+  @override
+  String get contactSupportAction => 'Contatar suporte';
+
+  @override
+  String get errorReportTicketSubject => 'Erro inesperado no Cortex';
+
+  @override
+  String get errorReportTicketBodyIntro =>
+      'Encontrei um problema inesperado ao usar o Cortex. Aqui estão alguns detalhes técnicos que podem ajudar:';
 }

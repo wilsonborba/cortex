@@ -420,4 +420,91 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get memoryGraphResetPositionsTooltip => 'Reset positions';
+
+  @override
+  String get supportTitle => 'Support';
+
+  @override
+  String get newTicketAction => 'New ticket';
+
+  @override
+  String get noSupportTicketsYetTitle => 'No support tickets yet';
+
+  @override
+  String get noSupportTicketsYetBody =>
+      'Start a new ticket if you need help or want to report something.';
+
+  @override
+  String get ticketStatusOpen => 'Open';
+
+  @override
+  String get ticketStatusPending => 'Pending';
+
+  @override
+  String get ticketStatusResolved => 'Resolved';
+
+  @override
+  String get ticketStatusClosed => 'Closed';
+
+  @override
+  String get ticketSubjectLabel => 'Subject';
+
+  @override
+  String get ticketSubjectHint => 'What\'s this about? (optional)';
+
+  @override
+  String get ticketBodyLabel => 'Message';
+
+  @override
+  String get ticketReplyHint => 'Type your message...';
+
+  @override
+  String get attachImageAction => 'Attach image';
+
+  @override
+  String get submitAction => 'Submit';
+
+  @override
+  String get supportTicketDetailTitle => 'Support ticket';
+
+  @override
+  String get ticketThreadUnavailableNotice =>
+      'Message history is temporarily unavailable. Your ticket is still open.';
+
+  @override
+  String get supportTeamLabel => 'Support team';
+
+  @override
+  String get youLabel => 'You';
+
+  @override
+  String get attachmentLabel => 'Attachment';
+
+  @override
+  String get tryAgainAction => 'Try again';
+
+  @override
+  String get errorLoadingTicketsMessage =>
+      'Couldn\'t load your support tickets.';
+
+  @override
+  String get ticketActionFailedMessage =>
+      'Something went wrong. Please try again.';
+
+  @override
+  String get genericErrorTitle => 'Something went wrong';
+
+  @override
+  String get genericErrorMessage =>
+      'We hit an unexpected problem. You can let us know so we can look into it.';
+
+  @override
+  String get contactSupportAction => 'Contact support';
+
+  @override
+  String get errorReportTicketSubject => 'Unexpected error in Cortex';
+
+  @override
+  String get errorReportTicketBodyIntro =>
+      'I ran into an unexpected problem while using Cortex. Here are some technical details that might help:';
 }

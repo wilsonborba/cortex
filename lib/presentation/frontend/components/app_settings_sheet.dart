@@ -6,6 +6,7 @@ import '../../../domain/services/auth_service.dart';
 import '../../../domain/services/session_service.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../handlers/app_preferences_scope.dart';
+import '../widgets/support/on_support.dart';
 
 /// Minimal settings surface: lets the user pick the theme mode (Light,
 /// Dark, System), the app language (English, Portuguese, Thai), the
@@ -242,6 +243,27 @@ class AppSettingsSheet extends StatelessWidget {
                       value: controller.improveInput,
                       onChanged: (val) => controller.setImproveInput(val),
                     ),
+                  ],
+                ),
+              ),
+            ]),
+            const SizedBox(height: 20),
+
+            // Support
+            group([
+              row(
+                onTap: () {
+                  Navigator.of(context).pop();
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => const OnSupportScreen()),
+                  );
+                },
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(l10n.supportTitle, style: const TextStyle(fontSize: 14)),
+                    ),
+                    Icon(Icons.chevron_right, size: 18, color: scheme.onSurface.withValues(alpha: 0.4)),
                   ],
                 ),
               ),

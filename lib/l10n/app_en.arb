@@ -171,5 +171,34 @@
   "@memoryGraphClusterExpandedCount": {
     "placeholders": {"count": {"type": "int"}}
   },
-  "memoryGraphResetPositionsTooltip": "Reset positions"
+  "memoryGraphResetPositionsTooltip": "Reset positions",
+
+  "supportTitle": "Support",
+  "newTicketAction": "New ticket",
+  "noSupportTicketsYetTitle": "No support tickets yet",
+  "noSupportTicketsYetBody": "Start a new ticket if you need help or want to report something.",
+  "ticketStatusOpen": "Open",
+  "ticketStatusPending": "Pending",
+  "ticketStatusResolved": "Resolved",
+  "ticketStatusClosed": "Closed",
+  "ticketSubjectLabel": "Subject",
+  "ticketSubjectHint": "What's this about? (optional)",
+  "ticketBodyLabel": "Message",
+  "ticketReplyHint": "Type your message...",
+  "attachImageAction": "Attach image",
+  "submitAction": "Submit",
+  "supportTicketDetailTitle": "Support ticket",
+  "ticketThreadUnavailableNotice": "Message history is temporarily unavailable. Your ticket is still open.",
+  "supportTeamLabel": "Support team",
+  "youLabel": "You",
+  "attachmentLabel": "Attachment",
+  "tryAgainAction": "Try again",
+  "errorLoadingTicketsMessage": "Couldn't load your support tickets.",
+  "ticketActionFailedMessage": "Something went wrong. Please try again.",
+
+  "genericErrorTitle": "Something went wrong",
+  "genericErrorMessage": "We hit an unexpected problem. You can let us know so we can look into it.",
+  "contactSupportAction": "Contact support",
+  "errorReportTicketSubject": "Unexpected error in Cortex",
+  "errorReportTicketBodyIntro": "I ran into an unexpected problem while using Cortex. Here are some technical details that might help:"
 }

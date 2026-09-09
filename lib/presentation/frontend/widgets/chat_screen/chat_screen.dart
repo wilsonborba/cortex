@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/utils/csrf.dart';
 import '../../../../core/utils/responsive.dart';
 import '../../../../dal/remote/auth_api_adapter.dart';
 import '../../../../domain/models/attachment.dart';
 import '../../../../domain/models/conversation.dart';
 import '../../../../domain/services/chat_service.dart';
 import '../../../../l10n/generated/app_localizations.dart';
+import '../../components/app_error_view.dart';
 import '../../handlers/chat_flow_handler.dart';
 import '../../handlers/conversation_handler.dart';
+import '../support/on_support.dart';
 import 'desktop_chat_screen.dart';
 import 'mobile_chat_screen.dart';
 
@@ -71,8 +74,32 @@ class _ChatScreenState extends State<ChatScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       final l10n = AppLocalizations.of(context);
+      // A message send failure is a real, user-visible problem (not the
+      // silent-by-design telemetry path), so it gets the same "contact
+      // support, pre-filled" CTA as the generic error view, in addition to
+      // the existing raw-ish message already shown here.
+      final loggedIn = (readCsrfToken() ?? '').isNotEmpty;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.couldNotSendMessage('$error'))),
+        SnackBar(
+          content: Text(l10n.couldNotSendMessage('$error')),
+          action: loggedIn
+              ? SnackBarAction(
+                  label: l10n.contactSupportAction,
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => OnSupportScreen(
+                          initialComposeSubject: l10n.errorReportTicketSubject,
+                          initialComposeBody:
+                              '${l10n.errorReportTicketBodyIntro}\n\n'
+                              '${AppErrorView.summarizeError(error, route: 'chat_send')}',
+                        ),
+                      ),
+                    );
+                  },
+                )
+              : null,
+        ),
       );
     });
   }

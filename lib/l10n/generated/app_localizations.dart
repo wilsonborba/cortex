@@ -831,6 +831,168 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Reset positions'**
   String get memoryGraphResetPositionsTooltip;
+
+  /// No description provided for @supportTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Support'**
+  String get supportTitle;
+
+  /// No description provided for @newTicketAction.
+  ///
+  /// In en, this message translates to:
+  /// **'New ticket'**
+  String get newTicketAction;
+
+  /// No description provided for @noSupportTicketsYetTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No support tickets yet'**
+  String get noSupportTicketsYetTitle;
+
+  /// No description provided for @noSupportTicketsYetBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Start a new ticket if you need help or want to report something.'**
+  String get noSupportTicketsYetBody;
+
+  /// No description provided for @ticketStatusOpen.
+  ///
+  /// In en, this message translates to:
+  /// **'Open'**
+  String get ticketStatusOpen;
+
+  /// No description provided for @ticketStatusPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get ticketStatusPending;
+
+  /// No description provided for @ticketStatusResolved.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolved'**
+  String get ticketStatusResolved;
+
+  /// No description provided for @ticketStatusClosed.
+  ///
+  /// In en, this message translates to:
+  /// **'Closed'**
+  String get ticketStatusClosed;
+
+  /// No description provided for @ticketSubjectLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Subject'**
+  String get ticketSubjectLabel;
+
+  /// No description provided for @ticketSubjectHint.
+  ///
+  /// In en, this message translates to:
+  /// **'What\'s this about? (optional)'**
+  String get ticketSubjectHint;
+
+  /// No description provided for @ticketBodyLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Message'**
+  String get ticketBodyLabel;
+
+  /// No description provided for @ticketReplyHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Type your message...'**
+  String get ticketReplyHint;
+
+  /// No description provided for @attachImageAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Attach image'**
+  String get attachImageAction;
+
+  /// No description provided for @submitAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit'**
+  String get submitAction;
+
+  /// No description provided for @supportTicketDetailTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Support ticket'**
+  String get supportTicketDetailTitle;
+
+  /// No description provided for @ticketThreadUnavailableNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'Message history is temporarily unavailable. Your ticket is still open.'**
+  String get ticketThreadUnavailableNotice;
+
+  /// No description provided for @supportTeamLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Support team'**
+  String get supportTeamLabel;
+
+  /// No description provided for @youLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'You'**
+  String get youLabel;
+
+  /// No description provided for @attachmentLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Attachment'**
+  String get attachmentLabel;
+
+  /// No description provided for @tryAgainAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Try again'**
+  String get tryAgainAction;
+
+  /// No description provided for @errorLoadingTicketsMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load your support tickets.'**
+  String get errorLoadingTicketsMessage;
+
+  /// No description provided for @ticketActionFailedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong. Please try again.'**
+  String get ticketActionFailedMessage;
+
+  /// No description provided for @genericErrorTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong'**
+  String get genericErrorTitle;
+
+  /// No description provided for @genericErrorMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'We hit an unexpected problem. You can let us know so we can look into it.'**
+  String get genericErrorMessage;
+
+  /// No description provided for @contactSupportAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact support'**
+  String get contactSupportAction;
+
+  /// No description provided for @errorReportTicketSubject.
+  ///
+  /// In en, this message translates to:
+  /// **'Unexpected error in Cortex'**
+  String get errorReportTicketSubject;
+
+  /// No description provided for @errorReportTicketBodyIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'I ran into an unexpected problem while using Cortex. Here are some technical details that might help:'**
+  String get errorReportTicketBodyIntro;
 }
 
 class _AppLocalizationsDelegate
