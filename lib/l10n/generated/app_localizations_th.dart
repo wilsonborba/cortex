@@ -412,4 +412,12 @@ class AppLocalizationsTh extends AppLocalizations {
   String memoryGraphClusterCount(int count) {
     return 'อีก $count รายการ';
   }
+
+  @override
+  String memoryGraphClusterExpandedCount(int count) {
+    return 'แสดง $count รายการ';
+  }
+
+  @override
+  String get memoryGraphResetPositionsTooltip => 'รีเซ็ตตำแหน่ง';
 }

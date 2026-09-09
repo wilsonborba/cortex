@@ -412,4 +412,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String memoryGraphClusterCount(int count) {
     return '+$count more';
   }
+
+  @override
+  String memoryGraphClusterExpandedCount(int count) {
+    return '$count shown';
+  }
+
+  @override
+  String get memoryGraphResetPositionsTooltip => 'Reset positions';
 }

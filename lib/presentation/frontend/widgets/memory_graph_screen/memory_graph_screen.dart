@@ -23,11 +23,25 @@ import 'memory_graph_painter.dart';
 /// top, panned/zoomed through Flutter's own [InteractiveViewer] (drag to
 /// pan, scroll wheel or pinch to zoom, no new package needed for either).
 ///
-/// Tapping a node fetches its context (`GET
-/// /memory-graph/nodes/{id}/context`) and, if available, seeds a brand-new
-/// draft [ChatScreen] conversation with it as a pending attachment, so the
-/// user can ask a question grounded in that memory/tag/entity/resource
-/// without the composer auto-sending anything.
+/// Tapping a memory/attachment/tag/entity/resource node fetches its context
+/// (`GET /memory-graph/nodes/{id}/context`) and, if available, seeds a
+/// brand-new draft [ChatScreen] conversation with it as a pending
+/// attachment, so the user can ask a question grounded in that node without
+/// the composer auto-sending anything. A `cluster` node (one conversation's
+/// worth of memories/attachments, collapsed into a single card) has no
+/// single memory's content to seed a conversation from, so tapping it
+/// instead toggles that cluster's collapsed/expanded state (see
+/// `_toggleCluster`).
+///
+/// Every node card is independently draggable (see `_onNodeDragUpdate`),
+/// and cluster cards start collapsed by default: a first-time graph can
+/// easily have dozens of individual memory/attachment cards, and hiding
+/// them behind their conversation's cluster card until the user asks to see
+/// them keeps the initial view legible (product call, see product owner
+/// feedback). The "Reset positions" app bar action restores both the
+/// original computed layout *and* this default collapsed state, since it is
+/// meant to fully undo any manual rearranging back to the space-efficient
+/// view the screen opens with (see `_resetLayout`).
 class MemoryGraphScreen extends StatefulWidget {
   const MemoryGraphScreen({super.key, CortexApiAdapter? adapter}) : _adapter = adapter;
 
@@ -46,6 +60,24 @@ class _MemoryGraphScreenState extends State<MemoryGraphScreen> {
   GraphLayout _layout = const GraphLayout(positions: [], canvasSize: math.Point(0, 0));
   String? _loadingNodeId;
   late final BrowserHistoryGuard _historyGuard;
+
+  /// Ids of `cluster` nodes currently collapsed (their members hidden).
+  /// Defaults to every cluster the graph has (see `_defaultCollapsedClusterIds`).
+  Set<String> _collapsedClusterIds = {};
+
+  /// Id of the node currently being dragged, if any. Also used to disable
+  /// [InteractiveViewer]'s own pan gesture while a node drag is in progress,
+  /// so the two gestures never fight over the same pointer (see
+  /// `_buildCanvas`).
+  String? _draggingNodeId;
+
+  /// All cluster nodes start collapsed (see the class doc for why).
+  Set<String> _defaultCollapsedClusterIds(MemoryGraph graph) {
+    return {
+      for (final node in graph.nodes)
+        if (node.nodeType == MemoryGraphNodeType.cluster && node.clusterOf.isNotEmpty) node.id,
+    };
+  }
 
   @override
   void initState() {
@@ -70,7 +102,50 @@ class _MemoryGraphScreenState extends State<MemoryGraphScreen> {
     setState(() {
       _graph = resolved;
       _layout = computeForceDirectedLayout(resolved);
+      _collapsedClusterIds = _defaultCollapsedClusterIds(resolved);
       _loading = false;
+    });
+  }
+
+  /// "Reset positions" app bar action: recomputes the original
+  /// force-directed layout (undoing any manual dragging) and also restores
+  /// the default collapsed state for every cluster, so the button returns
+  /// the whole canvas to exactly what a fresh load would show rather than
+  /// leaving stale manual expand/collapse choices mixed with fresh
+  /// positions.
+  void _resetLayout() {
+    setState(() {
+      _layout = computeForceDirectedLayout(_graph);
+      _collapsedClusterIds = _defaultCollapsedClusterIds(_graph);
+    });
+  }
+
+  void _toggleCluster(MemoryGraphNode node) {
+    setState(() {
+      if (!_collapsedClusterIds.remove(node.id)) {
+        _collapsedClusterIds.add(node.id);
+      }
+    });
+  }
+
+  /// Ids of every node hidden because it belongs to a currently-collapsed
+  /// cluster. Per the backend's data model, a memory/attachment belongs to
+  /// at most one conversation cluster, so a node hidden by one collapsed
+  /// cluster is simply hidden - no need to reconcile multiple clusters
+  /// disagreeing about the same node.
+  Set<String> _hiddenNodeIds() {
+    final hidden = <String>{};
+    for (final node in _graph.nodes) {
+      if (node.nodeType == MemoryGraphNodeType.cluster && _collapsedClusterIds.contains(node.id)) {
+        hidden.addAll(node.clusterOf);
+      }
+    }
+    return hidden;
+  }
+
+  void _onNodeDragUpdate(PositionedGraphNode positioned, Offset localDelta) {
+    setState(() {
+      positioned.position = clampToCanvas(positioned.position + localDelta, _layout.canvasSize);
     });
   }
 
@@ -91,6 +166,14 @@ class _MemoryGraphScreenState extends State<MemoryGraphScreen> {
   }
 
   Future<void> _onNodeTap(MemoryGraphNode node) async {
+    // Cluster taps are routed to `_toggleCluster` instead (see the switch in
+    // `_buildCanvas`); this guard is just defense in depth so a future
+    // wiring mistake can't seed a conversation from a cluster, which has no
+    // single memory's content to seed from.
+    if (node.nodeType == MemoryGraphNodeType.cluster) {
+      _toggleCluster(node);
+      return;
+    }
     if (_loadingNodeId != null) return;
     setState(() => _loadingNodeId = node.id);
     final nodeContext = await _adapter.fetchNodeContext(node.id);
@@ -143,6 +226,13 @@ class _MemoryGraphScreenState extends State<MemoryGraphScreen> {
       appBar: AppBar(
         title: Text(l10n.memoryGraphTitle),
         automaticallyImplyLeading: isMobile,
+        actions: [
+          IconButton(
+            tooltip: l10n.memoryGraphResetPositionsTooltip,
+            icon: const Icon(Icons.restart_alt_rounded, size: 20),
+            onPressed: _loading || _graph.nodes.isEmpty ? null : _resetLayout,
+          ),
+        ],
       ),
       body: Stack(
         children: [
@@ -168,8 +258,17 @@ class _MemoryGraphScreenState extends State<MemoryGraphScreen> {
   Widget _buildCanvas(ColorScheme scheme) {
     final width = _layout.canvasSize.x;
     final height = _layout.canvasSize.y;
+    final hiddenIds = _hiddenNodeIds();
+    final visiblePositions = [
+      for (final p in _layout.positions)
+        if (!hiddenIds.contains(p.node.id)) p,
+    ];
+    // Edges touching a hidden (collapsed-away) node are simply left out of
+    // `positionById`, which `MemoryGraphEdgePainter` already treats as "skip
+    // this edge" (see its `from == null || to == null` guard), so no
+    // separate edge-filtering pass is needed.
     final positionById = {
-      for (final p in _layout.positions) p.node.id: p.position,
+      for (final p in visiblePositions) p.node.id: p.position,
     };
 
     return Listener(
@@ -180,6 +279,10 @@ class _MemoryGraphScreenState extends State<MemoryGraphScreen> {
         minScale: 0.15,
         maxScale: 4,
         boundaryMargin: const EdgeInsets.all(400),
+        // Disabled while a node is being dragged so the pan gesture and the
+        // node-drag gesture never compete for the same pointer in the
+        // gesture arena (see `_onNodeDragUpdate`/the `Listener` below).
+        panEnabled: _draggingNodeId == null,
         child: SizedBox(
           width: width,
           height: height,
@@ -199,7 +302,7 @@ class _MemoryGraphScreenState extends State<MemoryGraphScreen> {
                   ),
                 ),
               ),
-              for (final p in _layout.positions)
+              for (final p in visiblePositions)
                 // Center each card on its node's position using that exact
                 // type's own known footprint (single source of truth:
                 // `MemoryGraphNodeStyle.sizeForType`), never a fixed guessed
@@ -207,9 +310,27 @@ class _MemoryGraphScreenState extends State<MemoryGraphScreen> {
                 Positioned(
                   left: p.position.dx - MemoryGraphNodeStyle.sizeForType(p.node.nodeType).width / 2,
                   top: p.position.dy - MemoryGraphNodeStyle.sizeForType(p.node.nodeType).height / 2,
-                  child: MemoryGraphNodeWidget(
-                    node: p.node,
-                    onTap: () => _onNodeTap(p.node),
+                  // A raw `Listener`, not a `GestureDetector`/`Draggable`:
+                  // pointer callbacks on a `Listener` fire unconditionally
+                  // (it never enters the gesture arena), so this drag never
+                  // fights `InteractiveViewer`'s own pan recognizer for the
+                  // same pointer - we just disable that recognizer for the
+                  // duration via `panEnabled` above. This also makes
+                  // dragging lag-free: position updates directly from raw
+                  // pointer deltas, no recognizer resolution delay.
+                  child: Listener(
+                    onPointerDown: (_) => setState(() => _draggingNodeId = p.node.id),
+                    onPointerMove: (event) {
+                      if (_draggingNodeId != p.node.id) return;
+                      _onNodeDragUpdate(p, event.localDelta);
+                    },
+                    onPointerUp: (_) => setState(() => _draggingNodeId = null),
+                    onPointerCancel: (_) => setState(() => _draggingNodeId = null),
+                    child: MemoryGraphNodeWidget(
+                      node: p.node,
+                      clusterCollapsed: _collapsedClusterIds.contains(p.node.id),
+                      onTap: () => _onNodeTap(p.node),
+                    ),
                   ),
                 ),
             ],

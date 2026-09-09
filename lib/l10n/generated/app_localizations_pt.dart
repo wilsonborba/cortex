@@ -417,4 +417,12 @@ class AppLocalizationsPt extends AppLocalizations {
   String memoryGraphClusterCount(int count) {
     return 'mais $count';
   }
+
+  @override
+  String memoryGraphClusterExpandedCount(int count) {
+    return '$count exibidos';
+  }
+
+  @override
+  String get memoryGraphResetPositionsTooltip => 'Restaurar posições';
 }

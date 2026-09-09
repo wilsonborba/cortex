@@ -151,5 +151,10 @@
   "memoryGraphClusterCount": "อีก {count} รายการ",
   "@memoryGraphClusterCount": {
     "placeholders": {"count": {"type": "int"}}
-  }
+  },
+  "memoryGraphClusterExpandedCount": "แสดง {count} รายการ",
+  "@memoryGraphClusterExpandedCount": {
+    "placeholders": {"count": {"type": "int"}}
+  },
+  "memoryGraphResetPositionsTooltip": "รีเซ็ตตำแหน่ง"
 }

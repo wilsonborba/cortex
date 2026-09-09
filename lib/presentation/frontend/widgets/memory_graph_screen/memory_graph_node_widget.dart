@@ -23,10 +23,16 @@ class MemoryGraphNodeWidget extends StatelessWidget {
     super.key,
     required this.node,
     required this.onTap,
+    this.clusterCollapsed = false,
   });
 
   final MemoryGraphNode node;
   final VoidCallback onTap;
+
+  /// Only meaningful for [MemoryGraphNodeType.cluster] nodes: whether this
+  /// cluster's members are currently hidden, so `_ClusterCard` can show a
+  /// clear expand/collapse indicator alongside its member count.
+  final bool clusterCollapsed;
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +58,13 @@ class MemoryGraphNodeWidget extends StatelessWidget {
               MemoryGraphNodeType.tag => _TagChip(node: node, style: style, scheme: scheme),
               MemoryGraphNodeType.entity => _EntityCard(node: node, style: style, scheme: scheme, l10n: l10n),
               MemoryGraphNodeType.resource => _ResourceCard(node: node, style: style, scheme: scheme, l10n: l10n),
-              MemoryGraphNodeType.cluster => _ClusterCard(node: node, style: style, scheme: scheme, l10n: l10n),
+              MemoryGraphNodeType.cluster => _ClusterCard(
+                  node: node,
+                  style: style,
+                  scheme: scheme,
+                  l10n: l10n,
+                  collapsed: clusterCollapsed,
+                ),
               MemoryGraphNodeType.unknown => _UnknownCard(node: node, style: style, scheme: scheme),
             },
           ),
@@ -380,12 +392,19 @@ class _ResourceCard extends StatelessWidget {
 /// card) since a cluster collapses multiple nodes, plus the collapsed count
 /// from `metadata.cluster_of` when available.
 class _ClusterCard extends StatelessWidget {
-  const _ClusterCard({required this.node, required this.style, required this.scheme, required this.l10n});
+  const _ClusterCard({
+    required this.node,
+    required this.style,
+    required this.scheme,
+    required this.l10n,
+    required this.collapsed,
+  });
 
   final MemoryGraphNode node;
   final MemoryGraphNodeStyle style;
   final ColorScheme scheme;
   final AppLocalizations l10n;
+  final bool collapsed;
 
   @override
   Widget build(BuildContext context) {
@@ -420,6 +439,12 @@ class _ClusterCard extends StatelessWidget {
                     Icon(style.icon, size: 15, color: style.accent),
                     const SizedBox(width: 6),
                     Expanded(child: _TypeBadge(text: l10n.memoryGraphTypeCluster, color: style.accent)),
+                    if (count > 0)
+                      Icon(
+                        collapsed ? Icons.expand_more_rounded : Icons.expand_less_rounded,
+                        size: 16,
+                        color: style.accent,
+                      ),
                   ],
                 ),
                 const SizedBox(height: 5),
@@ -434,7 +459,7 @@ class _ClusterCard extends StatelessWidget {
                 if (count > 0) ...[
                   const SizedBox(height: 3),
                   Text(
-                    l10n.memoryGraphClusterCount(count),
+                    collapsed ? l10n.memoryGraphClusterCount(count) : l10n.memoryGraphClusterExpandedCount(count),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(fontSize: 10.5, color: scheme.onSurface.withValues(alpha: 0.6)),

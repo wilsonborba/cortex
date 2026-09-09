@@ -25,6 +25,38 @@ class GraphLayout {
   final math.Point<double> canvasSize;
 }
 
+/// Half of the largest card footprint across every node type, plus a small
+/// safety buffer for the glass card's own drop shadow bleed. Every node
+/// position - whether placed by the initial force-directed layout or
+/// dragged there by the user afterwards - is clamped to stay at least this
+/// far from each canvas edge (see [clampToCanvas]), so no card, regardless
+/// of its type's real size, can ever be positioned close enough to the raw
+/// canvas edge to clip against the Stack's bounds.
+const double canvasEdgeShadowBleed = 20.0;
+
+/// The margin (in each axis) a node's center must stay away from the
+/// canvas edge, shared by the initial layout pass and by manual dragging so
+/// both clamp identically.
+math.Point<double> canvasMargin() {
+  final maxCardSize = MemoryGraphNodeStyle.maxSize;
+  return math.Point(
+    maxCardSize.width / 2 + canvasEdgeShadowBleed,
+    maxCardSize.height / 2 + canvasEdgeShadowBleed,
+  );
+}
+
+/// Clamps [position] so it stays within [canvasMargin] of every edge of a
+/// canvas of size [canvasSize]. Used both by the initial force-directed
+/// layout and by manual node dragging, so a dragged node is held to exactly
+/// the same "never clip past the edge" invariant as an on-load position.
+Offset clampToCanvas(Offset position, math.Point<double> canvasSize) {
+  final margin = canvasMargin();
+  return Offset(
+    position.dx.clamp(margin.x, canvasSize.x - margin.x),
+    position.dy.clamp(margin.y, canvasSize.y - margin.y),
+  );
+}
+
 /// A small, dependency-free force-directed layout (Fruchterman-Reingold
 /// style): repulsion between every pair of nodes, attraction along edges,
 /// a fixed number of cooling iterations run once when the graph loads.
@@ -46,21 +78,13 @@ GraphLayout computeForceDirectedLayout(
   // Scale the canvas with node count so dense graphs don't pile up.
   final side = math.max(900.0, 220.0 * math.sqrt(n.toDouble()));
 
-  // Half of the largest card footprint across every node type, plus a small
-  // safety buffer for the glass card's own drop shadow bleed. Every node
-  // position is later clamped to stay at least this far from each canvas
-  // edge (see the clamp below), so no card - regardless of its type's real
-  // size - can ever be positioned close enough to the raw canvas edge to
-  // clip against the Stack's bounds. `width`/`height` are then padded so
-  // that clamp range is always valid (lower <= upper) even for a single-node
-  // graph, whose `side` would otherwise be far bigger than needed but still
-  // must exceed twice the margin.
-  const shadowBleed = 20.0;
-  final maxCardSize = MemoryGraphNodeStyle.maxSize;
-  final marginX = maxCardSize.width / 2 + shadowBleed;
-  final marginY = maxCardSize.height / 2 + shadowBleed;
-  final width = math.max(side, marginX * 2 + 100);
-  final height = math.max(side, marginY * 2 + 100);
+  // `width`/`height` are padded so the clamp range below is always valid
+  // (lower <= upper) even for a single-node graph, whose `side` would
+  // otherwise be far bigger than needed but still must exceed twice the
+  // margin.
+  final margin = canvasMargin();
+  final width = math.max(side, margin.x * 2 + 100);
+  final height = math.max(side, margin.y * 2 + 100);
   final center = Offset(width / 2, height / 2);
 
   // Seeded so layout is stable across rebuilds/tests, not truly random.
@@ -124,12 +148,8 @@ GraphLayout computeForceDirectedLayout(
       final disp = displacement[id]!;
       final distance = math.max(disp.distance, 0.01);
       final capped = disp / distance * math.min(distance, temperature);
-      var next = positions[id]! + capped;
-      next = Offset(
-        next.dx.clamp(marginX, width - marginX),
-        next.dy.clamp(marginY, height - marginY),
-      );
-      positions[id] = next;
+      final next = positions[id]! + capped;
+      positions[id] = clampToCanvas(next, math.Point(width, height));
     }
 
     temperature = math.max(temperature - cooling, 1.0);

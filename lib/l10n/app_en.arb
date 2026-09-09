@@ -166,5 +166,10 @@
   "memoryGraphClusterCount": "+{count} more",
   "@memoryGraphClusterCount": {
     "placeholders": {"count": {"type": "int"}}
-  }
+  },
+  "memoryGraphClusterExpandedCount": "{count} shown",
+  "@memoryGraphClusterExpandedCount": {
+    "placeholders": {"count": {"type": "int"}}
+  },
+  "memoryGraphResetPositionsTooltip": "Reset positions"
 }

@@ -819,6 +819,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'+{count} more'**
   String memoryGraphClusterCount(int count);
+
+  /// No description provided for @memoryGraphClusterExpandedCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} shown'**
+  String memoryGraphClusterExpandedCount(int count);
+
+  /// No description provided for @memoryGraphResetPositionsTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset positions'**
+  String get memoryGraphResetPositionsTooltip;
 }
 
 class _AppLocalizationsDelegate

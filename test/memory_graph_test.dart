@@ -6,10 +6,12 @@
 
 import 'dart:async';
 import 'dart:convert';
+import 'dart:math' as math;
 
 import 'package:cortex/dal/remote/cortex_api_adapter.dart';
 import 'package:cortex/domain/models/memory_graph.dart';
 import 'package:cortex/l10n/generated/app_localizations.dart';
+import 'package:cortex/presentation/frontend/widgets/memory_graph_screen/memory_graph_layout.dart';
 import 'package:cortex/presentation/frontend/widgets/memory_graph_screen/memory_graph_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -134,6 +136,27 @@ void main() {
     });
   });
 
+  group('clampToCanvas', () {
+    test('leaves a position already within margin untouched', () {
+      final canvas = math.Point(1000.0, 800.0);
+      final result = clampToCanvas(const Offset(500, 400), canvas);
+      expect(result, const Offset(500, 400));
+    });
+
+    test('clamps a dragged position back within the canvas margin on every edge', () {
+      final canvas = math.Point(1000.0, 800.0);
+      final margin = canvasMargin();
+
+      final topLeft = clampToCanvas(const Offset(-500, -500), canvas);
+      expect(topLeft.dx, margin.x);
+      expect(topLeft.dy, margin.y);
+
+      final bottomRight = clampToCanvas(const Offset(5000, 5000), canvas);
+      expect(bottomRight.dx, canvas.x - margin.x);
+      expect(bottomRight.dy, canvas.y - margin.y);
+    });
+  });
+
   group('MemoryGraphScreen', () {
     testWidgets('shows the empty-state message when the graph has no nodes', (tester) async {
       final client = _FakeHttpClient((request) async {
@@ -177,6 +200,107 @@ void main() {
       expect(find.text('Memory One'), findsOneWidget);
       expect(find.text('Memory Two'), findsOneWidget);
       expect(find.text('foo'), findsOneWidget);
+    });
+
+    testWidgets('hides cluster members by default and reveals them on tap, without seeding a conversation', (tester) async {
+      final client = _FakeHttpClient((request) async {
+        // Only the graph endpoint should ever be hit: tapping the cluster
+        // card must toggle collapse locally, never fetch node context (that
+        // flow is for memory/attachment/tag/entity/resource nodes only).
+        expect(request.url.path, contains('memory-graph'));
+        expect(request.url.path.contains('/context'), isFalse);
+        return _jsonResponse({
+          'nodes': [
+            {'id': 'mem-1', 'node_type': 'memory', 'label': 'Memory One'},
+            {'id': 'mem-2', 'node_type': 'memory', 'label': 'Memory Two'},
+            {
+              'id': 'tag:conversation:convo-1',
+              'node_type': 'cluster',
+              'label': 'A conversation',
+              'metadata': {
+                'cluster_of': ['mem-1', 'mem-2'],
+              },
+            },
+          ],
+          'edges': [
+            {'source_id': 'mem-1', 'target_id': 'tag:conversation:convo-1', 'edge_type': 'tagged_with'},
+            {'source_id': 'mem-2', 'target_id': 'tag:conversation:convo-1', 'edge_type': 'tagged_with'},
+          ],
+          'root_ids': [],
+          'truncated': false,
+        });
+      });
+      final adapter = CortexApiAdapter(apiForAppsBaseUrl: 'http://test.local', httpClient: client);
+
+      await tester.pumpWidget(_wrap(MemoryGraphScreen(adapter: adapter)));
+      await tester.pump();
+      await tester.pump();
+
+      // Collapsed by default: members hidden, cluster shows a "hidden count".
+      expect(find.text('Memory One'), findsNothing);
+      expect(find.text('Memory Two'), findsNothing);
+      expect(find.text('A conversation'), findsOneWidget);
+      expect(find.text('+2 more'), findsOneWidget);
+
+      await tester.tap(find.text('A conversation'));
+      await tester.pump();
+
+      // Expanded: members now shown, cluster's own count label switches too.
+      expect(find.text('Memory One'), findsOneWidget);
+      expect(find.text('Memory Two'), findsOneWidget);
+      expect(find.text('2 shown'), findsOneWidget);
+      // Tapping the cluster must never navigate to a seeded ChatScreen.
+      expect(find.text('Memory graph'), findsOneWidget);
+
+      await tester.tap(find.text('A conversation'));
+      await tester.pump();
+
+      expect(find.text('Memory One'), findsNothing);
+      expect(find.text('Memory Two'), findsNothing);
+      expect(find.text('+2 more'), findsOneWidget);
+    });
+
+    testWidgets('reset positions button exists, is wired, and restores default collapsed state', (tester) async {
+      final client = _FakeHttpClient((request) async {
+        return _jsonResponse({
+          'nodes': [
+            {'id': 'mem-1', 'node_type': 'memory', 'label': 'Memory One'},
+            {
+              'id': 'tag:conversation:convo-1',
+              'node_type': 'cluster',
+              'label': 'A conversation',
+              'metadata': {
+                'cluster_of': ['mem-1'],
+              },
+            },
+          ],
+          'edges': [
+            {'source_id': 'mem-1', 'target_id': 'tag:conversation:convo-1', 'edge_type': 'tagged_with'},
+          ],
+          'root_ids': [],
+          'truncated': false,
+        });
+      });
+      final adapter = CortexApiAdapter(apiForAppsBaseUrl: 'http://test.local', httpClient: client);
+
+      await tester.pumpWidget(_wrap(MemoryGraphScreen(adapter: adapter)));
+      await tester.pump();
+      await tester.pump();
+
+      final resetButton = find.byTooltip('Reset positions');
+      expect(resetButton, findsOneWidget);
+
+      // Expand the cluster (manual state), then reset should collapse it
+      // again, proving the button is wired to something that restores the
+      // default layout/collapse state rather than a no-op.
+      await tester.tap(find.text('A conversation'));
+      await tester.pump();
+      expect(find.text('Memory One'), findsOneWidget);
+
+      await tester.tap(resetButton);
+      await tester.pump();
+
+      expect(find.text('Memory One'), findsNothing);
     });
 
     testWidgets('shows the truncated banner when the graph was truncated', (tester) async {
