@@ -1,18 +1,12 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:cortex/app.dart';
-import 'package:cortex/core/settings.dart';
 
 void main() {
-  setUp(() {
-    SharedPreferences.setMockInitialValues({});
-  });
-
   testWidgets('shows the landing page with [ Get Started ] when no session exists', (
     WidgetTester tester,
   ) async {
-    await tester.pumpWidget(const CortexApp());
+    await tester.pumpWidget(CortexApp(sessionCookieReader: () => null));
     await tester.pump();
     await tester.pump();
 
@@ -23,11 +17,7 @@ void main() {
   testWidgets('authenticated session reaches the chat screen and prompt dock', (
     WidgetTester tester,
   ) async {
-    SharedPreferences.setMockInitialValues({
-      AppSettings.sessionActiveStorageKey: true,
-    });
-
-    await tester.pumpWidget(const CortexApp());
+    await tester.pumpWidget(CortexApp(sessionCookieReader: () => 'fake-csrf-token'));
     await tester.pump();
     await tester.pump();
 

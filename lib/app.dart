@@ -12,7 +12,12 @@ import 'presentation/frontend/handlers/session_gate.dart';
 /// between the landing page and the chat screen depending on whether a
 /// session (or guest flag) is present.
 class CortexApp extends StatefulWidget {
-  const CortexApp({super.key});
+  const CortexApp({super.key, this.sessionCookieReader});
+
+  /// Test-only seam: overrides [SessionService]'s real browser-cookie check
+  /// (see its doc comment), since VM widget tests have no cookie jar to
+  /// read. Left null in production.
+  final String? Function()? sessionCookieReader;
 
   @override
   State<CortexApp> createState() => _CortexAppState();
@@ -54,7 +59,7 @@ class _CortexAppState extends State<CortexApp> {
               GlobalCupertinoLocalizations.delegate,
             ],
             supportedLocales: AppLocalizations.supportedLocales,
-            home: const SessionGate(),
+            home: SessionGate(sessionCookieReader: widget.sessionCookieReader),
           );
         },
       ),

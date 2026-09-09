@@ -37,9 +37,11 @@ class AuthService {
   }
 
   /// If [uri] is the `/sync` return route with an `auth_exchange_token`,
-  /// redeems it and persists the session. Returns `true` when a session was
-  /// established, `false` when [uri] was not a return route or the exchange
-  /// failed (nothing is persisted in that case).
+  /// redeems it. Returns `true` when a session was established, `false`
+  /// when [uri] was not a return route or the exchange failed. Nothing is
+  /// persisted locally here: a successful exchange already sets the real
+  /// `sid`/`csrf` cookies via `Set-Cookie`, [SessionService.currentStatus]
+  /// reads those directly rather than a locally-cached flag.
   Future<bool> tryConsumeReturnUri(Uri uri) async {
     if (uri.path != AppSettings.authSyncPath) return false;
 
@@ -47,9 +49,7 @@ class AuthService {
     if (token == null || token.isEmpty) return false;
 
     final ok = await _adapter.exchangeToken(token);
-    if (ok) {
-      await _sessionService.markAuthenticated();
-    } else {
+    if (!ok) {
       AppLogger.warning('Auth exchange did not establish a session.');
     }
     return ok;
