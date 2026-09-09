@@ -206,8 +206,18 @@ class _ConversationTileState extends State<ConversationTile> {
                       ),
                     ),
                   ),
-                  if (_isHovered || isSelected)
-                    PopupMenuButton<String>(
+                  // Always present (not gated on hover): on a touch device
+                  // (phone/tablet) there is no hover state at all, so a
+                  // hover-only menu button is permanently invisible and
+                  // unreachable for any conversation that isn't already the
+                  // selected one -- this was the actual cause of "delete
+                  // individual conversation doesn't work" on mobile (Clear
+                  // All is a separate affordance elsewhere, unaffected).
+                  // Faded when neither hovered nor selected on pointer
+                  // devices to keep the same restrained look there.
+                  Opacity(
+                    opacity: (_isHovered || isSelected) ? 1.0 : 0.55,
+                    child: PopupMenuButton<String>(
                       padding: EdgeInsets.zero,
                       iconSize: 16,
                       splashRadius: 14,
@@ -283,6 +293,7 @@ class _ConversationTileState extends State<ConversationTile> {
                         ),
                       ],
                     ),
+                  ),
                 ],
               ),
             ),
