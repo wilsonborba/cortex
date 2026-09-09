@@ -207,7 +207,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get documentAttachmentBackendGap =>
-      'Document ingestion is not supported by the backend yet: only images are accepted today.';
+      'This file type may not be fully supported yet and could fail to process.';
 
   @override
   String get voiceStartRecording => 'Record a voice message';

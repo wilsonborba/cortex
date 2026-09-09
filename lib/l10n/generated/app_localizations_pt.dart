@@ -209,7 +209,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get documentAttachmentBackendGap =>
-      'A ingestão de documentos ainda não é suportada pelo backend: hoje só imagens são aceitas.';
+      'Esse tipo de arquivo pode não ser totalmente suportado ainda e o processamento pode falhar.';
 
   @override
   String get voiceStartRecording => 'Gravar uma mensagem de voz';

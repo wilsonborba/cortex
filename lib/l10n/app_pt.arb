@@ -69,7 +69,7 @@
   "attachImage": "Imagem",
   "attachDocument": "Documento",
   "removeAttachment": "Remover anexo",
-  "documentAttachmentBackendGap": "A ingestão de documentos ainda não é suportada pelo backend: hoje só imagens são aceitas.",
+  "documentAttachmentBackendGap": "Esse tipo de arquivo pode não ser totalmente suportado ainda e o processamento pode falhar.",
 
   "voiceStartRecording": "Gravar uma mensagem de voz",
   "voiceFeatureNotReady": "Mensagem de voz: ainda não disponível",

@@ -208,7 +208,7 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get documentAttachmentBackendGap =>
-      'ระบบหลังบ้านยังไม่รองรับการนำเข้าเอกสาร วันนี้รองรับเฉพาะรูปภาพเท่านั้น';
+      'ไฟล์ประเภทนี้อาจยังไม่ได้รับการรองรับอย่างสมบูรณ์ และอาจประมวลผลไม่สำเร็จ';
 
   @override
   String get voiceStartRecording => 'บันทึกข้อความเสียง';

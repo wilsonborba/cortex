@@ -457,7 +457,7 @@ abstract class AppLocalizations {
   /// No description provided for @documentAttachmentBackendGap.
   ///
   /// In en, this message translates to:
-  /// **'Document ingestion is not supported by the backend yet: only images are accepted today.'**
+  /// **'This file type may not be fully supported yet and could fail to process.'**
   String get documentAttachmentBackendGap;
 
   /// No description provided for @voiceStartRecording.
