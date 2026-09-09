@@ -34,6 +34,13 @@ class ChatAttachment {
   bool get isImage => mimeType.startsWith('image/');
   bool get isAudio => mimeType.startsWith('audio/');
 
+  /// True for a historical attachment reconstructed from `GET
+  /// /conversations/{id}` (see `ChatService.loadRemoteConversation`), where
+  /// the server only ever gives back a filename, never the original bytes.
+  /// Rendering must fall back to a filename+icon chip for these: there is
+  /// nothing to decode as an image or play as audio.
+  bool get isPlaceholder => bytes.isEmpty;
+
   /// Whether cortex_api's ingestion step is expected to accept this mime
   /// type. Legacy binary `.doc` is the one picked-but-unsupported gap left
   /// (see this class's doc comment).

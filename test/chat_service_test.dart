@@ -501,4 +501,59 @@ void main() {
     expect(chatService.conversationById(draft.id), isNotNull);
     expect(chatService.listConversations(), isNotEmpty);
   });
+
+  test(
+    'loadRemoteConversation reconstructs a historical, bytes-less attachment from the attachments field',
+    () async {
+      final client = _FakeHttpClient((request) async {
+        return http.StreamedResponse(
+          Stream.value(
+            utf8.encode(
+              jsonEncode({
+                'id': 'convo-1',
+                'title': 'Restored conversation',
+                'created_at': '2026-09-01T00:00:00Z',
+                'messages': [
+                  {
+                    'id': 'mem-1-u',
+                    'role': 'user',
+                    'content': 'hello',
+                    'created_at': '2026-09-09T00:00:00Z',
+                    'attachments': [
+                      {'filename': 'report.pdf'},
+                    ],
+                  },
+                  {
+                    'id': 'mem-1-a',
+                    'role': 'assistant',
+                    'content': 'hi there',
+                    'created_at': '2026-09-09T00:00:01Z',
+                  },
+                ],
+              }),
+            ),
+          ),
+          200,
+        );
+      });
+
+      final chatService = ChatService(
+        cortexApiAdapter: CortexApiAdapter(apiForAppsBaseUrl: 'http://test.local', httpClient: client),
+      );
+
+      final conversation = await chatService.loadRemoteConversation('convo-1');
+
+      expect(conversation, isNotNull);
+      final userMessage = conversation!.messages.first;
+      expect(userMessage.attachments, hasLength(1));
+      final attachment = userMessage.attachments.single;
+      expect(attachment.filename, 'report.pdf');
+      expect(attachment.mimeType, 'application/pdf');
+      expect(attachment.bytes, isEmpty);
+      expect(attachment.isPlaceholder, isTrue);
+
+      final assistantMessage = conversation.messages.last;
+      expect(assistantMessage.attachments, isEmpty);
+    },
+  );
 }

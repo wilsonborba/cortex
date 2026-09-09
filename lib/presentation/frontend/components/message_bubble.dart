@@ -6,6 +6,7 @@ import '../../../domain/models/chat_message.dart';
 import 'audio_message_player.dart';
 import 'code_block_view.dart';
 import 'continue_generation_chip.dart';
+import 'file_icons.dart';
 import 'sources_card.dart';
 
 /// Renders a single [ChatMessage] as a markdown bubble, aligned right for
@@ -268,7 +269,10 @@ MarkdownStyleSheet _markdownStyleSheet({required ColorScheme scheme, required Co
 
 /// One attachment rendered inline in a sent/received bubble (issue #11):
 /// a thumbnail for an image, an interactive player for a voice message, or
-/// a filename chip for anything else.
+/// a filename chip for anything else. A historical attachment reconstructed
+/// from `GET /conversations/{id}` (see [ChatAttachment.isPlaceholder]) has
+/// no real bytes to decode or play, so it always falls back to the filename
+/// chip, with an icon guessed from its extension, regardless of mime type.
 class _MessageAttachment extends StatelessWidget {
   const _MessageAttachment({required this.attachment});
 
@@ -276,19 +280,21 @@ class _MessageAttachment extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (attachment.isAudio) {
-      return AudioMessagePlayer(attachment: attachment);
-    }
-    if (attachment.isImage) {
-      return ClipRRect(
-        borderRadius: BorderRadius.circular(8),
-        child: Image.memory(
-          attachment.bytes,
-          width: 160,
-          height: 160,
-          fit: BoxFit.cover,
-        ),
-      );
+    if (!attachment.isPlaceholder) {
+      if (attachment.isAudio) {
+        return AudioMessagePlayer(attachment: attachment);
+      }
+      if (attachment.isImage) {
+        return ClipRRect(
+          borderRadius: BorderRadius.circular(8),
+          child: Image.memory(
+            attachment.bytes,
+            width: 160,
+            height: 160,
+            fit: BoxFit.cover,
+          ),
+        );
+      }
     }
     final scheme = Theme.of(context).colorScheme;
     return Container(
@@ -302,7 +308,7 @@ class _MessageAttachment extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.description_outlined, size: 16, color: scheme.onSurface),
+          Icon(fileIconForFilename(attachment.filename), size: 16, color: scheme.onSurface),
           const SizedBox(width: 6),
           Flexible(
             child: Text(

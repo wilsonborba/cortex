@@ -1,10 +1,12 @@
 import 'dart:async';
+import 'dart:typed_data';
 
 import '../../dal/remote/cortex_api_adapter.dart';
 import '../models/attachment.dart';
 import '../models/chat_message.dart';
 import '../models/conversation.dart';
 import '../models/execute_request.dart';
+import 'mime_type_guesser.dart';
 
 /// Conversation and message lifecycle.
 ///
@@ -92,11 +94,23 @@ class ChatService {
           final role = roleStr == 'assistant'
               ? MessageRole.assistant
               : (roleStr == 'system' ? MessageRole.system : MessageRole.user);
+          final messageId = m['id'] as String? ?? 'msg-${DateTime.now().microsecondsSinceEpoch}';
+          final attachmentsData = m['attachments'] as List<dynamic>? ?? const [];
+          final attachments = attachmentsData.map((a) {
+            final filename = a['filename'] as String? ?? 'attachment';
+            return ChatAttachment(
+              id: 'historical-$messageId-$filename',
+              filename: filename,
+              mimeType: guessMimeType(filename),
+              bytes: Uint8List(0),
+            );
+          }).toList();
           return ChatMessage(
-            id: m['id'] as String? ?? 'msg-${DateTime.now().microsecondsSinceEpoch}',
+            id: messageId,
             role: role,
             content: m['content'] as String? ?? '',
             createdAt: DateTime.tryParse(m['created_at'] as String? ?? '') ?? DateTime.now(),
+            attachments: attachments,
           );
         }).toList();
 

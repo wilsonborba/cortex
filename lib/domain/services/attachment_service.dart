@@ -1,6 +1,7 @@
 import 'package:file_picker/file_picker.dart';
 
 import '../models/attachment.dart';
+import 'mime_type_guesser.dart';
 
 /// Wraps `file_picker` for the prompt dock's attach flow (issue #6).
 ///
@@ -39,26 +40,11 @@ class AttachmentService {
         ChatAttachment(
           id: 'att-${DateTime.now().microsecondsSinceEpoch}-${attachments.length}',
           filename: file.name,
-          mimeType: _guessMimeType(file.name),
+          mimeType: guessMimeType(file.name),
           bytes: bytes,
         ),
       );
     }
     return attachments;
-  }
-
-  String _guessMimeType(String filename) {
-    final lower = filename.toLowerCase();
-    if (lower.endsWith('.png')) return 'image/png';
-    if (lower.endsWith('.jpg') || lower.endsWith('.jpeg')) return 'image/jpeg';
-    if (lower.endsWith('.gif')) return 'image/gif';
-    if (lower.endsWith('.webp')) return 'image/webp';
-    if (lower.endsWith('.pdf')) return 'application/pdf';
-    if (lower.endsWith('.docx')) {
-      return 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
-    }
-    if (lower.endsWith('.csv')) return 'text/csv';
-    if (lower.endsWith('.md')) return 'text/markdown';
-    return 'text/plain';
   }
 }

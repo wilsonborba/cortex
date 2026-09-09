@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import '../../../../domain/models/memory_graph.dart';
 import '../../../../l10n/generated/app_localizations.dart';
 import '../../components/app_theme.dart';
+import '../../components/file_icons.dart';
 import 'memory_graph_painter.dart';
 
 /// A single node rendered on the graph canvas. Every [MemoryGraphNodeType]
@@ -94,54 +95,6 @@ String? _formatCreatedAt(AppLocalizations l10n, Map<String, dynamic> metadata) {
   return l10n.memoryGraphTimeJustNow;
 }
 
-/// Icon for an attachment's filename extension. Falls back to a generic
-/// file icon for anything unrecognized (new/unknown extensions must never
-/// crash or leave the card without an icon).
-IconData _fileIconForFilename(String filename) {
-  final dot = filename.lastIndexOf('.');
-  final ext = dot == -1 || dot == filename.length - 1 ? '' : filename.substring(dot + 1).toLowerCase();
-  switch (ext) {
-    case 'pdf':
-      return Icons.picture_as_pdf_outlined;
-    case 'doc':
-    case 'docx':
-    case 'rtf':
-      return Icons.description_outlined;
-    case 'wav':
-    case 'mp3':
-    case 'm4a':
-    case 'aac':
-    case 'ogg':
-    case 'flac':
-      return Icons.audiotrack_outlined;
-    case 'mp4':
-    case 'mov':
-    case 'webm':
-    case 'mkv':
-      return Icons.videocam_outlined;
-    case 'png':
-    case 'jpg':
-    case 'jpeg':
-    case 'gif':
-    case 'webp':
-    case 'heic':
-      return Icons.image_outlined;
-    case 'txt':
-    case 'md':
-      return Icons.text_snippet_outlined;
-    case 'csv':
-    case 'xls':
-    case 'xlsx':
-      return Icons.table_chart_outlined;
-    case 'json':
-    case 'xml':
-    case 'yaml':
-    case 'yml':
-      return Icons.data_object_outlined;
-    default:
-      return Icons.insert_drive_file_outlined;
-  }
-}
 
 /// Small caps-style badge used across most card types to name the node's
 /// kind (e.g. "MEMORY", "ATTACHMENT"), always in addition to the icon/shape,
@@ -240,7 +193,7 @@ class _AttachmentCard extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Icon(_fileIconForFilename(node.label), size: 26, color: style.accent),
+          Icon(fileIconForFilename(node.label), size: 26, color: style.accent),
           const SizedBox(width: 10),
           Expanded(
             child: Column(
