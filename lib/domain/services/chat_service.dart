@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import '../../dal/remote/cortex_api_adapter.dart';
 import '../models/attachment.dart';
 import '../models/chat_message.dart';
@@ -6,11 +8,10 @@ import '../models/execute_request.dart';
 
 /// Conversation and message lifecycle.
 ///
-/// Conversations themselves are still a static mocked dataset (there is no
-/// conversation-persistence backend yet), but sending a message now talks to
-/// the real cortex_api backend through the `api_for_apps` public proxy (see
-/// `CortexApiAdapter`), instead of the delayed, hardcoded reply this used to
-/// return.
+/// Conversation metadata (create/rename/pin/delete) is persisted through
+/// `cortex_api`'s `/conversations` CRUD endpoints (see `CortexApiAdapter`);
+/// message content is sent to the real cortex_api backend through the
+/// `api_for_apps` public proxy.
 ///
 /// Three modes are supported, chosen per-call:
 /// - Plain chat: streams tokens from cortex_api's OpenAI facade
@@ -36,17 +37,7 @@ class ChatService {
     CortexApiAdapter? cortexApiAdapter,
     List<Conversation>? initialConversations,
   }) : _cortexApi = cortexApiAdapter ?? CortexApiAdapter(),
-       _conversations = (initialConversations != null && initialConversations.isNotEmpty)
-           ? List.of(initialConversations)
-           : [
-               Conversation(
-                 id: 'convo-${DateTime.now().microsecondsSinceEpoch}',
-                 title: 'New Conversation',
-                 messages: const [],
-                 createdAt: DateTime.now(),
-                 updatedAt: DateTime.now(),
-               ),
-             ];
+       _conversations = List.of(initialConversations ?? const []);
 
   static int _convoIdCounter = 0;
   static String _nextConvoId() {
@@ -60,6 +51,10 @@ class ChatService {
   List<Conversation> listConversations() => List.unmodifiable(_conversations);
 
   /// Fetches real conversation history from cortex_api's `GET /conversations`.
+  /// Genuinely leaves `_conversations` empty when the tenant has none yet:
+  /// no conversation is fabricated here, [ChatScreen] hands a client-only
+  /// draft (see [newDraftConversation]) to the composer in that case, and
+  /// nothing is persisted until the user actually sends a first message.
   Future<List<Conversation>> loadRemoteConversations({String tenantId = 'default'}) async {
     try {
       final remoteList = await _cortexApi.fetchConversations(tenantId: tenantId);
@@ -75,6 +70,7 @@ class ChatService {
               id: id,
               title: title,
               messages: const [],
+              isPinned: item['is_pinned'] as bool? ?? false,
               createdAt: createdAt,
               updatedAt: updatedAt,
             ),
@@ -82,17 +78,6 @@ class ChatService {
         }
       }
     } catch (_) {}
-    if (_conversations.isEmpty) {
-      _conversations.add(
-        Conversation(
-          id: 'convo-${DateTime.now().millisecondsSinceEpoch}',
-          title: 'New Conversation',
-          messages: const [],
-          createdAt: DateTime.now(),
-          updatedAt: DateTime.now(),
-        ),
-      );
-    }
     return listConversations();
   }
 
@@ -144,68 +129,65 @@ class ChatService {
     return null;
   }
 
-  Conversation newConversation({String title = 'New Conversation'}) {
+  /// Creates a real, persisted conversation (`POST /conversations`) and
+  /// inserts it locally. Inserted optimistically even if the backend call
+  /// fails, so the UI stays usable offline; a later [loadRemoteConversations]
+  /// reconciles with the server's view.
+  Future<Conversation> newConversation({
+    String title = 'New Conversation',
+    String tenantId = 'default',
+  }) async {
     final now = DateTime.now();
+    final id = _nextConvoId();
     final convo = Conversation(
-      id: _nextConvoId(),
+      id: id,
       title: title,
       messages: const [],
       createdAt: now,
       updatedAt: now,
     );
     _conversations.insert(0, convo);
+    await _cortexApi.createConversation(conversationId: id, tenantId: tenantId, title: title);
     return convo;
   }
 
-  void renameConversation(String id, String newTitle) {
+  Future<void> renameConversation(String id, String newTitle, {String tenantId = 'default'}) async {
+    final trimmed = newTitle.trim();
     final index = _conversations.indexWhere((c) => c.id == id);
-    if (index != -1) {
+    if (index != -1 && trimmed.isNotEmpty) {
       final convo = _conversations[index];
-      _conversations[index] = convo.copyWith(
-        title: newTitle.trim().isEmpty ? convo.title : newTitle.trim(),
-        updatedAt: DateTime.now(),
-      );
+      _conversations[index] = convo.copyWith(title: trimmed, updatedAt: DateTime.now());
+    }
+    if (trimmed.isNotEmpty) {
+      await _cortexApi.renameConversation(id, trimmed, tenantId: tenantId);
     }
   }
 
-  void togglePinConversation(String id) {
+  Future<void> togglePinConversation(String id, {String tenantId = 'default'}) async {
     final index = _conversations.indexWhere((c) => c.id == id);
+    bool nextPinned = true;
     if (index != -1) {
       final convo = _conversations[index];
-      _conversations[index] = convo.copyWith(
-        isPinned: !convo.isPinned,
-        updatedAt: DateTime.now(),
-      );
+      nextPinned = !convo.isPinned;
+      _conversations[index] = convo.copyWith(isPinned: nextPinned, updatedAt: DateTime.now());
     }
+    await _cortexApi.setConversationPinned(id, nextPinned, tenantId: tenantId);
   }
 
-  void clearAllConversations() {
+  /// Deletes every conversation, leaving the sidebar genuinely empty.
+  Future<void> clearAllConversations({String tenantId = 'default'}) async {
+    final ids = _conversations.map((c) => c.id).toList();
     _conversations.clear();
-    final now = DateTime.now();
-    final fresh = Conversation(
-      id: _nextConvoId(),
-      title: 'New Conversation',
-      messages: const [],
-      createdAt: now,
-      updatedAt: now,
-    );
-    _conversations.add(fresh);
+    for (final id in ids) {
+      await _cortexApi.deleteConversation(id, tenantId: tenantId);
+    }
   }
 
-  void deleteConversation(String id) {
+  /// Soft-deletes a conversation (`DELETE /conversations/{id}`). Leaves
+  /// `_conversations` empty when it was the last one.
+  Future<void> deleteConversation(String id, {String tenantId = 'default'}) async {
     _conversations.removeWhere((c) => c.id == id);
-    if (_conversations.isEmpty) {
-      final now = DateTime.now();
-      _conversations.add(
-        Conversation(
-          id: _nextConvoId(),
-          title: 'New Conversation',
-          messages: const [],
-          createdAt: now,
-          updatedAt: now,
-        ),
-      );
-    }
+    await _cortexApi.deleteConversation(id, tenantId: tenantId);
   }
 
   /// Builds a brand-new, never-persisted conversation for incognito mode.
@@ -222,6 +204,24 @@ class ChatService {
     );
   }
 
+  /// A client-only conversation for when the sidebar has nothing to select:
+  /// not added to `_conversations` (so it never shows up in the sidebar
+  /// list), not persisted anywhere. Purely so [ChatFlowHandler] always has a
+  /// conversation object to render the composer around. The moment
+  /// [sendMessage] is called with this id, it is adopted for real (see
+  /// [sendMessage]'s doc comment) and starts showing up in the sidebar like
+  /// any other conversation.
+  Conversation newDraftConversation({String title = 'New Conversation'}) {
+    final now = DateTime.now();
+    return Conversation(
+      id: _nextConvoId(),
+      title: title,
+      messages: const [],
+      createdAt: now,
+      updatedAt: now,
+    );
+  }
+
   /// Appends [content] as a user message, then produces an assistant reply
   /// either by streaming (default) or, when [useMemory] is true or
   /// [attachments] is non-empty, by calling the native memory-aware
@@ -232,18 +232,32 @@ class ChatService {
   /// streamed token (or once with the full reply in the `/execute` path).
   /// Callers that want to render tokens as they arrive should use this
   /// callback rather than waiting on the returned [Future].
+  ///
+  /// If [conversationId] isn't in `_conversations` yet (the composer was
+  /// showing a [newDraftConversation]), it is adopted here: persisted for
+  /// real via `POST /conversations` and inserted, so this first message is
+  /// what actually turns a draft into a conversation the sidebar shows.
   Future<Conversation> sendMessage({
     required String conversationId,
     required String content,
     bool useMemory = false,
     bool needsWeb = false,
     bool normalizePrompt = true,
+    String tenantId = 'default',
     List<ChatAttachment> attachments = const [],
     void Function(Conversation conversation)? onUpdate,
   }) async {
-    final index = _conversations.indexWhere((c) => c.id == conversationId);
+    var index = _conversations.indexWhere((c) => c.id == conversationId);
     if (index == -1) {
-      throw ArgumentError('Unknown conversation: $conversationId');
+      final now = DateTime.now();
+      _conversations.insert(
+        0,
+        Conversation(id: conversationId, title: 'New Conversation', messages: const [], createdAt: now, updatedAt: now),
+      );
+      index = 0;
+      unawaited(
+        _cortexApi.createConversation(conversationId: conversationId, tenantId: tenantId),
+      );
     }
 
     final conversation = _conversations[index];
@@ -320,6 +334,14 @@ class ChatService {
     onUpdate?.call(updated);
 
     final replyId = 'msg-${now.microsecondsSinceEpoch}-r';
+
+    // Surface an empty assistant placeholder immediately, before any network
+    // call even starts: without this, no assistant message exists in the UI
+    // at all until the first streamed token (or the single non-streamed
+    // reply) arrives, so the "waiting" typing indicator (MessageBubble,
+    // shown for an empty, non-interrupted assistant message) never actually
+    // gets a message to attach to and never renders.
+    onUpdate?.call(_withAppendedReply(updated, replyId, '', now));
 
     if (useMemory || attachments.isNotEmpty || temporary) {
       updated = await _replyWithExecute(

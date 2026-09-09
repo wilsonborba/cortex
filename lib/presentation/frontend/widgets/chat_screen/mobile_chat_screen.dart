@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/settings.dart';
+import '../../../../core/utils/file_download.dart';
 import '../../../../domain/models/conversation.dart';
+import '../../../../domain/services/chat_export_service.dart';
 import '../../../../l10n/generated/app_localizations.dart';
 import '../../components/app_settings_sheet.dart';
 import '../../components/conversation_tile.dart';
@@ -24,11 +27,19 @@ class MobileChatScreen extends StatefulWidget {
 
 class _MobileChatScreenState extends State<MobileChatScreen> {
   final _scroll = StickyScrollController();
+  static const _exportService = ChatExportService();
 
   @override
   void dispose() {
     _scroll.dispose();
     super.dispose();
+  }
+
+  void _exportConversation(Conversation conversation) {
+    downloadTextFile(
+      filename: _exportService.suggestedFilename(conversation),
+      content: _exportService.buildMarkdown(conversation),
+    );
   }
 
   void _showClearAllConfirmation() {
@@ -127,6 +138,12 @@ class _MobileChatScreenState extends State<MobileChatScreen> {
               tooltip: l10n.startIncognito,
               icon: const Icon(Icons.visibility_off_outlined, size: 18),
               onPressed: props.onStartIncognitoChat,
+            ),
+          if (props.selectedConversation.messages.isNotEmpty)
+            IconButton(
+              tooltip: l10n.exportChatTooltip,
+              icon: const Icon(Icons.download_outlined, size: 18),
+              onPressed: () => _exportConversation(props.selectedConversation),
             ),
           IconButton(
             tooltip: 'Settings',
@@ -274,6 +291,21 @@ class _MobileChatScreenState extends State<MobileChatScreen> {
               Expanded(
                 child: _buildGroupedConversationList(context, props, scheme),
               ),
+              // Build/deploy timestamp, same spot & style certifications
+              // shows it in, so it's visible without opening Settings.
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                child: Center(
+                  child: Text(
+                    'Cortex ${AppSettings.buildVersion}',
+                    style: TextStyle(
+                      fontSize: 10,
+                      fontFamily: 'monospace',
+                      color: scheme.onSurface.withValues(alpha: 0.35),
+                    ),
+                  ),
+                ),
+              ),
             ],
           ),
         ),
@@ -302,14 +334,15 @@ class _MobileChatScreenState extends State<MobileChatScreen> {
                             ),
                             itemCount: props.selectedConversation.messages.length,
                             itemBuilder: (context, index) {
-                              final message =
-                                  props.selectedConversation.messages[index];
+                              final messages = props.selectedConversation.messages;
+                              final message = messages[index];
                               return MessageBubble(
                                 message: message,
                                 onContinueGeneration: () =>
                                     props.onContinueGeneration(message.id),
                                 isContinuingGeneration:
                                     props.continuingMessageId == message.id,
+                                isDelivered: index < messages.length - 1 || !props.isBusy,
                               );
                             },
                           ),
@@ -402,6 +435,22 @@ class _MobileChatScreenState extends State<MobileChatScreen> {
       );
     }
 
+    if (props.conversations.isEmpty) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Text(
+            AppLocalizations.of(context).noConversationsYetTitle,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 12,
+              color: scheme.onSurface.withValues(alpha: 0.5),
+            ),
+          ),
+        ),
+      );
+    }
+
     return ListView(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       children: [
@@ -433,24 +482,25 @@ class _MobileChatScreenState extends State<MobileChatScreen> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final cardBg = isDark ? const Color(0xFF141416) : const Color(0xFFFFFFFF);
 
+    final l10n = AppLocalizations.of(context);
     final suggestions = [
       {
-        'tag': 'SYSTEM ANALYSIS',
-        'title': 'Analyze system telemetry & bottlenecks',
+        'tag': l10n.suggestionSystemTag,
+        'title': l10n.suggestionSystemTitle,
         'icon': Icons.insights_rounded,
-        'prompt': 'Analyze current system metrics and identify memory/latency bottlenecks.',
+        'prompt': l10n.suggestionSystemPrompt,
       },
       {
-        'tag': 'ARCHITECTURE',
-        'title': 'Explore architecture tradeoffs',
+        'tag': l10n.suggestionArchitectureTag,
+        'title': l10n.suggestionArchitectureTitle,
         'icon': Icons.account_tree_outlined,
-        'prompt': 'Explain the architectural tradeoffs between token streaming facades vs RPC execute.',
+        'prompt': l10n.suggestionArchitecturePrompt,
       },
       {
-        'tag': 'PIPELINE CODE',
-        'title': 'Draft an async API pipeline',
+        'tag': l10n.suggestionPipelineTag,
+        'title': l10n.suggestionPipelineTitle,
         'icon': Icons.terminal_rounded,
-        'prompt': 'Write a Python FastAPI service connecting to an isolated AI gateway with health checks.',
+        'prompt': l10n.suggestionPipelinePrompt,
       },
     ];
 

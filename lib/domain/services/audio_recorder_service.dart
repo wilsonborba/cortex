@@ -24,6 +24,16 @@ class RecordedAudio {
 /// (writes to a path/blob URL that then has to be fetched back), so the
 /// finished clip's bytes are already in memory the moment recording stops,
 /// with no extra network round trip on web.
+///
+/// [AudioEncoder.pcm16bits] is the *only* encoder `record_web`'s
+/// `startStream` supports (confirmed in its source: every other encoder,
+/// `opus` included, hits a `default: throw Exception('Stream not
+/// supported.')` branch before the microphone is ever touched, so no
+/// permission prompt fires and the buffer stays empty, exactly the
+/// "records nothing, no permission dialog" symptom this fixes). Its
+/// streamed chunks are headerless raw PCM16 samples, so [stop] wraps the
+/// accumulated bytes in a standard WAV header itself before handing back a
+/// clip that is actually a valid, playable `audio/wav` file.
 class AudioRecorderService {
   final AudioRecorder _recorder = AudioRecorder();
   DateTime? _startedAt;
@@ -31,11 +41,11 @@ class AudioRecorderService {
   StreamSubscription<Uint8List>? _dataSub;
   final BytesBuilder _buffer = BytesBuilder(copy: false);
 
-  /// Opus-in-webm is what `record`'s web implementation actually produces
-  /// across Chromium/Firefox, and it's a mime type cortex_api's ingestion
-  /// already accepts (`audio/...`, see `attachment.dart`'s doc comment).
-  static const _encoder = AudioEncoder.opus;
-  static const _mimeType = 'audio/webm';
+  static const _encoder = AudioEncoder.pcm16bits;
+  static const _sampleRate = 44100;
+  static const _numChannels = 1;
+  static const _bitsPerSample = 16;
+  static const _mimeType = 'audio/wav';
 
   Future<bool> hasPermission() => _recorder.hasPermission();
 
@@ -46,7 +56,11 @@ class AudioRecorderService {
     _buffer.clear();
     _startedAt = DateTime.now();
     final stream = await _recorder.startStream(
-      const RecordConfig(encoder: _encoder, numChannels: 1),
+      const RecordConfig(
+        encoder: _encoder,
+        sampleRate: _sampleRate,
+        numChannels: _numChannels,
+      ),
     );
     _dataSub = stream.listen(_buffer.add);
     _amplitudeSub = _recorder
@@ -66,9 +80,44 @@ class AudioRecorderService {
     _amplitudeSub = null;
     _dataSub = null;
     _startedAt = null;
-    final bytes = _buffer.takeBytes();
-    if (bytes.isEmpty) return null;
-    return RecordedAudio(bytes: bytes, mimeType: _mimeType, duration: duration);
+    final pcmBytes = _buffer.takeBytes();
+    if (pcmBytes.isEmpty) return null;
+    return RecordedAudio(bytes: _wrapAsWav(pcmBytes), mimeType: _mimeType, duration: duration);
+  }
+
+  /// Prepends a standard 44-byte PCM WAV header to raw, headerless 16-bit
+  /// PCM samples so the result is a self-contained, playable audio file.
+  static Uint8List _wrapAsWav(Uint8List pcmBytes) {
+    const headerSize = 44;
+    final byteRate = _sampleRate * _numChannels * _bitsPerSample ~/ 8;
+    final blockAlign = _numChannels * _bitsPerSample ~/ 8;
+    final dataSize = pcmBytes.length;
+
+    final header = ByteData(headerSize);
+    void writeAscii(int offset, String text) {
+      for (var i = 0; i < text.length; i++) {
+        header.setUint8(offset + i, text.codeUnitAt(i));
+      }
+    }
+
+    writeAscii(0, 'RIFF');
+    header.setUint32(4, 36 + dataSize, Endian.little);
+    writeAscii(8, 'WAVE');
+    writeAscii(12, 'fmt ');
+    header.setUint32(16, 16, Endian.little); // fmt chunk size
+    header.setUint16(20, 1, Endian.little); // audio format: PCM
+    header.setUint16(22, _numChannels, Endian.little);
+    header.setUint32(24, _sampleRate, Endian.little);
+    header.setUint32(28, byteRate, Endian.little);
+    header.setUint16(32, blockAlign, Endian.little);
+    header.setUint16(34, _bitsPerSample, Endian.little);
+    writeAscii(36, 'data');
+    header.setUint32(40, dataSize, Endian.little);
+
+    final result = BytesBuilder(copy: false);
+    result.add(header.buffer.asUint8List());
+    result.add(pcmBytes);
+    return result.takeBytes();
   }
 
   /// Stops and discards whatever was captured, no bytes are read back.

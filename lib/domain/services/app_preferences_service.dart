@@ -25,7 +25,7 @@ class AppPreferencesService {
 
   Future<bool> readImproveInput() async {
     final raw = await _storage.readString(_improveInputKey);
-    if (raw == null) return true; // default true matching backend schema
+    if (raw == null) return false; // opt-in: off until the user turns it on
     return raw == 'true';
   }
 

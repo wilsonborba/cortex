@@ -36,3 +36,9 @@ List<String> cookieNamesPresent() {
 void deleteCookie(String name) {
   web.document.cookie = '$name=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
 }
+
+/// Full page reload: used right after sign-out so every piece of in-memory
+/// app state (SessionGate's cached status, ChatService's conversations,
+/// etc.) is torn down and rebuilt fresh against the now-cleared session,
+/// rather than trying to reset each of them by hand.
+void reloadPage() => web.window.location.reload();

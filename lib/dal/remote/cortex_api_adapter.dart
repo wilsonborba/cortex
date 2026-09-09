@@ -249,6 +249,108 @@ class CortexApiAdapter {
     return null;
   }
 
+  Uri _conversationsUri({String? conversationId, String tenantId = 'default'}) {
+    final base = '$apiForAppsBaseUrl${AppSettings.cortexProxyPrefix}/conversations';
+    final path = conversationId != null ? '$base/$conversationId' : base;
+    return Uri.parse('$path?tenant_id=$tenantId');
+  }
+
+  Map<String, dynamic>? _decodeConversation(http.Response response) {
+    if (response.statusCode != 200) return null;
+    try {
+      return Map<String, dynamic>.from(jsonDecode(response.body) as Map);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  /// Creates a conversation's metadata row (`POST /conversations`), so it
+  /// shows up in `fetchConversations` immediately even with zero messages.
+  Future<Map<String, dynamic>?> createConversation({
+    required String conversationId,
+    String tenantId = 'default',
+    String title = 'New Conversation',
+  }) async {
+    final headers = <String, String>{'Content-Type': 'application/json'};
+    _addAppProofHeader(headers);
+    _addCsrfHeader(headers);
+    try {
+      final response = await _httpClient.post(
+        _conversationsUri(),
+        headers: headers,
+        body: jsonEncode({'id': conversationId, 'tenant_id': tenantId, 'title': title}),
+      );
+      return _decodeConversation(response);
+    } catch (e) {
+      AppLogger.warning('Failed to create conversation $conversationId: $e');
+      return null;
+    }
+  }
+
+  /// Renames a conversation (`PATCH /conversations/{id}`).
+  Future<Map<String, dynamic>?> renameConversation(
+    String conversationId,
+    String title, {
+    String tenantId = 'default',
+  }) async {
+    final headers = <String, String>{'Content-Type': 'application/json'};
+    _addAppProofHeader(headers);
+    _addCsrfHeader(headers);
+    try {
+      final response = await _httpClient.patch(
+        _conversationsUri(conversationId: conversationId, tenantId: tenantId),
+        headers: headers,
+        body: jsonEncode({'title': title}),
+      );
+      return _decodeConversation(response);
+    } catch (e) {
+      AppLogger.warning('Failed to rename conversation $conversationId: $e');
+      return null;
+    }
+  }
+
+  /// Pins/unpins a conversation (`PATCH /conversations/{id}`).
+  Future<Map<String, dynamic>?> setConversationPinned(
+    String conversationId,
+    bool pinned, {
+    String tenantId = 'default',
+  }) async {
+    final headers = <String, String>{'Content-Type': 'application/json'};
+    _addAppProofHeader(headers);
+    _addCsrfHeader(headers);
+    try {
+      final response = await _httpClient.patch(
+        _conversationsUri(conversationId: conversationId, tenantId: tenantId),
+        headers: headers,
+        body: jsonEncode({'is_pinned': pinned}),
+      );
+      return _decodeConversation(response);
+    } catch (e) {
+      AppLogger.warning('Failed to set pinned=$pinned for conversation $conversationId: $e');
+      return null;
+    }
+  }
+
+  /// Soft-deletes a conversation (`DELETE /conversations/{id}`).
+  Future<bool> deleteConversation(
+    String conversationId, {
+    String tenantId = 'default',
+  }) async {
+    final headers = <String, String>{};
+    _addAppProofHeader(headers);
+    _addCsrfHeader(headers);
+    try {
+      final response = await _httpClient.delete(
+        _conversationsUri(conversationId: conversationId, tenantId: tenantId),
+        headers: headers,
+      );
+      return response.statusCode == 204;
+    } catch (e) {
+      AppLogger.warning('Failed to delete conversation $conversationId: $e');
+      return false;
+    }
+  }
+
   String _roleName(MessageRole role) {
     switch (role) {
       case MessageRole.user:

@@ -76,6 +76,13 @@ class AppLocalizationsTh extends AppLocalizations {
   String get newConversation => 'การสนทนาใหม่';
 
   @override
+  String get noConversationsYetTitle => 'ยังไม่มีการสนทนา';
+
+  @override
+  String get noConversationsYetBody =>
+      'เริ่มการสนทนาใหม่เพื่อเริ่มแชทกับ Cortex';
+
+  @override
   String get history => 'ประวัติการใช้งาน';
 
   @override
@@ -90,6 +97,16 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get cancel => 'ยกเลิก';
+
+  @override
+  String get logOut => 'ออกจากระบบ';
+
+  @override
+  String get logOutTitle => 'ออกจากระบบ';
+
+  @override
+  String get logOutConfirmation =>
+      'คุณจะออกจากระบบ Cortex บนอุปกรณ์นี้ และต้องเข้าสู่ระบบใหม่อีกครั้ง';
 
   @override
   String get delete => 'ลบ';
@@ -197,6 +214,52 @@ class AppLocalizationsTh extends AppLocalizations {
   String get voiceStartRecording => 'บันทึกข้อความเสียง';
 
   @override
+  String get voiceFeatureNotReady => 'ข้อความเสียง: ยังไม่พร้อมใช้งาน';
+
+  @override
+  String get suggestionSystemTag => 'การวิเคราะห์ระบบ';
+
+  @override
+  String get suggestionSystemTitle => 'วิเคราะห์ telemetry และคอขวดของระบบ';
+
+  @override
+  String get suggestionSystemSubtitle =>
+      'ระบุคอขวดของเวลาแฝงและวิเคราะห์การใช้หน่วยความจำ';
+
+  @override
+  String get suggestionSystemPrompt =>
+      'วิเคราะห์เมตริกระบบปัจจุบันและระบุคอขวดของหน่วยความจำ/เวลาแฝง';
+
+  @override
+  String get suggestionArchitectureTag => 'สถาปัตยกรรม';
+
+  @override
+  String get suggestionArchitectureTitle =>
+      'สำรวจข้อแลกเปลี่ยนของสถาปัตยกรรมแบบกระจาย';
+
+  @override
+  String get suggestionArchitectureSubtitle =>
+      'เปรียบเทียบ streaming facade กับโมเดลการประมวลผลแบบ batch';
+
+  @override
+  String get suggestionArchitecturePrompt =>
+      'อธิบายข้อแลกเปลี่ยนทางสถาปัตยกรรมระหว่าง token streaming facade กับ RPC execute';
+
+  @override
+  String get suggestionPipelineTag => 'โค้ดไปป์ไลน์';
+
+  @override
+  String get suggestionPipelineTitle => 'ร่าง API gateway แบบอะซิงโครนัส';
+
+  @override
+  String get suggestionPipelineSubtitle =>
+      'สร้างบริการที่ทนทานด้วย streaming SSE และการตรวจสอบสถานะ';
+
+  @override
+  String get suggestionPipelinePrompt =>
+      'เขียนบริการ Python FastAPI ที่เชื่อมต่อกับ AI gateway แบบแยกส่วนพร้อมการตรวจสอบสถานะ';
+
+  @override
   String get voiceCancelRecording => 'ยกเลิกการบันทึก';
 
   @override
@@ -245,6 +308,9 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get settingsTitle => 'ตั้งค่า';
+
+  @override
+  String get exportChatTooltip => 'ส่งออกแชทเป็น Markdown';
 
   @override
   String get themeLabel => 'ธีม';

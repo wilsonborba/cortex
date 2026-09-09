@@ -137,4 +137,45 @@ class AuthApiAdapter {
       return false;
     }
   }
+
+  /// Fetches the logged-in user's info from `api_for_apps` (`GET
+  /// /user/info/v1/`), authenticated by the `sid` session cookie same as
+  /// every other call. Returns `null` on any failure (no session, network
+  /// error, unexpected shape): callers should fall back to not showing a
+  /// name/email rather than blocking on this.
+  Future<Map<String, dynamic>?> fetchUserInfo() async {
+    final uri = Uri.parse('$apiForAppsBaseUrl/user/info/v1/');
+    try {
+      final response = await _httpClient.get(uri);
+      if (response.statusCode != 200) return null;
+      final decoded = jsonDecode(response.body);
+      if (decoded is Map && decoded['data'] is Map) {
+        return Map<String, dynamic>.from(decoded['data'] as Map);
+      }
+      return null;
+    } catch (e) {
+      AppLogger.warning('Failed to fetch user info: $e');
+      return null;
+    }
+  }
+
+  /// Revokes the session on the backend (`POST /user/sync/v1/log-out`):
+  /// deletes the Redis-side session and clears the `sid`/`csrf` cookies via
+  /// `Set-Cookie`. Best-effort: even on failure, the caller still clears
+  /// what it can locally (see `SessionService.clear`).
+  Future<void> logout() async {
+    final uri = Uri.parse('$apiForAppsBaseUrl/user/sync/v1/log-out');
+    final csrfToken = readCsrfToken();
+    try {
+      await _httpClient.post(
+        uri,
+        headers: {
+          if (csrfToken != null && csrfToken.isNotEmpty) 'X-CSRF-Token': csrfToken,
+          if (csrfToken != null && csrfToken.isNotEmpty) 'X-CSRFToken': csrfToken,
+        },
+      );
+    } catch (e) {
+      AppLogger.warning('Logout request failed: $e');
+    }
+  }
 }

@@ -34,8 +34,8 @@ class SessionService {
 
   /// Best-effort local sign-out signal (see `deleteCookie`'s doc comment):
   /// clears the readable cookie so [currentStatus] stops reporting this
-  /// browser as authenticated. Not currently wired to any UI (no sign-out
-  /// button exists yet, tracked separately), kept for when one is added.
+  /// browser as authenticated. Called from `AuthService.signOut`, alongside
+  /// the real backend session revocation.
   Future<void> clear() async {
     deleteCookie('csrf');
   }

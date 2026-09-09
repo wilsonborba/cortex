@@ -246,26 +246,17 @@ class _PromptDockState extends State<PromptDock> {
                     ),
                   ),
                   const SizedBox(width: 8),
-                  // Voice message recorder (issue #11): tapping transitions
-                  // this dock into VoiceRecordingBar above.
+                  // Voice message recorder: visible but disabled for now
+                  // (not ready yet) -- shown, not clickable, tooltip
+                  // explains why. Flip back to the real onTap once ready.
                   Tooltip(
-                    message: l10n.voiceStartRecording,
-                    child: Material(
-                      color: Colors.transparent,
-                      borderRadius: BorderRadius.circular(10),
-                      child: InkWell(
-                        borderRadius: BorderRadius.circular(10),
-                        onTap: widget.onSendVoiceMessage == null
-                            ? null
-                            : () => setState(() => _isRecordingVoice = true),
-                        child: Padding(
-                          padding: const EdgeInsets.all(6),
-                          child: Icon(
-                            Icons.mic_none_rounded,
-                            size: 20,
-                            color: scheme.onSurface.withValues(alpha: 0.7),
-                          ),
-                        ),
+                    message: l10n.voiceFeatureNotReady,
+                    child: Padding(
+                      padding: const EdgeInsets.all(6),
+                      child: Icon(
+                        Icons.mic_none_rounded,
+                        size: 20,
+                        color: scheme.onSurface.withValues(alpha: 0.3),
                       ),
                     ),
                   ),

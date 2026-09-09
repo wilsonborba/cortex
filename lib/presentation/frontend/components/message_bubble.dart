@@ -23,6 +23,7 @@ class MessageBubble extends StatelessWidget {
     required this.message,
     this.onContinueGeneration,
     this.isContinuingGeneration = false,
+    this.isDelivered = true,
   });
 
   final ChatMessage message;
@@ -34,6 +35,11 @@ class MessageBubble extends StatelessWidget {
   /// Whether a continue-generation retry for this exact message is
   /// currently in flight, disables/shows a spinner on the chip.
   final bool isContinuingGeneration;
+
+  /// User messages only: whether the assistant has replied yet (a
+  /// WhatsApp-style single check while waiting, double check once
+  /// answered). Meaningless for assistant/system messages.
+  final bool isDelivered;
 
   @override
   Widget build(BuildContext context) {
@@ -130,6 +136,10 @@ class MessageBubble extends StatelessWidget {
                                     .toList(),
                               ),
                             ),
+                          if (message.content.trim().isEmpty &&
+                              !isUser &&
+                              !message.interrupted)
+                            _TypingIndicator(color: textColor),
                           if (message.content.trim().isNotEmpty)
                             MarkdownBody(
                               data: message.content,
@@ -149,6 +159,32 @@ class MessageBubble extends StatelessWidget {
                                   backgroundColor:
                                       scheme.onSurface.withValues(alpha: 0.06),
                                 ),
+                              ),
+                            ),
+                          if (message.content.trim().isNotEmpty || message.attachments.isNotEmpty)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 4),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    _formatTime(message.createdAt),
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                      color: textColor.withValues(alpha: 0.45),
+                                    ),
+                                  ),
+                                  if (isUser) ...[
+                                    const SizedBox(width: 4),
+                                    Icon(
+                                      isDelivered ? Icons.done_all_rounded : Icons.done_rounded,
+                                      size: 14,
+                                      color: isDelivered
+                                          ? scheme.primary.withValues(alpha: 0.8)
+                                          : textColor.withValues(alpha: 0.45),
+                                    ),
+                                  ],
+                                ],
                               ),
                             ),
                         ],
@@ -186,6 +222,13 @@ class MessageBubble extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  String _formatTime(DateTime dt) {
+    final local = dt.toLocal();
+    final hour = local.hour.toString().padLeft(2, '0');
+    final minute = local.minute.toString().padLeft(2, '0');
+    return '$hour:$minute';
   }
 }
 
@@ -236,6 +279,66 @@ class _MessageAttachment extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// Shown in place of an assistant bubble's content while the reply hasn't
+/// started streaming in yet (empty content, not interrupted): three dots
+/// pulsing in sequence, one shared `AnimationController` driving all three
+/// via a phase offset rather than three separate animations, so it stays
+/// cheap. Replaces relying on nothing being shown at all during that gap.
+class _TypingIndicator extends StatefulWidget {
+  const _TypingIndicator({required this.color});
+
+  final Color color;
+
+  @override
+  State<_TypingIndicator> createState() => _TypingIndicatorState();
+}
+
+class _TypingIndicatorState extends State<_TypingIndicator>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 1200),
+  )..repeat();
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 14,
+      child: AnimatedBuilder(
+        animation: _controller,
+        builder: (context, _) {
+          return Row(
+            mainAxisSize: MainAxisSize.min,
+            children: List.generate(3, (i) {
+              // Each dot's phase is offset by a third of the cycle, so they
+              // pulse in a left-to-right wave rather than in lockstep.
+              final phase = (_controller.value + i / 3) % 1.0;
+              final opacity = 0.25 + 0.75 * (0.5 - (phase - 0.5).abs()) * 2;
+              return Padding(
+                padding: EdgeInsets.only(right: i < 2 ? 5 : 0),
+                child: Opacity(
+                  opacity: opacity.clamp(0.25, 1.0),
+                  child: Container(
+                    width: 6,
+                    height: 6,
+                    decoration: BoxDecoration(color: widget.color, shape: BoxShape.circle),
+                  ),
+                ),
+              );
+            }),
+          );
+        },
       ),
     );
   }

@@ -23,6 +23,24 @@ class _FakeHttpClient extends http.BaseClient {
   }
 }
 
+int _seedCounter = 0;
+Conversation _seedConversation() => Conversation(
+  id: 'convo-seed-${_seedCounter++}',
+  title: 'Seed conversation',
+  messages: const [],
+);
+
+/// A CortexApiAdapter backed by a fake client that answers any request with
+/// an empty 200 JSON body, used by tests that only assert on ChatService's
+/// local state after a CRUD call, not on the network request itself.
+CortexApiAdapter _noopCortexApiAdapter() => CortexApiAdapter(
+  apiForAppsBaseUrl: 'http://test.local',
+  httpClient: _FakeHttpClient(
+    (request) async =>
+        http.StreamedResponse(Stream.value(utf8.encode('{}')), 200),
+  ),
+);
+
 void main() {
   test(
     'sendMessage streams assistant tokens and reports incremental updates',
@@ -56,6 +74,7 @@ void main() {
           apiForAppsBaseUrl: 'http://test.local',
           httpClient: client,
         ),
+        initialConversations: [_seedConversation()],
       );
 
       final conversation = chatService.listConversations().first;
@@ -108,6 +127,7 @@ void main() {
           apiForAppsBaseUrl: 'http://test.local',
           httpClient: client,
         ),
+        initialConversations: [_seedConversation()],
       );
 
       final conversation = chatService.listConversations().first;
@@ -168,6 +188,7 @@ void main() {
           apiForAppsBaseUrl: 'http://test.local',
           httpClient: client,
         ),
+        initialConversations: [_seedConversation()],
       );
 
       final before = chatService.listConversations();
@@ -216,6 +237,7 @@ void main() {
           apiForAppsBaseUrl: 'http://test.local',
           httpClient: client,
         ),
+        initialConversations: [_seedConversation()],
       );
 
       final conversation = chatService.listConversations().first;
@@ -263,6 +285,7 @@ void main() {
           apiForAppsBaseUrl: 'http://test.local',
           httpClient: client,
         ),
+        initialConversations: [_seedConversation()],
       );
 
       final conversation = chatService.listConversations().first;
@@ -338,6 +361,7 @@ void main() {
         apiForAppsBaseUrl: 'http://test.local',
         httpClient: client,
       ),
+      initialConversations: [_seedConversation()],
     );
 
     final conversation = chatService.listConversations().first;
@@ -375,6 +399,7 @@ void main() {
           apiForAppsBaseUrl: 'http://test.local',
           httpClient: client,
         ),
+        initialConversations: [_seedConversation()],
       );
 
       final conversation = chatService.listConversations().first;
@@ -388,33 +413,92 @@ void main() {
     },
   );
 
-  test('renameConversation updates title and timestamp', () {
-    final chatService = ChatService();
+  test('newConversation adds and persists a real conversation', () async {
+    final chatService = ChatService(cortexApiAdapter: _noopCortexApiAdapter());
+    expect(chatService.listConversations(), isEmpty);
+
+    final created = await chatService.newConversation(title: 'Custom title');
+
+    expect(chatService.listConversations(), hasLength(1));
+    expect(chatService.conversationById(created.id)?.title, 'Custom title');
+  });
+
+  test('clearAllConversations deletes every conversation via the backend, leaving the list empty', () async {
+    final chatService = ChatService(
+      cortexApiAdapter: _noopCortexApiAdapter(),
+      initialConversations: [_seedConversation(), _seedConversation()],
+    );
+    expect(chatService.listConversations(), isNotEmpty);
+
+    await chatService.clearAllConversations();
+
+    expect(chatService.listConversations(), isEmpty);
+  });
+
+  test('renameConversation updates title and persists it via the backend', () async {
+    final chatService = ChatService(
+      cortexApiAdapter: _noopCortexApiAdapter(),
+      initialConversations: [_seedConversation()],
+    );
     final convo = chatService.listConversations().first;
-    chatService.renameConversation(convo.id, 'New Renamed Title');
+    await chatService.renameConversation(convo.id, 'New Renamed Title');
 
     final updated = chatService.conversationById(convo.id);
     expect(updated?.title, 'New Renamed Title');
   });
 
-  test('togglePinConversation toggles isPinned boolean flag', () {
-    final chatService = ChatService();
+  test('togglePinConversation toggles isPinned boolean flag', () async {
+    final chatService = ChatService(
+      cortexApiAdapter: _noopCortexApiAdapter(),
+      initialConversations: [_seedConversation()],
+    );
     final convo = chatService.listConversations().first;
     final initialPinned = convo.isPinned;
 
-    chatService.togglePinConversation(convo.id);
+    await chatService.togglePinConversation(convo.id);
     expect(chatService.conversationById(convo.id)?.isPinned, !initialPinned);
 
-    chatService.togglePinConversation(convo.id);
+    await chatService.togglePinConversation(convo.id);
     expect(chatService.conversationById(convo.id)?.isPinned, initialPinned);
   });
 
-  test('deleteConversation removes item or resets to fresh conversation', () {
-    final chatService = ChatService();
+  test('deleteConversation removes the item, leaving a genuinely empty list', () async {
+    final chatService = ChatService(
+      cortexApiAdapter: _noopCortexApiAdapter(),
+      initialConversations: [_seedConversation()],
+    );
     final convos = chatService.listConversations();
     final targetId = convos.first.id;
 
-    chatService.deleteConversation(targetId);
+    await chatService.deleteConversation(targetId);
     expect(chatService.listConversations().any((c) => c.id == targetId), isFalse);
+    expect(chatService.listConversations(), isEmpty);
+  });
+
+  test('sendMessage adopts an unknown conversationId as a real conversation (draft -> real)', () async {
+    final client = _FakeHttpClient((request) async {
+      final frames = [
+        'data: ${jsonEncode({
+          "choices": [
+            {
+              "delta": {"content": "hi"},
+            },
+          ],
+        })}\n\n',
+        'data: [DONE]\n\n',
+      ];
+      return http.StreamedResponse(Stream.fromIterable(frames.map(utf8.encode)), 200);
+    });
+    final chatService = ChatService(
+      cortexApiAdapter: CortexApiAdapter(apiForAppsBaseUrl: 'http://test.local', httpClient: client),
+    );
+
+    final draft = chatService.newDraftConversation();
+    expect(chatService.listConversations(), isEmpty);
+
+    await chatService.sendMessage(conversationId: draft.id, content: 'hello');
+
+    expect(chatService.conversationById(draft.id), isNotNull);
+    expect(chatService.listConversations(), isNotEmpty);
   });
 }

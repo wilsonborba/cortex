@@ -76,6 +76,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get newConversation => 'New Conversation';
 
   @override
+  String get noConversationsYetTitle => 'No conversations yet';
+
+  @override
+  String get noConversationsYetBody =>
+      'Start a new conversation to begin chatting with Cortex.';
+
+  @override
   String get history => 'HISTORY';
 
   @override
@@ -90,6 +97,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get cancel => 'Cancel';
+
+  @override
+  String get logOut => 'Log Out';
+
+  @override
+  String get logOutTitle => 'Log Out';
+
+  @override
+  String get logOutConfirmation =>
+      'You\'ll be signed out of Cortex on this device and need to sign in again.';
 
   @override
   String get delete => 'Delete';
@@ -196,6 +213,52 @@ class AppLocalizationsEn extends AppLocalizations {
   String get voiceStartRecording => 'Record a voice message';
 
   @override
+  String get voiceFeatureNotReady => 'Voice messages: not ready yet';
+
+  @override
+  String get suggestionSystemTag => 'SYSTEM ANALYSIS';
+
+  @override
+  String get suggestionSystemTitle => 'Analyze system telemetry & bottlenecks';
+
+  @override
+  String get suggestionSystemSubtitle =>
+      'Identify latency bottlenecks and profile memory usage.';
+
+  @override
+  String get suggestionSystemPrompt =>
+      'Analyze current system metrics and identify memory/latency bottlenecks.';
+
+  @override
+  String get suggestionArchitectureTag => 'ARCHITECTURE';
+
+  @override
+  String get suggestionArchitectureTitle =>
+      'Explore distributed architecture tradeoffs';
+
+  @override
+  String get suggestionArchitectureSubtitle =>
+      'Compare streaming facades against batch execution models.';
+
+  @override
+  String get suggestionArchitecturePrompt =>
+      'Explain the architectural tradeoffs between token streaming facades vs RPC execute.';
+
+  @override
+  String get suggestionPipelineTag => 'PIPELINE CODE';
+
+  @override
+  String get suggestionPipelineTitle => 'Draft an asynchronous API gateway';
+
+  @override
+  String get suggestionPipelineSubtitle =>
+      'Build a resilient service with streaming SSE & health guards.';
+
+  @override
+  String get suggestionPipelinePrompt =>
+      'Write a Python FastAPI service connecting to an isolated AI gateway with health checks.';
+
+  @override
   String get voiceCancelRecording => 'Cancel recording';
 
   @override
@@ -244,6 +307,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settingsTitle => 'Settings';
+
+  @override
+  String get exportChatTooltip => 'Export chat as Markdown';
 
   @override
   String get themeLabel => 'Theme';

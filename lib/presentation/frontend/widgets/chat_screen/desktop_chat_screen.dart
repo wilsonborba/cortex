@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/settings.dart';
+import '../../../../core/utils/file_download.dart';
 import '../../../../domain/models/conversation.dart';
+import '../../../../domain/services/chat_export_service.dart';
 import '../../../../l10n/generated/app_localizations.dart';
 import '../../components/app_settings_sheet.dart';
 import '../../components/conversation_tile.dart';
@@ -24,11 +27,19 @@ class DesktopChatScreen extends StatefulWidget {
 class _DesktopChatScreenState extends State<DesktopChatScreen> {
   bool _sidebarCollapsed = false;
   final _scroll = StickyScrollController();
+  static const _exportService = ChatExportService();
 
   @override
   void dispose() {
     _scroll.dispose();
     super.dispose();
+  }
+
+  void _exportConversation(Conversation conversation) {
+    downloadTextFile(
+      filename: _exportService.suggestedFilename(conversation),
+      content: _exportService.buildMarkdown(conversation),
+    );
   }
 
   void _showClearAllConfirmation() {
@@ -258,6 +269,21 @@ class _DesktopChatScreenState extends State<DesktopChatScreen> {
                         Expanded(
                           child: _buildGroupedConversationList(context, props, scheme),
                         ),
+                        // Build/deploy timestamp, same spot & style certifications
+                        // shows it in, so it's visible without opening Settings.
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 6),
+                          child: Center(
+                            child: Text(
+                              'Cortex ${AppSettings.buildVersion}',
+                              style: TextStyle(
+                                fontSize: 10,
+                                fontFamily: 'monospace',
+                                color: scheme.onSurface.withValues(alpha: 0.35),
+                              ),
+                            ),
+                          ),
+                        ),
                         // User Profile Footer
                         Container(
                           padding: const EdgeInsets.all(12),
@@ -274,7 +300,9 @@ class _DesktopChatScreenState extends State<DesktopChatScreen> {
                                 radius: 15,
                                 backgroundColor: scheme.onSurface.withValues(alpha: 0.12),
                                 child: Text(
-                                  'W',
+                                  (props.userEmail?.isNotEmpty ?? false)
+                                      ? props.userEmail![0].toUpperCase()
+                                      : '?',
                                   style: TextStyle(
                                     fontSize: 12,
                                     fontWeight: FontWeight.w700,
@@ -284,27 +312,14 @@ class _DesktopChatScreenState extends State<DesktopChatScreen> {
                               ),
                               const SizedBox(width: 10),
                               Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'Wilson Borba',
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w600,
-                                        color: scheme.onSurface,
-                                      ),
-                                    ),
-                                    Text(
-                                      'PRO ACCOUNT',
-                                      style: TextStyle(
-                                        fontSize: 9,
-                                        fontWeight: FontWeight.w600,
-                                        letterSpacing: 0.5,
-                                        color: scheme.onSurface.withValues(alpha: 0.45),
-                                      ),
-                                    ),
-                                  ],
+                                child: Text(
+                                  props.userEmail ?? '...',
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
+                                    color: scheme.onSurface,
+                                  ),
                                 ),
                               ),
                               IconButton(
@@ -457,11 +472,12 @@ class _DesktopChatScreenState extends State<DesktopChatScreen> {
                             icon: const Icon(Icons.visibility_off_outlined, size: 18),
                             onPressed: props.onStartIncognitoChat,
                           ),
-                        IconButton(
-                          tooltip: 'Settings',
-                          icon: const Icon(Icons.tune_outlined, size: 18),
-                          onPressed: () => AppSettingsSheet.show(context),
-                        ),
+                        if (props.selectedConversation.messages.isNotEmpty)
+                          IconButton(
+                            tooltip: l10n.exportChatTooltip,
+                            icon: const Icon(Icons.download_outlined, size: 18),
+                            onPressed: () => _exportConversation(props.selectedConversation),
+                          ),
                       ],
                     ),
                   ),
@@ -490,15 +506,15 @@ class _DesktopChatScreenState extends State<DesktopChatScreen> {
                                       itemCount:
                                           props.selectedConversation.messages.length,
                                       itemBuilder: (context, index) {
-                                        final message = props
-                                            .selectedConversation
-                                            .messages[index];
+                                        final messages = props.selectedConversation.messages;
+                                        final message = messages[index];
                                         return MessageBubble(
                                           message: message,
                                           onContinueGeneration: () =>
                                               props.onContinueGeneration(message.id),
                                           isContinuingGeneration:
                                               props.continuingMessageId == message.id,
+                                          isDelivered: index < messages.length - 1 || !props.isBusy,
                                         );
                                       },
                                     ),
@@ -598,6 +614,22 @@ class _DesktopChatScreenState extends State<DesktopChatScreen> {
       );
     }
 
+    if (props.conversations.isEmpty) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Text(
+            AppLocalizations.of(context).noConversationsYetTitle,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 12,
+              color: scheme.onSurface.withValues(alpha: 0.5),
+            ),
+          ),
+        ),
+      );
+    }
+
     return ListView(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       children: [
@@ -629,27 +661,28 @@ class _DesktopChatScreenState extends State<DesktopChatScreen> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final cardBg = isDark ? const Color(0xFF141416) : const Color(0xFFFFFFFF);
 
+    final l10n = AppLocalizations.of(context);
     final suggestions = [
       {
-        'tag': 'SYSTEM ANALYSIS',
-        'title': 'Analyze system telemetry & bottlenecks',
-        'subtitle': 'Identify latency bottlenecks and profile memory usage.',
+        'tag': l10n.suggestionSystemTag,
+        'title': l10n.suggestionSystemTitle,
+        'subtitle': l10n.suggestionSystemSubtitle,
         'icon': Icons.insights_rounded,
-        'prompt': 'Analyze current system metrics and identify memory/latency bottlenecks.',
+        'prompt': l10n.suggestionSystemPrompt,
       },
       {
-        'tag': 'ARCHITECTURE',
-        'title': 'Explore distributed architecture tradeoffs',
-        'subtitle': 'Compare streaming facades against batch execution models.',
+        'tag': l10n.suggestionArchitectureTag,
+        'title': l10n.suggestionArchitectureTitle,
+        'subtitle': l10n.suggestionArchitectureSubtitle,
         'icon': Icons.account_tree_outlined,
-        'prompt': 'Explain the architectural tradeoffs between token streaming facades vs RPC execute.',
+        'prompt': l10n.suggestionArchitecturePrompt,
       },
       {
-        'tag': 'PIPELINE CODE',
-        'title': 'Draft an asynchronous API gateway',
-        'subtitle': 'Build a resilient service with streaming SSE & health guards.',
+        'tag': l10n.suggestionPipelineTag,
+        'title': l10n.suggestionPipelineTitle,
+        'subtitle': l10n.suggestionPipelineSubtitle,
         'icon': Icons.terminal_rounded,
-        'prompt': 'Write a Python FastAPI service connecting to an isolated AI gateway with health checks.',
+        'prompt': l10n.suggestionPipelinePrompt,
       },
     ];
 

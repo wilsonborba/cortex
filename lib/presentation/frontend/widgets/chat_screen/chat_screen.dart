@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/utils/responsive.dart';
+import '../../../../dal/remote/auth_api_adapter.dart';
 import '../../../../domain/models/attachment.dart';
 import '../../../../domain/models/conversation.dart';
 import '../../../../domain/services/chat_service.dart';
@@ -25,6 +26,7 @@ class _ChatScreenState extends State<ChatScreen> {
   late final ConversationHandler _conversationHandler;
   late ChatFlowHandler _flowHandler;
   Object? _lastShownError;
+  String? _userEmail;
 
   @override
   void initState() {
@@ -32,6 +34,15 @@ class _ChatScreenState extends State<ChatScreen> {
     _conversationHandler = ConversationHandler(_chatService);
     _flowHandler = ChatFlowHandler(_chatService, _conversationHandler.selected);
     _conversationHandler.addListener(_onConversationChanged);
+    _loadUserInfo();
+  }
+
+  Future<void> _loadUserInfo() async {
+    final info = await AuthApiAdapter().fetchUserInfo();
+    final email = info?['email'] as String?;
+    if (mounted && email != null && email.isNotEmpty) {
+      setState(() => _userEmail = email);
+    }
   }
 
   void _maybeShowError() {
@@ -128,6 +139,7 @@ class _ChatScreenState extends State<ChatScreen> {
           onDraftChanged: _flowHandler.updateDraft,
           onContinueGeneration: _onContinueGeneration,
           continuingMessageId: _flowHandler.continuingMessageId,
+          userEmail: _userEmail,
         );
         return Responsive.isMobile(context)
             ? MobileChatScreen(props: props)
@@ -164,6 +176,7 @@ class ChatScreenProps {
     required this.onDraftChanged,
     required this.onContinueGeneration,
     required this.continuingMessageId,
+    this.userEmail,
   });
 
   final List<Conversation> conversations;
@@ -217,4 +230,8 @@ class ChatScreenProps {
   /// Id of the assistant message currently being retried via
   /// [onContinueGeneration], if any.
   final String? continuingMessageId;
+
+  /// The logged-in user's real email (`GET /user/info/v1/`), null until
+  /// fetched or if the fetch failed.
+  final String? userEmail;
 }

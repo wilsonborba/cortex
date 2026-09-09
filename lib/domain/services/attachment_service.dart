@@ -20,16 +20,13 @@ class AttachmentService {
 
   /// Opens the platform picker restricted to common document types.
   ///
-  /// Note (documented gap, see `ChatAttachment.isAcceptedByBackendToday`):
-  /// cortex_api's real `Attachment` schema only accepts `image/...` and
-  /// `audio/...` mime types at ingestion today, so a document picked here
-  /// can be selected, previewed, and sent on the wire exactly like the
-  /// real schema, but is expected to be rejected server-side until
-  /// document ingestion ships.
+  /// `.doc` (legacy binary Word format) is intentionally not offered here:
+  /// cortex_api's ingestion has no library for it (only the modern XML
+  /// `.docx`), see `ChatAttachment.isAcceptedByBackendToday`.
   Future<List<ChatAttachment>> pickDocuments() async {
     final files = await FilePicker.pickFiles(
       type: FileType.custom,
-      allowedExtensions: const ['pdf', 'doc', 'docx', 'txt', 'md', 'csv'],
+      allowedExtensions: const ['pdf', 'docx', 'txt', 'md', 'csv'],
     );
     return _toAttachments(files);
   }
@@ -57,7 +54,6 @@ class AttachmentService {
     if (lower.endsWith('.gif')) return 'image/gif';
     if (lower.endsWith('.webp')) return 'image/webp';
     if (lower.endsWith('.pdf')) return 'application/pdf';
-    if (lower.endsWith('.doc')) return 'application/msword';
     if (lower.endsWith('.docx')) {
       return 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
     }

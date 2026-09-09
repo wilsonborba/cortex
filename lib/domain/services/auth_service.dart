@@ -2,6 +2,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/logs.dart';
 import '../../core/settings.dart';
+import '../../core/utils/csrf.dart';
 import '../../dal/remote/auth_api_adapter.dart';
 import 'session_service.dart';
 
@@ -55,7 +56,16 @@ class AuthService {
     return ok;
   }
 
-  Future<void> signOut() => _sessionService.clear();
+  /// Signs out for real: revokes the session on the backend, clears the
+  /// local cookie-based gate, then reloads the page so every piece of
+  /// cached app state (conversations, chat handlers, etc.) is torn down
+  /// and `SessionGate` re-evaluates from scratch, landing on the sign-in
+  /// screen.
+  Future<void> signOut() async {
+    await _adapter.logout();
+    await _sessionService.clear();
+    reloadPage();
+  }
 
   String _currentOrigin() {
     final base = Uri.base;

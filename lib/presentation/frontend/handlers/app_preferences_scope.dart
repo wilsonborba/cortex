@@ -21,7 +21,7 @@ class AppPreferencesController extends ChangeNotifier {
 
   ThemeMode _themeMode = ThemeMode.system;
   Locale? _locale;
-  bool _improveInput = true;
+  bool _improveInput = false;
 
   ThemeMode get themeMode => _themeMode;
 

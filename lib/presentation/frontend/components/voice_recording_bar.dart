@@ -8,11 +8,12 @@ import '../../../l10n/generated/app_localizations.dart';
 
 /// Issue #11's inline recording bar: tapping the prompt dock's mic button
 /// transitions the whole dock into this bar (pulsating red indicator with
-/// an elapsed timer, a live waveform, a cancel button that discards the
-/// clip, and a send button that hands a finished `ChatAttachment` back to
-/// the caller). Replaces the old speech-to-text dictation button entirely,
-/// this records and sends an actual playable voice message instead of
-/// transcribing into the text field.
+/// an elapsed timer, a scrolling live waveform of the actual captured
+/// audio levels, a cancel button that discards the clip, and a send button
+/// that hands a finished `ChatAttachment` back to the caller). Replaces the
+/// old speech-to-text dictation button entirely, this records and sends an
+/// actual playable voice message instead of transcribing into the text
+/// field.
 class VoiceRecordingBar extends StatefulWidget {
   const VoiceRecordingBar({
     super.key,
@@ -33,11 +34,16 @@ class VoiceRecordingBar extends StatefulWidget {
   State<VoiceRecordingBar> createState() => _VoiceRecordingBarState();
 }
 
+/// How many amplitude samples make up the visible waveform history. At the
+/// ~200ms sample cadence [AudioRecorderService.start] uses, this covers the
+/// last ~9.6s of audio, scrolling in from the right as new samples arrive.
+const _waveformHistoryLength = 48;
+
 class _VoiceRecordingBarState extends State<VoiceRecordingBar> {
   final _service = AudioRecorderService();
   Timer? _tickTimer;
   Duration _elapsed = Duration.zero;
-  double _amplitude = 0;
+  final List<double> _levels = List.filled(_waveformHistoryLength, 0.0);
   bool _finishing = false;
 
   @override
@@ -64,7 +70,14 @@ class _VoiceRecordingBarState extends State<VoiceRecordingBar> {
 
       await _service.start(
         onAmplitude: (level) {
-          if (mounted) setState(() => _amplitude = level);
+          if (!mounted) return;
+          // dBFS-ish, roughly -45 (silence) to 0 (peak): normalize to 0..1
+          // and scroll it into the visible history, newest sample last.
+          final normalized = ((level + 45) / 45).clamp(0.05, 1.0);
+          setState(() {
+            _levels.removeAt(0);
+            _levels.add(normalized);
+          });
         },
       );
       _tickTimer = Timer.periodic(const Duration(milliseconds: 200), (_) {
@@ -118,7 +131,7 @@ class _VoiceRecordingBarState extends State<VoiceRecordingBar> {
     }
     final attachment = ChatAttachment(
       id: 'voice-${DateTime.now().microsecondsSinceEpoch}',
-      filename: 'voice-message.webm',
+      filename: 'voice-message.wav',
       mimeType: recorded.mimeType,
       bytes: recorded.bytes,
       audioDuration: recorded.duration,
@@ -151,7 +164,7 @@ class _VoiceRecordingBarState extends State<VoiceRecordingBar> {
           _PulsatingDot(color: scheme.error),
           const SizedBox(width: 8),
           Text(
-            '● ${_formatElapsed(_elapsed)}',
+            _formatElapsed(_elapsed),
             style: TextStyle(
               fontFamily: 'monospace',
               fontSize: 13,
@@ -160,7 +173,15 @@ class _VoiceRecordingBarState extends State<VoiceRecordingBar> {
             ),
           ),
           const SizedBox(width: 12),
-          Expanded(child: _LiveWaveform(amplitude: _amplitude, color: scheme.error)),
+          Expanded(
+            child: SizedBox(
+              height: 28,
+              child: CustomPaint(
+                painter: _ScrollingWaveformPainter(levels: _levels, color: scheme.error),
+                size: Size.infinite,
+              ),
+            ),
+          ),
           const SizedBox(width: 8),
           Container(
             width: 32,
@@ -221,31 +242,49 @@ class _PulsatingDotState extends State<_PulsatingDot>
   }
 }
 
-/// Live waveform bars reacting to [amplitude], same visual language the old
-/// dictation button used for its live sound-wave indicator.
-class _LiveWaveform extends StatelessWidget {
-  const _LiveWaveform({required this.amplitude, required this.color});
+/// Paints [levels] (each already normalized 0..1, oldest first) as a single
+/// scrolling bar chart in one canvas pass: real captured-audio history, not
+/// a decorative shape, so it visibly reacts to the user's own voice as it
+/// happens, this is what makes the recording actually *feel* live. One
+/// `CustomPainter` repaint is far cheaper than the previous approach of N
+/// independently-animated `AnimatedContainer` bars.
+class _ScrollingWaveformPainter extends CustomPainter {
+  _ScrollingWaveformPainter({required this.levels, required this.color});
 
-  final double amplitude;
+  final List<double> levels;
   final Color color;
 
   @override
-  Widget build(BuildContext context) {
-    final level = ((amplitude + 45) / 45).clamp(0.08, 1.0);
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: List.generate(12, (i) {
-        final phase = (i.isEven ? level : level * 0.55).clamp(0.08, 1.0);
-        return AnimatedContainer(
-          duration: const Duration(milliseconds: 150),
-          width: 3,
-          height: 4 + phase * 18,
-          decoration: BoxDecoration(
-            color: color,
-            borderRadius: BorderRadius.circular(2),
-          ),
-        );
-      }),
-    );
+  void paint(Canvas canvas, Size size) {
+    if (levels.isEmpty || size.width <= 0 || size.height <= 0) return;
+
+    const gap = 2.0;
+    final barWidth = (size.width / levels.length) - gap;
+    if (barWidth <= 0) return;
+
+    final paint = Paint()..style = PaintingStyle.fill;
+    final midY = size.height / 2;
+
+    for (var i = 0; i < levels.length; i++) {
+      final x = i * (barWidth + gap);
+      // Newer samples (right side) are drawn fully opaque; older ones fade
+      // out, reinforcing the left-to-right "flowing in" direction.
+      final age = i / levels.length;
+      paint.color = color.withValues(alpha: 0.35 + age * 0.65);
+
+      final barHeight = (levels[i] * size.height).clamp(2.0, size.height);
+      final rect = RRect.fromRectAndRadius(
+        Rect.fromCenter(center: Offset(x + barWidth / 2, midY), width: barWidth, height: barHeight),
+        Radius.circular(barWidth / 2),
+      );
+      canvas.drawRRect(rect, paint);
+    }
   }
+
+  // `levels` is the same mutated list instance across rebuilds (updated via
+  // removeAt/add rather than reassigned), so identity/equality checks can't
+  // detect new samples: always repaint. `setState` already gates how often
+  // this fires (once per ~200ms amplitude sample), so this stays cheap.
+  @override
+  bool shouldRepaint(covariant _ScrollingWaveformPainter oldDelegate) => true;
 }

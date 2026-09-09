@@ -226,6 +226,18 @@ abstract class AppLocalizations {
   /// **'New Conversation'**
   String get newConversation;
 
+  /// No description provided for @noConversationsYetTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No conversations yet'**
+  String get noConversationsYetTitle;
+
+  /// No description provided for @noConversationsYetBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Start a new conversation to begin chatting with Cortex.'**
+  String get noConversationsYetBody;
+
   /// No description provided for @history.
   ///
   /// In en, this message translates to:
@@ -255,6 +267,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Cancel'**
   String get cancel;
+
+  /// No description provided for @logOut.
+  ///
+  /// In en, this message translates to:
+  /// **'Log Out'**
+  String get logOut;
+
+  /// No description provided for @logOutTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Log Out'**
+  String get logOutTitle;
+
+  /// No description provided for @logOutConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'ll be signed out of Cortex on this device and need to sign in again.'**
+  String get logOutConfirmation;
 
   /// No description provided for @delete.
   ///
@@ -436,6 +466,84 @@ abstract class AppLocalizations {
   /// **'Record a voice message'**
   String get voiceStartRecording;
 
+  /// No description provided for @voiceFeatureNotReady.
+  ///
+  /// In en, this message translates to:
+  /// **'Voice messages: not ready yet'**
+  String get voiceFeatureNotReady;
+
+  /// No description provided for @suggestionSystemTag.
+  ///
+  /// In en, this message translates to:
+  /// **'SYSTEM ANALYSIS'**
+  String get suggestionSystemTag;
+
+  /// No description provided for @suggestionSystemTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Analyze system telemetry & bottlenecks'**
+  String get suggestionSystemTitle;
+
+  /// No description provided for @suggestionSystemSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Identify latency bottlenecks and profile memory usage.'**
+  String get suggestionSystemSubtitle;
+
+  /// No description provided for @suggestionSystemPrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Analyze current system metrics and identify memory/latency bottlenecks.'**
+  String get suggestionSystemPrompt;
+
+  /// No description provided for @suggestionArchitectureTag.
+  ///
+  /// In en, this message translates to:
+  /// **'ARCHITECTURE'**
+  String get suggestionArchitectureTag;
+
+  /// No description provided for @suggestionArchitectureTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Explore distributed architecture tradeoffs'**
+  String get suggestionArchitectureTitle;
+
+  /// No description provided for @suggestionArchitectureSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Compare streaming facades against batch execution models.'**
+  String get suggestionArchitectureSubtitle;
+
+  /// No description provided for @suggestionArchitecturePrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Explain the architectural tradeoffs between token streaming facades vs RPC execute.'**
+  String get suggestionArchitecturePrompt;
+
+  /// No description provided for @suggestionPipelineTag.
+  ///
+  /// In en, this message translates to:
+  /// **'PIPELINE CODE'**
+  String get suggestionPipelineTag;
+
+  /// No description provided for @suggestionPipelineTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Draft an asynchronous API gateway'**
+  String get suggestionPipelineTitle;
+
+  /// No description provided for @suggestionPipelineSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Build a resilient service with streaming SSE & health guards.'**
+  String get suggestionPipelineSubtitle;
+
+  /// No description provided for @suggestionPipelinePrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Write a Python FastAPI service connecting to an isolated AI gateway with health checks.'**
+  String get suggestionPipelinePrompt;
+
   /// No description provided for @voiceCancelRecording.
   ///
   /// In en, this message translates to:
@@ -525,6 +633,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Settings'**
   String get settingsTitle;
+
+  /// No description provided for @exportChatTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Export chat as Markdown'**
+  String get exportChatTooltip;
 
   /// No description provided for @themeLabel.
   ///

@@ -6,14 +6,12 @@ import 'dart:typed_data';
 ///
 /// Mirrors cortex_api's native `Attachment` schema (see
 /// `lib/presentation/api/schemas/attachments.py`): `filename`, `mimeType`
-/// and a base64 payload. That schema's own comment states ingestion only
-/// accepts `image/...` and `audio/...` mime types, other types are
-/// rejected server-side. Document attachments (PDF, DOCX, plain text, ...)
-/// are therefore fully supported here on the client (pick, preview,
-/// remove, and the request is shaped exactly like the real schema), but
-/// sending anything other than an image today will be rejected by
-/// cortex_api's ingestion step until it grows document support. That is a
-/// documented backend gap, not a client-side limitation.
+/// and a base64 payload. Ingestion accepts `image/...`, `audio/...`,
+/// `application/pdf`, docx, and plain-text-ish mime types (see
+/// `lib/engine/attachments.py`'s `AttachmentIngestor`); legacy binary
+/// `.doc` (`application/msword`) is not supported (no library for the old
+/// binary format, only the modern XML-based docx), same gap
+/// `certifications_api` already has.
 class ChatAttachment {
   const ChatAttachment({
     required this.id,
@@ -36,13 +34,17 @@ class ChatAttachment {
   bool get isImage => mimeType.startsWith('image/');
   bool get isAudio => mimeType.startsWith('audio/');
 
-  /// Whether cortex_api's current ingestion step is expected to accept
-  /// this mime type (`image/...` or `audio/...` only, per the real
-  /// `Attachment` schema's own comment). Non-image, non-audio documents
-  /// are still picked/previewed/sent client-side, but flagged here so the
-  /// UI can be honest that the backend does not accept them yet.
+  /// Whether cortex_api's ingestion step is expected to accept this mime
+  /// type. Legacy binary `.doc` is the one picked-but-unsupported gap left
+  /// (see this class's doc comment).
   bool get isAcceptedByBackendToday =>
-      mimeType.startsWith('image/') || mimeType.startsWith('audio/');
+      mimeType.startsWith('image/') ||
+      mimeType.startsWith('audio/') ||
+      mimeType == 'application/pdf' ||
+      mimeType == 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
+      mimeType.startsWith('text/') ||
+      mimeType == 'application/json' ||
+      mimeType == 'application/xml';
 
   String get base64 => base64Encode(bytes);
 
