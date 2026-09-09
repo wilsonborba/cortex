@@ -69,7 +69,7 @@
   "attachImage": "Imagem",
   "attachDocument": "Documento",
   "removeAttachment": "Remover anexo",
-  "documentAttachmentBackendGap": "Esse tipo de arquivo pode não ser suportado. Suportados: imagens, áudio, PDF, Word (.docx) e arquivos de texto simples/JSON/XML.",
+  "documentAttachmentBackendGap": "Arquivos suportados: imagens, áudio, PDF, Word (.docx) e texto simples/JSON/XML.",
 
   "voiceStartRecording": "Gravar uma mensagem de voz",
   "voiceFeatureNotReady": "Mensagem de voz: ainda não disponível",

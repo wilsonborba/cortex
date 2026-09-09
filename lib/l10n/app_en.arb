@@ -82,7 +82,7 @@
   "attachImage": "Image",
   "attachDocument": "Document",
   "removeAttachment": "Remove attachment",
-  "documentAttachmentBackendGap": "This file type may not be supported. Supported: images, audio, PDF, Word (.docx), and plain text/JSON/XML files.",
+  "documentAttachmentBackendGap": "Supported files: images, audio, PDF, Word (.docx), and plain text/JSON/XML.",
 
   "voiceStartRecording": "Record a voice message",
   "voiceFeatureNotReady": "Voice messages: not ready yet",

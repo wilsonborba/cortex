@@ -69,7 +69,7 @@
   "attachImage": "รูปภาพ",
   "attachDocument": "เอกสาร",
   "removeAttachment": "ลบไฟล์แนบ",
-  "documentAttachmentBackendGap": "ไฟล์ประเภทนี้อาจไม่รองรับ รองรับ: รูปภาพ, เสียง, PDF, Word (.docx) และไฟล์ข้อความ/JSON/XML ทั่วไป",
+  "documentAttachmentBackendGap": "ไฟล์ที่รองรับ: รูปภาพ, เสียง, PDF, Word (.docx) และไฟล์ข้อความ/JSON/XML ทั่วไป",
 
   "voiceStartRecording": "บันทึกข้อความเสียง",
   "voiceFeatureNotReady": "ข้อความเสียง: ยังไม่พร้อมใช้งาน",

@@ -457,7 +457,7 @@ abstract class AppLocalizations {
   /// No description provided for @documentAttachmentBackendGap.
   ///
   /// In en, this message translates to:
-  /// **'This file type may not be supported. Supported: images, audio, PDF, Word (.docx), and plain text/JSON/XML files.'**
+  /// **'Supported files: images, audio, PDF, Word (.docx), and plain text/JSON/XML.'**
   String get documentAttachmentBackendGap;
 
   /// No description provided for @voiceStartRecording.

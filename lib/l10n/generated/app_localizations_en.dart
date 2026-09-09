@@ -207,7 +207,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get documentAttachmentBackendGap =>
-      'This file type may not be supported. Supported: images, audio, PDF, Word (.docx), and plain text/JSON/XML files.';
+      'Supported files: images, audio, PDF, Word (.docx), and plain text/JSON/XML.';
 
   @override
   String get voiceStartRecording => 'Record a voice message';
