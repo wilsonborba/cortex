@@ -145,21 +145,7 @@ class MessageBubble extends StatelessWidget {
                               data: message.content,
                               selectable: true,
                               builders: {'pre': CodeBlockElementBuilder()},
-                              styleSheet: MarkdownStyleSheet(
-                                p: TextStyle(
-                                  color: textColor,
-                                  height: 1.5,
-                                  fontSize: 14,
-                                  letterSpacing: -0.1,
-                                ),
-                                code: TextStyle(
-                                  color: textColor,
-                                  fontFamily: 'monospace',
-                                  fontSize: 13,
-                                  backgroundColor:
-                                      scheme.onSurface.withValues(alpha: 0.06),
-                                ),
-                              ),
+                              styleSheet: _markdownStyleSheet(scheme: scheme, textColor: textColor),
                             ),
                           if (message.content.trim().isNotEmpty || message.attachments.isNotEmpty)
                             Padding(
@@ -230,6 +216,54 @@ class MessageBubble extends StatelessWidget {
     final minute = local.minute.toString().padLeft(2, '0');
     return '$hour:$minute';
   }
+}
+
+/// A message bubble only ever set `p`/`code` on its [MarkdownStyleSheet];
+/// flutter_markdown merges anything left unset from its own hardcoded
+/// fallback (`kFallbackStyle`), not from this app's theme -- that fallback's
+/// link color is a plain `Colors.blue` and its blockquote background is
+/// `Colors.blue.shade100` regardless of brightness, both of which read fine
+/// against a light bubble by coincidence but stand out harshly against this
+/// app's near-black dark bubble. Every element markdown content actually
+/// tends to use is styled explicitly here instead, off this app's own
+/// monochrome palette, so dark mode never gets an unstyled leftover.
+MarkdownStyleSheet _markdownStyleSheet({required ColorScheme scheme, required Color textColor}) {
+  final quoteColor = textColor.withValues(alpha: 0.75);
+  final mutedBorder = scheme.outline.withValues(alpha: 0.35);
+
+  return MarkdownStyleSheet(
+    p: TextStyle(color: textColor, height: 1.5, fontSize: 14, letterSpacing: -0.1),
+    pPadding: const EdgeInsets.only(bottom: 4),
+    h1: TextStyle(color: textColor, fontSize: 22, fontWeight: FontWeight.w700, height: 1.4),
+    h2: TextStyle(color: textColor, fontSize: 19, fontWeight: FontWeight.w700, height: 1.4),
+    h3: TextStyle(color: textColor, fontSize: 17, fontWeight: FontWeight.w600, height: 1.4),
+    h4: TextStyle(color: textColor, fontSize: 15, fontWeight: FontWeight.w600, height: 1.4),
+    h5: TextStyle(color: textColor, fontSize: 14, fontWeight: FontWeight.w600, height: 1.4),
+    h6: TextStyle(color: textColor, fontSize: 14, fontWeight: FontWeight.w600, height: 1.4),
+    strong: TextStyle(color: textColor, fontWeight: FontWeight.w700),
+    em: TextStyle(color: textColor, fontStyle: FontStyle.italic),
+    del: TextStyle(color: textColor.withValues(alpha: 0.6), decoration: TextDecoration.lineThrough),
+    a: TextStyle(color: scheme.primary, decoration: TextDecoration.underline, decorationColor: scheme.primary),
+    listBullet: TextStyle(color: textColor, fontSize: 14),
+    blockquote: TextStyle(color: quoteColor, fontSize: 14, height: 1.5, fontStyle: FontStyle.italic),
+    blockquotePadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+    blockquoteDecoration: BoxDecoration(
+      color: scheme.onSurface.withValues(alpha: 0.05),
+      border: Border(left: BorderSide(color: mutedBorder, width: 3)),
+    ),
+    code: TextStyle(
+      color: textColor,
+      fontFamily: 'monospace',
+      fontSize: 13,
+      backgroundColor: scheme.onSurface.withValues(alpha: 0.06),
+    ),
+    horizontalRuleDecoration: BoxDecoration(border: Border(top: BorderSide(color: mutedBorder))),
+    tableHead: TextStyle(color: textColor, fontWeight: FontWeight.w700, fontSize: 13),
+    tableBody: TextStyle(color: textColor, fontSize: 13),
+    tableBorder: TableBorder.all(color: mutedBorder, width: 1),
+    tableCellsPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+    checkbox: TextStyle(color: scheme.primary),
+  );
 }
 
 /// One attachment rendered inline in a sent/received bubble (issue #11):
