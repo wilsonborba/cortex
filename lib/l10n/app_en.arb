@@ -117,6 +117,7 @@
 
   "codeBlockPlainLabel": "code",
   "codeBlockCopyLabel": "Copy",
+  "copyMessageTooltip": "Copy message",
   "codeBlockCopiedLabel": "Copied!",
 
   "continueGenerationLabel": "Continue generation",

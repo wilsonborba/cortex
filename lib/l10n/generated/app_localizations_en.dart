@@ -296,6 +296,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get codeBlockCopyLabel => 'Copy';
 
   @override
+  String get copyMessageTooltip => 'Copy message';
+
+  @override
   String get codeBlockCopiedLabel => 'Copied!';
 
   @override

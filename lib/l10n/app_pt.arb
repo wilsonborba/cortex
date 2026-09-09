@@ -102,6 +102,7 @@
 
   "codeBlockPlainLabel": "código",
   "codeBlockCopyLabel": "Copiar",
+  "copyMessageTooltip": "Copiar mensagem",
   "codeBlockCopiedLabel": "Copiado!",
 
   "continueGenerationLabel": "Continuar geração",

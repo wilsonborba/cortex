@@ -102,6 +102,7 @@
 
   "codeBlockPlainLabel": "โค้ด",
   "codeBlockCopyLabel": "คัดลอก",
+  "copyMessageTooltip": "คัดลอกข้อความ",
   "codeBlockCopiedLabel": "คัดลอกแล้ว!",
 
   "continueGenerationLabel": "สร้างคำตอบต่อ",

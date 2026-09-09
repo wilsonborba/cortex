@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 
 import '../../../domain/models/attachment.dart';
 import '../../../domain/models/chat_message.dart';
+import '../../../l10n/generated/app_localizations.dart';
 import 'audio_message_player.dart';
 import 'code_block_view.dart';
 import 'continue_generation_chip.dart';
@@ -170,6 +172,10 @@ class MessageBubble extends StatelessWidget {
                                           ? scheme.primary.withValues(alpha: 0.8)
                                           : textColor.withValues(alpha: 0.45),
                                     ),
+                                  ],
+                                  if (message.content.trim().isNotEmpty) ...[
+                                    const SizedBox(width: 6),
+                                    _CopyMessageButton(text: message.content, color: textColor),
                                   ],
                                 ],
                               ),
@@ -379,6 +385,53 @@ class _TypingIndicatorState extends State<_TypingIndicator>
             }),
           );
         },
+      ),
+    );
+  }
+}
+
+/// Copies a message's raw content (Markdown source, tables included as-is)
+/// to the clipboard, mirroring [CodeBlockView]'s copy/checkmark-revert
+/// pattern so the whole app has one consistent "copy" affordance. Shown on
+/// both user and assistant bubbles.
+class _CopyMessageButton extends StatefulWidget {
+  const _CopyMessageButton({required this.text, required this.color});
+
+  final String text;
+  final Color color;
+
+  @override
+  State<_CopyMessageButton> createState() => _CopyMessageButtonState();
+}
+
+class _CopyMessageButtonState extends State<_CopyMessageButton> {
+  bool _copied = false;
+
+  Future<void> _copy() async {
+    await Clipboard.setData(ClipboardData(text: widget.text));
+    if (!mounted) return;
+    setState(() => _copied = true);
+    Future.delayed(const Duration(seconds: 2), () {
+      if (mounted) setState(() => _copied = false);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return Tooltip(
+      message: _copied ? l10n.codeBlockCopiedLabel : l10n.copyMessageTooltip,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(4),
+        onTap: _copy,
+        child: Padding(
+          padding: const EdgeInsets.all(2),
+          child: Icon(
+            _copied ? Icons.check_rounded : Icons.copy_rounded,
+            size: 13,
+            color: widget.color.withValues(alpha: 0.45),
+          ),
+        ),
       ),
     );
   }

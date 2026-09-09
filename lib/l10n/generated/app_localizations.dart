@@ -610,6 +610,12 @@ abstract class AppLocalizations {
   /// **'Copy'**
   String get codeBlockCopyLabel;
 
+  /// No description provided for @copyMessageTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy message'**
+  String get copyMessageTooltip;
+
   /// No description provided for @codeBlockCopiedLabel.
   ///
   /// In en, this message translates to:

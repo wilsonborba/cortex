@@ -297,6 +297,9 @@ class AppLocalizationsTh extends AppLocalizations {
   String get codeBlockCopyLabel => 'คัดลอก';
 
   @override
+  String get copyMessageTooltip => 'คัดลอกข้อความ';
+
+  @override
   String get codeBlockCopiedLabel => 'คัดลอกแล้ว!';
 
   @override
