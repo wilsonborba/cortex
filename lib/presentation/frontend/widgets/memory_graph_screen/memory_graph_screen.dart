@@ -4,6 +4,7 @@ import 'dart:math' as math;
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
+import '../../../../core/utils/browser_history_guard.dart';
 import '../../../../core/utils/responsive.dart';
 import '../../../../dal/remote/cortex_api_adapter.dart';
 import '../../../../domain/models/attachment.dart';
@@ -44,10 +45,21 @@ class _MemoryGraphScreenState extends State<MemoryGraphScreen> {
   MemoryGraph _graph = MemoryGraph.empty;
   GraphLayout _layout = const GraphLayout(positions: [], canvasSize: math.Point(0, 0));
   String? _loadingNodeId;
+  late final BrowserHistoryGuard _historyGuard;
 
   @override
   void initState() {
     super.initState();
+    // Web only (no-op elsewhere): this screen is reached via a plain
+    // `Navigator.push`, which never touches the browser's own history
+    // stack, so without this the browser's back button would navigate away
+    // from the app entirely to whatever real page came before it, instead
+    // of just closing this screen back to chat.
+    _historyGuard = armBrowserHistoryGuard(
+      onBack: () {
+        if (mounted) Navigator.of(context).pop();
+      },
+    );
     _load();
   }
 
@@ -112,6 +124,7 @@ class _MemoryGraphScreenState extends State<MemoryGraphScreen> {
 
   @override
   void dispose() {
+    _historyGuard.disarm();
     _transformController.dispose();
     super.dispose();
   }
