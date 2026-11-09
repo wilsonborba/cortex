@@ -1,6 +1,16 @@
 # Changelog
 
 
+## Unreleased
+
+
+### Chores
+
+- Merge v1.2.0 back to feature/main
+
+- Add Flutter web project skeleton (#26)
+
+
 ## v1.2.0 - 2026-11-09
 
 
