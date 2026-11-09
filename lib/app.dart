@@ -1,68 +1,56 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-
+import 'package:go_router/go_router.dart';
 import 'l10n/generated/app_localizations.dart';
-import 'presentation/frontend/components/app_theme.dart';
-import 'presentation/frontend/handlers/app_preferences_scope.dart';
 import 'presentation/frontend/handlers/session_gate.dart';
 
-/// Root widget: wires the monochrome [AppTheme] (light/dark/system) and the
-/// tri-lingual [AppLocalizations] (en/pt/th), both driven by
-/// [AppPreferencesScope], and hands routing to [SessionGate], which decides
-/// between the landing page and the chat screen depending on whether a
-/// session (or guest flag) is present.
 class CortexApp extends StatefulWidget {
-  const CortexApp({super.key, this.sessionCookieReader});
-
-  /// Test-only seam: overrides [SessionService]'s real browser-cookie check
-  /// (see its doc comment), since VM widget tests have no cookie jar to
-  /// read. Left null in production.
-  final String? Function()? sessionCookieReader;
-
+  const CortexApp({super.key});
   @override
   State<CortexApp> createState() => _CortexAppState();
 }
 
 class _CortexAppState extends State<CortexApp> {
-  late final AppPreferencesController _preferences;
-
-  @override
-  void initState() {
-    super.initState();
-    _preferences = AppPreferencesController();
-  }
-
+  final _router = GoRouter(
+    routes: [
+      GoRoute(path: '/', redirect: (_, _) => '/v1/home'),
+      GoRoute(path: '/sync', builder: (_, _) => const SessionGate()),
+      GoRoute(path: '/v1/home', builder: (_, _) => const SessionGate()),
+    ],
+  );
+  ThemeData theme(Brightness brightness) => ThemeData(
+    useMaterial3: true,
+    brightness: brightness,
+    fontFamily: 'Ubuntu Sans',
+    fontFamilyFallback: const ['IBM Plex Sans Thai'],
+    colorScheme: ColorScheme.fromSeed(
+      seedColor: brightness == Brightness.dark
+          ? const Color(0xFF6EFF00)
+          : const Color(0xFF7C3AED),
+      brightness: brightness,
+    ),
+    scaffoldBackgroundColor: brightness == Brightness.dark
+        ? const Color(0xFF090A0C)
+        : const Color(0xFFECECEC),
+  );
   @override
   void dispose() {
-    _preferences.dispose();
+    _router.dispose();
     super.dispose();
   }
 
   @override
-  Widget build(BuildContext context) {
-    return AppPreferencesScope(
-      controller: _preferences,
-      child: AnimatedBuilder(
-        animation: _preferences,
-        builder: (context, _) {
-          return MaterialApp(
-            title: 'Cortex',
-            debugShowCheckedModeBanner: false,
-            theme: AppTheme.light(),
-            darkTheme: AppTheme.dark(),
-            themeMode: _preferences.themeMode,
-            locale: _preferences.locale,
-            localizationsDelegates: const [
-              AppLocalizations.delegate,
-              GlobalMaterialLocalizations.delegate,
-              GlobalWidgetsLocalizations.delegate,
-              GlobalCupertinoLocalizations.delegate,
-            ],
-            supportedLocales: AppLocalizations.supportedLocales,
-            home: SessionGate(sessionCookieReader: widget.sessionCookieReader),
-          );
-        },
-      ),
-    );
-  }
+  Widget build(BuildContext context) => MaterialApp.router(
+    title: 'Cortex',
+    routerConfig: _router,
+    theme: theme(Brightness.light),
+    darkTheme: theme(Brightness.dark),
+    localizationsDelegates: const [
+      AppLocalizations.delegate,
+      GlobalMaterialLocalizations.delegate,
+      GlobalWidgetsLocalizations.delegate,
+      GlobalCupertinoLocalizations.delegate,
+    ],
+    supportedLocales: AppLocalizations.supportedLocales,
+  );
 }

@@ -1,72 +1,41 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
-
+import 'package:go_router/go_router.dart';
 import '../../../dal/remote/auth_api_adapter.dart';
-import '../../../domain/models/session_status.dart';
 import '../../../domain/services/auth_service.dart';
+import '../../../domain/models/session_status.dart';
 import '../../../domain/services/session_service.dart';
-import '../widgets/chat_screen/chat_screen.dart';
-import '../widgets/landing_screen/landing_screen.dart';
+import '../widgets/home/desktop_home.dart';
 
-/// Routing widget: decides whether the visitor sees the [LandingScreen] or
-/// the [ChatScreen], and owns the [AuthService] both the landing page and (in
-/// the future) the chat screen's sign-out affordance depend on.
-///
-/// No business/session logic lives in the widgets themselves: this handler
-/// resolves the initial `SessionStatus` (checking `auth_apps`'s `/sync`
-/// return route first, then the locally persisted flags), and hands the
-/// result down as a simple `canEnterChat` boolean.
 class SessionGate extends StatefulWidget {
-  const SessionGate({super.key, this.sessionCookieReader});
-
-  /// Test-only seam, forwarded from [CortexApp]/tests directly; see
-  /// [SessionService]'s doc comment for why this exists.
-  final String? Function()? sessionCookieReader;
-
+  const SessionGate({super.key});
   @override
   State<SessionGate> createState() => _SessionGateState();
 }
 
 class _SessionGateState extends State<SessionGate> {
-  late final AuthService _authService;
-  SessionStatus? _status;
-
+  final _auth = AuthService(AuthApiAdapter());
+  bool? _signedIn;
   @override
   void initState() {
     super.initState();
-    final sessionService = SessionService(cookieReader: widget.sessionCookieReader);
-    _authService = AuthService(AuthApiAdapter(), sessionService);
-    _resolveInitialStatus(sessionService);
+    _load();
   }
 
-  Future<void> _resolveInitialStatus(SessionService sessionService) async {
-    final consumed = await _authService.tryConsumeReturnUri(Uri.base);
-    if (consumed && kIsWeb) {
-      // Drop `?auth_exchange_token=...` from the address bar: the token is
-      // single-use and already redeemed, keeping it around only invites a
-      // confusing failure on refresh.
-      urlStrategy?.replaceState(null, 'Cortex', '/');
+  Future<void> _load() async {
+    final uri = Uri.base;
+    if (uri.queryParameters.containsKey('auth_exchange_token')) {
+      await _auth.consumeReturn(uri);
+      urlStrategy?.replaceState(null, 'Cortex', '/v1/home');
     }
-
-    final status = await sessionService.currentStatus();
+    final status = await const SessionService().currentStatus();
     if (!mounted) return;
-    setState(() => _status = status);
+    if (uri.path == '/sync') context.go('/v1/home');
+    setState(() => _signedIn = status.canEnterChat);
   }
 
   @override
-  Widget build(BuildContext context) {
-    final status = _status;
-    if (status == null) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
-    }
-
-    if (status.canEnterChat) {
-      return const ChatScreen();
-    }
-
-    return LandingScreen(
-      onSignIn: _authService.signInWithSso,
-    );
-  }
+  Widget build(BuildContext context) => _signedIn == null
+      ? const Scaffold(body: Center(child: CircularProgressIndicator()))
+      : HomeShell(signedIn: _signedIn!, onSignIn: _auth.signIn);
 }
