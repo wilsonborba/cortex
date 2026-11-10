@@ -603,4 +603,37 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get steps_thinking_stopped => 'ผู้ใช้หยุดการคิด';
+
+  @override
+  String get temporaryBanner => 'ชั่วคราว: ไม่ถูกบันทึก และหายไปเมื่อรีเฟรช';
+
+  @override
+  String get justNow => 'เมื่อสักครู่';
+
+  @override
+  String minutesAgo(int n) {
+    return '$n นาทีที่แล้ว';
+  }
+
+  @override
+  String hoursAgo(int n) {
+    return '$n ชั่วโมงที่แล้ว';
+  }
+
+  @override
+  String daysAgo(int n) {
+    return '$n วันที่แล้ว';
+  }
+
+  @override
+  String get running => 'กำลังทำงาน';
+
+  @override
+  String get chatActions => 'การทำงานของแชท';
+
+  @override
+  String get deleteFailed => 'ยังไม่ได้ลบแชท';
+
+  @override
+  String get chatsLoadFailed => 'โหลดแชทไม่ได้';
 }

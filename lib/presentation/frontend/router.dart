@@ -5,6 +5,8 @@ import '../../domain/services/auth_service.dart';
 import '../../domain/services/session_controller.dart';
 import '../../l10n/generated/app_localizations.dart';
 import 'screens/basic_pages.dart';
+import '../../domain/services/chat_list_controller.dart';
+import 'screens/chat/chat_list.dart';
 import 'screens/chat/chat_screen.dart';
 import 'shell/app_shell.dart';
 import 'shell/details_panel.dart';
@@ -30,6 +32,7 @@ GoRouter buildRouter({
 }) {
   final panel = details ?? DetailsController();
   final cortex = api ?? CortexApi();
+  final chats = ChatListController(api: cortex);
   Widget chatPage(
     BuildContext c,
     String Function(AppLocalizations) title,
@@ -96,6 +99,10 @@ GoRouter buildRouter({
           location: s.uri.path,
           details: panel,
           onLogOut: auth.signOut,
+          // Test screens replace the content, so they get no live list.
+          chatList: screen == null
+              ? ChatList(controller: chats, location: s.uri.path)
+              : null,
           child: child,
         ),
         routes: [

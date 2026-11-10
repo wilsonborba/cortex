@@ -1209,6 +1209,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Thinking stopped by the user'**
   String get steps_thinking_stopped;
+
+  /// No description provided for @temporaryBanner.
+  ///
+  /// In en, this message translates to:
+  /// **'Temporary: not saved, lost when you refresh.'**
+  String get temporaryBanner;
+
+  /// No description provided for @justNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Just now'**
+  String get justNow;
+
+  /// No description provided for @minutesAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{n} min ago'**
+  String minutesAgo(int n);
+
+  /// No description provided for @hoursAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{n} h ago'**
+  String hoursAgo(int n);
+
+  /// No description provided for @daysAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{n} d ago'**
+  String daysAgo(int n);
+
+  /// No description provided for @running.
+  ///
+  /// In en, this message translates to:
+  /// **'Running'**
+  String get running;
+
+  /// No description provided for @chatActions.
+  ///
+  /// In en, this message translates to:
+  /// **'Chat actions'**
+  String get chatActions;
+
+  /// No description provided for @deleteFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'The chat was not deleted.'**
+  String get deleteFailed;
+
+  /// No description provided for @chatsLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Chats could not be loaded.'**
+  String get chatsLoadFailed;
 }
 
 class _AppLocalizationsDelegate
