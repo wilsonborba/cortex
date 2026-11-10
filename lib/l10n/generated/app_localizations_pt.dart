@@ -615,4 +615,38 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get steps_thinking_stopped => 'Raciocínio parado pelo usuário';
+
+  @override
+  String get temporaryBanner =>
+      'Temporária: não é salva e se perde ao recarregar.';
+
+  @override
+  String get justNow => 'Agora';
+
+  @override
+  String minutesAgo(int n) {
+    return '$n min atrás';
+  }
+
+  @override
+  String hoursAgo(int n) {
+    return '$n h atrás';
+  }
+
+  @override
+  String daysAgo(int n) {
+    return '$n d atrás';
+  }
+
+  @override
+  String get running => 'Em andamento';
+
+  @override
+  String get chatActions => 'Ações da conversa';
+
+  @override
+  String get deleteFailed => 'A conversa não foi excluída.';
+
+  @override
+  String get chatsLoadFailed => 'Não foi possível carregar as conversas.';
 }

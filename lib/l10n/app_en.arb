@@ -252,5 +252,35 @@
     "type": "int"
    }
   }
+ },
+ "temporaryBanner": "Temporary: not saved, lost when you refresh.",
+ "justNow": "Just now",
+ "minutesAgo": "{n} min ago",
+ "hoursAgo": "{n} h ago",
+ "daysAgo": "{n} d ago",
+ "running": "Running",
+ "chatActions": "Chat actions",
+ "deleteFailed": "The chat was not deleted.",
+ "chatsLoadFailed": "Chats could not be loaded.",
+ "@minutesAgo": {
+  "placeholders": {
+   "n": {
+    "type": "int"
+   }
+  }
+ },
+ "@hoursAgo": {
+  "placeholders": {
+   "n": {
+    "type": "int"
+   }
+  }
+ },
+ "@daysAgo": {
+  "placeholders": {
+   "n": {
+    "type": "int"
+   }
+  }
  }
 }

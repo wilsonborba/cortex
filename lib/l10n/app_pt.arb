@@ -184,5 +184,14 @@
  "steps_web_page_read": "Lendo a página",
  "steps_chunks_selected": "Trechos selecionados",
  "steps_thinking_step": "Etapa de raciocínio",
- "steps_thinking_stopped": "Raciocínio parado pelo usuário"
+ "steps_thinking_stopped": "Raciocínio parado pelo usuário",
+ "temporaryBanner": "Temporária: não é salva e se perde ao recarregar.",
+ "justNow": "Agora",
+ "minutesAgo": "{n} min atrás",
+ "hoursAgo": "{n} h atrás",
+ "daysAgo": "{n} d atrás",
+ "running": "Em andamento",
+ "chatActions": "Ações da conversa",
+ "deleteFailed": "A conversa não foi excluída.",
+ "chatsLoadFailed": "Não foi possível carregar as conversas."
 }

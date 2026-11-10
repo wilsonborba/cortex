@@ -175,6 +175,23 @@ class _ChatScreenState extends State<ChatScreen> {
         : '${chat.chat?['title'] ?? (chat.isNew ? l.newChat : '')}';
     return Column(
       children: [
+        // Fixed while the temporary chat is open (31.2).
+        if (chat.temporary)
+          Container(
+            key: const Key('temporary-banner'),
+            padding: const EdgeInsets.symmetric(
+              horizontal: Space.s16,
+              vertical: Space.s8,
+            ),
+            decoration: BoxDecoration(
+              color: p.surface,
+              border: Border(bottom: BorderSide(color: p.border)),
+            ),
+            child: NoticeLine(
+              message: l.temporaryBanner,
+              kind: NoticeKind.warning,
+            ),
+          ),
         if (chat.reconnecting)
           OfflineBanner(
             key: const Key('reconnecting'),

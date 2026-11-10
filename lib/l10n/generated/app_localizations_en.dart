@@ -609,4 +609,37 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get steps_thinking_stopped => 'Thinking stopped by the user';
+
+  @override
+  String get temporaryBanner => 'Temporary: not saved, lost when you refresh.';
+
+  @override
+  String get justNow => 'Just now';
+
+  @override
+  String minutesAgo(int n) {
+    return '$n min ago';
+  }
+
+  @override
+  String hoursAgo(int n) {
+    return '$n h ago';
+  }
+
+  @override
+  String daysAgo(int n) {
+    return '$n d ago';
+  }
+
+  @override
+  String get running => 'Running';
+
+  @override
+  String get chatActions => 'Chat actions';
+
+  @override
+  String get deleteFailed => 'The chat was not deleted.';
+
+  @override
+  String get chatsLoadFailed => 'Chats could not be loaded.';
 }
