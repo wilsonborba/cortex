@@ -314,6 +314,43 @@ void main() {
     tester.view.reset();
   });
 
+  testWidgets(
+    'full landing final action fits and works at 200 percent in all locales',
+    (tester) async {
+      for (final locale in [
+        const Locale('en'),
+        const Locale('pt', 'BR'),
+        const Locale('th'),
+      ]) {
+        for (final width in [390.0, 800.0, 1300.0]) {
+          await tester.pumpWidget(const SizedBox());
+          final (_, auth) = await pump(
+            tester,
+            '/v1/home',
+            locale: locale,
+            size: Size(width, 900),
+            scale: 2,
+          );
+          expect(tester.takeException(), isNull, reason: '$locale $width');
+          final l = await AppLocalizations.delegate.load(locale);
+          final button = find.descendant(
+            of: find.byKey(const Key('landing-final-action')),
+            matching: find.text(l.startChat),
+          );
+          await tester.ensureVisible(button);
+          await tester.tap(button);
+          await frames(tester);
+          expect(auth.returns, ['/v1/chats']);
+          expect(
+            tester.takeException(),
+            isNull,
+            reason: '$locale $width final action',
+          );
+        }
+      }
+    },
+  );
+
   test('CREDITS.md exists and lists the image sources', () {
     final credits = File(
       'lib/presentation/frontend/assets/CREDITS.md',

@@ -12,6 +12,8 @@
 
 - Landing-header-layout (#40)
 
+- Landing-final-action (#41)
+
 
 ### Chores
 
@@ -40,6 +42,8 @@
 - Merge #35 messages-states-accessibility
 
 - Merge #39 landing-role-language
+
+- Merge #40 landing-header-layout
 
 
 ### Documentation
