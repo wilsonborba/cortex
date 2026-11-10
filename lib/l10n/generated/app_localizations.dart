@@ -1395,6 +1395,192 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Linked personas'**
   String get linkedPersonas;
+
+  /// No description provided for @searchPersonas.
+  ///
+  /// In en, this message translates to:
+  /// **'Search personas'**
+  String get searchPersonas;
+
+  /// No description provided for @allPersonaTypes.
+  ///
+  /// In en, this message translates to:
+  /// **'All types'**
+  String get allPersonaTypes;
+
+  /// No description provided for @personType.
+  ///
+  /// In en, this message translates to:
+  /// **'Person'**
+  String get personType;
+
+  /// No description provided for @botType.
+  ///
+  /// In en, this message translates to:
+  /// **'Bot'**
+  String get botType;
+
+  /// No description provided for @you.
+  ///
+  /// In en, this message translates to:
+  /// **'You'**
+  String get you;
+
+  /// No description provided for @noPersonas.
+  ///
+  /// In en, this message translates to:
+  /// **'No personas yet'**
+  String get noPersonas;
+
+  /// No description provided for @personasLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Personas could not be loaded.'**
+  String get personasLoadFailed;
+
+  /// No description provided for @personaFormFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'The persona form could not be loaded.'**
+  String get personaFormFailed;
+
+  /// No description provided for @personaSaveFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'The persona could not be saved. Check the marked fields.'**
+  String get personaSaveFailed;
+
+  /// No description provided for @editPersona.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit persona'**
+  String get editPersona;
+
+  /// No description provided for @personaType.
+  ///
+  /// In en, this message translates to:
+  /// **'Type'**
+  String get personaType;
+
+  /// No description provided for @personaName.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get personaName;
+
+  /// No description provided for @personaAliases.
+  ///
+  /// In en, this message translates to:
+  /// **'Aliases'**
+  String get personaAliases;
+
+  /// No description provided for @personaIsSelf.
+  ///
+  /// In en, this message translates to:
+  /// **'This persona is you'**
+  String get personaIsSelf;
+
+  /// No description provided for @personaRequiredLegend.
+  ///
+  /// In en, this message translates to:
+  /// **'* Required field'**
+  String get personaRequiredLegend;
+
+  /// No description provided for @personaSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Persona saved'**
+  String get personaSaved;
+
+  /// No description provided for @deletePersona.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete persona'**
+  String get deletePersona;
+
+  /// No description provided for @deletePersonaConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete this persona and its attributes?'**
+  String get deletePersonaConfirm;
+
+  /// No description provided for @personaFieldRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'This field is required.'**
+  String get personaFieldRequired;
+
+  /// No description provided for @personaFieldUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'This field is not in the stored schema.'**
+  String get personaFieldUnknown;
+
+  /// No description provided for @personaFieldType.
+  ///
+  /// In en, this message translates to:
+  /// **'Use the type shown for this field.'**
+  String get personaFieldType;
+
+  /// No description provided for @personaFieldInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Check this field.'**
+  String get personaFieldInvalid;
+
+  /// No description provided for @addPersonaItem.
+  ///
+  /// In en, this message translates to:
+  /// **'Add item'**
+  String get addPersonaItem;
+
+  /// No description provided for @removePersonaItem.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove item'**
+  String get removePersonaItem;
+
+  /// No description provided for @choosePersonaDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a date'**
+  String get choosePersonaDate;
+
+  /// No description provided for @clear.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear'**
+  String get clear;
+
+  /// No description provided for @personaYes.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes'**
+  String get personaYes;
+
+  /// No description provided for @personaNo.
+  ///
+  /// In en, this message translates to:
+  /// **'No'**
+  String get personaNo;
+
+  /// No description provided for @personaInteger.
+  ///
+  /// In en, this message translates to:
+  /// **'Whole number'**
+  String get personaInteger;
+
+  /// No description provided for @personaNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Number'**
+  String get personaNumber;
+
+  /// No description provided for @personaActionFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not complete the action. Try again.'**
+  String get personaActionFailed;
 }
 
 class _AppLocalizationsDelegate
