@@ -14,12 +14,16 @@
 
 - Merge #27 design-system
 
+- Merge #28 app-shell
+
 
 ### Features
 
 - Design-system (#27)
 
 - App-shell (#28)
+
+- Landing-page (#29)
 
 
 ## v1.2.0 - 2026-11-09

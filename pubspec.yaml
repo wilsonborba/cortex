@@ -28,6 +28,9 @@ dev_dependencies:
   flutter_lints: ^5.0.0
 flutter:
   generate: true
+  assets:
+    - lib/presentation/frontend/assets/img/
+    - lib/presentation/frontend/assets/snippets/
   uses-material-design: true
   fonts:
     - family: Ubuntu Sans

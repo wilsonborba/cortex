@@ -67,4 +67,371 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get output => 'Resposta';
+
+  @override
+  String get product => 'Produto';
+
+  @override
+  String get howItWorks => 'Como funciona';
+
+  @override
+  String get engineering => 'Engenharia';
+
+  @override
+  String get faq => 'Perguntas';
+
+  @override
+  String get language => 'Idioma';
+
+  @override
+  String get themeSwitch => 'Tema';
+
+  @override
+  String get menu => 'Menu';
+
+  @override
+  String get heroLabel => 'Espaço de chat com IA';
+
+  @override
+  String get heroTitle => 'Converse com sua memória, arquivos e a web';
+
+  @override
+  String get heroLead =>
+      'O Cortex responde com um modelo local e mostra cada etapa: memória, arquivos, fontes da web e raciocínio.';
+
+  @override
+  String get startChat => 'Começar uma conversa';
+
+  @override
+  String get seeHow => 'Veja como funciona';
+
+  @override
+  String get example => 'Exemplo';
+
+  @override
+  String get demoMemoryPrompt => 'O que eu decidi sobre o balanceador de uso?';
+
+  @override
+  String get demoFastPrompt => 'Qual é a versão estável mais recente do Rust?';
+
+  @override
+  String get demoDeepPrompt =>
+      'Compare SQLite e PostgreSQL para um app web pequeno.';
+
+  @override
+  String get demoThinkPrompt =>
+      'Um trem sai às 09:40 e chega às 13:05. Quantos minutos?';
+
+  @override
+  String get demoMemoryAnswer =>
+      'Você decidiu uma divisão justa por usuário em 24 horas, com peso base 1 para novos usuários.';
+
+  @override
+  String get demoFastAnswer =>
+      'A resposta vem das páginas lidas agora, e cada fonte aparece abaixo da resposta.';
+
+  @override
+  String get demoDeepAnswer =>
+      'Para um app pequeno com poucos escritores, o SQLite é mais simples; para muitos escritores ao mesmo tempo, o PostgreSQL é mais seguro.';
+
+  @override
+  String get demoThinkAnswer => 'A viagem leva 205 minutos.';
+
+  @override
+  String get demoReplay => 'Repetir';
+
+  @override
+  String get stepSecurity => 'Verificação de segurança OK';
+
+  @override
+  String get stepMemorySearch => 'Buscando na sua memória';
+
+  @override
+  String get stepMemoriesFound => 'Memórias encontradas';
+
+  @override
+  String get stepQueries => 'Preparando as buscas';
+
+  @override
+  String get stepWebSearch => 'Buscando na web';
+
+  @override
+  String get stepPageRead => 'Lendo a página';
+
+  @override
+  String get stepThinking => 'Etapa de raciocínio';
+
+  @override
+  String get stepAnswer => 'Escrevendo a resposta';
+
+  @override
+  String get sources => 'Fontes';
+
+  @override
+  String get whatTitle => 'O que ele faz';
+
+  @override
+  String get whatMemory => 'Chat com memória';
+
+  @override
+  String get whatMemoryText =>
+      'O Cortex encontra até 5 memórias suas que combinam com a pergunta e mostra quais usou.';
+
+  @override
+  String get whatWeb => 'Pesquisa na web';
+
+  @override
+  String get whatWebText =>
+      'Rápida, média ou profunda: mais buscas e mais páginas para perguntas difíceis, com cada fonte mostrada.';
+
+  @override
+  String get whatFiles => 'Arquivos';
+
+  @override
+  String get whatFilesText =>
+      'PDF (com OCR para páginas digitalizadas), DOCX com tabelas, áudio de até 10 minutos e imagens.';
+
+  @override
+  String get whatThinking => 'Raciocínio';
+
+  @override
+  String get whatThinkingText =>
+      'Etapas de plano, trabalho e verificação antes da resposta final, no máximo 2 rodadas, e você pode parar o raciocínio a qualquer momento.';
+
+  @override
+  String get pipelineTitle => 'Como uma pergunta é processada';
+
+  @override
+  String get stageAccept => 'Aceitar';
+
+  @override
+  String get stageGather => 'Reunir';
+
+  @override
+  String get stageAssemble => 'Montar';
+
+  @override
+  String get stageThink => 'Pensar';
+
+  @override
+  String get stageAnswer => 'Responder';
+
+  @override
+  String get stageSave => 'Salvar';
+
+  @override
+  String get stageAcceptText =>
+      'Verifica tamanho e tokens, depois a segurança.';
+
+  @override
+  String get stageGatherText => 'Arquivos, memória e web ao mesmo tempo.';
+
+  @override
+  String get stageAssembleText =>
+      'Preenche o contexto de 8192 tokens em ordem fixa.';
+
+  @override
+  String get stageThinkText => 'Plano, trabalho e verificação opcionais.';
+
+  @override
+  String get stageAnswerText =>
+      'Uma chamada ao modelo, transmitida token a token.';
+
+  @override
+  String get stageSaveText =>
+      'Histórico, memória, uso e o registro da execução.';
+
+  @override
+  String get pipelineDescription =>
+      'Diagrama das seis etapas de uma pergunta: Aceitar, Reunir com arquivos, memória e web em paralelo, Montar, Pensar, Responder e Salvar.';
+
+  @override
+  String get pause => 'Pausar';
+
+  @override
+  String get play => 'Reproduzir';
+
+  @override
+  String get memoryTitle => 'Memória com o Hippocampus';
+
+  @override
+  String get memoryScope =>
+      'Toda memória tem um escopo: workspace, app e usuário. Uma busca nunca sai do escopo.';
+
+  @override
+  String get memorySearch =>
+      'A busca por palavras e a busca semântica são unidas com Reciprocal Rank Fusion (RRF).';
+
+  @override
+  String get memoryPersonas =>
+      'Personas: quem você é, uma voz de bot para a conversa e pessoas que você cita na pergunta.';
+
+  @override
+  String get memoryRepo => 'Repositório do Hippocampus';
+
+  @override
+  String get scopeDescription =>
+      'Árvore de um escopo de memória: um workspace contém apps, e um app contém usuários.';
+
+  @override
+  String get graphDescription =>
+      'Exemplo de grafo de memória: memórias ligadas a tags, entidades e arquivos.';
+
+  @override
+  String get webTitle => 'Pesquisa na web';
+
+  @override
+  String get webMode => 'Modo';
+
+  @override
+  String get webQueries => 'Buscas';
+
+  @override
+  String get webPages => 'Páginas';
+
+  @override
+  String get webDepth => 'Profundidade de links';
+
+  @override
+  String get webTime => 'Limite de tempo';
+
+  @override
+  String get webFast => 'Rápida';
+
+  @override
+  String get webMedium => 'Média';
+
+  @override
+  String get webDeep => 'Profunda';
+
+  @override
+  String get webFastPages => '5';
+
+  @override
+  String get webMediumPages => '5 por nível';
+
+  @override
+  String get webMethod =>
+      'As páginas são cortadas em trechos de cerca de 500 tokens e ordenadas com BM25 e RRF. O texto da web não usa embeddings, e as fontes ficam separadas da sua memória.';
+
+  @override
+  String seconds(int n) {
+    return '$n s';
+  }
+
+  @override
+  String get liveTitle => 'Controle ao vivo';
+
+  @override
+  String get liveSteps =>
+      'Etapas ao vivo: cada etapa é transmitida quando acontece.';
+
+  @override
+  String get liveReconnect =>
+      'Reconexão: a resposta continua no servidor, e você pode voltar a ela.';
+
+  @override
+  String get liveStop =>
+      'Parar: você pode parar uma resposta a qualquer momento.';
+
+  @override
+  String get liveStopThinking =>
+      'Parar o raciocínio: ir para a resposta final com as notas até agora.';
+
+  @override
+  String get engTitle => 'Engenharia';
+
+  @override
+  String get engMachines =>
+      'Máquinas locais em uma rede: a GPU do MSI executa o modelo de linguagem, o Pong executa embeddings, o FSM guarda os arquivos e um servidor de banco guarda os dados.';
+
+  @override
+  String get engRust =>
+      'As APIs do Cortex e do Hippocampus são escritas em Rust.';
+
+  @override
+  String get engLocal =>
+      'Somente modelos locais. Nenhum modelo de linguagem na nuvem.';
+
+  @override
+  String get machinesDescription =>
+      'Diagrama das máquinas: a API do Cortex envia chamadas de modelo à GPU do MSI e chamadas de memória ao Hippocampus, que usa o Pong para embeddings, o FSM para arquivos e o servidor de banco.';
+
+  @override
+  String get codeTitle => 'Código real';
+
+  @override
+  String get codeRrf => 'Reciprocal Rank Fusion das listas de busca na web';
+
+  @override
+  String get codeGather => 'Arquivos, memória e web reunidos ao mesmo tempo';
+
+  @override
+  String get codeNames => 'Busca de tags dentro de um escopo';
+
+  @override
+  String get researchTitle => 'Base de pesquisa';
+
+  @override
+  String get securityTitle => 'Segurança e privacidade';
+
+  @override
+  String get securityShield =>
+      'Toda entrada passa por uma verificação de segurança com regras fixas e um classificador antes de qualquer gravação.';
+
+  @override
+  String get securityIsolation =>
+      'Cada usuário vê apenas suas próprias conversas, arquivos e memórias, em cada app.';
+
+  @override
+  String get securityLogs =>
+      'Logs e registros de execução não guardam texto das conversas.';
+
+  @override
+  String get faqLoginQ => 'Preciso de uma conta?';
+
+  @override
+  String get faqLoginA =>
+      'Sim. Você entra com sua conta Asodya antes da primeira conversa.';
+
+  @override
+  String get faqModelQ => 'Qual modelo responde?';
+
+  @override
+  String get faqModelA =>
+      'Um modelo de texto local, e um modelo de visão local quando você envia uma imagem.';
+
+  @override
+  String get faqDataQ => 'Onde ficam meus dados?';
+
+  @override
+  String get faqDataA =>
+      'Nas máquinas da Asodya: conversas no banco, memórias no Hippocampus e arquivos no FSM.';
+
+  @override
+  String get faqTempQ => 'O que é uma conversa temporária?';
+
+  @override
+  String get faqTempA =>
+      'Uma conversa que não é salva: termina após uma hora ou quando você a fecha, e não cria memória.';
+
+  @override
+  String get faqLangQ => 'Quais idiomas?';
+
+  @override
+  String get faqLangA => 'O app está em inglês, português e tailandês.';
+
+  @override
+  String get finalLine => 'Faça sua primeira pergunta.';
+
+  @override
+  String get builtBy => 'Feito por Wilson Borba';
+
+  @override
+  String version(String v) {
+    return 'Versão $v';
+  }
+
+  @override
+  String get logoDescription => 'Logo do Cortex';
 }
