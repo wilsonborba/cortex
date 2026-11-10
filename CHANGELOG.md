@@ -10,6 +10,13 @@
 
 - Add Flutter web project skeleton (#26)
 
+- Merge #26 add Flutter web project skeleton
+
+
+### Features
+
+- Design-system (#27)
+
 
 ## v1.2.0 - 2026-11-09
 
@@ -56,6 +63,12 @@
 - Default endpoints to live Asodya Auth and API cloud services
 
 - Replace Flutter default web branding with Cortex identity
+
+- Prepare v1.2.0 (#25)
+
+- Consolidate v1.2.0
+
+- Prepare development for v1.2.0
 
 
 ### Features
