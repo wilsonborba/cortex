@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 import '../../core/logs.dart';
 import '../../core/settings.dart';
 import 'credentials_client.dart';
+import '../../core/utils/csrf.dart';
 
 /// Remote adapter for Asodya's unified authentication:
 /// - builds the SSO redirect URL that hands `auth_apps` an encrypted
@@ -85,6 +86,25 @@ class AuthApiAdapter {
     } catch (_) {
       AppLogger.warning('Auth exchange failed');
       return false;
+    }
+  }
+
+  /// Revokes the gateway session (ported unchanged from v1).
+  Future<void> logout() async {
+    final uri = Uri.parse('$apiForAppsBaseUrl/user/sync/v1/log-out');
+    final csrfToken = readCsrfToken();
+    try {
+      await _httpClient.post(
+        uri,
+        headers: {
+          if (csrfToken != null && csrfToken.isNotEmpty)
+            'X-CSRF-Token': csrfToken,
+          if (csrfToken != null && csrfToken.isNotEmpty)
+            'X-CSRFToken': csrfToken,
+        },
+      );
+    } catch (e) {
+      AppLogger.warning('Logout request failed: $e');
     }
   }
 }

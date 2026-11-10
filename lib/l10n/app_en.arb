@@ -1,1 +1,23 @@
-{"@@locale": "en", "logIn": "Log in"}
+{
+ "@@locale": "en",
+ "logIn": "Log in",
+ "logOut": "Log out",
+ "newChat": "New chat",
+ "temporaryChat": "Temporary chat",
+ "chats": "Chats",
+ "memory": "Memory",
+ "personas": "Personas",
+ "usage": "Usage",
+ "timing": "Timing",
+ "stats": "Statistics",
+ "events": "Events",
+ "newPersona": "New persona",
+ "details": "Details",
+ "close": "Close",
+ "notFoundTitle": "Page not found",
+ "notFoundMessage": "This path or item does not exist.",
+ "goToChats": "Go to chats",
+ "signingIn": "Opening the login",
+ "noChatsYet": "No chats yet",
+ "output": "Output"
+}

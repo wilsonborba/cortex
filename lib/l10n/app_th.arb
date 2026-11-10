@@ -1,1 +1,23 @@
-{"@@locale": "th", "logIn": "เข้าสู่ระบบ"}
+{
+ "@@locale": "th",
+ "logIn": "เข้าสู่ระบบ",
+ "logOut": "ออกจากระบบ",
+ "newChat": "แชทใหม่",
+ "temporaryChat": "แชทชั่วคราว",
+ "chats": "แชท",
+ "memory": "ความจำ",
+ "personas": "เพอร์โซนา",
+ "usage": "การใช้งาน",
+ "timing": "เวลา",
+ "stats": "สถิติ",
+ "events": "เหตุการณ์",
+ "newPersona": "เพอร์โซนาใหม่",
+ "details": "รายละเอียด",
+ "close": "ปิด",
+ "notFoundTitle": "ไม่พบหน้านี้",
+ "notFoundMessage": "ไม่มีเส้นทางหรือรายการนี้",
+ "goToChats": "ไปที่แชท",
+ "signingIn": "กำลังเปิดหน้าเข้าสู่ระบบ",
+ "noChatsYet": "ยังไม่มีแชท",
+ "output": "คำตอบ"
+}
