@@ -1,3 +1,4 @@
+import '../../../../l10n/generated/app_localizations.dart';
 import 'package:flutter/material.dart';
 import '../../theme/tokens.dart';
 import 'buttons.dart';
@@ -11,7 +12,7 @@ class SkeletonBox extends StatelessWidget {
   Widget build(BuildContext context) {
     final p = Palette.of(Theme.of(context).brightness);
     return Semantics(
-      label: 'Loading',
+      label: AppLocalizations.of(context).loading,
       child: Container(
         width: width,
         height: height,

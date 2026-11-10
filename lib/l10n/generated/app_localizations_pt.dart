@@ -937,4 +937,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get loadMore => 'Carregar mais';
+
+  @override
+  String get loading => 'Carregando';
 }

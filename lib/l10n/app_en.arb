@@ -397,5 +397,6 @@
       }
     }
   },
-  "loadMore": "Load more"
+  "loadMore": "Load more",
+  "loading": "Loading"
 }
