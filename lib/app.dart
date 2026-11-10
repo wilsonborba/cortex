@@ -3,6 +3,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:go_router/go_router.dart';
 import 'l10n/generated/app_localizations.dart';
 import 'presentation/frontend/handlers/session_gate.dart';
+import 'presentation/frontend/theme/theme.dart';
 
 class CortexApp extends StatefulWidget {
   const CortexApp({super.key});
@@ -18,21 +19,7 @@ class _CortexAppState extends State<CortexApp> {
       GoRoute(path: '/v1/home', builder: (_, _) => const SessionGate()),
     ],
   );
-  ThemeData theme(Brightness brightness) => ThemeData(
-    useMaterial3: true,
-    brightness: brightness,
-    fontFamily: 'Ubuntu Sans',
-    fontFamilyFallback: const ['IBM Plex Sans Thai'],
-    colorScheme: ColorScheme.fromSeed(
-      seedColor: brightness == Brightness.dark
-          ? const Color(0xFF6EFF00)
-          : const Color(0xFF7C3AED),
-      brightness: brightness,
-    ),
-    scaffoldBackgroundColor: brightness == Brightness.dark
-        ? const Color(0xFF090A0C)
-        : const Color(0xFFECECEC),
-  );
+
   @override
   void dispose() {
     _router.dispose();
@@ -43,8 +30,8 @@ class _CortexAppState extends State<CortexApp> {
   Widget build(BuildContext context) => MaterialApp.router(
     title: 'Cortex',
     routerConfig: _router,
-    theme: theme(Brightness.light),
-    darkTheme: theme(Brightness.dark),
+    theme: cortexTheme(Brightness.light),
+    darkTheme: cortexTheme(Brightness.dark),
     localizationsDelegates: const [
       AppLocalizations.delegate,
       GlobalMaterialLocalizations.delegate,
