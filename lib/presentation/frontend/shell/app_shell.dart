@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../l10n/generated/app_localizations.dart';
@@ -46,11 +47,19 @@ class AppShell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final size = SizeClass.of(MediaQuery.sizeOf(context).width);
-    return switch (size) {
-      SizeClass.expanded => _Expanded(shell: this),
-      SizeClass.medium => _Medium(shell: this),
-      SizeClass.compact => _Compact(shell: this),
-    };
+    return CallbackShortcuts(
+      bindings: {
+        const SingleActivator(LogicalKeyboardKey.escape): details.close,
+      },
+      child: Focus(
+        autofocus: true,
+        child: switch (size) {
+          SizeClass.expanded => _Expanded(shell: this),
+          SizeClass.medium => _Medium(shell: this),
+          SizeClass.compact => _Compact(shell: this),
+        },
+      ),
+    );
   }
 }
 
@@ -194,10 +203,24 @@ class _DetailsSheetState extends State<_DetailsSheet> {
     await showModalBottomSheet<void>(
       context: context,
       showDragHandle: true,
-      builder: (_) => Padding(
-        key: const Key('details-sheet'),
-        padding: const EdgeInsets.fromLTRB(Space.s24, 0, Space.s24, Space.s24),
-        child: SingleChildScrollView(child: content),
+      builder: (sheetContext) => CallbackShortcuts(
+        bindings: {
+          const SingleActivator(LogicalKeyboardKey.escape): () =>
+              Navigator.pop(sheetContext),
+        },
+        child: Focus(
+          autofocus: true,
+          child: Padding(
+            key: const Key('details-sheet'),
+            padding: const EdgeInsets.fromLTRB(
+              Space.s24,
+              0,
+              Space.s24,
+              Space.s24,
+            ),
+            child: SingleChildScrollView(child: content),
+          ),
+        ),
       ),
     );
     widget.details.close();

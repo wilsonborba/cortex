@@ -1,3 +1,5 @@
+import '../../handlers/api_action.dart';
+import '../../handlers/process_messages.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../../../core/utils/file_picker.dart';
@@ -99,9 +101,13 @@ class ComposerState extends State<Composer> {
                   InputChip(
                     key: Key('file-${f.name}'),
                     avatar: f.uploading
-                        ? const SizedBox.square(
+                        ? SizedBox.square(
                             dimension: 14,
-                            child: CircularProgressIndicator(strokeWidth: 1.5),
+                            child: MediaQuery.disableAnimationsOf(context)
+                                ? const Icon(Icons.hourglass_empty, size: 14)
+                                : const CircularProgressIndicator(
+                                    strokeWidth: 1.5,
+                                  ),
                           )
                         : Icon(
                             f.errorNumber != null
@@ -115,10 +121,14 @@ class ComposerState extends State<Composer> {
                         f.name,
                         _size(f.size),
                         if (f.uploading) l.uploading,
-                        if (f.errorMessage != null) f.errorMessage!,
+                        if (f.errorNumber != null)
+                          processMessage(l, f.errorNumber)
+                        else if (f.errorMessage != null)
+                          l.networkOffline,
                       ].join(' · '),
                       style: TextStyles.label,
                     ),
+                    deleteButtonTooltipMessage: l.removePersonaItem,
                     onDeleted: () => chat.removeFile(f),
                   ),
               ],
@@ -157,26 +167,33 @@ class ComposerState extends State<Composer> {
                 icon: const Icon(Icons.attach_file),
                 onPressed: running ? null : _attach,
               ),
-              DropdownButton<WebChoice>(
-                key: const Key('web-choice'),
-                value: o.web,
-                underline: const SizedBox(),
-                items: [
-                  for (final (v, label) in [
-                    (WebChoice.off, l.webOff),
-                    (WebChoice.fast, l.webFast),
-                    (WebChoice.medium, l.webMedium),
-                    (WebChoice.deep, l.webDeep),
-                  ])
-                    DropdownMenuItem(
-                      value: v,
-                      child: Text(
-                        '${l.webLabel}: $label',
-                        style: TextStyles.compact,
+              SizedBox(
+                width: MediaQuery.sizeOf(context).width < 600
+                    ? MediaQuery.sizeOf(context).width - Space.s24
+                    : 240,
+                child: DropdownButton<WebChoice>(
+                  isExpanded: true,
+                  itemHeight: null,
+                  key: const Key('web-choice'),
+                  value: o.web,
+                  underline: const SizedBox(),
+                  items: [
+                    for (final (v, label) in [
+                      (WebChoice.off, l.webOff),
+                      (WebChoice.fast, l.webFast),
+                      (WebChoice.medium, l.webMedium),
+                      (WebChoice.deep, l.webDeep),
+                    ])
+                      DropdownMenuItem(
+                        value: v,
+                        child: Text(
+                          '${l.webLabel}: $label',
+                          style: TextStyles.compact,
+                        ),
                       ),
-                    ),
-                ],
-                onChanged: (v) => setState(() => o.web = v!),
+                  ],
+                  onChanged: (v) => setState(() => o.web = v!),
+                ),
               ),
               FilterChip(
                 key: const Key('memory-switch'),
@@ -205,33 +222,40 @@ class ComposerState extends State<Composer> {
                 onSelected: (v) => setState(() => o.thinking = v),
               ),
               if (chat.isNew && !chat.temporary && chat.personas.isNotEmpty)
-                DropdownButton<String?>(
-                  key: const Key('persona-picker'),
-                  value: o.personaId,
-                  hint: Text(l.personaPicker, style: TextStyles.compact),
-                  underline: const SizedBox(),
-                  items: [
-                    DropdownMenuItem<String?>(
-                      value: null,
-                      child: Text(l.noPersona, style: TextStyles.compact),
-                    ),
-                    for (final persona in chat.personas)
+                SizedBox(
+                  width: MediaQuery.sizeOf(context).width < 600
+                      ? MediaQuery.sizeOf(context).width - Space.s24
+                      : 240,
+                  child: DropdownButton<String?>(
+                    isExpanded: true,
+                    itemHeight: null,
+                    key: const Key('persona-picker'),
+                    value: o.personaId,
+                    hint: Text(l.personaPicker, style: TextStyles.compact),
+                    underline: const SizedBox(),
+                    items: [
                       DropdownMenuItem<String?>(
-                        value: '${persona['persona_id']}',
-                        child: Text(
-                          '${persona['name']}',
-                          style: TextStyles.compact,
-                        ),
+                        value: null,
+                        child: Text(l.noPersona, style: TextStyles.compact),
                       ),
-                  ],
-                  onChanged: (v) => setState(() => o.personaId = v),
+                      for (final persona in chat.personas)
+                        DropdownMenuItem<String?>(
+                          value: '${persona['persona_id']}',
+                          child: Text(
+                            '${persona['name']}',
+                            style: TextStyles.compact,
+                          ),
+                        ),
+                    ],
+                    onChanged: (v) => setState(() => o.personaId = v),
+                  ),
                 ),
               running
                   ? AppButton(
                       key: const Key('stop'),
                       label: l.stop,
                       icon: Icons.stop,
-                      onPressed: chat.stop,
+                      onPressed: () => runApiAction(context, chat.stop),
                     )
                   : AppButton.primary(
                       key: const Key('send'),

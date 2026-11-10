@@ -1,3 +1,4 @@
+import '../../handlers/process_messages.dart';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -232,7 +233,7 @@ class _PersonaFormState extends State<PersonaForm> {
     if (loading) return const Center(child: SkeletonBox(width: 240));
     if (schema == null) {
       return ErrorState(
-        message: l.personaFormFailed,
+        message: apiFailure(l, error),
         retryLabel: l.retry,
         onRetry: load,
       );
@@ -256,9 +257,7 @@ class _PersonaFormState extends State<PersonaForm> {
                 Padding(
                   padding: const EdgeInsets.only(bottom: Space.s16),
                   child: Text(
-                    error!.fieldErrors.isEmpty
-                        ? l.personaActionFailed
-                        : l.personaSaveFailed,
+                    apiFailure(l, error),
                     style: TextStyle(
                       color: Palette.of(Theme.of(context).brightness).danger,
                     ),

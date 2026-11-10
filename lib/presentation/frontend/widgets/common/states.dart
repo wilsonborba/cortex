@@ -41,28 +41,33 @@ class EmptyState extends StatelessWidget {
   Widget build(BuildContext context) {
     final p = Palette.of(Theme.of(context).brightness);
     return Center(
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 420),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, size: 32, color: p.muted),
-            const SizedBox(height: Space.s12),
-            Text(
-              title,
-              style: TextStyles.subsection,
-              textAlign: TextAlign.center,
-            ),
-            if (message != null) ...[
-              const SizedBox(height: Space.s8),
+      child: SingleChildScrollView(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 420),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, size: 32, color: p.muted),
+              const SizedBox(height: Space.s12),
               Text(
-                message!,
-                style: TextStyles.body.copyWith(color: p.muted),
+                title,
+                style: TextStyles.subsection,
                 textAlign: TextAlign.center,
               ),
+              if (message != null) ...[
+                const SizedBox(height: Space.s8),
+                Text(
+                  message!,
+                  style: TextStyles.body.copyWith(color: p.muted),
+                  textAlign: TextAlign.center,
+                ),
+              ],
+              if (action != null) ...[
+                const SizedBox(height: Space.s16),
+                action!,
+              ],
             ],
-            if (action != null) ...[const SizedBox(height: Space.s16), action!],
-          ],
+          ),
         ),
       ),
     );

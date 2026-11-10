@@ -31,6 +31,8 @@
 
 - Merge #34 usage-timing-stats-events
 
+- Merge #38 loading-language
+
 
 ### Documentation
 
@@ -54,6 +56,8 @@
 - Persona-schema-forms (#33)
 
 - Usage-timing-stats-events (#34)
+
+- Messages-states-accessibility (#35)
 
 
 ## v1.2.0 - 2026-11-09

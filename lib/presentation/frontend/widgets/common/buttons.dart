@@ -75,7 +75,9 @@ class AppButton extends StatelessWidget {
     final child = busy
         ? SizedBox.square(
             dimension: 16,
-            child: CircularProgressIndicator(strokeWidth: 2, color: fg),
+            child: MediaQuery.disableAnimationsOf(context)
+                ? Icon(Icons.hourglass_empty, size: 16, color: fg)
+                : CircularProgressIndicator(strokeWidth: 2, color: fg),
           )
         : Row(
             mainAxisSize: MainAxisSize.min,

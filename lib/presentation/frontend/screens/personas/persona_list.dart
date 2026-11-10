@@ -1,3 +1,4 @@
+import '../../handlers/process_messages.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../domain/services/persona_controller.dart';
@@ -90,12 +91,12 @@ class _PersonaListState extends State<PersonaList> {
             ],
           ),
         ),
-        if (personas.loading && items != null) const LinearProgressIndicator(),
+        if (personas.loading && items != null) const SkeletonBox(height: 4),
         if (personas.error != null && items != null)
           Padding(
             padding: const EdgeInsets.all(Space.s12),
             child: ErrorState(
-              message: l.personasLoadFailed,
+              message: apiFailure(l, personas.error),
               retryLabel: l.retry,
               onRetry: personas.load,
             ),
@@ -105,7 +106,7 @@ class _PersonaListState extends State<PersonaList> {
               ? personas.error == null
                     ? const Center(child: SkeletonBox(width: 240))
                     : ErrorState(
-                        message: l.personasLoadFailed,
+                        message: apiFailure(l, personas.error),
                         retryLabel: l.retry,
                         onRetry: personas.load,
                       )

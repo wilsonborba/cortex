@@ -1,3 +1,4 @@
+import '../../handlers/process_messages.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -110,7 +111,7 @@ class _UsageScreenState extends State<UsageScreen> {
           Padding(
             padding: const EdgeInsets.all(Space.s16),
             child: ErrorState(
-              message: l.usageLoadFailed,
+              message: apiFailure(l, error),
               retryLabel: l.retry,
               onRetry: () => usage.load(widget.view, more: retryMore),
             ),

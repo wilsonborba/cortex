@@ -1815,6 +1815,378 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Loading'**
   String get loading;
+
+  /// No description provided for @process1001.
+  ///
+  /// In en, this message translates to:
+  /// **'The route was not found'**
+  String get process1001;
+
+  /// No description provided for @process1002.
+  ///
+  /// In en, this message translates to:
+  /// **'The method is not allowed'**
+  String get process1002;
+
+  /// No description provided for @process1003.
+  ///
+  /// In en, this message translates to:
+  /// **'The request data is not valid'**
+  String get process1003;
+
+  /// No description provided for @process1004.
+  ///
+  /// In en, this message translates to:
+  /// **'The JSON body is not valid'**
+  String get process1004;
+
+  /// No description provided for @process1005.
+  ///
+  /// In en, this message translates to:
+  /// **'The x-uuid header is required'**
+  String get process1005;
+
+  /// No description provided for @process1006.
+  ///
+  /// In en, this message translates to:
+  /// **'The content type is not supported'**
+  String get process1006;
+
+  /// No description provided for @process1007.
+  ///
+  /// In en, this message translates to:
+  /// **'The request body is too large'**
+  String get process1007;
+
+  /// No description provided for @process1008.
+  ///
+  /// In en, this message translates to:
+  /// **'The server could not complete the request'**
+  String get process1008;
+
+  /// No description provided for @process1009.
+  ///
+  /// In en, this message translates to:
+  /// **'The app_id is not allowed'**
+  String get process1009;
+
+  /// No description provided for @process1010.
+  ///
+  /// In en, this message translates to:
+  /// **'The server is under heavy load. Try later'**
+  String get process1010;
+
+  /// No description provided for @process1011.
+  ///
+  /// In en, this message translates to:
+  /// **'The local call queue failed'**
+  String get process1011;
+
+  /// No description provided for @process1012.
+  ///
+  /// In en, this message translates to:
+  /// **'The local model call failed'**
+  String get process1012;
+
+  /// No description provided for @process1201.
+  ///
+  /// In en, this message translates to:
+  /// **'The input is over the token limit'**
+  String get process1201;
+
+  /// No description provided for @process1013.
+  ///
+  /// In en, this message translates to:
+  /// **'The usage data is not available'**
+  String get process1013;
+
+  /// No description provided for @process1014.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you kidding me, clown?'**
+  String get process1014;
+
+  /// No description provided for @process1015.
+  ///
+  /// In en, this message translates to:
+  /// **'The input security check is not available'**
+  String get process1015;
+
+  /// No description provided for @process1016.
+  ///
+  /// In en, this message translates to:
+  /// **'The chat was not found'**
+  String get process1016;
+
+  /// No description provided for @process1017.
+  ///
+  /// In en, this message translates to:
+  /// **'The chat history could not be loaded or changed'**
+  String get process1017;
+
+  /// No description provided for @process1018.
+  ///
+  /// In en, this message translates to:
+  /// **'The output was not found'**
+  String get process1018;
+
+  /// No description provided for @process1019.
+  ///
+  /// In en, this message translates to:
+  /// **'The exchange memory could not be saved'**
+  String get process1019;
+
+  /// No description provided for @process1020.
+  ///
+  /// In en, this message translates to:
+  /// **'Web search is not available'**
+  String get process1020;
+
+  /// No description provided for @process1021.
+  ///
+  /// In en, this message translates to:
+  /// **'The web page timed out'**
+  String get process1021;
+
+  /// No description provided for @process1022.
+  ///
+  /// In en, this message translates to:
+  /// **'The web page is over the size limit'**
+  String get process1022;
+
+  /// No description provided for @process1023.
+  ///
+  /// In en, this message translates to:
+  /// **'The web page is not HTML'**
+  String get process1023;
+
+  /// No description provided for @process1024.
+  ///
+  /// In en, this message translates to:
+  /// **'The web page could not be read'**
+  String get process1024;
+
+  /// No description provided for @process1025.
+  ///
+  /// In en, this message translates to:
+  /// **'The web page has no readable main text'**
+  String get process1025;
+
+  /// No description provided for @process1026.
+  ///
+  /// In en, this message translates to:
+  /// **'The web time limit was reached'**
+  String get process1026;
+
+  /// No description provided for @process1027.
+  ///
+  /// In en, this message translates to:
+  /// **'The web page limit was reached'**
+  String get process1027;
+
+  /// No description provided for @process1028.
+  ///
+  /// In en, this message translates to:
+  /// **'The web crawl rules could not be loaded'**
+  String get process1028;
+
+  /// No description provided for @process1029.
+  ///
+  /// In en, this message translates to:
+  /// **'Memory could not be loaded'**
+  String get process1029;
+
+  /// No description provided for @process1030.
+  ///
+  /// In en, this message translates to:
+  /// **'The file type is not supported'**
+  String get process1030;
+
+  /// No description provided for @process1031.
+  ///
+  /// In en, this message translates to:
+  /// **'The file is over the size limit'**
+  String get process1031;
+
+  /// No description provided for @process1032.
+  ///
+  /// In en, this message translates to:
+  /// **'The file text could not be read'**
+  String get process1032;
+
+  /// No description provided for @process1033.
+  ///
+  /// In en, this message translates to:
+  /// **'The file is over the OCR page limit'**
+  String get process1033;
+
+  /// No description provided for @process1034.
+  ///
+  /// In en, this message translates to:
+  /// **'The file image text could not be read'**
+  String get process1034;
+
+  /// No description provided for @process1035.
+  ///
+  /// In en, this message translates to:
+  /// **'Temporary chat storage is not available'**
+  String get process1035;
+
+  /// No description provided for @process1036.
+  ///
+  /// In en, this message translates to:
+  /// **'The thinking time limit was reached'**
+  String get process1036;
+
+  /// No description provided for @process1037.
+  ///
+  /// In en, this message translates to:
+  /// **'The live log stream is for the LAN'**
+  String get process1037;
+
+  /// No description provided for @process1038.
+  ///
+  /// In en, this message translates to:
+  /// **'Telemetry data could not be loaded'**
+  String get process1038;
+
+  /// No description provided for @process1039.
+  ///
+  /// In en, this message translates to:
+  /// **'The memory graph node was not found'**
+  String get process1039;
+
+  /// No description provided for @process1040.
+  ///
+  /// In en, this message translates to:
+  /// **'The file was not saved'**
+  String get process1040;
+
+  /// No description provided for @process1041.
+  ///
+  /// In en, this message translates to:
+  /// **'The file was not found'**
+  String get process1041;
+
+  /// No description provided for @process1042.
+  ///
+  /// In en, this message translates to:
+  /// **'The output events are not available'**
+  String get process1042;
+
+  /// No description provided for @process1043.
+  ///
+  /// In en, this message translates to:
+  /// **'The output is not running'**
+  String get process1043;
+
+  /// No description provided for @process1044.
+  ///
+  /// In en, this message translates to:
+  /// **'The chat memories could not be deleted'**
+  String get process1044;
+
+  /// No description provided for @process1045.
+  ///
+  /// In en, this message translates to:
+  /// **'The persona was not found'**
+  String get process1045;
+
+  /// No description provided for @process1046.
+  ///
+  /// In en, this message translates to:
+  /// **'The persona data is not valid'**
+  String get process1046;
+
+  /// No description provided for @process1047.
+  ///
+  /// In en, this message translates to:
+  /// **'Personas could not be loaded or changed'**
+  String get process1047;
+
+  /// No description provided for @process1048.
+  ///
+  /// In en, this message translates to:
+  /// **'The audio is over the 10 minute limit'**
+  String get process1048;
+
+  /// No description provided for @process1049.
+  ///
+  /// In en, this message translates to:
+  /// **'The audio could not be transcribed'**
+  String get process1049;
+
+  /// No description provided for @process1050.
+  ///
+  /// In en, this message translates to:
+  /// **'The file worker did not answer'**
+  String get process1050;
+
+  /// No description provided for @processUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong ({number}).'**
+  String processUnknown(int number);
+
+  /// No description provided for @processGeneric.
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong. Try again.'**
+  String get processGeneric;
+
+  /// No description provided for @networkOffline.
+  ///
+  /// In en, this message translates to:
+  /// **'You are offline. Check your connection and retry.'**
+  String get networkOffline;
+
+  /// No description provided for @stepUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Working'**
+  String get stepUnknown;
+
+  /// No description provided for @statusStarted.
+  ///
+  /// In en, this message translates to:
+  /// **'Started'**
+  String get statusStarted;
+
+  /// No description provided for @statusDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get statusDone;
+
+  /// No description provided for @statusFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed'**
+  String get statusFailed;
+
+  /// No description provided for @statusCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get statusCancelled;
+
+  /// No description provided for @statusSkipped.
+  ///
+  /// In en, this message translates to:
+  /// **'Skipped'**
+  String get statusSkipped;
+
+  /// No description provided for @expandThinking.
+  ///
+  /// In en, this message translates to:
+  /// **'Expand thinking'**
+  String get expandThinking;
+
+  /// No description provided for @collapseThinking.
+  ///
+  /// In en, this message translates to:
+  /// **'Collapse thinking'**
+  String get collapseThinking;
 }
 
 class _AppLocalizationsDelegate
