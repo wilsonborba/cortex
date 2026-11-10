@@ -921,4 +921,7 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get loadMore => 'โหลดเพิ่ม';
+
+  @override
+  String get loading => 'กำลังโหลด';
 }

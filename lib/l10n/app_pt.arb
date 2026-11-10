@@ -308,5 +308,6 @@
       }
     }
   },
-  "loadMore": "Carregar mais"
+  "loadMore": "Carregar mais",
+  "loading": "Carregando"
 }

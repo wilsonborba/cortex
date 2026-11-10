@@ -4,6 +4,11 @@
 ## Unreleased
 
 
+### Bug Fixes
+
+- Loading-language (#38)
+
+
 ### Chores
 
 - Merge v1.2.0 back to feature/main
@@ -23,6 +28,8 @@
 - Merge #32 memory-graph-and-cards
 
 - Merge #33 persona-schema-forms
+
+- Merge #34 usage-timing-stats-events
 
 
 ### Documentation
