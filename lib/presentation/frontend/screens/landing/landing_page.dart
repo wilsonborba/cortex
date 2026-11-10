@@ -484,7 +484,7 @@ class _What extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              for (final r in ['plan', 'work', 'check'])
+              for (final r in [l.rolePlan, l.roleWork, l.roleCheck])
                 NoticeLine(message: '${l.stepThinking}: $r'),
             ],
           ),

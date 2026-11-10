@@ -24,6 +24,7 @@ Future<(GoRouter, FakeAuth)> pump(
   WidgetTester tester,
   String location, {
   Size size = const Size(1300, 900),
+  Locale locale = const Locale('en'),
 }) async {
   tester.view.physicalSize = size;
   tester.view.devicePixelRatio = 1;
@@ -42,6 +43,7 @@ Future<(GoRouter, FakeAuth)> pump(
       preferences: Preferences(),
       child: MaterialApp.router(
         routerConfig: router,
+        locale: locale,
         theme: cortexTheme(Brightness.dark),
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
@@ -215,6 +217,33 @@ void main() {
       expect(find.text('6. Save'), findsOneWidget);
     },
   );
+
+  testWidgets('static thinking example roles use EN, PT-BR and TH', (
+    tester,
+  ) async {
+    for (final locale in [
+      const Locale('en'),
+      const Locale('pt', 'BR'),
+      const Locale('th'),
+    ]) {
+      await tester.pumpWidget(const SizedBox());
+      await pump(
+        tester,
+        '/v1/home',
+        locale: locale,
+        size: const Size(1600, 900),
+      );
+      final l = await AppLocalizations.delegate.load(locale);
+      for (final role in [l.rolePlan, l.roleWork, l.roleCheck]) {
+        expect(find.text('${l.stepThinking}: $role'), findsOneWidget);
+      }
+      if (locale.languageCode != 'en') {
+        for (final role in ['plan', 'work', 'check']) {
+          expect(find.text('${l.stepThinking}: $role'), findsNothing);
+        }
+      }
+    }
+  });
 
   test('CREDITS.md exists and lists the image sources', () {
     final credits = File(
