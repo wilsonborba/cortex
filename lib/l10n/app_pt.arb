@@ -1,1 +1,23 @@
-{"@@locale": "pt", "logIn": "Entrar"}
+{
+ "@@locale": "pt",
+ "logIn": "Entrar",
+ "logOut": "Sair",
+ "newChat": "Nova conversa",
+ "temporaryChat": "Conversa temporária",
+ "chats": "Conversas",
+ "memory": "Memória",
+ "personas": "Personas",
+ "usage": "Uso",
+ "timing": "Tempo",
+ "stats": "Estatísticas",
+ "events": "Eventos",
+ "newPersona": "Nova persona",
+ "details": "Detalhes",
+ "close": "Fechar",
+ "notFoundTitle": "Página não encontrada",
+ "notFoundMessage": "Este caminho ou item não existe.",
+ "goToChats": "Ir para as conversas",
+ "signingIn": "Abrindo o login",
+ "noChatsYet": "Nenhuma conversa ainda",
+ "output": "Resposta"
+}

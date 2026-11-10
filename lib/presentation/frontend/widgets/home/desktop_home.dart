@@ -3,9 +3,17 @@ import '../../../../core/settings.dart';
 import '../../../../l10n/generated/app_localizations.dart';
 
 class HomeShell extends StatelessWidget {
-  const HomeShell({super.key, required this.signedIn, required this.onSignIn});
+  const HomeShell({
+    super.key,
+    required this.signedIn,
+    required this.onSignIn,
+    this.section,
+  });
   final bool signedIn;
   final VoidCallback onSignIn;
+
+  /// Section of the one-page landing to show (#29).
+  final String? section;
   @override
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(

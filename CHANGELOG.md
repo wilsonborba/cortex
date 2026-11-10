@@ -12,10 +12,14 @@
 
 - Merge #26 add Flutter web project skeleton
 
+- Merge #27 design-system
+
 
 ### Features
 
 - Design-system (#27)
+
+- App-shell (#28)
 
 
 ## v1.2.0 - 2026-11-09
