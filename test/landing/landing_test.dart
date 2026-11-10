@@ -1,3 +1,5 @@
+import 'package:cortex/presentation/frontend/screens/landing/landing_page.dart';
+import 'package:cortex/presentation/frontend/theme/tokens.dart';
 import 'dart:io';
 import 'package:cortex/dal/remote/auth_api_adapter.dart';
 import 'package:cortex/domain/services/auth_service.dart';
@@ -25,6 +27,7 @@ Future<(GoRouter, FakeAuth)> pump(
   String location, {
   Size size = const Size(1300, 900),
   Locale locale = const Locale('en'),
+  double scale = 1,
 }) async {
   tester.view.physicalSize = size;
   tester.view.devicePixelRatio = 1;
@@ -44,6 +47,13 @@ Future<(GoRouter, FakeAuth)> pump(
       child: MaterialApp.router(
         routerConfig: router,
         locale: locale,
+        builder: (context, child) => MediaQuery(
+          data: MediaQuery.of(context).copyWith(
+            textScaler: TextScaler.linear(scale),
+            disableAnimations: scale > 1,
+          ),
+          child: child!,
+        ),
         theme: cortexTheme(Brightness.dark),
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
@@ -231,7 +241,7 @@ void main() {
         tester,
         '/v1/home',
         locale: locale,
-        size: const Size(1600, 900),
+        size: const Size(1300, 900),
       );
       final l = await AppLocalizations.delegate.load(locale);
       for (final role in [l.rolePlan, l.roleWork, l.roleCheck]) {
@@ -243,6 +253,65 @@ void main() {
         }
       }
     }
+  });
+
+  testWidgets('landing header fits three locales and widths at 200 percent', (
+    tester,
+  ) async {
+    for (final locale in [
+      const Locale('en'),
+      const Locale('pt', 'BR'),
+      const Locale('th'),
+    ]) {
+      for (final width in [390.0, 800.0, 1300.0]) {
+        tester.view.physicalSize = Size(width, 900);
+        tester.view.devicePixelRatio = 1;
+        await tester.pumpWidget(const SizedBox());
+        var selected = false;
+        await tester.pumpWidget(
+          PreferencesScope(
+            preferences: Preferences(),
+            child: MaterialApp(
+              locale: locale,
+              theme: cortexTheme(Brightness.dark),
+              localizationsDelegates: AppLocalizations.localizationsDelegates,
+              supportedLocales: AppLocalizations.supportedLocales,
+              builder: (context, child) => MediaQuery(
+                data: MediaQuery.of(
+                  context,
+                ).copyWith(textScaler: const TextScaler.linear(2)),
+                child: child!,
+              ),
+              home: Scaffold(
+                body: LandingHeader(
+                  size: SizeClass.of(width),
+                  onSignIn: () {},
+                  onSection: (_) => selected = true,
+                ),
+              ),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+        expect(tester.takeException(), isNull, reason: '$locale $width');
+        expect(
+          tester.getSize(find.byKey(const Key('landing-header'))).height,
+          64,
+        );
+        final l = await AppLocalizations.delegate.load(locale);
+        expect(find.text(l.logIn), findsOneWidget);
+        if (width > 1000) {
+          final last = find.byKey(const Key('link-faq'));
+          await tester.ensureVisible(last);
+          await tester.tap(last);
+          await tester.pumpAndSettle();
+          expect(selected, isTrue);
+        } else {
+          expect(find.byKey(const Key('section-menu')), findsOneWidget);
+        }
+      }
+    }
+    tester.view.reset();
   });
 
   test('CREDITS.md exists and lists the image sources', () {

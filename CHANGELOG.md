@@ -10,6 +10,8 @@
 
 - Landing-role-language (#39)
 
+- Landing-header-layout (#40)
+
 
 ### Chores
 
@@ -36,6 +38,8 @@
 - Merge #38 loading-language
 
 - Merge #35 messages-states-accessibility
+
+- Merge #39 landing-role-language
 
 
 ### Documentation
