@@ -216,13 +216,25 @@ class _LandingPageState extends State<LandingPage> {
                           section(LandingSection.faq, l.faq, const _Faq()),
                           Padding(
                             padding: const EdgeInsets.only(top: Space.section),
-                            child: Row(
+                            child: Flex(
+                              key: const Key('landing-final-action'),
+                              direction: size == SizeClass.compact
+                                  ? Axis.vertical
+                                  : Axis.horizontal,
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Expanded(
-                                  child: Text(
-                                    l.finalLine,
-                                    style: TextStyles.section,
+                                if (size == SizeClass.compact)
+                                  Text(l.finalLine, style: TextStyles.section)
+                                else
+                                  Expanded(
+                                    child: Text(
+                                      l.finalLine,
+                                      style: TextStyles.section,
+                                    ),
                                   ),
+                                const SizedBox(
+                                  width: Space.s16,
+                                  height: Space.s16,
                                 ),
                                 AppButton.primary(
                                   label: l.startChat,
