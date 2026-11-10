@@ -70,30 +70,30 @@ const research = [
   ),
 ];
 
-enum _Section { product, howItWorks, memory, engineering, faq }
+enum LandingSection { product, howItWorks, memory, engineering, faq }
 
-extension _SectionX on _Section {
+extension _LandingSectionX on LandingSection {
   /// /v1/home/:section (28.1); Product is the top of the page.
   String get path => switch (this) {
-    _Section.product => '/v1/home',
-    _Section.howItWorks => '/v1/home/how-it-works',
-    _Section.memory => '/v1/home/memory',
-    _Section.engineering => '/v1/home/engineering',
-    _Section.faq => '/v1/home/faq',
+    LandingSection.product => '/v1/home',
+    LandingSection.howItWorks => '/v1/home/how-it-works',
+    LandingSection.memory => '/v1/home/memory',
+    LandingSection.engineering => '/v1/home/engineering',
+    LandingSection.faq => '/v1/home/faq',
   };
-  static _Section? fromSlug(String? slug) => switch (slug) {
-    'how-it-works' => _Section.howItWorks,
-    'memory' => _Section.memory,
-    'engineering' => _Section.engineering,
-    'faq' => _Section.faq,
+  static LandingSection? fromSlug(String? slug) => switch (slug) {
+    'how-it-works' => LandingSection.howItWorks,
+    'memory' => LandingSection.memory,
+    'engineering' => LandingSection.engineering,
+    'faq' => LandingSection.faq,
     _ => null,
   };
   String label(AppLocalizations l) => switch (this) {
-    _Section.product => l.product,
-    _Section.howItWorks => l.howItWorks,
-    _Section.memory => l.memory,
-    _Section.engineering => l.engineering,
-    _Section.faq => l.faq,
+    LandingSection.product => l.product,
+    LandingSection.howItWorks => l.howItWorks,
+    LandingSection.memory => l.memory,
+    LandingSection.engineering => l.engineering,
+    LandingSection.faq => l.faq,
   };
 }
 
@@ -107,25 +107,25 @@ class LandingPage extends StatefulWidget {
 }
 
 class _LandingPageState extends State<LandingPage> {
-  final _keys = {for (final s in _Section.values) s: GlobalKey()};
+  final _keys = {for (final s in LandingSection.values) s: GlobalKey()};
 
   @override
   void initState() {
     super.initState();
-    final target = _SectionX.fromSlug(widget.section);
+    final target = _LandingSectionX.fromSlug(widget.section);
     if (target != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) => _scrollTo(target));
     }
   }
 
-  void _scrollTo(_Section s) {
+  void _scrollTo(LandingSection s) {
     final c = _keys[s]!.currentContext;
     if (c != null) {
       Scrollable.ensureVisible(c, duration: Motion.of(context), alignment: 0);
     }
   }
 
-  void _go(_Section s) {
+  void _go(LandingSection s) {
     context.go(s.path);
     _scrollTo(s);
   }
@@ -134,7 +134,7 @@ class _LandingPageState extends State<LandingPage> {
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
     final size = SizeClass.of(MediaQuery.sizeOf(context).width);
-    Widget section(_Section? key, String title, Widget body) => Padding(
+    Widget section(LandingSection? key, String title, Widget body) => Padding(
       key: key == null ? null : _keys[key],
       padding: const EdgeInsets.only(top: Space.section),
       child: Column(
@@ -152,7 +152,7 @@ class _LandingPageState extends State<LandingPage> {
     return Scaffold(
       body: Column(
         children: [
-          _Header(size: size, onSignIn: widget.onSignIn, onSection: _go),
+          LandingHeader(size: size, onSignIn: widget.onSignIn, onSection: _go),
           Expanded(
             child: GridBackground(
               child: SingleChildScrollView(
@@ -169,21 +169,21 @@ class _LandingPageState extends State<LandingPage> {
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           KeyedSubtree(
-                            key: _keys[_Section.product],
+                            key: _keys[LandingSection.product],
                             child: _Hero(
                               size: size,
                               onSignIn: widget.onSignIn,
-                              onHow: () => _go(_Section.howItWorks),
+                              onHow: () => _go(LandingSection.howItWorks),
                             ),
                           ),
                           section(null, l.whatTitle, _What(size: size)),
                           section(
-                            _Section.howItWorks,
+                            LandingSection.howItWorks,
                             l.pipelineTitle,
                             const PipelineDiagram(),
                           ),
                           section(
-                            _Section.memory,
+                            LandingSection.memory,
                             l.memoryTitle,
                             _Memory(size: size),
                           ),
@@ -199,7 +199,7 @@ class _LandingPageState extends State<LandingPage> {
                             ]),
                           ),
                           section(
-                            _Section.engineering,
+                            LandingSection.engineering,
                             l.engTitle,
                             const _Engineering(),
                           ),
@@ -213,7 +213,7 @@ class _LandingPageState extends State<LandingPage> {
                               l.securityLogs,
                             ]),
                           ),
-                          section(_Section.faq, l.faq, const _Faq()),
+                          section(LandingSection.faq, l.faq, const _Faq()),
                           Padding(
                             padding: const EdgeInsets.only(top: Space.section),
                             child: Row(
@@ -246,15 +246,16 @@ class _LandingPageState extends State<LandingPage> {
   }
 }
 
-class _Header extends StatelessWidget {
-  const _Header({
+class LandingHeader extends StatelessWidget {
+  const LandingHeader({
+    super.key,
     required this.size,
     required this.onSignIn,
     required this.onSection,
   });
   final SizeClass size;
   final VoidCallback onSignIn;
-  final ValueChanged<_Section> onSection;
+  final ValueChanged<LandingSection> onSection;
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
@@ -265,7 +266,9 @@ class _Header extends StatelessWidget {
     return Container(
       key: const Key('landing-header'),
       height: 64,
-      padding: const EdgeInsets.symmetric(horizontal: Space.s24),
+      padding: EdgeInsets.symmetric(
+        horizontal: size == SizeClass.compact ? Space.s16 : Space.s24,
+      ),
       decoration: BoxDecoration(
         color: p.background,
         border: Border(bottom: BorderSide(color: p.border)),
@@ -282,17 +285,32 @@ class _Header extends StatelessWidget {
               excludeFromSemantics: true,
             ),
           ),
-          const SizedBox(width: Space.s8),
-          Text('Cortex', style: TextStyles.subsection),
-          const Spacer(),
-          if (!compact)
-            for (final s in _Section.values)
-              TextButton(
-                key: Key('link-${s.name}'),
-                onPressed: () => onSection(s),
-                child: Text(s.label(l), style: TextStyles.compact),
+          if (!compact) ...[
+            const SizedBox(width: Space.s8),
+            Text('Cortex', style: TextStyles.subsection),
+            const SizedBox(width: Space.s24),
+            Expanded(
+              child: SingleChildScrollView(
+                key: const Key('header-links'),
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    for (final section in LandingSection.values)
+                      TextButton(
+                        key: Key('link-${section.name}'),
+                        onPressed: () => onSection(section),
+                        child: Text(
+                          section.label(l),
+                          style: TextStyles.compact,
+                        ),
+                      ),
+                  ],
+                ),
               ),
-          const Spacer(),
+            ),
+            const SizedBox(width: Space.s16),
+          ] else
+            const SizedBox(width: Space.s8),
           if (size != SizeClass.compact && prefs != null) ...[
             PopupMenuButton<Locale>(
               tooltip: l.language,
@@ -321,18 +339,23 @@ class _Header extends StatelessWidget {
             ),
           ],
           if (compact)
-            PopupMenuButton<_Section>(
+            PopupMenuButton<LandingSection>(
               key: const Key('section-menu'),
               tooltip: l.menu,
               icon: const Icon(Icons.menu),
               onSelected: onSection,
               itemBuilder: (_) => [
-                for (final s in _Section.values)
+                for (final s in LandingSection.values)
                   PopupMenuItem(value: s, child: Text(s.label(l))),
               ],
             ),
           const SizedBox(width: Space.s8),
-          AppButton(label: l.logIn, onPressed: onSignIn),
+          if (compact)
+            Expanded(
+              child: AppButton(label: l.logIn, onPressed: onSignIn),
+            )
+          else
+            AppButton(label: l.logIn, onPressed: onSignIn),
         ],
       ),
     );
