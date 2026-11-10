@@ -804,4 +804,127 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get personaActionFailed => 'Could not complete the action. Try again.';
+
+  @override
+  String get usageLoadFailed => 'Usage could not be loaded.';
+
+  @override
+  String get notAvailableYet => 'Not available yet';
+
+  @override
+  String usageWindow(int hours) {
+    return 'Your usage in the last $hours hours';
+  }
+
+  @override
+  String get usageInputTokens => 'Input tokens';
+
+  @override
+  String get usageOutputTokens => 'Output tokens';
+
+  @override
+  String get usageTotalTokens => 'Total tokens';
+
+  @override
+  String get usageImages => 'Images';
+
+  @override
+  String get usageAudio => 'Audio items';
+
+  @override
+  String get usagePriority => 'Your priority';
+
+  @override
+  String get usagePriorityHelp =>
+      'The next model call goes to the waiting user with the lowest token use divided by their weight. A call that has started will finish.';
+
+  @override
+  String get usageWeight => 'Weight';
+
+  @override
+  String get usageAccountAge => 'Account age part';
+
+  @override
+  String get usageFrequency => 'Sign-in frequency part';
+
+  @override
+  String get usageAccountDays => 'Account age in days';
+
+  @override
+  String get usageSignInDays => 'Days with a sign-in in the last 90 days';
+
+  @override
+  String get usageWeightFormula =>
+      'Weight = 1 + account age part + sign-in frequency part.';
+
+  @override
+  String usageKind(String mode, String thinking) {
+    return '$mode, $thinking';
+  }
+
+  @override
+  String get usageThinkingOn => 'thinking on';
+
+  @override
+  String get usageThinkingOff => 'thinking off';
+
+  @override
+  String usageSeconds(String value) {
+    return '$value s';
+  }
+
+  @override
+  String get usageTimingHelp =>
+      'Average of the last 20 completed answers for each kind. Failed and cancelled answers are excluded.';
+
+  @override
+  String get usageEmpty => 'No usage records yet';
+
+  @override
+  String get usageMetric => 'Measure';
+
+  @override
+  String get usageRuns => 'Total answers';
+
+  @override
+  String get usageAverageTime => 'Average time';
+
+  @override
+  String get usageAverageInput => 'Average input tokens';
+
+  @override
+  String get usageAverageOutput => 'Average output tokens';
+
+  @override
+  String get usageAverageTotal => 'Average total tokens';
+
+  @override
+  String get usageSuccessRate => 'Success rate';
+
+  @override
+  String get usageRequest => 'Request ID';
+
+  @override
+  String get usageOutput => 'Output ID';
+
+  @override
+  String get usageUser => 'User';
+
+  @override
+  String get usageModel => 'Model';
+
+  @override
+  String get usageRole => 'Role';
+
+  @override
+  String get usageStarted => 'Started';
+
+  @override
+  String get usageFinished => 'Finished';
+
+  @override
+  String get usageNoUser => 'No user';
+
+  @override
+  String get loadMore => 'Load more';
 }

@@ -1,3 +1,6 @@
+import '../../domain/models/telemetry.dart';
+import '../../domain/services/usage_controller.dart';
+import 'screens/usage/usage_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../dal/remote/cortex_api.dart';
@@ -40,17 +43,12 @@ GoRouter buildRouter({
   final chats = ChatListController(api: cortex);
   final memory = MemoryController(api: cortex);
   final personas = PersonaController(api: cortex);
+  final usage = UsageController(api: cortex);
   Widget screenPage(
     BuildContext c,
     String Function(AppLocalizations) title,
     Widget Function() build,
   ) => screen?.call(c, title(AppLocalizations.of(c))) ?? build();
-  Widget page(BuildContext c, String Function(AppLocalizations) title) =>
-      screen?.call(c, title(AppLocalizations.of(c))) ??
-      ScreenFrame(
-        title: title(AppLocalizations.of(c)),
-        child: const SizedBox(),
-      );
   Widget uuidPage(
     GoRouterState s,
     List<String> keys,
@@ -221,24 +219,17 @@ GoRouter buildRouter({
               ),
             ),
           ),
-          GoRoute(
-            path: '/v1/usage',
-            builder: (c, _) => page(c, (l) => l.usage),
-            routes: [
-              GoRoute(
-                path: 'timing',
-                builder: (c, _) => page(c, (l) => l.timing),
+          for (final view in UsageView.values)
+            GoRoute(
+              path: view == UsageView.usage
+                  ? '/v1/usage'
+                  : '/v1/usage/${view.name}',
+              builder: (c, _) => screenPage(
+                c,
+                (l) => viewTitle(l, view),
+                () => UsageScreen(controller: usage, view: view),
               ),
-              GoRoute(
-                path: 'stats',
-                builder: (c, _) => page(c, (l) => l.stats),
-              ),
-              GoRoute(
-                path: 'events',
-                builder: (c, _) => page(c, (l) => l.events),
-              ),
-            ],
-          ),
+            ),
         ],
       ),
     ],

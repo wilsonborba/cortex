@@ -1581,6 +1581,234 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Could not complete the action. Try again.'**
   String get personaActionFailed;
+
+  /// No description provided for @usageLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Usage could not be loaded.'**
+  String get usageLoadFailed;
+
+  /// No description provided for @notAvailableYet.
+  ///
+  /// In en, this message translates to:
+  /// **'Not available yet'**
+  String get notAvailableYet;
+
+  /// No description provided for @usageWindow.
+  ///
+  /// In en, this message translates to:
+  /// **'Your usage in the last {hours} hours'**
+  String usageWindow(int hours);
+
+  /// No description provided for @usageInputTokens.
+  ///
+  /// In en, this message translates to:
+  /// **'Input tokens'**
+  String get usageInputTokens;
+
+  /// No description provided for @usageOutputTokens.
+  ///
+  /// In en, this message translates to:
+  /// **'Output tokens'**
+  String get usageOutputTokens;
+
+  /// No description provided for @usageTotalTokens.
+  ///
+  /// In en, this message translates to:
+  /// **'Total tokens'**
+  String get usageTotalTokens;
+
+  /// No description provided for @usageImages.
+  ///
+  /// In en, this message translates to:
+  /// **'Images'**
+  String get usageImages;
+
+  /// No description provided for @usageAudio.
+  ///
+  /// In en, this message translates to:
+  /// **'Audio items'**
+  String get usageAudio;
+
+  /// No description provided for @usagePriority.
+  ///
+  /// In en, this message translates to:
+  /// **'Your priority'**
+  String get usagePriority;
+
+  /// No description provided for @usagePriorityHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'The next model call goes to the waiting user with the lowest token use divided by their weight. A call that has started will finish.'**
+  String get usagePriorityHelp;
+
+  /// No description provided for @usageWeight.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight'**
+  String get usageWeight;
+
+  /// No description provided for @usageAccountAge.
+  ///
+  /// In en, this message translates to:
+  /// **'Account age part'**
+  String get usageAccountAge;
+
+  /// No description provided for @usageFrequency.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign-in frequency part'**
+  String get usageFrequency;
+
+  /// No description provided for @usageAccountDays.
+  ///
+  /// In en, this message translates to:
+  /// **'Account age in days'**
+  String get usageAccountDays;
+
+  /// No description provided for @usageSignInDays.
+  ///
+  /// In en, this message translates to:
+  /// **'Days with a sign-in in the last 90 days'**
+  String get usageSignInDays;
+
+  /// No description provided for @usageWeightFormula.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight = 1 + account age part + sign-in frequency part.'**
+  String get usageWeightFormula;
+
+  /// No description provided for @usageKind.
+  ///
+  /// In en, this message translates to:
+  /// **'{mode}, {thinking}'**
+  String usageKind(String mode, String thinking);
+
+  /// No description provided for @usageThinkingOn.
+  ///
+  /// In en, this message translates to:
+  /// **'thinking on'**
+  String get usageThinkingOn;
+
+  /// No description provided for @usageThinkingOff.
+  ///
+  /// In en, this message translates to:
+  /// **'thinking off'**
+  String get usageThinkingOff;
+
+  /// No description provided for @usageSeconds.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} s'**
+  String usageSeconds(String value);
+
+  /// No description provided for @usageTimingHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Average of the last 20 completed answers for each kind. Failed and cancelled answers are excluded.'**
+  String get usageTimingHelp;
+
+  /// No description provided for @usageEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No usage records yet'**
+  String get usageEmpty;
+
+  /// No description provided for @usageMetric.
+  ///
+  /// In en, this message translates to:
+  /// **'Measure'**
+  String get usageMetric;
+
+  /// No description provided for @usageRuns.
+  ///
+  /// In en, this message translates to:
+  /// **'Total answers'**
+  String get usageRuns;
+
+  /// No description provided for @usageAverageTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Average time'**
+  String get usageAverageTime;
+
+  /// No description provided for @usageAverageInput.
+  ///
+  /// In en, this message translates to:
+  /// **'Average input tokens'**
+  String get usageAverageInput;
+
+  /// No description provided for @usageAverageOutput.
+  ///
+  /// In en, this message translates to:
+  /// **'Average output tokens'**
+  String get usageAverageOutput;
+
+  /// No description provided for @usageAverageTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'Average total tokens'**
+  String get usageAverageTotal;
+
+  /// No description provided for @usageSuccessRate.
+  ///
+  /// In en, this message translates to:
+  /// **'Success rate'**
+  String get usageSuccessRate;
+
+  /// No description provided for @usageRequest.
+  ///
+  /// In en, this message translates to:
+  /// **'Request ID'**
+  String get usageRequest;
+
+  /// No description provided for @usageOutput.
+  ///
+  /// In en, this message translates to:
+  /// **'Output ID'**
+  String get usageOutput;
+
+  /// No description provided for @usageUser.
+  ///
+  /// In en, this message translates to:
+  /// **'User'**
+  String get usageUser;
+
+  /// No description provided for @usageModel.
+  ///
+  /// In en, this message translates to:
+  /// **'Model'**
+  String get usageModel;
+
+  /// No description provided for @usageRole.
+  ///
+  /// In en, this message translates to:
+  /// **'Role'**
+  String get usageRole;
+
+  /// No description provided for @usageStarted.
+  ///
+  /// In en, this message translates to:
+  /// **'Started'**
+  String get usageStarted;
+
+  /// No description provided for @usageFinished.
+  ///
+  /// In en, this message translates to:
+  /// **'Finished'**
+  String get usageFinished;
+
+  /// No description provided for @usageNoUser.
+  ///
+  /// In en, this message translates to:
+  /// **'No user'**
+  String get usageNoUser;
+
+  /// No description provided for @loadMore.
+  ///
+  /// In en, this message translates to:
+  /// **'Load more'**
+  String get loadMore;
 }
 
 class _AppLocalizationsDelegate

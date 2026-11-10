@@ -22,6 +22,8 @@
 
 - Merge #32 memory-graph-and-cards
 
+- Merge #33 persona-schema-forms
+
 
 ### Documentation
 
@@ -43,6 +45,8 @@
 - Memory-graph-and-cards (#32)
 
 - Persona-schema-forms (#33)
+
+- Usage-timing-stats-events (#34)
 
 
 ## v1.2.0 - 2026-11-09

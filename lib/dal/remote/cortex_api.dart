@@ -1,3 +1,4 @@
+import '../../domain/models/telemetry.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -70,6 +71,28 @@ class CortexApi {
     if (body != null) request.body = jsonEncode(body);
     return _body(await http.Response.fromStream(await _client.send(request)));
   }
+
+  Future<UsageData> usage() async => UsageData.fromJson(
+    ((await _get('/telemetry/usage'))['data'] as Map).cast(),
+  );
+  Future<List<TimingAverage>> timing() async => [
+    for (final item in (await _get('/telemetry/timing'))['data'] as List)
+      TimingAverage.fromJson((item as Map).cast()),
+  ];
+  Future<List<GroupStats>> stats() async => [
+    for (final item in (await _get('/telemetry/stats'))['data'] as List)
+      GroupStats.fromJson((item as Map).cast()),
+  ];
+  Future<List<CallEvent>> callEvents({String? before, int limit = 20}) async =>
+      [
+        for (final item
+            in (await _get('/telemetry/events', {
+                  'limit': '$limit',
+                  'before': ?before,
+                }))['data']
+                as List)
+          CallEvent.fromJson((item as Map).cast()),
+      ];
 
   Future<InputBudget> budget() async =>
       InputBudget.fromJson(((await _get('/models'))['data'] as Map).cast());

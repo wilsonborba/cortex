@@ -798,4 +798,127 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get personaActionFailed => 'ทำรายการไม่สำเร็จ โปรดลองอีกครั้ง';
+
+  @override
+  String get usageLoadFailed => 'โหลดข้อมูลการใช้งานไม่ได้';
+
+  @override
+  String get notAvailableYet => 'ยังไม่มีข้อมูล';
+
+  @override
+  String usageWindow(int hours) {
+    return 'การใช้งานของคุณใน $hours ชั่วโมงที่ผ่านมา';
+  }
+
+  @override
+  String get usageInputTokens => 'โทเคนขาเข้า';
+
+  @override
+  String get usageOutputTokens => 'โทเคนขาออก';
+
+  @override
+  String get usageTotalTokens => 'โทเคนทั้งหมด';
+
+  @override
+  String get usageImages => 'รูปภาพ';
+
+  @override
+  String get usageAudio => 'รายการเสียง';
+
+  @override
+  String get usagePriority => 'ลำดับความสำคัญของคุณ';
+
+  @override
+  String get usagePriorityHelp =>
+      'การเรียกโมเดลครั้งถัดไปจะเป็นของผู้ใช้ที่รออยู่และมีการใช้โทเคนหารด้วยค่าน้ำหนักต่ำที่สุด การเรียกที่เริ่มแล้วจะทำงานจนเสร็จ';
+
+  @override
+  String get usageWeight => 'ค่าน้ำหนัก';
+
+  @override
+  String get usageAccountAge => 'ส่วนอายุบัญชี';
+
+  @override
+  String get usageFrequency => 'ส่วนความถี่ในการเข้าสู่ระบบ';
+
+  @override
+  String get usageAccountDays => 'อายุบัญชีเป็นวัน';
+
+  @override
+  String get usageSignInDays => 'วันที่เข้าสู่ระบบใน 90 วันที่ผ่านมา';
+
+  @override
+  String get usageWeightFormula =>
+      'ค่าน้ำหนัก = 1 + ส่วนอายุบัญชี + ส่วนความถี่ในการเข้าสู่ระบบ';
+
+  @override
+  String usageKind(String mode, String thinking) {
+    return '$mode, $thinking';
+  }
+
+  @override
+  String get usageThinkingOn => 'เปิดการคิด';
+
+  @override
+  String get usageThinkingOff => 'ปิดการคิด';
+
+  @override
+  String usageSeconds(String value) {
+    return '$value วินาที';
+  }
+
+  @override
+  String get usageTimingHelp =>
+      'ค่าเฉลี่ยของคำตอบที่เสร็จสมบูรณ์ 20 รายการล่าสุดในแต่ละประเภท ไม่รวมคำตอบที่ล้มเหลวหรือถูกยกเลิก';
+
+  @override
+  String get usageEmpty => 'ยังไม่มีบันทึกการใช้งาน';
+
+  @override
+  String get usageMetric => 'ตัวชี้วัด';
+
+  @override
+  String get usageRuns => 'คำตอบทั้งหมด';
+
+  @override
+  String get usageAverageTime => 'เวลาเฉลี่ย';
+
+  @override
+  String get usageAverageInput => 'โทเคนขาเข้าเฉลี่ย';
+
+  @override
+  String get usageAverageOutput => 'โทเคนขาออกเฉลี่ย';
+
+  @override
+  String get usageAverageTotal => 'โทเคนทั้งหมดเฉลี่ย';
+
+  @override
+  String get usageSuccessRate => 'อัตราความสำเร็จ';
+
+  @override
+  String get usageRequest => 'รหัสคำขอ';
+
+  @override
+  String get usageOutput => 'รหัสคำตอบ';
+
+  @override
+  String get usageUser => 'ผู้ใช้';
+
+  @override
+  String get usageModel => 'โมเดล';
+
+  @override
+  String get usageRole => 'หน้าที่';
+
+  @override
+  String get usageStarted => 'เริ่ม';
+
+  @override
+  String get usageFinished => 'เสร็จ';
+
+  @override
+  String get usageNoUser => 'ไม่มีผู้ใช้';
+
+  @override
+  String get loadMore => 'โหลดเพิ่ม';
 }
