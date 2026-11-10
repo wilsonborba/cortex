@@ -717,4 +717,101 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get linkedPersonas => 'Personas vinculadas';
+
+  @override
+  String get searchPersonas => 'Buscar personas';
+
+  @override
+  String get allPersonaTypes => 'Todos os tipos';
+
+  @override
+  String get personType => 'Pessoa';
+
+  @override
+  String get botType => 'Bot';
+
+  @override
+  String get you => 'Você';
+
+  @override
+  String get noPersonas => 'Nenhuma persona ainda';
+
+  @override
+  String get personasLoadFailed => 'Não foi possível carregar as personas.';
+
+  @override
+  String get personaFormFailed =>
+      'Não foi possível carregar o formulário da persona.';
+
+  @override
+  String get personaSaveFailed =>
+      'Não foi possível salvar a persona. Confira os campos marcados.';
+
+  @override
+  String get editPersona => 'Editar persona';
+
+  @override
+  String get personaType => 'Tipo';
+
+  @override
+  String get personaName => 'Nome';
+
+  @override
+  String get personaAliases => 'Apelidos';
+
+  @override
+  String get personaIsSelf => 'Esta persona é você';
+
+  @override
+  String get personaRequiredLegend => '* Campo obrigatório';
+
+  @override
+  String get personaSaved => 'Persona salva';
+
+  @override
+  String get deletePersona => 'Excluir persona';
+
+  @override
+  String get deletePersonaConfirm => 'Excluir esta persona e seus atributos?';
+
+  @override
+  String get personaFieldRequired => 'Este campo é obrigatório.';
+
+  @override
+  String get personaFieldUnknown =>
+      'Este campo não faz parte do esquema salvo.';
+
+  @override
+  String get personaFieldType => 'Use o tipo indicado para este campo.';
+
+  @override
+  String get personaFieldInvalid => 'Confira este campo.';
+
+  @override
+  String get addPersonaItem => 'Adicionar item';
+
+  @override
+  String get removePersonaItem => 'Remover item';
+
+  @override
+  String get choosePersonaDate => 'Escolher uma data';
+
+  @override
+  String get clear => 'Limpar';
+
+  @override
+  String get personaYes => 'Sim';
+
+  @override
+  String get personaNo => 'Não';
+
+  @override
+  String get personaInteger => 'Número inteiro';
+
+  @override
+  String get personaNumber => 'Número';
+
+  @override
+  String get personaActionFailed =>
+      'Não foi possível concluir a ação. Tente novamente.';
 }

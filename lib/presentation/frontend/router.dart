@@ -7,6 +7,9 @@ import '../../l10n/generated/app_localizations.dart';
 import 'screens/basic_pages.dart';
 import '../../domain/services/chat_list_controller.dart';
 import '../../domain/services/memory_controller.dart';
+import '../../domain/services/persona_controller.dart';
+import 'screens/personas/persona_list.dart';
+import 'screens/personas/persona_form.dart';
 import 'screens/chat/chat_list.dart';
 import 'screens/chat/chat_screen.dart';
 import 'screens/memory/memory_screen.dart';
@@ -36,6 +39,7 @@ GoRouter buildRouter({
   final cortex = api ?? CortexApi();
   final chats = ChatListController(api: cortex);
   final memory = MemoryController(api: cortex);
+  final personas = PersonaController(api: cortex);
   Widget screenPage(
     BuildContext c,
     String Function(AppLocalizations) title,
@@ -191,17 +195,31 @@ GoRouter buildRouter({
           ),
           GoRoute(
             path: '/v1/personas',
-            builder: (c, _) => page(c, (l) => l.personas),
-            routes: [
-              GoRoute(
-                path: 'new',
-                builder: (c, _) => page(c, (l) => l.newPersona),
+            builder: (c, _) => screenPage(
+              c,
+              (l) => l.personas,
+              () => PersonaList(controller: personas),
+            ),
+          ),
+          GoRoute(
+            path: '/v1/personas/new',
+            builder: (c, _) => screenPage(
+              c,
+              (l) => l.newPersona,
+              () => PersonaForm(api: cortex, onChanged: personas.load),
+            ),
+          ),
+          GoRoute(
+            path: '/v1/personas/:persona_id',
+            builder: (c, state) => screenPage(
+              c,
+              (l) => l.personas,
+              () => PersonaForm(
+                api: cortex,
+                id: state.pathParameters['persona_id'],
+                onChanged: personas.load,
               ),
-              GoRoute(
-                path: ':persona_id',
-                builder: (c, _) => page(c, (l) => l.personas),
-              ),
-            ],
+            ),
           ),
           GoRoute(
             path: '/v1/usage',

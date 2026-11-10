@@ -704,4 +704,98 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get linkedPersonas => 'เพอร์โซนาที่เชื่อมโยง';
+
+  @override
+  String get searchPersonas => 'ค้นหาเพอร์โซนา';
+
+  @override
+  String get allPersonaTypes => 'ทุกประเภท';
+
+  @override
+  String get personType => 'บุคคล';
+
+  @override
+  String get botType => 'บอต';
+
+  @override
+  String get you => 'คุณ';
+
+  @override
+  String get noPersonas => 'ยังไม่มีเพอร์โซนา';
+
+  @override
+  String get personasLoadFailed => 'โหลดเพอร์โซนาไม่ได้';
+
+  @override
+  String get personaFormFailed => 'โหลดแบบฟอร์มเพอร์โซนาไม่ได้';
+
+  @override
+  String get personaSaveFailed =>
+      'บันทึกเพอร์โซนาไม่ได้ โปรดตรวจช่องที่ทำเครื่องหมายไว้';
+
+  @override
+  String get editPersona => 'แก้ไขเพอร์โซนา';
+
+  @override
+  String get personaType => 'ประเภท';
+
+  @override
+  String get personaName => 'ชื่อ';
+
+  @override
+  String get personaAliases => 'ชื่อเรียกอื่น';
+
+  @override
+  String get personaIsSelf => 'เพอร์โซนานี้คือคุณ';
+
+  @override
+  String get personaRequiredLegend => '* ช่องที่ต้องกรอก';
+
+  @override
+  String get personaSaved => 'บันทึกเพอร์โซนาแล้ว';
+
+  @override
+  String get deletePersona => 'ลบเพอร์โซนา';
+
+  @override
+  String get deletePersonaConfirm => 'ลบเพอร์โซนานี้และคุณลักษณะทั้งหมดหรือไม่';
+
+  @override
+  String get personaFieldRequired => 'ต้องกรอกช่องนี้';
+
+  @override
+  String get personaFieldUnknown => 'ช่องนี้ไม่อยู่ในสคีมาที่บันทึกไว้';
+
+  @override
+  String get personaFieldType => 'ใช้ชนิดข้อมูลที่แสดงสำหรับช่องนี้';
+
+  @override
+  String get personaFieldInvalid => 'โปรดตรวจช่องนี้';
+
+  @override
+  String get addPersonaItem => 'เพิ่มรายการ';
+
+  @override
+  String get removePersonaItem => 'ลบรายการ';
+
+  @override
+  String get choosePersonaDate => 'เลือกวันที่';
+
+  @override
+  String get clear => 'ล้าง';
+
+  @override
+  String get personaYes => 'ใช่';
+
+  @override
+  String get personaNo => 'ไม่ใช่';
+
+  @override
+  String get personaInteger => 'จำนวนเต็ม';
+
+  @override
+  String get personaNumber => 'ตัวเลข';
+
+  @override
+  String get personaActionFailed => 'ทำรายการไม่สำเร็จ โปรดลองอีกครั้ง';
 }

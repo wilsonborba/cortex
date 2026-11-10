@@ -20,6 +20,8 @@
 
 - Merge #30 chat-screen
 
+- Merge #32 memory-graph-and-cards
+
 
 ### Documentation
 
@@ -39,6 +41,8 @@
 - Add chat list and temporary chat banner (#31)
 
 - Memory-graph-and-cards (#32)
+
+- Persona-schema-forms (#33)
 
 
 ## v1.2.0 - 2026-11-09

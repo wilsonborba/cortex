@@ -5,6 +5,7 @@ import 'package:http_parser/http_parser.dart';
 import '../../core/settings.dart';
 import '../../core/utils/csrf.dart';
 import '../../domain/models/memory_graph.dart';
+import '../../domain/models/persona.dart';
 import '../../domain/models/api.dart';
 import 'credentials_client.dart';
 import 'stream_client.dart';
@@ -43,6 +44,11 @@ class CortexApi {
         r.statusCode,
         (data['error_number'] as num?)?.toInt(),
         '${body['message'] ?? r.reasonPhrase}',
+        fieldErrors: {
+          for (final error in data['errors'] as List? ?? const [])
+            if (error is Map)
+              '${error['field_path'] ?? ''}': '${error['message'] ?? ''}',
+        },
       );
     }
     return body;
@@ -120,6 +126,61 @@ class CortexApi {
       ((await _get('/personas', {'app_id': appId, 'type': 'bot'}))['data']
               as List)
           .cast();
+
+  Future<List<Persona>> personas({String? query, String? type}) async => [
+    for (final value
+        in (await _get('/personas', {
+              'app_id': appId,
+              'q': ?query,
+              'type': ?type,
+            }))['data']
+            as List)
+      Persona.fromJson((value as Map).cast()),
+  ];
+  Future<Persona> persona(String id) async => Persona.fromJson(
+    ((await _get('/personas/${Uri.encodeComponent(id)}', {
+              'app_id': appId,
+            }))['data']
+            as Map)
+        .cast(),
+  );
+  Future<PersonaSchema> personaSchema(String type) async =>
+      PersonaSchema.fromJson(
+        ((await _get('/personas/schemas/${Uri.encodeComponent(type)}', {
+                  'app_id': appId,
+                }))['data']
+                as Map)
+            .cast(),
+      );
+  Future<Persona> savePersona({
+    String? id,
+    required String type,
+    required String name,
+    required List<String> aliases,
+    required bool isSelf,
+    required Map<String, dynamic> attributes,
+  }) async => Persona.fromJson(
+    ((await _send(
+              id == null ? 'POST' : 'PATCH',
+              id == null ? '/personas' : '/personas/${Uri.encodeComponent(id)}',
+              {
+                if (id == null) 'type': type,
+                'name': name,
+                'aliases': aliases,
+                'is_self': isSelf,
+                'attributes': attributes,
+              },
+              {'app_id': appId},
+            ))['data']
+            as Map)
+        .cast(),
+  );
+  Future<void> deletePersona(String id) => _send(
+    'DELETE',
+    '/personas/${Uri.encodeComponent(id)}',
+    null,
+    {'app_id': appId},
+  );
 
   /// Output controls (10.5, 11.8).
   Future<void> cancel(String session, String output) => _send(

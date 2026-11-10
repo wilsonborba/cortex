@@ -10,10 +10,16 @@ class ChatEvent {
 
 /// A Cortex error with its process number (area 1.10).
 class ApiError implements Exception {
-  const ApiError(this.status, this.number, this.message);
+  const ApiError(
+    this.status,
+    this.number,
+    this.message, {
+    this.fieldErrors = const {},
+  });
   final int status;
   final int? number;
   final String message;
+  final Map<String, String> fieldErrors;
   @override
   String toString() => 'ApiError($status, $number, $message)';
 }

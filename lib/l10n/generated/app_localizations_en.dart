@@ -710,4 +710,98 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get linkedPersonas => 'Linked personas';
+
+  @override
+  String get searchPersonas => 'Search personas';
+
+  @override
+  String get allPersonaTypes => 'All types';
+
+  @override
+  String get personType => 'Person';
+
+  @override
+  String get botType => 'Bot';
+
+  @override
+  String get you => 'You';
+
+  @override
+  String get noPersonas => 'No personas yet';
+
+  @override
+  String get personasLoadFailed => 'Personas could not be loaded.';
+
+  @override
+  String get personaFormFailed => 'The persona form could not be loaded.';
+
+  @override
+  String get personaSaveFailed =>
+      'The persona could not be saved. Check the marked fields.';
+
+  @override
+  String get editPersona => 'Edit persona';
+
+  @override
+  String get personaType => 'Type';
+
+  @override
+  String get personaName => 'Name';
+
+  @override
+  String get personaAliases => 'Aliases';
+
+  @override
+  String get personaIsSelf => 'This persona is you';
+
+  @override
+  String get personaRequiredLegend => '* Required field';
+
+  @override
+  String get personaSaved => 'Persona saved';
+
+  @override
+  String get deletePersona => 'Delete persona';
+
+  @override
+  String get deletePersonaConfirm => 'Delete this persona and its attributes?';
+
+  @override
+  String get personaFieldRequired => 'This field is required.';
+
+  @override
+  String get personaFieldUnknown => 'This field is not in the stored schema.';
+
+  @override
+  String get personaFieldType => 'Use the type shown for this field.';
+
+  @override
+  String get personaFieldInvalid => 'Check this field.';
+
+  @override
+  String get addPersonaItem => 'Add item';
+
+  @override
+  String get removePersonaItem => 'Remove item';
+
+  @override
+  String get choosePersonaDate => 'Choose a date';
+
+  @override
+  String get clear => 'Clear';
+
+  @override
+  String get personaYes => 'Yes';
+
+  @override
+  String get personaNo => 'No';
+
+  @override
+  String get personaInteger => 'Whole number';
+
+  @override
+  String get personaNumber => 'Number';
+
+  @override
+  String get personaActionFailed => 'Could not complete the action. Try again.';
 }
