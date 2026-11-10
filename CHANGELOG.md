@@ -21,6 +21,11 @@
 - Merge #30 chat-screen
 
 
+### Documentation
+
+- Update for #31
+
+
 ### Features
 
 - Design-system (#27)
@@ -32,6 +37,8 @@
 - Chat-screen (#30)
 
 - Add chat list and temporary chat banner (#31)
+
+- Memory-graph-and-cards (#32)
 
 
 ## v1.2.0 - 2026-11-09

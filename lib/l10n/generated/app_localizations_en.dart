@@ -642,4 +642,72 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get chatsLoadFailed => 'Chats could not be loaded.';
+
+  @override
+  String get graphView => 'Graph';
+
+  @override
+  String get listView => 'List';
+
+  @override
+  String get depthLabel => 'Depth';
+
+  @override
+  String get limitLabel => 'Limit';
+
+  @override
+  String get legendMemory => 'Memory';
+
+  @override
+  String get legendTag => 'Tag';
+
+  @override
+  String get legendEntity => 'Entity';
+
+  @override
+  String get legendFile => 'File';
+
+  @override
+  String get noMemories => 'No memories yet';
+
+  @override
+  String get memoryLoadFailed => 'Memory could not be loaded.';
+
+  @override
+  String get memoryNotFound => 'This memory was not found.';
+
+  @override
+  String get superseded => 'Superseded';
+
+  @override
+  String get detailsLabel => 'Details';
+
+  @override
+  String get linkedFiles => 'Files';
+
+  @override
+  String get linkedMemories => 'Linked memories';
+
+  @override
+  String get typeChat => 'Chat';
+
+  @override
+  String get typeFile => 'File';
+
+  @override
+  String get typeNote => 'Note';
+
+  @override
+  String get graphTruncated =>
+      'Only part of the graph is shown. Raise the limit to see more.';
+
+  @override
+  String get memoryGraphDescription =>
+      'Memory graph. The list view shows the same nodes as text.';
+
+  @override
+  String get legendPersona => 'Persona';
+
+  @override
+  String get linkedPersonas => 'Linked personas';
 }

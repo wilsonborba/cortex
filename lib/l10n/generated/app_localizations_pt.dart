@@ -649,4 +649,72 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get chatsLoadFailed => 'Não foi possível carregar as conversas.';
+
+  @override
+  String get graphView => 'Grafo';
+
+  @override
+  String get listView => 'Lista';
+
+  @override
+  String get depthLabel => 'Profundidade';
+
+  @override
+  String get limitLabel => 'Limite';
+
+  @override
+  String get legendMemory => 'Memória';
+
+  @override
+  String get legendTag => 'Tag';
+
+  @override
+  String get legendEntity => 'Entidade';
+
+  @override
+  String get legendFile => 'Arquivo';
+
+  @override
+  String get noMemories => 'Nenhuma memória ainda';
+
+  @override
+  String get memoryLoadFailed => 'Não foi possível carregar a memória.';
+
+  @override
+  String get memoryNotFound => 'Esta memória não foi encontrada.';
+
+  @override
+  String get superseded => 'Substituída';
+
+  @override
+  String get detailsLabel => 'Detalhes';
+
+  @override
+  String get linkedFiles => 'Arquivos';
+
+  @override
+  String get linkedMemories => 'Memórias ligadas';
+
+  @override
+  String get typeChat => 'Conversa';
+
+  @override
+  String get typeFile => 'Arquivo';
+
+  @override
+  String get typeNote => 'Nota';
+
+  @override
+  String get graphTruncated =>
+      'Só parte do grafo aparece. Aumente o limite para ver mais.';
+
+  @override
+  String get memoryGraphDescription =>
+      'Grafo da memória. A lista mostra os mesmos nós em texto.';
+
+  @override
+  String get legendPersona => 'Persona';
+
+  @override
+  String get linkedPersonas => 'Personas vinculadas';
 }

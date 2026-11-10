@@ -6,8 +6,10 @@ import '../../domain/services/session_controller.dart';
 import '../../l10n/generated/app_localizations.dart';
 import 'screens/basic_pages.dart';
 import '../../domain/services/chat_list_controller.dart';
+import '../../domain/services/memory_controller.dart';
 import 'screens/chat/chat_list.dart';
 import 'screens/chat/chat_screen.dart';
+import 'screens/memory/memory_screen.dart';
 import 'shell/app_shell.dart';
 import 'shell/details_panel.dart';
 import 'screens/landing/landing_page.dart';
@@ -33,7 +35,8 @@ GoRouter buildRouter({
   final panel = details ?? DetailsController();
   final cortex = api ?? CortexApi();
   final chats = ChatListController(api: cortex);
-  Widget chatPage(
+  final memory = MemoryController(api: cortex);
+  Widget screenPage(
     BuildContext c,
     String Function(AppLocalizations) title,
     Widget Function() build,
@@ -109,7 +112,7 @@ GoRouter buildRouter({
           // Flat routes: one chat screen per path, never a stacked new-chat page.
           GoRoute(
             path: '/v1/chats',
-            builder: (c, _) => chatPage(
+            builder: (c, _) => screenPage(
               c,
               (l) => l.chats,
               () => ChatScreen(
@@ -121,7 +124,7 @@ GoRouter buildRouter({
           ),
           GoRoute(
             path: '/v1/chats/temporary',
-            builder: (c, _) => chatPage(
+            builder: (c, _) => screenPage(
               c,
               (l) => l.temporaryChat,
               () => ChatScreen(
@@ -137,7 +140,7 @@ GoRouter buildRouter({
             builder: (c, s) => uuidPage(
               s,
               ['session_id'],
-              () => chatPage(
+              () => screenPage(
                 c,
                 (l) => l.chats,
                 () => ChatScreen(
@@ -154,7 +157,7 @@ GoRouter buildRouter({
             builder: (c, s) => uuidPage(
               s,
               ['session_id', 'output_id'],
-              () => chatPage(
+              () => screenPage(
                 c,
                 (l) => l.output,
                 () => ChatScreen(
@@ -166,15 +169,25 @@ GoRouter buildRouter({
               ),
             ),
           ),
+          // Flat: one memory screen; the node path only opens its card.
           GoRoute(
             path: '/v1/memory',
-            builder: (c, _) => page(c, (l) => l.memory),
-            routes: [
-              GoRoute(
-                path: ':node_id',
-                builder: (c, _) => page(c, (l) => l.memory),
+            builder: (c, _) => screenPage(
+              c,
+              (l) => l.memory,
+              () => MemoryScreen(controller: memory),
+            ),
+          ),
+          GoRoute(
+            path: '/v1/memory/:node_id',
+            builder: (c, s) => screenPage(
+              c,
+              (l) => l.memory,
+              () => MemoryScreen(
+                controller: memory,
+                nodeId: s.pathParameters['node_id'],
               ),
-            ],
+            ),
           ),
           GoRoute(
             path: '/v1/personas',

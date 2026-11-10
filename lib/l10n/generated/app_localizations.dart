@@ -1263,6 +1263,138 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Chats could not be loaded.'**
   String get chatsLoadFailed;
+
+  /// No description provided for @graphView.
+  ///
+  /// In en, this message translates to:
+  /// **'Graph'**
+  String get graphView;
+
+  /// No description provided for @listView.
+  ///
+  /// In en, this message translates to:
+  /// **'List'**
+  String get listView;
+
+  /// No description provided for @depthLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Depth'**
+  String get depthLabel;
+
+  /// No description provided for @limitLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Limit'**
+  String get limitLabel;
+
+  /// No description provided for @legendMemory.
+  ///
+  /// In en, this message translates to:
+  /// **'Memory'**
+  String get legendMemory;
+
+  /// No description provided for @legendTag.
+  ///
+  /// In en, this message translates to:
+  /// **'Tag'**
+  String get legendTag;
+
+  /// No description provided for @legendEntity.
+  ///
+  /// In en, this message translates to:
+  /// **'Entity'**
+  String get legendEntity;
+
+  /// No description provided for @legendFile.
+  ///
+  /// In en, this message translates to:
+  /// **'File'**
+  String get legendFile;
+
+  /// No description provided for @noMemories.
+  ///
+  /// In en, this message translates to:
+  /// **'No memories yet'**
+  String get noMemories;
+
+  /// No description provided for @memoryLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Memory could not be loaded.'**
+  String get memoryLoadFailed;
+
+  /// No description provided for @memoryNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'This memory was not found.'**
+  String get memoryNotFound;
+
+  /// No description provided for @superseded.
+  ///
+  /// In en, this message translates to:
+  /// **'Superseded'**
+  String get superseded;
+
+  /// No description provided for @detailsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Details'**
+  String get detailsLabel;
+
+  /// No description provided for @linkedFiles.
+  ///
+  /// In en, this message translates to:
+  /// **'Files'**
+  String get linkedFiles;
+
+  /// No description provided for @linkedMemories.
+  ///
+  /// In en, this message translates to:
+  /// **'Linked memories'**
+  String get linkedMemories;
+
+  /// No description provided for @typeChat.
+  ///
+  /// In en, this message translates to:
+  /// **'Chat'**
+  String get typeChat;
+
+  /// No description provided for @typeFile.
+  ///
+  /// In en, this message translates to:
+  /// **'File'**
+  String get typeFile;
+
+  /// No description provided for @typeNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Note'**
+  String get typeNote;
+
+  /// No description provided for @graphTruncated.
+  ///
+  /// In en, this message translates to:
+  /// **'Only part of the graph is shown. Raise the limit to see more.'**
+  String get graphTruncated;
+
+  /// No description provided for @memoryGraphDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Memory graph. The list view shows the same nodes as text.'**
+  String get memoryGraphDescription;
+
+  /// No description provided for @legendPersona.
+  ///
+  /// In en, this message translates to:
+  /// **'Persona'**
+  String get legendPersona;
+
+  /// No description provided for @linkedPersonas.
+  ///
+  /// In en, this message translates to:
+  /// **'Linked personas'**
+  String get linkedPersonas;
 }
 
 class _AppLocalizationsDelegate
