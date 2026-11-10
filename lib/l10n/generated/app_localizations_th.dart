@@ -201,7 +201,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get pipelineTitle => 'คำขอหนึ่งครั้งทำงานอย่างไร';
 
   @override
-  String get stageAccept => 'รับ';
+  String get stageAccept => 'รับคำขอ';
 
   @override
   String get stageGather => 'รวบรวม';
@@ -924,4 +924,193 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get loading => 'กำลังโหลด';
+
+  @override
+  String get process1001 => 'ไม่พบเส้นทางนี้';
+
+  @override
+  String get process1002 => 'ไม่อนุญาตให้ใช้วิธีนี้';
+
+  @override
+  String get process1003 => 'ข้อมูลคำขอไม่ถูกต้อง';
+
+  @override
+  String get process1004 => 'เนื้อหา JSON ไม่ถูกต้อง';
+
+  @override
+  String get process1005 => 'เข้าสู่ระบบเพื่อดำเนินการต่อ';
+
+  @override
+  String get process1006 => 'ไม่รองรับประเภทเนื้อหานี้';
+
+  @override
+  String get process1007 => 'คำขอมีขนาดใหญ่เกินไป';
+
+  @override
+  String get process1008 => 'เซิร์ฟเวอร์ดำเนินการตามคำขอไม่สำเร็จ';
+
+  @override
+  String get process1009 => 'ไม่อนุญาตให้ใช้แอปนี้';
+
+  @override
+  String get process1010 => 'เซิร์ฟเวอร์มีภาระงานสูง โปรดลองภายหลัง';
+
+  @override
+  String get process1011 => 'คิวการเรียกโมเดลภายในล้มเหลว';
+
+  @override
+  String get process1012 => 'การเรียกโมเดลภายในล้มเหลว';
+
+  @override
+  String get process1201 => 'ข้อมูลขาเข้าเกินขีดจำกัดโทเคน';
+
+  @override
+  String get process1013 => 'ไม่มีข้อมูลการใช้งาน';
+
+  @override
+  String get process1014 => 'ล้อเล่นกันหรือไง เจ้าตัวตลก?';
+
+  @override
+  String get process1015 => 'การตรวจสอบความปลอดภัยไม่พร้อมใช้งาน';
+
+  @override
+  String get process1016 => 'ไม่พบแชต';
+
+  @override
+  String get process1017 => 'โหลดหรือแก้ไขประวัติแชตไม่ได้';
+
+  @override
+  String get process1018 => 'ไม่พบคำตอบ';
+
+  @override
+  String get process1019 => 'บันทึกความจำของแชตไม่ได้';
+
+  @override
+  String get process1020 => 'การค้นหาเว็บไม่พร้อมใช้งาน';
+
+  @override
+  String get process1021 => 'หมดเวลารอหน้าเว็บ';
+
+  @override
+  String get process1022 => 'หน้าเว็บมีขนาดเกินขีดจำกัด';
+
+  @override
+  String get process1023 => 'หน้าเว็บไม่ใช่ HTML';
+
+  @override
+  String get process1024 => 'อ่านหน้าเว็บไม่ได้';
+
+  @override
+  String get process1025 => 'หน้าเว็บไม่มีข้อความหลักที่อ่านได้';
+
+  @override
+  String get process1026 => 'ถึงขีดจำกัดเวลาค้นหาเว็บแล้ว';
+
+  @override
+  String get process1027 => 'ถึงขีดจำกัดจำนวนหน้าเว็บแล้ว';
+
+  @override
+  String get process1028 => 'โหลดกฎการรวบรวมข้อมูลเว็บไม่ได้';
+
+  @override
+  String get process1029 => 'โหลดความจำไม่ได้';
+
+  @override
+  String get process1030 => 'ไม่รองรับประเภทไฟล์นี้';
+
+  @override
+  String get process1031 => 'ไฟล์มีขนาดเกินขีดจำกัด';
+
+  @override
+  String get process1032 => 'อ่านข้อความในไฟล์ไม่ได้';
+
+  @override
+  String get process1033 => 'ไฟล์มีจำนวนหน้าเกินขีดจำกัด OCR';
+
+  @override
+  String get process1034 => 'อ่านข้อความในรูปภาพไม่ได้';
+
+  @override
+  String get process1035 => 'พื้นที่จัดเก็บแชตชั่วคราวไม่พร้อมใช้งาน';
+
+  @override
+  String get process1036 => 'ถึงขีดจำกัดเวลาคิดแล้ว';
+
+  @override
+  String get process1037 => 'สตรีมบันทึกพร้อมใช้งานเฉพาะในเครือข่ายภายใน';
+
+  @override
+  String get process1038 => 'โหลดข้อมูลการวัดผลไม่ได้';
+
+  @override
+  String get process1039 => 'ไม่พบโหนดความจำ';
+
+  @override
+  String get process1040 => 'ไม่ได้บันทึกไฟล์';
+
+  @override
+  String get process1041 => 'ไม่พบไฟล์';
+
+  @override
+  String get process1042 => 'เหตุการณ์ของคำตอบไม่พร้อมใช้งาน';
+
+  @override
+  String get process1043 => 'คำตอบไม่ได้กำลังทำงาน';
+
+  @override
+  String get process1044 => 'ลบความจำของแชตไม่ได้';
+
+  @override
+  String get process1045 => 'ไม่พบเพอร์โซนา';
+
+  @override
+  String get process1046 => 'ข้อมูลเพอร์โซนาไม่ถูกต้อง';
+
+  @override
+  String get process1047 => 'โหลดหรือแก้ไขเพอร์โซนาไม่ได้';
+
+  @override
+  String get process1048 => 'เสียงมีความยาวเกินขีดจำกัด 10 นาที';
+
+  @override
+  String get process1049 => 'ถอดเสียงไม่ได้';
+
+  @override
+  String get process1050 => 'กระบวนการจัดการไฟล์ไม่ตอบสนอง';
+
+  @override
+  String processUnknown(int number) {
+    return 'เกิดปัญหา ($number)';
+  }
+
+  @override
+  String get processGeneric => 'เกิดปัญหา โปรดลองอีกครั้ง';
+
+  @override
+  String get networkOffline =>
+      'คุณออฟไลน์อยู่ ตรวจสอบการเชื่อมต่อแล้วลองอีกครั้ง';
+
+  @override
+  String get stepUnknown => 'กำลังทำงาน';
+
+  @override
+  String get statusStarted => 'เริ่มแล้ว';
+
+  @override
+  String get statusDone => 'เสร็จแล้ว';
+
+  @override
+  String get statusFailed => 'ล้มเหลว';
+
+  @override
+  String get statusCancelled => 'ยกเลิกแล้ว';
+
+  @override
+  String get statusSkipped => 'ข้ามแล้ว';
+
+  @override
+  String get expandThinking => 'ขยายการคิด';
+
+  @override
+  String get collapseThinking => 'ย่อการคิด';
 }

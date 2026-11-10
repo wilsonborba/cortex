@@ -1,3 +1,5 @@
+import '../../handlers/api_action.dart';
+import '../../handlers/process_messages.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/utils/file_picker.dart';
@@ -146,8 +148,8 @@ class _ChatScreenState extends State<ChatScreen> {
         ],
       ),
     );
-    if (ok == true && controller.text.trim().isNotEmpty) {
-      await chat.rename(controller.text.trim());
+    if (mounted && ok == true && controller.text.trim().isNotEmpty) {
+      await runApiAction(context, () => chat.rename(controller.text.trim()));
     }
   }
 
@@ -161,8 +163,11 @@ class _ChatScreenState extends State<ChatScreen> {
       cancel: l.cancel,
       destructive: true,
     )) {
-      await chat.delete();
-      if (mounted) GoRouter.maybeOf(context)?.go('/v1/chats');
+      if (!mounted) return;
+      await runApiAction(context, () async {
+        await chat.delete();
+        if (mounted) GoRouter.maybeOf(context)?.go('/v1/chats');
+      });
     }
   }
 
@@ -228,7 +233,7 @@ class _ChatScreenState extends State<ChatScreen> {
                         ? Icons.push_pin
                         : Icons.push_pin_outlined,
                   ),
-                  onPressed: chat.togglePin,
+                  onPressed: () => runApiAction(context, chat.togglePin),
                 ),
                 IconButton(
                   key: const Key('delete'),
@@ -243,7 +248,13 @@ class _ChatScreenState extends State<ChatScreen> {
         Expanded(
           child: Stack(
             children: [
-              if (chat.loading && chat.exchanges.isEmpty)
+              if (chat.loadError != null)
+                ErrorState(
+                  message: apiFailure(l, chat.loadError),
+                  retryLabel: l.retry,
+                  onRetry: chat.open,
+                )
+              else if (chat.loading && chat.exchanges.isEmpty)
                 const Center(child: SkeletonBox(width: 240))
               else if (chat.exchanges.isEmpty)
                 _Empty(
@@ -299,7 +310,8 @@ class _ChatScreenState extends State<ChatScreen> {
                               const SizedBox(height: Space.s12),
                               OutputBlock(
                                 output: e.output,
-                                onStopThinking: chat.stopThinking,
+                                onStopThinking: () =>
+                                    runApiAction(context, chat.stopThinking),
                                 onMemories: _showMemories,
                                 onRetry:
                                     e.output.running ||
@@ -350,36 +362,38 @@ class _Empty extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
-    return Center(
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 560),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              l.chatGreeting,
-              style: TextStyles.section,
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: Space.s24),
-            Wrap(
-              spacing: Space.s8,
-              runSpacing: Space.s8,
-              alignment: WrapAlignment.center,
-              children: [
-                for (final prompt in [
-                  l.demoMemoryPrompt,
-                  l.demoFastPrompt,
-                  l.demoDeepPrompt,
-                  l.demoThinkPrompt,
-                ])
-                  ActionChip(
-                    label: Text(prompt, style: TextStyles.label),
-                    onPressed: () => onPrompt(prompt),
-                  ),
-              ],
-            ),
-          ],
+    return SingleChildScrollView(
+      child: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 560),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                l.chatGreeting,
+                style: TextStyles.section,
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: Space.s24),
+              Wrap(
+                spacing: Space.s8,
+                runSpacing: Space.s8,
+                alignment: WrapAlignment.center,
+                children: [
+                  for (final prompt in [
+                    l.demoMemoryPrompt,
+                    l.demoFastPrompt,
+                    l.demoDeepPrompt,
+                    l.demoThinkPrompt,
+                  ])
+                    ActionChip(
+                      label: Text(prompt, style: TextStyles.label),
+                      onPressed: () => onPrompt(prompt),
+                    ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -130,10 +130,13 @@ class ChatController extends ChangeNotifier {
           ),
       ];
       hasOlder = older.length >= 20;
+      if (before == null) exchanges.clear();
       exchanges.insertAll(0, older);
       loadError = null;
     } on ApiError catch (e) {
       loadError = e;
+    } catch (_) {
+      loadError = const ApiError(0, null, '');
     }
   }
 
@@ -162,6 +165,8 @@ class ChatController extends ChangeNotifier {
     } on ApiError catch (e) {
       file.errorNumber = e.number;
       file.errorMessage = e.message;
+    } catch (_) {
+      file.errorMessage = '';
     }
     file.uploading = false;
     _notify();

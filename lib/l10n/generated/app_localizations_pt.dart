@@ -211,7 +211,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get stageAssemble => 'Montar';
 
   @override
-  String get stageThink => 'Pensar';
+  String get stageThink => 'Raciocinar';
 
   @override
   String get stageAnswer => 'Responder';
@@ -940,4 +940,198 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get loading => 'Carregando';
+
+  @override
+  String get process1001 => 'A rota não foi encontrada.';
+
+  @override
+  String get process1002 => 'O método não é permitido.';
+
+  @override
+  String get process1003 => 'Os dados da requisição não são válidos.';
+
+  @override
+  String get process1004 => 'O corpo JSON não é válido.';
+
+  @override
+  String get process1005 => 'Entre na sua conta para continuar.';
+
+  @override
+  String get process1006 => 'O tipo de conteúdo não é compatível.';
+
+  @override
+  String get process1007 => 'A requisição é grande demais.';
+
+  @override
+  String get process1008 => 'O servidor não conseguiu concluir a requisição.';
+
+  @override
+  String get process1009 => 'Este aplicativo não é permitido.';
+
+  @override
+  String get process1010 =>
+      'O servidor está com muita carga. Tente mais tarde.';
+
+  @override
+  String get process1011 => 'A fila de chamadas locais falhou.';
+
+  @override
+  String get process1012 => 'A chamada ao modelo local falhou.';
+
+  @override
+  String get process1201 => 'A entrada ultrapassa o limite de tokens.';
+
+  @override
+  String get process1013 => 'Os dados de uso não estão disponíveis.';
+
+  @override
+  String get process1014 => 'Você está brincando comigo, palhaço?';
+
+  @override
+  String get process1015 => 'A verificação de segurança não está disponível.';
+
+  @override
+  String get process1016 => 'A conversa não foi encontrada.';
+
+  @override
+  String get process1017 => 'Não foi possível carregar ou alterar o histórico.';
+
+  @override
+  String get process1018 => 'A resposta não foi encontrada.';
+
+  @override
+  String get process1019 => 'Não foi possível salvar a memória da conversa.';
+
+  @override
+  String get process1020 => 'A pesquisa na web não está disponível.';
+
+  @override
+  String get process1021 => 'A página excedeu o tempo de espera.';
+
+  @override
+  String get process1022 => 'A página ultrapassa o limite de tamanho.';
+
+  @override
+  String get process1023 => 'A página não é HTML.';
+
+  @override
+  String get process1024 => 'Não foi possível ler a página.';
+
+  @override
+  String get process1025 => 'A página não tem texto principal legível.';
+
+  @override
+  String get process1026 => 'O limite de tempo da pesquisa foi atingido.';
+
+  @override
+  String get process1027 => 'O limite de páginas foi atingido.';
+
+  @override
+  String get process1028 =>
+      'Não foi possível carregar as regras de rastreamento.';
+
+  @override
+  String get process1029 => 'Não foi possível carregar a memória.';
+
+  @override
+  String get process1030 => 'O tipo de arquivo não é compatível.';
+
+  @override
+  String get process1031 => 'O arquivo ultrapassa o limite de tamanho.';
+
+  @override
+  String get process1032 => 'Não foi possível ler o texto do arquivo.';
+
+  @override
+  String get process1033 =>
+      'O arquivo ultrapassa o limite de páginas para OCR.';
+
+  @override
+  String get process1034 => 'Não foi possível ler o texto da imagem.';
+
+  @override
+  String get process1035 =>
+      'O armazenamento de conversas temporárias não está disponível.';
+
+  @override
+  String get process1036 => 'O limite de tempo do raciocínio foi atingido.';
+
+  @override
+  String get process1037 =>
+      'O fluxo de logs está disponível apenas na rede local.';
+
+  @override
+  String get process1038 => 'Não foi possível carregar os dados de telemetria.';
+
+  @override
+  String get process1039 => 'O nó de memória não foi encontrado.';
+
+  @override
+  String get process1040 => 'O arquivo não foi salvo.';
+
+  @override
+  String get process1041 => 'O arquivo não foi encontrado.';
+
+  @override
+  String get process1042 => 'Os eventos da resposta não estão disponíveis.';
+
+  @override
+  String get process1043 => 'A resposta não está em execução.';
+
+  @override
+  String get process1044 => 'Não foi possível excluir as memórias da conversa.';
+
+  @override
+  String get process1045 => 'A persona não foi encontrada.';
+
+  @override
+  String get process1046 => 'Os dados da persona não são válidos.';
+
+  @override
+  String get process1047 => 'Não foi possível carregar ou alterar as personas.';
+
+  @override
+  String get process1048 => 'O áudio ultrapassa o limite de 10 minutos.';
+
+  @override
+  String get process1049 => 'Não foi possível transcrever o áudio.';
+
+  @override
+  String get process1050 => 'O processo de arquivos não respondeu.';
+
+  @override
+  String processUnknown(int number) {
+    return 'Ocorreu um problema ($number).';
+  }
+
+  @override
+  String get processGeneric => 'Ocorreu um problema. Tente novamente.';
+
+  @override
+  String get networkOffline =>
+      'Você está offline. Confira sua conexão e tente novamente.';
+
+  @override
+  String get stepUnknown => 'Em andamento';
+
+  @override
+  String get statusStarted => 'Iniciado';
+
+  @override
+  String get statusDone => 'Concluído';
+
+  @override
+  String get statusFailed => 'Falhou';
+
+  @override
+  String get statusCancelled => 'Cancelado';
+
+  @override
+  String get statusSkipped => 'Ignorado';
+
+  @override
+  String get expandThinking => 'Expandir raciocínio';
+
+  @override
+  String get collapseThinking => 'Recolher raciocínio';
 }

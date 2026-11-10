@@ -1,3 +1,5 @@
+import '../../handlers/api_action.dart';
+import '../../handlers/process_messages.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../domain/services/chat_list_controller.dart';
@@ -64,7 +66,7 @@ class _ChatListState extends State<ChatList> {
     final id = '${chat['session_id']}';
     switch (action) {
       case _Action.pin:
-        await list.togglePin(chat);
+        await runApiAction(context, () => list.togglePin(chat));
       case _Action.rename:
         final field = TextEditingController(text: '${chat['title']}');
         final ok = await showDialog<bool>(
@@ -88,7 +90,12 @@ class _ChatListState extends State<ChatList> {
           ),
         );
         if (ok == true && field.text.trim().isNotEmpty) {
-          await list.rename(id, field.text.trim());
+          if (mounted) {
+            await runApiAction(
+              context,
+              () => list.rename(id, field.text.trim()),
+            );
+          }
         }
       case _Action.delete:
         if (!mounted) return;
@@ -113,11 +120,7 @@ class _ChatListState extends State<ChatList> {
     if (error != null) {
       ScaffoldMessenger.maybeOf(context)?.showSnackBar(
         SnackBar(
-          content: Text(
-            error.message.isEmpty
-                ? l.deleteFailed
-                : '${l.deleteFailed} ${error.message}',
-          ),
+          content: Text(apiFailure(l, error)),
           action: SnackBarAction(label: l.retry, onPressed: () => _delete(id)),
         ),
       );
@@ -133,7 +136,7 @@ class _ChatListState extends State<ChatList> {
     final now = (widget.now ?? DateTime.now)();
     if (list.error != null && list.chats.isEmpty) {
       return ErrorState(
-        message: l.chatsLoadFailed,
+        message: apiFailure(l, list.error),
         retryLabel: l.retry,
         onRetry: list.refresh,
       );
@@ -145,8 +148,21 @@ class _ChatListState extends State<ChatList> {
     }
     return ListView.builder(
       key: const Key('chat-list'),
-      itemCount: list.chats.length,
+      itemCount: list.chats.length + (list.error == null ? 0 : 1),
       itemBuilder: (_, i) {
+        if (list.error != null) {
+          if (i == 0) {
+            return Padding(
+              padding: const EdgeInsets.all(Space.s12),
+              child: ErrorState(
+                message: apiFailure(l, list.error),
+                retryLabel: l.retry,
+                onRetry: list.refresh,
+              ),
+            );
+          }
+          i--;
+        }
         final chat = list.chats[i];
         final id = '${chat['session_id']}';
         final selected = widget.location.startsWith('/v1/chats/$id');

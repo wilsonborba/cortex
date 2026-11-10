@@ -1,3 +1,4 @@
+import 'package:cortex/l10n/generated/app_localizations.dart';
 import 'dart:io';
 import 'package:cortex/presentation/frontend/theme/theme.dart';
 import 'package:cortex/presentation/frontend/theme/tokens.dart';
@@ -117,6 +118,8 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           debugShowCheckedModeBanner: false,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
           theme: cortexTheme(brightness),
           home: gallery(),
         ),

@@ -27,7 +27,7 @@ class Api {
       return http.Response(
         jsonEncode({
           'message': 'server detail',
-          'data': {'error_number': 1037},
+          'data': {'error_number': 1038},
         }),
         503,
       );
@@ -237,7 +237,7 @@ void main() {
     expect(find.byType(BarChart), findsNothing);
     api.gate!.complete();
     await tester.pumpAndSettle();
-    expect(find.text('Usage could not be loaded.'), findsOneWidget);
+    expect(find.text('Telemetry data could not be loaded'), findsOneWidget);
     api.empty = true;
     await tester.tap(find.text('Retry'));
     await tester.pumpAndSettle();

@@ -1,3 +1,5 @@
+import 'presentation/frontend/widgets/common/connection_banner.dart';
+import 'presentation/frontend/widgets/common/states.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:go_router/go_router.dart';
@@ -63,7 +65,8 @@ class _CortexAppState extends State<CortexApp> {
         darkTheme: cortexTheme(Brightness.dark),
         localizationsDelegates: delegates,
         supportedLocales: AppLocalizations.supportedLocales,
-        home: const Scaffold(),
+        home: const Scaffold(body: Center(child: SkeletonBox(width: 240))),
+        builder: (context, child) => ConnectionBanner(child: child!),
       );
     }
     return PreferencesScope(
@@ -72,6 +75,7 @@ class _CortexAppState extends State<CortexApp> {
         listenable: _preferences,
         builder: (_, _) => MaterialApp.router(
           title: 'Cortex',
+          builder: (context, child) => ConnectionBanner(child: child!),
           routerConfig: router,
           locale: _preferences.locale,
           themeMode: _preferences.theme,

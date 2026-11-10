@@ -24,14 +24,40 @@ String stepText(
     'chunks.selected' => l.steps_chunks_selected,
     'thinking.step' => l.steps_thinking_step,
     'thinking.stopped' => l.steps_thinking_stopped,
-    _ => step,
+    _ => l.stepUnknown,
   };
   final detail = [
     for (final key in ['file', 'name', 'query', 'url', 'model', 'role'])
-      if (params[key] != null) '${params[key]}',
+      if (params[key] != null)
+        key == 'role' ? thinkingRole(l, '${params[key]}') : '${params[key]}',
   ].join(' ');
   final count = progress != null && progress.length == 2
       ? ' (${progress[0]} / ${progress[1]})'
       : '';
   return [base, if (detail.isNotEmpty) detail].join(': ') + count;
 }
+
+String thinkingRole(AppLocalizations l, String role) => switch (role) {
+  'plan' => l.rolePlan,
+  'work' => l.roleWork,
+  'check' => l.roleCheck,
+  _ => l.roleNotes,
+};
+String stageText(AppLocalizations l, String stage) => switch (stage) {
+  'accept' => l.stageAccept,
+  'gather' => l.stageGather,
+  'assemble' => l.stageAssemble,
+  'think' => l.stageThink,
+  'answer' => l.stageAnswer,
+  'save' => l.stageSave,
+  _ => l.stepUnknown,
+};
+String stageStatus(AppLocalizations l, String status) => switch (status) {
+  'started' => l.statusStarted,
+  'done' => l.statusDone,
+  'completed' => l.statusDone,
+  'failed' => l.statusFailed,
+  'cancelled' => l.statusCancelled,
+  'skipped' => l.statusSkipped,
+  _ => l.stepUnknown,
+};

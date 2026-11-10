@@ -1,3 +1,4 @@
+import '../../handlers/process_messages.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
@@ -54,23 +55,26 @@ class _OutputBlockState extends State<OutputBlock> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
+                  Wrap(
+                    spacing: Space.s8,
+                    runSpacing: Space.s4,
+                    crossAxisAlignment: WrapCrossAlignment.center,
                     children: [
                       SizedBox.square(
                         dimension: 12,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 1.5,
-                          color: p.muted,
-                        ),
+                        child: MediaQuery.disableAnimationsOf(context)
+                            ? const Icon(Icons.hourglass_empty, size: 12)
+                            : CircularProgressIndicator(
+                                strokeWidth: 1.5,
+                                color: p.muted,
+                              ),
                       ),
                       const SizedBox(width: Space.s8),
-                      Flexible(
-                        child: Text(
-                          o.step == null
-                              ? l.steps_queue_wait
-                              : stepText(l, o.step!, o.stepParams, o.progress),
-                          style: TextStyles.compact.copyWith(color: p.muted),
-                        ),
+                      Text(
+                        o.step == null
+                            ? l.steps_queue_wait
+                            : stepText(l, o.step!, o.stepParams, o.progress),
+                        style: TextStyles.compact.copyWith(color: p.muted),
                       ),
                       const SizedBox(width: Space.s8),
                       Text(
@@ -109,7 +113,7 @@ class _OutputBlockState extends State<OutputBlock> {
               children: [
                 for (final s in o.stages)
                   Text(
-                    '${s.name}  ${s.status}  ${s.timeMs} ms',
+                    '${stageText(l, s.name)}  ${stageStatus(l, s.status)}  ${s.timeMs} ms',
                     style: TextStyles.label.copyWith(
                       color: p.muted,
                       fontFamily: TextStyles.mono,
@@ -148,10 +152,13 @@ class _OutputBlockState extends State<OutputBlock> {
             icon: const Icon(Icons.hub_outlined, size: 16),
             label: Text(l.usedMemories(o.memories.length)),
           ),
-        for (final (_, message) in o.notices)
+        for (final (number, _) in o.notices)
           Padding(
             padding: const EdgeInsets.only(top: Space.s4),
-            child: NoticeLine(message: message, kind: NoticeKind.warning),
+            child: NoticeLine(
+              message: processMessage(l, number),
+              kind: NoticeKind.warning,
+            ),
           ),
         if (o.errorNumber != null || o.status == 'failed')
           Padding(
@@ -168,7 +175,7 @@ class _OutputBlockState extends State<OutputBlock> {
                 const SizedBox(width: Space.s8),
                 Flexible(
                   child: Text(
-                    o.errorMessage ?? '',
+                    processMessage(l, o.errorNumber),
                     key: const Key('output-error'),
                     style: TextStyles.compact,
                   ),
@@ -208,12 +215,6 @@ class _OutputBlockState extends State<OutputBlock> {
   }
 
   Widget _thinkingSection(AppLocalizations l, Palette p, OutputView o) {
-    String role(String r) => switch (r) {
-      'plan' => l.rolePlan,
-      'work' => l.roleWork,
-      'check' => l.roleCheck,
-      _ => l.roleNotes,
-    };
     return Container(
       key: const Key('thinking-section'),
       margin: const EdgeInsets.only(bottom: Space.s8),
@@ -225,10 +226,11 @@ class _OutputBlockState extends State<OutputBlock> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
+          Wrap(
+            spacing: Space.s8,
+            crossAxisAlignment: WrapCrossAlignment.center,
             children: [
               Text(l.thinkingSection, style: TextStyles.label),
-              const Spacer(),
               if (o.thinkingRuns && widget.onStopThinking != null)
                 TextButton(
                   key: const Key('stop-thinking'),
@@ -236,7 +238,7 @@ class _OutputBlockState extends State<OutputBlock> {
                   child: Text(l.stopThinking),
                 ),
               IconButton(
-                tooltip: l.close,
+                tooltip: _thinking ? l.collapseThinking : l.expandThinking,
                 icon: Icon(
                   _thinking ? Icons.expand_less : Icons.expand_more,
                   size: 18,
@@ -248,7 +250,7 @@ class _OutputBlockState extends State<OutputBlock> {
           if (_thinking)
             for (final t in o.thinking) ...[
               Text(
-                '${role(t.role)} · ${l.roundN(t.round)}',
+                '${thinkingRole(l, t.role)} · ${l.roundN(t.round)}',
                 style: TextStyles.label.copyWith(color: p.muted),
               ),
               Text(t.text, style: TextStyles.compact.copyWith(color: p.muted)),

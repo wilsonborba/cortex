@@ -50,6 +50,8 @@ class ChatListController extends ChangeNotifier {
       return null;
     } on ApiError catch (e) {
       return e;
+    } catch (_) {
+      return const ApiError(0, null, '');
     }
   }
 }

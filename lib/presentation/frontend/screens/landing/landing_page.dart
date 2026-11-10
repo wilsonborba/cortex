@@ -441,11 +441,11 @@ class _What extends StatelessWidget {
         block(
           l.whatMemory,
           l.whatMemoryText,
-          const Wrap(
+          Wrap(
             spacing: Space.s8,
             children: [
               Chip(label: Text('tag: cortex')),
-              Chip(label: Text('2 memories')),
+              Chip(label: Text(l.usedMemories(2))),
             ],
           ),
         ),

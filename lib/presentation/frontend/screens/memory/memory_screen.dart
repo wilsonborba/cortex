@@ -1,3 +1,4 @@
+import '../../handlers/process_messages.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:graphview/GraphView.dart';
@@ -74,9 +75,9 @@ class _MemoryScreenState extends State<MemoryScreen> {
     final p = Palette.of(Theme.of(context).brightness);
     final graph = memory.graph;
     final Widget body;
-    if (memory.error != null && graph == null) {
+    if (memory.error != null) {
       body = ErrorState(
-        message: l.memoryLoadFailed,
+        message: apiFailure(l, memory.error),
         retryLabel: l.retry,
         onRetry: memory.load,
       );
@@ -95,9 +96,7 @@ class _MemoryScreenState extends State<MemoryScreen> {
         ? const SkeletonBox(width: 240)
         : memory.nodeError != null
         ? ErrorState(
-            message: memory.nodeError!.status == 404
-                ? l.memoryNotFound
-                : l.memoryLoadFailed,
+            message: apiFailure(l, memory.nodeError),
             retryLabel: l.retry,
             onRetry: () => memory.open(widget.nodeId),
           )

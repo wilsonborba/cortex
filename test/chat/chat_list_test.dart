@@ -194,7 +194,10 @@ void main() {
       expect(find.text('Delete this chat?'), findsOneWidget);
       await tester.tap(find.widgetWithText(FilledButton, 'Delete').last);
       await tester.pumpAndSettle();
-      expect(find.textContaining('The chat was not deleted.'), findsOneWidget);
+      expect(
+        find.textContaining('Something went wrong (1501).'),
+        findsOneWidget,
+      );
       expect(titles(tester), contains('Alpha old'));
       await tester.tap(find.text('Retry'));
       await tester.pumpAndSettle();
