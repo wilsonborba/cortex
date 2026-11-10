@@ -8,6 +8,8 @@
 
 - Loading-language (#38)
 
+- Landing-role-language (#39)
+
 
 ### Chores
 
@@ -32,6 +34,8 @@
 - Merge #34 usage-timing-stats-events
 
 - Merge #38 loading-language
+
+- Merge #35 messages-states-accessibility
 
 
 ### Documentation
