@@ -18,6 +18,8 @@
 
 - Merge #29 landing-page
 
+- Merge #30 chat-screen
+
 
 ### Features
 
@@ -28,6 +30,8 @@
 - Landing-page (#29)
 
 - Chat-screen (#30)
+
+- Add chat list and temporary chat banner (#31)
 
 
 ## v1.2.0 - 2026-11-09
