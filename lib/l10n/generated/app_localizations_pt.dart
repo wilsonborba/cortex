@@ -814,4 +814,127 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get personaActionFailed =>
       'Não foi possível concluir a ação. Tente novamente.';
+
+  @override
+  String get usageLoadFailed => 'Não foi possível carregar o uso.';
+
+  @override
+  String get notAvailableYet => 'Ainda não disponível';
+
+  @override
+  String usageWindow(int hours) {
+    return 'Seu uso nas últimas $hours horas';
+  }
+
+  @override
+  String get usageInputTokens => 'Tokens de entrada';
+
+  @override
+  String get usageOutputTokens => 'Tokens de saída';
+
+  @override
+  String get usageTotalTokens => 'Total de tokens';
+
+  @override
+  String get usageImages => 'Imagens';
+
+  @override
+  String get usageAudio => 'Itens de áudio';
+
+  @override
+  String get usagePriority => 'Sua prioridade';
+
+  @override
+  String get usagePriorityHelp =>
+      'A próxima chamada ao modelo vai para a pessoa na fila com o menor uso de tokens dividido pelo seu peso. Uma chamada já iniciada termina normalmente.';
+
+  @override
+  String get usageWeight => 'Peso';
+
+  @override
+  String get usageAccountAge => 'Parte da idade da conta';
+
+  @override
+  String get usageFrequency => 'Parte da frequência de acesso';
+
+  @override
+  String get usageAccountDays => 'Idade da conta em dias';
+
+  @override
+  String get usageSignInDays => 'Dias com acesso nos últimos 90 dias';
+
+  @override
+  String get usageWeightFormula =>
+      'Peso = 1 + parte da idade da conta + parte da frequência de acesso.';
+
+  @override
+  String usageKind(String mode, String thinking) {
+    return '$mode, $thinking';
+  }
+
+  @override
+  String get usageThinkingOn => 'raciocínio ativado';
+
+  @override
+  String get usageThinkingOff => 'raciocínio desativado';
+
+  @override
+  String usageSeconds(String value) {
+    return '$value s';
+  }
+
+  @override
+  String get usageTimingHelp =>
+      'Média das últimas 20 respostas concluídas de cada tipo. Respostas com falha ou canceladas não entram na média.';
+
+  @override
+  String get usageEmpty => 'Ainda não há registros de uso';
+
+  @override
+  String get usageMetric => 'Medida';
+
+  @override
+  String get usageRuns => 'Total de respostas';
+
+  @override
+  String get usageAverageTime => 'Tempo médio';
+
+  @override
+  String get usageAverageInput => 'Média de tokens de entrada';
+
+  @override
+  String get usageAverageOutput => 'Média de tokens de saída';
+
+  @override
+  String get usageAverageTotal => 'Média do total de tokens';
+
+  @override
+  String get usageSuccessRate => 'Taxa de sucesso';
+
+  @override
+  String get usageRequest => 'ID da requisição';
+
+  @override
+  String get usageOutput => 'ID da resposta';
+
+  @override
+  String get usageUser => 'Usuário';
+
+  @override
+  String get usageModel => 'Modelo';
+
+  @override
+  String get usageRole => 'Função';
+
+  @override
+  String get usageStarted => 'Início';
+
+  @override
+  String get usageFinished => 'Fim';
+
+  @override
+  String get usageNoUser => 'Sem usuário';
+
+  @override
+  String get loadMore => 'Carregar mais';
 }

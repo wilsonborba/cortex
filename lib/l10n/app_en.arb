@@ -1,339 +1,401 @@
 {
- "@@locale": "en",
- "logIn": "Log in",
- "logOut": "Log out",
- "newChat": "New chat",
- "temporaryChat": "Temporary chat",
- "chats": "Chats",
- "memory": "Memory",
- "personas": "Personas",
- "usage": "Usage",
- "timing": "Timing",
- "stats": "Statistics",
- "events": "Events",
- "newPersona": "New persona",
- "details": "Details",
- "close": "Close",
- "notFoundTitle": "Page not found",
- "notFoundMessage": "This path or item does not exist.",
- "goToChats": "Go to chats",
- "signingIn": "Opening the login",
- "noChatsYet": "No chats yet",
- "output": "Output",
- "product": "Product",
- "howItWorks": "How it works",
- "engineering": "Engineering",
- "faq": "FAQ",
- "language": "Language",
- "themeSwitch": "Theme",
- "menu": "Menu",
- "heroLabel": "AI chat workspace",
- "heroTitle": "Chat with your memory, files and the web",
- "heroLead": "Cortex answers with a local model and shows each step: memory, files, web sources and thinking.",
- "startChat": "Start a chat",
- "seeHow": "See how it works",
- "example": "Example",
- "demoMemoryPrompt": "What did I decide about the usage balancer?",
- "demoFastPrompt": "What is the latest stable Rust version?",
- "demoDeepPrompt": "Compare SQLite and PostgreSQL for a small web app.",
- "demoThinkPrompt": "A train leaves at 09:40 and arrives at 13:05. How many minutes?",
- "demoMemoryAnswer": "You decided on a fair share per user over 24 hours, with a base weight of 1 for new users.",
- "demoFastAnswer": "The answer comes from the pages read now, and each source is listed below the answer.",
- "demoDeepAnswer": "For one small app with few writers, SQLite is simpler; for many writers at the same time, PostgreSQL is safer.",
- "demoThinkAnswer": "The trip takes 205 minutes.",
- "demoReplay": "Replay",
- "stepSecurity": "Security check OK",
- "stepMemorySearch": "Searching your memory",
- "stepMemoriesFound": "Memories found",
- "stepQueries": "Preparing search queries",
- "stepWebSearch": "Searching the web",
- "stepPageRead": "Reading the web page",
- "stepThinking": "Thinking step",
- "stepAnswer": "Writing the answer",
- "sources": "Sources",
- "whatTitle": "What it does",
- "whatMemory": "Chat with memory",
- "whatMemoryText": "Cortex finds up to 5 of your memories that match the question and shows which ones it used.",
- "whatWeb": "Web research",
- "whatWebText": "Fast, medium or deep: more queries and more pages for harder questions, with every source shown.",
- "whatFiles": "Files",
- "whatFilesText": "PDF (with OCR for scanned pages), DOCX with tables, audio up to 10 minutes and images.",
- "whatThinking": "Thinking",
- "whatThinkingText": "Plan, work and check steps before the final answer, at most 2 rounds, and you can stop thinking at any time.",
- "pipelineTitle": "How one request works",
- "stageAccept": "Accept",
- "stageGather": "Gather",
- "stageAssemble": "Assemble",
- "stageThink": "Think",
- "stageAnswer": "Answer",
- "stageSave": "Save",
- "stageAcceptText": "Size and token checks, then the security check.",
- "stageGatherText": "Files, memory and web at the same time.",
- "stageAssembleText": "Fills the 8192-token context in a fixed order.",
- "stageThinkText": "Optional plan, work and check.",
- "stageAnswerText": "One model call, streamed token by token.",
- "stageSaveText": "History, memory, usage and the run record.",
- "pipelineDescription": "Diagram of the six stages of one request: Accept, Gather with files, memory and web in parallel, Assemble, Think, Answer and Save.",
- "pause": "Pause",
- "play": "Play",
- "memoryTitle": "Memory with Hippocampus",
- "memoryScope": "Every memory has a scope: workspace, app and user. A search never leaves the scope.",
- "memorySearch": "Word search and semantic search are merged with Reciprocal Rank Fusion (RRF).",
- "memoryPersonas": "Personas: the person you are, a bot voice for a chat, and people you name in a question.",
- "memoryRepo": "Hippocampus repository",
- "scopeDescription": "Tree of a memory scope: a workspace holds apps, and an app holds users.",
- "graphDescription": "Example memory graph: memories linked to tags, entities and files.",
- "webTitle": "Web research",
- "webMode": "Mode",
- "webQueries": "Queries",
- "webPages": "Pages",
- "webDepth": "Link depth",
- "webTime": "Time limit",
- "webFast": "Fast",
- "webMedium": "Medium",
- "webDeep": "Deep",
- "webFastPages": "5",
- "webMediumPages": "5 per level",
- "webMethod": "Pages are cut into chunks of about 500 tokens and ranked with BM25 and RRF. Web text uses no embeddings, and sources stay apart from your memory.",
- "seconds": "{n} s",
- "liveTitle": "Live control",
- "liveSteps": "Live steps: every stage and step is streamed as it happens.",
- "liveReconnect": "Reconnect: the answer keeps running on the server, and you can come back to it.",
- "liveStop": "Stop: you can stop an answer at any time.",
- "liveStopThinking": "Stop thinking: go to the final answer with the notes so far.",
- "engTitle": "Engineering",
- "engMachines": "Local machines on one network: the MSI GPU runs the language model, Pong runs embeddings, FSM keeps the files, and a database server keeps the data.",
- "engRust": "The Cortex and Hippocampus APIs are written in Rust.",
- "engLocal": "Local models only. No cloud language model.",
- "machinesDescription": "Diagram of the machines: the Cortex API sends model calls to the MSI GPU, memory calls to Hippocampus, which uses Pong for embeddings, FSM for files and the database server.",
- "codeTitle": "Real code",
- "codeRrf": "Reciprocal Rank Fusion of web search lists",
- "codeGather": "Files, memory and web gathered at the same time",
- "codeNames": "Tag search inside one scope",
- "researchTitle": "Research basis",
- "securityTitle": "Security and privacy",
- "securityShield": "Every input passes a security check with fixed rules and a classifier before anything is saved.",
- "securityIsolation": "Each user sees only their own chats, files and memories, inside each app.",
- "securityLogs": "Logs and run records hold no chat text.",
- "faqLoginQ": "Do I need an account?",
- "faqLoginA": "Yes. You log in with your Asodya account before the first chat.",
- "faqModelQ": "Which model answers?",
- "faqModelA": "A local text model, and a local vision model when you send an image.",
- "faqDataQ": "Where does my data live?",
- "faqDataA": "On Asodya machines: chats in the database, memories in Hippocampus and files in FSM.",
- "faqTempQ": "What is a temporary chat?",
- "faqTempA": "A chat that is not saved: it ends after one hour or when you close it, and it creates no memory.",
- "faqLangQ": "Which languages?",
- "faqLangA": "The app is in English, Portuguese and Thai.",
- "finalLine": "Ask your first question.",
- "builtBy": "Built by Wilson Borba",
- "version": "Version {v}",
- "logoDescription": "Cortex logo",
- "@seconds": {
-  "placeholders": {
-   "n": {
-    "type": "int"
-   }
-  }
- },
- "@version": {
-  "placeholders": {
-   "v": {
-    "type": "String"
-   }
-  }
- },
- "chatGreeting": "What do you want to know?",
- "composerHint": "Write a message",
- "attach": "Attach files",
- "webLabel": "Web",
- "webOff": "Off",
- "memoryToggle": "Memory",
- "topicHint": "Topic (optional)",
- "thinkingToggle": "Thinking",
- "personaPicker": "Bot persona",
- "noPersona": "No persona",
- "send": "Send",
- "stop": "Stop",
- "stopThinking": "Stop thinking",
- "usuallyAbout": "Usually about {n} s",
- "elapsed": "{n} s",
- "stagesTimeline": "Stages",
- "thinkingSection": "Thinking",
- "rolePlan": "Plan",
- "roleWork": "Work",
- "roleCheck": "Check",
- "roleNotes": "Notes",
- "roundN": "round {n}",
- "usedMemories": "Used {n} memories",
- "copy": "Copy",
- "copied": "Copied",
- "retry": "Retry",
- "jumpToLatest": "Jump to latest",
- "reconnecting": "Reconnecting...",
- "rename": "Rename",
- "pin": "Pin",
- "unpin": "Unpin",
- "delete": "Delete",
- "cancel": "Cancel",
- "save": "Save",
- "deleteChatTitle": "Delete this chat?",
- "deleteChatMessage": "The chat and its memories are deleted. This cannot be undone.",
- "tokenCounter": "{n} of {max} tokens",
- "overLimit": "The message is over the input limit.",
- "uploading": "Uploading",
- "statsLine": "{time} · {s} s · {input} in, {output} out tokens",
- "cancelledLine": "Stopped",
- "steps_web_queries": "Preparing search queries",
- "steps_queue_wait": "Waiting for the model",
- "steps_model_load": "Loading the model",
- "steps_model_ready": "The model is ready",
- "steps_security_ok": "Security check OK",
- "steps_file_read_page": "Reading the file page",
- "steps_file_ocr_page": "Reading the page image",
- "steps_file_transcribe": "Transcribing audio",
- "steps_memory_search": "Searching your memory",
- "steps_memory_found": "Memories found",
- "steps_web_search": "Searching the web",
- "steps_web_page_read": "Reading the web page",
- "steps_chunks_selected": "Text parts selected",
- "steps_thinking_step": "Thinking step",
- "steps_thinking_stopped": "Thinking stopped by the user",
- "@usuallyAbout": {
-  "placeholders": {
-   "n": {
-    "type": "int"
-   }
-  }
- },
- "@elapsed": {
-  "placeholders": {
-   "n": {
-    "type": "int"
-   }
-  }
- },
- "@roundN": {
-  "placeholders": {
-   "n": {
-    "type": "int"
-   }
-  }
- },
- "@usedMemories": {
-  "placeholders": {
-   "n": {
-    "type": "int"
-   }
-  }
- },
- "@tokenCounter": {
-  "placeholders": {
-   "n": {
-    "type": "int"
-   },
-   "max": {
-    "type": "int"
-   }
-  }
- },
- "@statsLine": {
-  "placeholders": {
-   "time": {
-    "type": "String"
-   },
-   "s": {
-    "type": "String"
-   },
-   "input": {
-    "type": "int"
-   },
-   "output": {
-    "type": "int"
-   }
-  }
- },
- "temporaryBanner": "Temporary: not saved, lost when you refresh.",
- "justNow": "Just now",
- "minutesAgo": "{n} min ago",
- "hoursAgo": "{n} h ago",
- "daysAgo": "{n} d ago",
- "running": "Running",
- "chatActions": "Chat actions",
- "deleteFailed": "The chat was not deleted.",
- "chatsLoadFailed": "Chats could not be loaded.",
- "@minutesAgo": {
-  "placeholders": {
-   "n": {
-    "type": "int"
-   }
-  }
- },
- "@hoursAgo": {
-  "placeholders": {
-   "n": {
-    "type": "int"
-   }
-  }
- },
- "@daysAgo": {
-  "placeholders": {
-   "n": {
-    "type": "int"
-   }
-  }
- },
- "graphView": "Graph",
- "listView": "List",
- "depthLabel": "Depth",
- "limitLabel": "Limit",
- "legendMemory": "Memory",
- "legendTag": "Tag",
- "legendEntity": "Entity",
- "legendFile": "File",
- "noMemories": "No memories yet",
- "memoryLoadFailed": "Memory could not be loaded.",
- "memoryNotFound": "This memory was not found.",
- "superseded": "Superseded",
- "detailsLabel": "Details",
- "linkedFiles": "Files",
- "linkedMemories": "Linked memories",
- "typeChat": "Chat",
- "typeFile": "File",
- "typeNote": "Note",
- "graphTruncated": "Only part of the graph is shown. Raise the limit to see more.",
- "memoryGraphDescription": "Memory graph. The list view shows the same nodes as text.",
- "legendPersona": "Persona",
- "linkedPersonas": "Linked personas",
- "searchPersonas": "Search personas",
- "allPersonaTypes": "All types",
- "personType": "Person",
- "botType": "Bot",
- "you": "You",
- "noPersonas": "No personas yet",
- "personasLoadFailed": "Personas could not be loaded.",
- "personaFormFailed": "The persona form could not be loaded.",
- "personaSaveFailed": "The persona could not be saved. Check the marked fields.",
- "editPersona": "Edit persona",
- "personaType": "Type",
- "personaName": "Name",
- "personaAliases": "Aliases",
- "personaIsSelf": "This persona is you",
- "personaRequiredLegend": "* Required field",
- "personaSaved": "Persona saved",
- "deletePersona": "Delete persona",
- "deletePersonaConfirm": "Delete this persona and its attributes?",
- "personaFieldRequired": "This field is required.",
- "personaFieldUnknown": "This field is not in the stored schema.",
- "personaFieldType": "Use the type shown for this field.",
- "personaFieldInvalid": "Check this field.",
- "addPersonaItem": "Add item",
- "removePersonaItem": "Remove item",
- "choosePersonaDate": "Choose a date",
- "clear": "Clear",
- "personaYes": "Yes",
- "personaNo": "No",
- "personaInteger": "Whole number",
- "personaNumber": "Number",
- "personaActionFailed": "Could not complete the action. Try again."
+  "@@locale": "en",
+  "logIn": "Log in",
+  "logOut": "Log out",
+  "newChat": "New chat",
+  "temporaryChat": "Temporary chat",
+  "chats": "Chats",
+  "memory": "Memory",
+  "personas": "Personas",
+  "usage": "Usage",
+  "timing": "Timing",
+  "stats": "Statistics",
+  "events": "Events",
+  "newPersona": "New persona",
+  "details": "Details",
+  "close": "Close",
+  "notFoundTitle": "Page not found",
+  "notFoundMessage": "This path or item does not exist.",
+  "goToChats": "Go to chats",
+  "signingIn": "Opening the login",
+  "noChatsYet": "No chats yet",
+  "output": "Output",
+  "product": "Product",
+  "howItWorks": "How it works",
+  "engineering": "Engineering",
+  "faq": "FAQ",
+  "language": "Language",
+  "themeSwitch": "Theme",
+  "menu": "Menu",
+  "heroLabel": "AI chat workspace",
+  "heroTitle": "Chat with your memory, files and the web",
+  "heroLead": "Cortex answers with a local model and shows each step: memory, files, web sources and thinking.",
+  "startChat": "Start a chat",
+  "seeHow": "See how it works",
+  "example": "Example",
+  "demoMemoryPrompt": "What did I decide about the usage balancer?",
+  "demoFastPrompt": "What is the latest stable Rust version?",
+  "demoDeepPrompt": "Compare SQLite and PostgreSQL for a small web app.",
+  "demoThinkPrompt": "A train leaves at 09:40 and arrives at 13:05. How many minutes?",
+  "demoMemoryAnswer": "You decided on a fair share per user over 24 hours, with a base weight of 1 for new users.",
+  "demoFastAnswer": "The answer comes from the pages read now, and each source is listed below the answer.",
+  "demoDeepAnswer": "For one small app with few writers, SQLite is simpler; for many writers at the same time, PostgreSQL is safer.",
+  "demoThinkAnswer": "The trip takes 205 minutes.",
+  "demoReplay": "Replay",
+  "stepSecurity": "Security check OK",
+  "stepMemorySearch": "Searching your memory",
+  "stepMemoriesFound": "Memories found",
+  "stepQueries": "Preparing search queries",
+  "stepWebSearch": "Searching the web",
+  "stepPageRead": "Reading the web page",
+  "stepThinking": "Thinking step",
+  "stepAnswer": "Writing the answer",
+  "sources": "Sources",
+  "whatTitle": "What it does",
+  "whatMemory": "Chat with memory",
+  "whatMemoryText": "Cortex finds up to 5 of your memories that match the question and shows which ones it used.",
+  "whatWeb": "Web research",
+  "whatWebText": "Fast, medium or deep: more queries and more pages for harder questions, with every source shown.",
+  "whatFiles": "Files",
+  "whatFilesText": "PDF (with OCR for scanned pages), DOCX with tables, audio up to 10 minutes and images.",
+  "whatThinking": "Thinking",
+  "whatThinkingText": "Plan, work and check steps before the final answer, at most 2 rounds, and you can stop thinking at any time.",
+  "pipelineTitle": "How one request works",
+  "stageAccept": "Accept",
+  "stageGather": "Gather",
+  "stageAssemble": "Assemble",
+  "stageThink": "Think",
+  "stageAnswer": "Answer",
+  "stageSave": "Save",
+  "stageAcceptText": "Size and token checks, then the security check.",
+  "stageGatherText": "Files, memory and web at the same time.",
+  "stageAssembleText": "Fills the 8192-token context in a fixed order.",
+  "stageThinkText": "Optional plan, work and check.",
+  "stageAnswerText": "One model call, streamed token by token.",
+  "stageSaveText": "History, memory, usage and the run record.",
+  "pipelineDescription": "Diagram of the six stages of one request: Accept, Gather with files, memory and web in parallel, Assemble, Think, Answer and Save.",
+  "pause": "Pause",
+  "play": "Play",
+  "memoryTitle": "Memory with Hippocampus",
+  "memoryScope": "Every memory has a scope: workspace, app and user. A search never leaves the scope.",
+  "memorySearch": "Word search and semantic search are merged with Reciprocal Rank Fusion (RRF).",
+  "memoryPersonas": "Personas: the person you are, a bot voice for a chat, and people you name in a question.",
+  "memoryRepo": "Hippocampus repository",
+  "scopeDescription": "Tree of a memory scope: a workspace holds apps, and an app holds users.",
+  "graphDescription": "Example memory graph: memories linked to tags, entities and files.",
+  "webTitle": "Web research",
+  "webMode": "Mode",
+  "webQueries": "Queries",
+  "webPages": "Pages",
+  "webDepth": "Link depth",
+  "webTime": "Time limit",
+  "webFast": "Fast",
+  "webMedium": "Medium",
+  "webDeep": "Deep",
+  "webFastPages": "5",
+  "webMediumPages": "5 per level",
+  "webMethod": "Pages are cut into chunks of about 500 tokens and ranked with BM25 and RRF. Web text uses no embeddings, and sources stay apart from your memory.",
+  "seconds": "{n} s",
+  "liveTitle": "Live control",
+  "liveSteps": "Live steps: every stage and step is streamed as it happens.",
+  "liveReconnect": "Reconnect: the answer keeps running on the server, and you can come back to it.",
+  "liveStop": "Stop: you can stop an answer at any time.",
+  "liveStopThinking": "Stop thinking: go to the final answer with the notes so far.",
+  "engTitle": "Engineering",
+  "engMachines": "Local machines on one network: the MSI GPU runs the language model, Pong runs embeddings, FSM keeps the files, and a database server keeps the data.",
+  "engRust": "The Cortex and Hippocampus APIs are written in Rust.",
+  "engLocal": "Local models only. No cloud language model.",
+  "machinesDescription": "Diagram of the machines: the Cortex API sends model calls to the MSI GPU, memory calls to Hippocampus, which uses Pong for embeddings, FSM for files and the database server.",
+  "codeTitle": "Real code",
+  "codeRrf": "Reciprocal Rank Fusion of web search lists",
+  "codeGather": "Files, memory and web gathered at the same time",
+  "codeNames": "Tag search inside one scope",
+  "researchTitle": "Research basis",
+  "securityTitle": "Security and privacy",
+  "securityShield": "Every input passes a security check with fixed rules and a classifier before anything is saved.",
+  "securityIsolation": "Each user sees only their own chats, files and memories, inside each app.",
+  "securityLogs": "Logs and run records hold no chat text.",
+  "faqLoginQ": "Do I need an account?",
+  "faqLoginA": "Yes. You log in with your Asodya account before the first chat.",
+  "faqModelQ": "Which model answers?",
+  "faqModelA": "A local text model, and a local vision model when you send an image.",
+  "faqDataQ": "Where does my data live?",
+  "faqDataA": "On Asodya machines: chats in the database, memories in Hippocampus and files in FSM.",
+  "faqTempQ": "What is a temporary chat?",
+  "faqTempA": "A chat that is not saved: it ends after one hour or when you close it, and it creates no memory.",
+  "faqLangQ": "Which languages?",
+  "faqLangA": "The app is in English, Portuguese and Thai.",
+  "finalLine": "Ask your first question.",
+  "builtBy": "Built by Wilson Borba",
+  "version": "Version {v}",
+  "logoDescription": "Cortex logo",
+  "@seconds": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "@version": {
+    "placeholders": {
+      "v": {
+        "type": "String"
+      }
+    }
+  },
+  "chatGreeting": "What do you want to know?",
+  "composerHint": "Write a message",
+  "attach": "Attach files",
+  "webLabel": "Web",
+  "webOff": "Off",
+  "memoryToggle": "Memory",
+  "topicHint": "Topic (optional)",
+  "thinkingToggle": "Thinking",
+  "personaPicker": "Bot persona",
+  "noPersona": "No persona",
+  "send": "Send",
+  "stop": "Stop",
+  "stopThinking": "Stop thinking",
+  "usuallyAbout": "Usually about {n} s",
+  "elapsed": "{n} s",
+  "stagesTimeline": "Stages",
+  "thinkingSection": "Thinking",
+  "rolePlan": "Plan",
+  "roleWork": "Work",
+  "roleCheck": "Check",
+  "roleNotes": "Notes",
+  "roundN": "round {n}",
+  "usedMemories": "Used {n} memories",
+  "copy": "Copy",
+  "copied": "Copied",
+  "retry": "Retry",
+  "jumpToLatest": "Jump to latest",
+  "reconnecting": "Reconnecting...",
+  "rename": "Rename",
+  "pin": "Pin",
+  "unpin": "Unpin",
+  "delete": "Delete",
+  "cancel": "Cancel",
+  "save": "Save",
+  "deleteChatTitle": "Delete this chat?",
+  "deleteChatMessage": "The chat and its memories are deleted. This cannot be undone.",
+  "tokenCounter": "{n} of {max} tokens",
+  "overLimit": "The message is over the input limit.",
+  "uploading": "Uploading",
+  "statsLine": "{time} · {s} s · {input} in, {output} out tokens",
+  "cancelledLine": "Stopped",
+  "steps_web_queries": "Preparing search queries",
+  "steps_queue_wait": "Waiting for the model",
+  "steps_model_load": "Loading the model",
+  "steps_model_ready": "The model is ready",
+  "steps_security_ok": "Security check OK",
+  "steps_file_read_page": "Reading the file page",
+  "steps_file_ocr_page": "Reading the page image",
+  "steps_file_transcribe": "Transcribing audio",
+  "steps_memory_search": "Searching your memory",
+  "steps_memory_found": "Memories found",
+  "steps_web_search": "Searching the web",
+  "steps_web_page_read": "Reading the web page",
+  "steps_chunks_selected": "Text parts selected",
+  "steps_thinking_step": "Thinking step",
+  "steps_thinking_stopped": "Thinking stopped by the user",
+  "@usuallyAbout": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "@elapsed": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "@roundN": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "@usedMemories": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "@tokenCounter": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "@statsLine": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      },
+      "s": {
+        "type": "String"
+      },
+      "input": {
+        "type": "int"
+      },
+      "output": {
+        "type": "int"
+      }
+    }
+  },
+  "temporaryBanner": "Temporary: not saved, lost when you refresh.",
+  "justNow": "Just now",
+  "minutesAgo": "{n} min ago",
+  "hoursAgo": "{n} h ago",
+  "daysAgo": "{n} d ago",
+  "running": "Running",
+  "chatActions": "Chat actions",
+  "deleteFailed": "The chat was not deleted.",
+  "chatsLoadFailed": "Chats could not be loaded.",
+  "@minutesAgo": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "@hoursAgo": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "@daysAgo": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "graphView": "Graph",
+  "listView": "List",
+  "depthLabel": "Depth",
+  "limitLabel": "Limit",
+  "legendMemory": "Memory",
+  "legendTag": "Tag",
+  "legendEntity": "Entity",
+  "legendFile": "File",
+  "noMemories": "No memories yet",
+  "memoryLoadFailed": "Memory could not be loaded.",
+  "memoryNotFound": "This memory was not found.",
+  "superseded": "Superseded",
+  "detailsLabel": "Details",
+  "linkedFiles": "Files",
+  "linkedMemories": "Linked memories",
+  "typeChat": "Chat",
+  "typeFile": "File",
+  "typeNote": "Note",
+  "graphTruncated": "Only part of the graph is shown. Raise the limit to see more.",
+  "memoryGraphDescription": "Memory graph. The list view shows the same nodes as text.",
+  "legendPersona": "Persona",
+  "linkedPersonas": "Linked personas",
+  "searchPersonas": "Search personas",
+  "allPersonaTypes": "All types",
+  "personType": "Person",
+  "botType": "Bot",
+  "you": "You",
+  "noPersonas": "No personas yet",
+  "personasLoadFailed": "Personas could not be loaded.",
+  "personaFormFailed": "The persona form could not be loaded.",
+  "personaSaveFailed": "The persona could not be saved. Check the marked fields.",
+  "editPersona": "Edit persona",
+  "personaType": "Type",
+  "personaName": "Name",
+  "personaAliases": "Aliases",
+  "personaIsSelf": "This persona is you",
+  "personaRequiredLegend": "* Required field",
+  "personaSaved": "Persona saved",
+  "deletePersona": "Delete persona",
+  "deletePersonaConfirm": "Delete this persona and its attributes?",
+  "personaFieldRequired": "This field is required.",
+  "personaFieldUnknown": "This field is not in the stored schema.",
+  "personaFieldType": "Use the type shown for this field.",
+  "personaFieldInvalid": "Check this field.",
+  "addPersonaItem": "Add item",
+  "removePersonaItem": "Remove item",
+  "choosePersonaDate": "Choose a date",
+  "clear": "Clear",
+  "personaYes": "Yes",
+  "personaNo": "No",
+  "personaInteger": "Whole number",
+  "personaNumber": "Number",
+  "personaActionFailed": "Could not complete the action. Try again.",
+  "usageLoadFailed": "Usage could not be loaded.",
+  "notAvailableYet": "Not available yet",
+  "usageWindow": "Your usage in the last {hours} hours",
+  "usageInputTokens": "Input tokens",
+  "usageOutputTokens": "Output tokens",
+  "usageTotalTokens": "Total tokens",
+  "usageImages": "Images",
+  "usageAudio": "Audio items",
+  "usagePriority": "Your priority",
+  "usagePriorityHelp": "The next model call goes to the waiting user with the lowest token use divided by their weight. A call that has started will finish.",
+  "usageWeight": "Weight",
+  "usageAccountAge": "Account age part",
+  "usageFrequency": "Sign-in frequency part",
+  "usageAccountDays": "Account age in days",
+  "usageSignInDays": "Days with a sign-in in the last 90 days",
+  "usageWeightFormula": "Weight = 1 + account age part + sign-in frequency part.",
+  "usageKind": "{mode}, {thinking}",
+  "usageThinkingOn": "thinking on",
+  "usageThinkingOff": "thinking off",
+  "usageSeconds": "{value} s",
+  "usageTimingHelp": "Average of the last 20 completed answers for each kind. Failed and cancelled answers are excluded.",
+  "usageEmpty": "No usage records yet",
+  "usageMetric": "Measure",
+  "usageRuns": "Total answers",
+  "usageAverageTime": "Average time",
+  "usageAverageInput": "Average input tokens",
+  "usageAverageOutput": "Average output tokens",
+  "usageAverageTotal": "Average total tokens",
+  "usageSuccessRate": "Success rate",
+  "usageRequest": "Request ID",
+  "usageOutput": "Output ID",
+  "usageUser": "User",
+  "usageModel": "Model",
+  "usageRole": "Role",
+  "usageStarted": "Started",
+  "usageFinished": "Finished",
+  "usageNoUser": "No user",
+  "@usageWindow": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "@usageKind": {
+    "placeholders": {
+      "mode": {
+        "type": "String"
+      },
+      "thinking": {
+        "type": "String"
+      }
+    }
+  },
+  "@usageSeconds": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "loadMore": "Load more"
 }
