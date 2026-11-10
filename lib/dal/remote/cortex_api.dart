@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import '../../core/settings.dart';
 import '../../core/utils/csrf.dart';
+import '../../domain/models/memory_graph.dart';
 import '../../domain/models/api.dart';
 import 'credentials_client.dart';
 import 'stream_client.dart';
@@ -92,6 +93,28 @@ class CortexApi {
 
   Future<void> deleteChat(String session) =>
       _send('DELETE', '/chats/$session', null);
+
+  /// The scope graph (issue #32); depth and limit go to the API as they are.
+  Future<MemoryGraphData> memoryGraph({int? depth, int? limit}) async =>
+      MemoryGraphData.fromJson(
+        ((await _get('/memory-graph', {
+                  'app_id': appId,
+                  'depth': ?depth?.toString(),
+                  'limit': ?limit?.toString(),
+                }))['data']
+                as Map)
+            .cast(),
+      );
+
+  Future<MemoryGraphData> memoryNode(String id, {int? depth}) async =>
+      MemoryGraphData.fromJson(
+        ((await _get('/memory-graph/nodes/${Uri.encodeComponent(id)}', {
+                  'app_id': appId,
+                  'depth': ?depth?.toString(),
+                }))['data']
+                as Map)
+            .cast(),
+      );
 
   Future<List<Map<String, dynamic>>> botPersonas() async =>
       ((await _get('/personas', {'app_id': appId, 'type': 'bot'}))['data']

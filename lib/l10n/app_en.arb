@@ -282,5 +282,27 @@
     "type": "int"
    }
   }
- }
+ },
+ "graphView": "Graph",
+ "listView": "List",
+ "depthLabel": "Depth",
+ "limitLabel": "Limit",
+ "legendMemory": "Memory",
+ "legendTag": "Tag",
+ "legendEntity": "Entity",
+ "legendFile": "File",
+ "noMemories": "No memories yet",
+ "memoryLoadFailed": "Memory could not be loaded.",
+ "memoryNotFound": "This memory was not found.",
+ "superseded": "Superseded",
+ "detailsLabel": "Details",
+ "linkedFiles": "Files",
+ "linkedMemories": "Linked memories",
+ "typeChat": "Chat",
+ "typeFile": "File",
+ "typeNote": "Note",
+ "graphTruncated": "Only part of the graph is shown. Raise the limit to see more.",
+ "memoryGraphDescription": "Memory graph. The list view shows the same nodes as text.",
+ "legendPersona": "Persona",
+ "linkedPersonas": "Linked personas"
 }

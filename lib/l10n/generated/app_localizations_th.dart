@@ -636,4 +636,72 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get chatsLoadFailed => 'โหลดแชทไม่ได้';
+
+  @override
+  String get graphView => 'กราฟ';
+
+  @override
+  String get listView => 'รายการ';
+
+  @override
+  String get depthLabel => 'ความลึก';
+
+  @override
+  String get limitLabel => 'จำนวนสูงสุด';
+
+  @override
+  String get legendMemory => 'ความจำ';
+
+  @override
+  String get legendTag => 'แท็ก';
+
+  @override
+  String get legendEntity => 'เอนทิตี';
+
+  @override
+  String get legendFile => 'ไฟล์';
+
+  @override
+  String get noMemories => 'ยังไม่มีความจำ';
+
+  @override
+  String get memoryLoadFailed => 'โหลดความจำไม่ได้';
+
+  @override
+  String get memoryNotFound => 'ไม่พบความจำนี้';
+
+  @override
+  String get superseded => 'ถูกแทนที่';
+
+  @override
+  String get detailsLabel => 'รายละเอียด';
+
+  @override
+  String get linkedFiles => 'ไฟล์';
+
+  @override
+  String get linkedMemories => 'ความจำที่เชื่อมโยง';
+
+  @override
+  String get typeChat => 'แชท';
+
+  @override
+  String get typeFile => 'ไฟล์';
+
+  @override
+  String get typeNote => 'บันทึก';
+
+  @override
+  String get graphTruncated =>
+      'แสดงกราฟเพียงบางส่วน เพิ่มจำนวนสูงสุดเพื่อดูเพิ่ม';
+
+  @override
+  String get memoryGraphDescription =>
+      'กราฟความจำ มุมมองรายการแสดงโหนดเดียวกันเป็นข้อความ';
+
+  @override
+  String get legendPersona => 'เพอร์โซนา';
+
+  @override
+  String get linkedPersonas => 'เพอร์โซนาที่เชื่อมโยง';
 }
