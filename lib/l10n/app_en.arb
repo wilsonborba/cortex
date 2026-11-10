@@ -142,5 +142,115 @@
     "type": "String"
    }
   }
+ },
+ "chatGreeting": "What do you want to know?",
+ "composerHint": "Write a message",
+ "attach": "Attach files",
+ "webLabel": "Web",
+ "webOff": "Off",
+ "memoryToggle": "Memory",
+ "topicHint": "Topic (optional)",
+ "thinkingToggle": "Thinking",
+ "personaPicker": "Bot persona",
+ "noPersona": "No persona",
+ "send": "Send",
+ "stop": "Stop",
+ "stopThinking": "Stop thinking",
+ "usuallyAbout": "Usually about {n} s",
+ "elapsed": "{n} s",
+ "stagesTimeline": "Stages",
+ "thinkingSection": "Thinking",
+ "rolePlan": "Plan",
+ "roleWork": "Work",
+ "roleCheck": "Check",
+ "roleNotes": "Notes",
+ "roundN": "round {n}",
+ "usedMemories": "Used {n} memories",
+ "copy": "Copy",
+ "copied": "Copied",
+ "retry": "Retry",
+ "jumpToLatest": "Jump to latest",
+ "reconnecting": "Reconnecting...",
+ "rename": "Rename",
+ "pin": "Pin",
+ "unpin": "Unpin",
+ "delete": "Delete",
+ "cancel": "Cancel",
+ "save": "Save",
+ "deleteChatTitle": "Delete this chat?",
+ "deleteChatMessage": "The chat and its memories are deleted. This cannot be undone.",
+ "tokenCounter": "{n} of {max} tokens",
+ "overLimit": "The message is over the input limit.",
+ "uploading": "Uploading",
+ "statsLine": "{time} · {s} s · {input} in, {output} out tokens",
+ "cancelledLine": "Stopped",
+ "steps_web_queries": "Preparing search queries",
+ "steps_queue_wait": "Waiting for the model",
+ "steps_model_load": "Loading the model",
+ "steps_model_ready": "The model is ready",
+ "steps_security_ok": "Security check OK",
+ "steps_file_read_page": "Reading the file page",
+ "steps_file_ocr_page": "Reading the page image",
+ "steps_file_transcribe": "Transcribing audio",
+ "steps_memory_search": "Searching your memory",
+ "steps_memory_found": "Memories found",
+ "steps_web_search": "Searching the web",
+ "steps_web_page_read": "Reading the web page",
+ "steps_chunks_selected": "Text parts selected",
+ "steps_thinking_step": "Thinking step",
+ "steps_thinking_stopped": "Thinking stopped by the user",
+ "@usuallyAbout": {
+  "placeholders": {
+   "n": {
+    "type": "int"
+   }
+  }
+ },
+ "@elapsed": {
+  "placeholders": {
+   "n": {
+    "type": "int"
+   }
+  }
+ },
+ "@roundN": {
+  "placeholders": {
+   "n": {
+    "type": "int"
+   }
+  }
+ },
+ "@usedMemories": {
+  "placeholders": {
+   "n": {
+    "type": "int"
+   }
+  }
+ },
+ "@tokenCounter": {
+  "placeholders": {
+   "n": {
+    "type": "int"
+   },
+   "max": {
+    "type": "int"
+   }
+  }
+ },
+ "@statsLine": {
+  "placeholders": {
+   "time": {
+    "type": "String"
+   },
+   "s": {
+    "type": "String"
+   },
+   "input": {
+    "type": "int"
+   },
+   "output": {
+    "type": "int"
+   }
+  }
  }
 }

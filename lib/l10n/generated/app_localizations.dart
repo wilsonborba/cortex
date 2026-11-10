@@ -873,6 +873,342 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Cortex logo'**
   String get logoDescription;
+
+  /// No description provided for @chatGreeting.
+  ///
+  /// In en, this message translates to:
+  /// **'What do you want to know?'**
+  String get chatGreeting;
+
+  /// No description provided for @composerHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Write a message'**
+  String get composerHint;
+
+  /// No description provided for @attach.
+  ///
+  /// In en, this message translates to:
+  /// **'Attach files'**
+  String get attach;
+
+  /// No description provided for @webLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Web'**
+  String get webLabel;
+
+  /// No description provided for @webOff.
+  ///
+  /// In en, this message translates to:
+  /// **'Off'**
+  String get webOff;
+
+  /// No description provided for @memoryToggle.
+  ///
+  /// In en, this message translates to:
+  /// **'Memory'**
+  String get memoryToggle;
+
+  /// No description provided for @topicHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Topic (optional)'**
+  String get topicHint;
+
+  /// No description provided for @thinkingToggle.
+  ///
+  /// In en, this message translates to:
+  /// **'Thinking'**
+  String get thinkingToggle;
+
+  /// No description provided for @personaPicker.
+  ///
+  /// In en, this message translates to:
+  /// **'Bot persona'**
+  String get personaPicker;
+
+  /// No description provided for @noPersona.
+  ///
+  /// In en, this message translates to:
+  /// **'No persona'**
+  String get noPersona;
+
+  /// No description provided for @send.
+  ///
+  /// In en, this message translates to:
+  /// **'Send'**
+  String get send;
+
+  /// No description provided for @stop.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop'**
+  String get stop;
+
+  /// No description provided for @stopThinking.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop thinking'**
+  String get stopThinking;
+
+  /// No description provided for @usuallyAbout.
+  ///
+  /// In en, this message translates to:
+  /// **'Usually about {n} s'**
+  String usuallyAbout(int n);
+
+  /// No description provided for @elapsed.
+  ///
+  /// In en, this message translates to:
+  /// **'{n} s'**
+  String elapsed(int n);
+
+  /// No description provided for @stagesTimeline.
+  ///
+  /// In en, this message translates to:
+  /// **'Stages'**
+  String get stagesTimeline;
+
+  /// No description provided for @thinkingSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Thinking'**
+  String get thinkingSection;
+
+  /// No description provided for @rolePlan.
+  ///
+  /// In en, this message translates to:
+  /// **'Plan'**
+  String get rolePlan;
+
+  /// No description provided for @roleWork.
+  ///
+  /// In en, this message translates to:
+  /// **'Work'**
+  String get roleWork;
+
+  /// No description provided for @roleCheck.
+  ///
+  /// In en, this message translates to:
+  /// **'Check'**
+  String get roleCheck;
+
+  /// No description provided for @roleNotes.
+  ///
+  /// In en, this message translates to:
+  /// **'Notes'**
+  String get roleNotes;
+
+  /// No description provided for @roundN.
+  ///
+  /// In en, this message translates to:
+  /// **'round {n}'**
+  String roundN(int n);
+
+  /// No description provided for @usedMemories.
+  ///
+  /// In en, this message translates to:
+  /// **'Used {n} memories'**
+  String usedMemories(int n);
+
+  /// No description provided for @copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy'**
+  String get copy;
+
+  /// No description provided for @copied.
+  ///
+  /// In en, this message translates to:
+  /// **'Copied'**
+  String get copied;
+
+  /// No description provided for @retry.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get retry;
+
+  /// No description provided for @jumpToLatest.
+  ///
+  /// In en, this message translates to:
+  /// **'Jump to latest'**
+  String get jumpToLatest;
+
+  /// No description provided for @reconnecting.
+  ///
+  /// In en, this message translates to:
+  /// **'Reconnecting...'**
+  String get reconnecting;
+
+  /// No description provided for @rename.
+  ///
+  /// In en, this message translates to:
+  /// **'Rename'**
+  String get rename;
+
+  /// No description provided for @pin.
+  ///
+  /// In en, this message translates to:
+  /// **'Pin'**
+  String get pin;
+
+  /// No description provided for @unpin.
+  ///
+  /// In en, this message translates to:
+  /// **'Unpin'**
+  String get unpin;
+
+  /// No description provided for @delete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get delete;
+
+  /// No description provided for @cancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancel;
+
+  /// No description provided for @save.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get save;
+
+  /// No description provided for @deleteChatTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete this chat?'**
+  String get deleteChatTitle;
+
+  /// No description provided for @deleteChatMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'The chat and its memories are deleted. This cannot be undone.'**
+  String get deleteChatMessage;
+
+  /// No description provided for @tokenCounter.
+  ///
+  /// In en, this message translates to:
+  /// **'{n} of {max} tokens'**
+  String tokenCounter(int n, int max);
+
+  /// No description provided for @overLimit.
+  ///
+  /// In en, this message translates to:
+  /// **'The message is over the input limit.'**
+  String get overLimit;
+
+  /// No description provided for @uploading.
+  ///
+  /// In en, this message translates to:
+  /// **'Uploading'**
+  String get uploading;
+
+  /// No description provided for @statsLine.
+  ///
+  /// In en, this message translates to:
+  /// **'{time} · {s} s · {input} in, {output} out tokens'**
+  String statsLine(String time, String s, int input, int output);
+
+  /// No description provided for @cancelledLine.
+  ///
+  /// In en, this message translates to:
+  /// **'Stopped'**
+  String get cancelledLine;
+
+  /// No description provided for @steps_web_queries.
+  ///
+  /// In en, this message translates to:
+  /// **'Preparing search queries'**
+  String get steps_web_queries;
+
+  /// No description provided for @steps_queue_wait.
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting for the model'**
+  String get steps_queue_wait;
+
+  /// No description provided for @steps_model_load.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading the model'**
+  String get steps_model_load;
+
+  /// No description provided for @steps_model_ready.
+  ///
+  /// In en, this message translates to:
+  /// **'The model is ready'**
+  String get steps_model_ready;
+
+  /// No description provided for @steps_security_ok.
+  ///
+  /// In en, this message translates to:
+  /// **'Security check OK'**
+  String get steps_security_ok;
+
+  /// No description provided for @steps_file_read_page.
+  ///
+  /// In en, this message translates to:
+  /// **'Reading the file page'**
+  String get steps_file_read_page;
+
+  /// No description provided for @steps_file_ocr_page.
+  ///
+  /// In en, this message translates to:
+  /// **'Reading the page image'**
+  String get steps_file_ocr_page;
+
+  /// No description provided for @steps_file_transcribe.
+  ///
+  /// In en, this message translates to:
+  /// **'Transcribing audio'**
+  String get steps_file_transcribe;
+
+  /// No description provided for @steps_memory_search.
+  ///
+  /// In en, this message translates to:
+  /// **'Searching your memory'**
+  String get steps_memory_search;
+
+  /// No description provided for @steps_memory_found.
+  ///
+  /// In en, this message translates to:
+  /// **'Memories found'**
+  String get steps_memory_found;
+
+  /// No description provided for @steps_web_search.
+  ///
+  /// In en, this message translates to:
+  /// **'Searching the web'**
+  String get steps_web_search;
+
+  /// No description provided for @steps_web_page_read.
+  ///
+  /// In en, this message translates to:
+  /// **'Reading the web page'**
+  String get steps_web_page_read;
+
+  /// No description provided for @steps_chunks_selected.
+  ///
+  /// In en, this message translates to:
+  /// **'Text parts selected'**
+  String get steps_chunks_selected;
+
+  /// No description provided for @steps_thinking_step.
+  ///
+  /// In en, this message translates to:
+  /// **'Thinking step'**
+  String get steps_thinking_step;
+
+  /// No description provided for @steps_thinking_stopped.
+  ///
+  /// In en, this message translates to:
+  /// **'Thinking stopped by the user'**
+  String get steps_thinking_stopped;
 }
 
 class _AppLocalizationsDelegate

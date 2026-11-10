@@ -428,4 +428,185 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get logoDescription => 'Cortex logo';
+
+  @override
+  String get chatGreeting => 'What do you want to know?';
+
+  @override
+  String get composerHint => 'Write a message';
+
+  @override
+  String get attach => 'Attach files';
+
+  @override
+  String get webLabel => 'Web';
+
+  @override
+  String get webOff => 'Off';
+
+  @override
+  String get memoryToggle => 'Memory';
+
+  @override
+  String get topicHint => 'Topic (optional)';
+
+  @override
+  String get thinkingToggle => 'Thinking';
+
+  @override
+  String get personaPicker => 'Bot persona';
+
+  @override
+  String get noPersona => 'No persona';
+
+  @override
+  String get send => 'Send';
+
+  @override
+  String get stop => 'Stop';
+
+  @override
+  String get stopThinking => 'Stop thinking';
+
+  @override
+  String usuallyAbout(int n) {
+    return 'Usually about $n s';
+  }
+
+  @override
+  String elapsed(int n) {
+    return '$n s';
+  }
+
+  @override
+  String get stagesTimeline => 'Stages';
+
+  @override
+  String get thinkingSection => 'Thinking';
+
+  @override
+  String get rolePlan => 'Plan';
+
+  @override
+  String get roleWork => 'Work';
+
+  @override
+  String get roleCheck => 'Check';
+
+  @override
+  String get roleNotes => 'Notes';
+
+  @override
+  String roundN(int n) {
+    return 'round $n';
+  }
+
+  @override
+  String usedMemories(int n) {
+    return 'Used $n memories';
+  }
+
+  @override
+  String get copy => 'Copy';
+
+  @override
+  String get copied => 'Copied';
+
+  @override
+  String get retry => 'Retry';
+
+  @override
+  String get jumpToLatest => 'Jump to latest';
+
+  @override
+  String get reconnecting => 'Reconnecting...';
+
+  @override
+  String get rename => 'Rename';
+
+  @override
+  String get pin => 'Pin';
+
+  @override
+  String get unpin => 'Unpin';
+
+  @override
+  String get delete => 'Delete';
+
+  @override
+  String get cancel => 'Cancel';
+
+  @override
+  String get save => 'Save';
+
+  @override
+  String get deleteChatTitle => 'Delete this chat?';
+
+  @override
+  String get deleteChatMessage =>
+      'The chat and its memories are deleted. This cannot be undone.';
+
+  @override
+  String tokenCounter(int n, int max) {
+    return '$n of $max tokens';
+  }
+
+  @override
+  String get overLimit => 'The message is over the input limit.';
+
+  @override
+  String get uploading => 'Uploading';
+
+  @override
+  String statsLine(String time, String s, int input, int output) {
+    return '$time · $s s · $input in, $output out tokens';
+  }
+
+  @override
+  String get cancelledLine => 'Stopped';
+
+  @override
+  String get steps_web_queries => 'Preparing search queries';
+
+  @override
+  String get steps_queue_wait => 'Waiting for the model';
+
+  @override
+  String get steps_model_load => 'Loading the model';
+
+  @override
+  String get steps_model_ready => 'The model is ready';
+
+  @override
+  String get steps_security_ok => 'Security check OK';
+
+  @override
+  String get steps_file_read_page => 'Reading the file page';
+
+  @override
+  String get steps_file_ocr_page => 'Reading the page image';
+
+  @override
+  String get steps_file_transcribe => 'Transcribing audio';
+
+  @override
+  String get steps_memory_search => 'Searching your memory';
+
+  @override
+  String get steps_memory_found => 'Memories found';
+
+  @override
+  String get steps_web_search => 'Searching the web';
+
+  @override
+  String get steps_web_page_read => 'Reading the web page';
+
+  @override
+  String get steps_chunks_selected => 'Text parts selected';
+
+  @override
+  String get steps_thinking_step => 'Thinking step';
+
+  @override
+  String get steps_thinking_stopped => 'Thinking stopped by the user';
 }
