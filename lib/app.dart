@@ -5,6 +5,7 @@ import 'dal/remote/auth_api_adapter.dart';
 import 'domain/services/auth_service.dart';
 import 'domain/services/session_controller.dart';
 import 'l10n/generated/app_localizations.dart';
+import 'presentation/frontend/preferences.dart';
 import 'presentation/frontend/router.dart';
 import 'presentation/frontend/theme/theme.dart';
 
@@ -21,6 +22,7 @@ class _CortexAppState extends State<CortexApp> {
   late final SessionController _session = widget.session ?? SessionController();
   late final AuthService _auth = widget.auth ?? AuthService(AuthApiAdapter());
   GoRouter? _router;
+  final _preferences = Preferences();
 
   @override
   void initState() {
@@ -64,13 +66,21 @@ class _CortexAppState extends State<CortexApp> {
         home: const Scaffold(),
       );
     }
-    return MaterialApp.router(
-      title: 'Cortex',
-      routerConfig: router,
-      theme: cortexTheme(Brightness.light),
-      darkTheme: cortexTheme(Brightness.dark),
-      localizationsDelegates: delegates,
-      supportedLocales: AppLocalizations.supportedLocales,
+    return PreferencesScope(
+      preferences: _preferences,
+      child: ListenableBuilder(
+        listenable: _preferences,
+        builder: (_, _) => MaterialApp.router(
+          title: 'Cortex',
+          routerConfig: router,
+          locale: _preferences.locale,
+          themeMode: _preferences.theme,
+          theme: cortexTheme(Brightness.light),
+          darkTheme: cortexTheme(Brightness.dark),
+          localizationsDelegates: delegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+        ),
+      ),
     );
   }
 }

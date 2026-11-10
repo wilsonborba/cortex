@@ -96,6 +96,20 @@ ThemeData cortexTheme(Brightness brightness) {
         borderRadius: BorderRadius.circular(Radii.control),
       ),
     ),
+    // Text buttons and icon buttons are neutral: the accent is only for the
+    // primary button and the selected item (C2).
+    textButtonTheme: TextButtonThemeData(
+      style: TextButton.styleFrom(
+        foregroundColor: p.text,
+        textStyle: TextStyles.compact,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(Radii.control),
+        ),
+      ),
+    ),
+    iconButtonTheme: IconButtonThemeData(
+      style: IconButton.styleFrom(foregroundColor: p.text),
+    ),
     focusColor: p.text.withValues(alpha: 0.12),
     hoverColor: p.text.withValues(alpha: 0.06),
     pageTransitionsTheme: const PageTransitionsTheme(

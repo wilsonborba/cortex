@@ -6,7 +6,7 @@ import '../../l10n/generated/app_localizations.dart';
 import 'screens/basic_pages.dart';
 import 'shell/app_shell.dart';
 import 'shell/details_panel.dart';
-import 'widgets/home/desktop_home.dart';
+import 'screens/landing/landing_page.dart';
 
 const homeSections = {'how-it-works', 'memory', 'engineering', 'faq'};
 const _protected = ['/v1/chats', '/v1/memory', '/v1/personas', '/v1/usage'];
@@ -68,23 +68,19 @@ GoRouter buildRouter({
       ),
       GoRoute(
         path: '/v1/home',
-        builder: (_, _) => HomeShell(
-          signedIn: session.signedIn,
-          onSignIn: () => auth.signIn(returnPath: '/v1/chats'),
-        ),
-        routes: [
-          GoRoute(
-            path: ':section',
-            builder: (_, s) =>
-                homeSections.contains(s.pathParameters['section'])
-                ? HomeShell(
-                    signedIn: session.signedIn,
-                    onSignIn: () => auth.signIn(returnPath: '/v1/chats'),
-                    section: s.pathParameters['section'],
-                  )
-                : const NotFoundPage(),
-          ),
-        ],
+        builder: (_, _) =>
+            LandingPage(onSignIn: () => auth.signIn(returnPath: '/v1/chats')),
+      ),
+      // Not nested: one landing page per section path.
+      GoRoute(
+        path: '/v1/home/:section',
+        builder: (_, s) => homeSections.contains(s.pathParameters['section'])
+            ? LandingPage(
+                key: ValueKey(s.pathParameters['section']),
+                onSignIn: () => auth.signIn(returnPath: '/v1/chats'),
+                section: s.pathParameters['section'],
+              )
+            : const NotFoundPage(),
       ),
       ShellRoute(
         builder: (c, s, child) => AppShell(
