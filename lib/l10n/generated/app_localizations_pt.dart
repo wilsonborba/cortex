@@ -434,4 +434,185 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get logoDescription => 'Logo do Cortex';
+
+  @override
+  String get chatGreeting => 'O que você quer saber?';
+
+  @override
+  String get composerHint => 'Escreva uma mensagem';
+
+  @override
+  String get attach => 'Anexar arquivos';
+
+  @override
+  String get webLabel => 'Web';
+
+  @override
+  String get webOff => 'Desligada';
+
+  @override
+  String get memoryToggle => 'Memória';
+
+  @override
+  String get topicHint => 'Tópico (opcional)';
+
+  @override
+  String get thinkingToggle => 'Raciocínio';
+
+  @override
+  String get personaPicker => 'Persona do bot';
+
+  @override
+  String get noPersona => 'Sem persona';
+
+  @override
+  String get send => 'Enviar';
+
+  @override
+  String get stop => 'Parar';
+
+  @override
+  String get stopThinking => 'Parar o raciocínio';
+
+  @override
+  String usuallyAbout(int n) {
+    return 'Normalmente cerca de $n s';
+  }
+
+  @override
+  String elapsed(int n) {
+    return '$n s';
+  }
+
+  @override
+  String get stagesTimeline => 'Etapas';
+
+  @override
+  String get thinkingSection => 'Raciocínio';
+
+  @override
+  String get rolePlan => 'Plano';
+
+  @override
+  String get roleWork => 'Trabalho';
+
+  @override
+  String get roleCheck => 'Verificação';
+
+  @override
+  String get roleNotes => 'Notas';
+
+  @override
+  String roundN(int n) {
+    return 'rodada $n';
+  }
+
+  @override
+  String usedMemories(int n) {
+    return 'Usou $n memórias';
+  }
+
+  @override
+  String get copy => 'Copiar';
+
+  @override
+  String get copied => 'Copiado';
+
+  @override
+  String get retry => 'Tentar de novo';
+
+  @override
+  String get jumpToLatest => 'Ir para o mais recente';
+
+  @override
+  String get reconnecting => 'Reconectando...';
+
+  @override
+  String get rename => 'Renomear';
+
+  @override
+  String get pin => 'Fixar';
+
+  @override
+  String get unpin => 'Desafixar';
+
+  @override
+  String get delete => 'Excluir';
+
+  @override
+  String get cancel => 'Cancelar';
+
+  @override
+  String get save => 'Salvar';
+
+  @override
+  String get deleteChatTitle => 'Excluir esta conversa?';
+
+  @override
+  String get deleteChatMessage =>
+      'A conversa e suas memórias serão excluídas. Isso não pode ser desfeito.';
+
+  @override
+  String tokenCounter(int n, int max) {
+    return '$n de $max tokens';
+  }
+
+  @override
+  String get overLimit => 'A mensagem passa do limite de entrada.';
+
+  @override
+  String get uploading => 'Enviando';
+
+  @override
+  String statsLine(String time, String s, int input, int output) {
+    return '$time · $s s · $input entrada, $output saída tokens';
+  }
+
+  @override
+  String get cancelledLine => 'Parado';
+
+  @override
+  String get steps_web_queries => 'Preparando as buscas';
+
+  @override
+  String get steps_queue_wait => 'Aguardando o modelo';
+
+  @override
+  String get steps_model_load => 'Carregando o modelo';
+
+  @override
+  String get steps_model_ready => 'O modelo está pronto';
+
+  @override
+  String get steps_security_ok => 'Verificação de segurança OK';
+
+  @override
+  String get steps_file_read_page => 'Lendo a página do arquivo';
+
+  @override
+  String get steps_file_ocr_page => 'Lendo a imagem da página';
+
+  @override
+  String get steps_file_transcribe => 'Transcrevendo o áudio';
+
+  @override
+  String get steps_memory_search => 'Buscando na sua memória';
+
+  @override
+  String get steps_memory_found => 'Memórias encontradas';
+
+  @override
+  String get steps_web_search => 'Buscando na web';
+
+  @override
+  String get steps_web_page_read => 'Lendo a página';
+
+  @override
+  String get steps_chunks_selected => 'Trechos selecionados';
+
+  @override
+  String get steps_thinking_step => 'Etapa de raciocínio';
+
+  @override
+  String get steps_thinking_stopped => 'Raciocínio parado pelo usuário';
 }

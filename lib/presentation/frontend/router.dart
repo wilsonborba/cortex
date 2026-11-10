@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import '../../dal/remote/cortex_api.dart';
 import '../../domain/services/auth_service.dart';
 import '../../domain/services/session_controller.dart';
 import '../../l10n/generated/app_localizations.dart';
 import 'screens/basic_pages.dart';
+import 'screens/chat/chat_screen.dart';
 import 'shell/app_shell.dart';
 import 'shell/details_panel.dart';
 import 'screens/landing/landing_page.dart';
@@ -24,8 +26,15 @@ GoRouter buildRouter({
   DetailsController? details,
   Widget Function(BuildContext, String)? screen,
   String initialLocation = '/v1/home',
+  CortexApi? api,
 }) {
   final panel = details ?? DetailsController();
+  final cortex = api ?? CortexApi();
+  Widget chatPage(
+    BuildContext c,
+    String Function(AppLocalizations) title,
+    Widget Function() build,
+  ) => screen?.call(c, title(AppLocalizations.of(c))) ?? build();
   Widget page(BuildContext c, String Function(AppLocalizations) title) =>
       screen?.call(c, title(AppLocalizations.of(c))) ??
       ScreenFrame(
@@ -90,29 +99,65 @@ GoRouter buildRouter({
           child: child,
         ),
         routes: [
+          // Flat routes: one chat screen per path, never a stacked new-chat page.
           GoRoute(
             path: '/v1/chats',
-            builder: (c, _) => page(c, (l) => l.chats),
-            routes: [
-              GoRoute(
-                path: 'temporary',
-                builder: (c, _) => page(c, (l) => l.temporaryChat),
+            builder: (c, _) => chatPage(
+              c,
+              (l) => l.chats,
+              () => ChatScreen(
+                key: const ValueKey('new'),
+                api: cortex,
+                details: panel,
               ),
-              GoRoute(
-                path: ':session_id',
-                builder: (c, s) =>
-                    uuidPage(s, ['session_id'], () => page(c, (l) => l.chats)),
-                routes: [
-                  GoRoute(
-                    path: 'outputs/:output_id',
-                    builder: (c, s) => uuidPage(s, [
-                      'session_id',
-                      'output_id',
-                    ], () => page(c, (l) => l.output)),
-                  ),
-                ],
+            ),
+          ),
+          GoRoute(
+            path: '/v1/chats/temporary',
+            builder: (c, _) => chatPage(
+              c,
+              (l) => l.temporaryChat,
+              () => ChatScreen(
+                key: const ValueKey('temporary'),
+                api: cortex,
+                details: panel,
+                temporary: true,
               ),
-            ],
+            ),
+          ),
+          GoRoute(
+            path: '/v1/chats/:session_id',
+            builder: (c, s) => uuidPage(
+              s,
+              ['session_id'],
+              () => chatPage(
+                c,
+                (l) => l.chats,
+                () => ChatScreen(
+                  key: ValueKey(s.pathParameters['session_id']),
+                  api: cortex,
+                  details: panel,
+                  sessionId: s.pathParameters['session_id'],
+                ),
+              ),
+            ),
+          ),
+          GoRoute(
+            path: '/v1/chats/:session_id/outputs/:output_id',
+            builder: (c, s) => uuidPage(
+              s,
+              ['session_id', 'output_id'],
+              () => chatPage(
+                c,
+                (l) => l.output,
+                () => ChatScreen(
+                  key: ValueKey(s.pathParameters['session_id']),
+                  api: cortex,
+                  details: panel,
+                  sessionId: s.pathParameters['session_id'],
+                ),
+              ),
+            ),
           ),
           GoRoute(
             path: '/v1/memory',

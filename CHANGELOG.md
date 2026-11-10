@@ -16,6 +16,8 @@
 
 - Merge #28 app-shell
 
+- Merge #29 landing-page
+
 
 ### Features
 
@@ -24,6 +26,8 @@
 - App-shell (#28)
 
 - Landing-page (#29)
+
+- Chat-screen (#30)
 
 
 ## v1.2.0 - 2026-11-09

@@ -422,4 +422,185 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get logoDescription => 'โลโก้ Cortex';
+
+  @override
+  String get chatGreeting => 'คุณอยากรู้อะไร';
+
+  @override
+  String get composerHint => 'พิมพ์ข้อความ';
+
+  @override
+  String get attach => 'แนบไฟล์';
+
+  @override
+  String get webLabel => 'เว็บ';
+
+  @override
+  String get webOff => 'ปิด';
+
+  @override
+  String get memoryToggle => 'ความจำ';
+
+  @override
+  String get topicHint => 'หัวข้อ (ไม่บังคับ)';
+
+  @override
+  String get thinkingToggle => 'การคิด';
+
+  @override
+  String get personaPicker => 'เพอร์โซนาของบอท';
+
+  @override
+  String get noPersona => 'ไม่มีเพอร์โซนา';
+
+  @override
+  String get send => 'ส่ง';
+
+  @override
+  String get stop => 'หยุด';
+
+  @override
+  String get stopThinking => 'หยุดคิด';
+
+  @override
+  String usuallyAbout(int n) {
+    return 'ปกติประมาณ $n วินาที';
+  }
+
+  @override
+  String elapsed(int n) {
+    return '$n วินาที';
+  }
+
+  @override
+  String get stagesTimeline => 'ขั้นตอน';
+
+  @override
+  String get thinkingSection => 'การคิด';
+
+  @override
+  String get rolePlan => 'วางแผน';
+
+  @override
+  String get roleWork => 'ทำงาน';
+
+  @override
+  String get roleCheck => 'ตรวจสอบ';
+
+  @override
+  String get roleNotes => 'บันทึก';
+
+  @override
+  String roundN(int n) {
+    return 'รอบ $n';
+  }
+
+  @override
+  String usedMemories(int n) {
+    return 'ใช้ความจำ $n รายการ';
+  }
+
+  @override
+  String get copy => 'คัดลอก';
+
+  @override
+  String get copied => 'คัดลอกแล้ว';
+
+  @override
+  String get retry => 'ลองอีกครั้ง';
+
+  @override
+  String get jumpToLatest => 'ไปที่ล่าสุด';
+
+  @override
+  String get reconnecting => 'กำลังเชื่อมต่อใหม่...';
+
+  @override
+  String get rename => 'เปลี่ยนชื่อ';
+
+  @override
+  String get pin => 'ปักหมุด';
+
+  @override
+  String get unpin => 'เลิกปักหมุด';
+
+  @override
+  String get delete => 'ลบ';
+
+  @override
+  String get cancel => 'ยกเลิก';
+
+  @override
+  String get save => 'บันทึก';
+
+  @override
+  String get deleteChatTitle => 'ลบแชทนี้ไหม';
+
+  @override
+  String get deleteChatMessage =>
+      'แชทและความจำของแชทจะถูกลบ ไม่สามารถย้อนกลับได้';
+
+  @override
+  String tokenCounter(int n, int max) {
+    return '$n จาก $max โทเค็น';
+  }
+
+  @override
+  String get overLimit => 'ข้อความเกินขีดจำกัดอินพุต';
+
+  @override
+  String get uploading => 'กำลังอัปโหลด';
+
+  @override
+  String statsLine(String time, String s, int input, int output) {
+    return '$time · $s วินาที · เข้า $input ออก $output โทเค็น';
+  }
+
+  @override
+  String get cancelledLine => 'หยุดแล้ว';
+
+  @override
+  String get steps_web_queries => 'กำลังเตรียมคำค้น';
+
+  @override
+  String get steps_queue_wait => 'กำลังรอโมเดล';
+
+  @override
+  String get steps_model_load => 'กำลังโหลดโมเดล';
+
+  @override
+  String get steps_model_ready => 'โมเดลพร้อมแล้ว';
+
+  @override
+  String get steps_security_ok => 'ตรวจความปลอดภัยผ่าน';
+
+  @override
+  String get steps_file_read_page => 'กำลังอ่านหน้าไฟล์';
+
+  @override
+  String get steps_file_ocr_page => 'กำลังอ่านภาพของหน้า';
+
+  @override
+  String get steps_file_transcribe => 'กำลังถอดเสียง';
+
+  @override
+  String get steps_memory_search => 'กำลังค้นหาความจำของคุณ';
+
+  @override
+  String get steps_memory_found => 'พบความจำ';
+
+  @override
+  String get steps_web_search => 'กำลังค้นหาเว็บ';
+
+  @override
+  String get steps_web_page_read => 'กำลังอ่านหน้าเว็บ';
+
+  @override
+  String get steps_chunks_selected => 'เลือกส่วนข้อความแล้ว';
+
+  @override
+  String get steps_thinking_step => 'ขั้นตอนการคิด';
+
+  @override
+  String get steps_thinking_stopped => 'ผู้ใช้หยุดการคิด';
 }
