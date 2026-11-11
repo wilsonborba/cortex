@@ -16,6 +16,8 @@
 
 - Preserve-isolated-memory-nodes-and-frame-graph (#47)
 
+- Keep-composer-labels-readable-and-compact (#46)
+
 
 ### Chores
 
@@ -32,6 +34,8 @@
 - Merge #45 restore-chat-order-copy-and-local-timestamps
 
 - Merge #46 refine-chat-reading-and-composer-layout
+
+- Merge #47 preserve-isolated-memory-nodes-and-frame-graph
 
 
 ## v2.0.0 - 2026-11-11

@@ -104,13 +104,7 @@ class ComposerState extends State<Composer> {
                 backgroundColor: Colors.transparent,
                 selectedColor: p.text.withValues(alpha: 0.06),
                 side: BorderSide.none,
-                labelStyle: WidgetStateTextStyle.resolveWith(
-                  (states) => TextStyles.compact.copyWith(
-                    color: states.contains(WidgetState.selected)
-                        ? p.accent
-                        : p.muted,
-                  ),
-                ),
+                labelStyle: TextStyles.compact.copyWith(color: p.muted),
               ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -173,6 +167,9 @@ class ComposerState extends State<Composer> {
                     decoration: InputDecoration(
                       hintText: l.composerHint,
                       border: InputBorder.none,
+                      enabledBorder: InputBorder.none,
+                      focusedBorder: InputBorder.none,
+                      disabledBorder: InputBorder.none,
                       filled: false,
                     ),
                   ),
@@ -198,7 +195,9 @@ class ComposerState extends State<Composer> {
                         onPressed: running ? null : _attach,
                       ),
                       SizedBox(
-                        width: 176,
+                        width: MediaQuery.sizeOf(context).width < 600
+                            ? 136
+                            : 176,
                         child: DropdownButton<WebChoice>(
                           isExpanded: true,
                           isDense: true,
@@ -226,7 +225,12 @@ class ComposerState extends State<Composer> {
                       ),
                       FilterChip(
                         key: const Key('memory-switch'),
-                        label: Text(l.memoryToggle),
+                        label: Text(
+                          l.memoryToggle,
+                          style: TextStyles.compact.copyWith(
+                            color: o.memory ? p.accent : p.muted,
+                          ),
+                        ),
                         selected: o.memory,
                         showCheckmark: false,
                         onSelected: (v) => setState(() => o.memory = v),
@@ -245,7 +249,12 @@ class ComposerState extends State<Composer> {
                         ),
                       FilterChip(
                         key: const Key('thinking-switch'),
-                        label: Text(l.thinkingToggle),
+                        label: Text(
+                          l.thinkingToggle,
+                          style: TextStyles.compact.copyWith(
+                            color: o.thinking ? p.accent : p.muted,
+                          ),
+                        ),
                         selected: o.thinking,
                         showCheckmark: false,
                         onSelected: (v) => setState(() => o.thinking = v),
