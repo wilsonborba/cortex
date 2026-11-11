@@ -1,3 +1,4 @@
+import 'package:cortex/presentation/frontend/theme/app_icons.dart';
 import 'dart:convert';
 import 'package:cortex/dal/remote/cortex_api.dart';
 import 'package:cortex/domain/services/chat_list_controller.dart';
@@ -152,7 +153,7 @@ void main() {
       expect(find.text('3 h ago'), findsOneWidget);
       expect(find.byKey(const Key('running-$b')), findsOneWidget);
       expect(find.byKey(const Key('running-$a')), findsNothing);
-      expect(find.byIcon(Icons.push_pin), findsOneWidget);
+      expect(find.byIcon(AppIcons.pin), findsOneWidget);
     },
   );
 

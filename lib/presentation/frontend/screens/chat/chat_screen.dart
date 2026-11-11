@@ -1,3 +1,4 @@
+import '../../theme/app_icons.dart';
 import '../../handlers/api_action.dart';
 import '../../handlers/process_messages.dart';
 import 'package:flutter/material.dart';
@@ -246,7 +247,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   child: PopupMenuButton<String>(
                     key: const Key('chat-actions'),
                     tooltip: l.menu,
-                    icon: Icon(Icons.more_horiz, color: p.muted),
+                    icon: Icon(AppIcons.more, color: p.muted),
                     onSelected: (action) {
                       switch (action) {
                         case 'rename':
@@ -394,7 +395,10 @@ class _ChatScreenState extends State<ChatScreen> {
                   child: Center(
                     child: ActionChip(
                       key: const Key('jump-latest'),
-                      avatar: const Icon(Icons.arrow_downward, size: 16),
+                      avatar: const Icon(
+                        AppIcons.jumpToLatest,
+                        size: IconSizes.action,
+                      ),
                       label: Text(l.jumpToLatest),
                       onPressed: () {
                         _jump();

@@ -1,3 +1,4 @@
+import '../../theme/app_icons.dart';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -224,13 +225,13 @@ class SchemaFields extends StatelessWidget {
                             IconButton(
                               tooltip: l.choosePersonaDate,
                               onPressed: enabled ? pick : null,
-                              icon: const Icon(Icons.calendar_today_outlined),
+                              icon: const Icon(AppIcons.calendar),
                             ),
                             if (value != null)
                               IconButton(
                                 tooltip: l.clear,
                                 onPressed: enabled ? () => change(null) : null,
-                                icon: const Icon(Icons.close),
+                                icon: const Icon(AppIcons.close),
                               ),
                           ],
                         ),
@@ -438,7 +439,7 @@ class _ListFieldState extends State<ListField> {
                 IconButton(
                   tooltip: l.addPersonaItem,
                   onPressed: widget.enabled ? add : null,
-                  icon: const Icon(Icons.add),
+                  icon: const Icon(AppIcons.add),
                 ),
               ],
             )
@@ -447,7 +448,7 @@ class _ListFieldState extends State<ListField> {
               alignment: Alignment.centerLeft,
               child: TextButton.icon(
                 onPressed: widget.enabled ? add : null,
-                icon: const Icon(Icons.add),
+                icon: const Icon(AppIcons.add),
                 label: Text(l.addPersonaItem),
               ),
             ),

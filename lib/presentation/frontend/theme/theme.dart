@@ -47,6 +47,7 @@ ThemeData cortexTheme(Brightness brightness) {
     fontFamily: TextStyles.family,
     fontFamilyFallback: TextStyles.fallback,
     textTheme: text,
+    iconTheme: IconThemeData(size: IconSizes.action, color: p.text),
     scaffoldBackgroundColor: p.background,
     shadowColor: Colors.transparent,
     splashFactory: NoSplash.splashFactory,
@@ -128,8 +129,14 @@ ThemeData cortexTheme(Brightness brightness) {
     navigationRailTheme: NavigationRailThemeData(
       backgroundColor: p.surface,
       indicatorColor: p.text.withValues(alpha: 0.05),
-      selectedIconTheme: IconThemeData(color: p.text, size: 20),
-      unselectedIconTheme: IconThemeData(color: p.muted, size: 20),
+      selectedIconTheme: IconThemeData(
+        color: p.text,
+        size: IconSizes.navigation,
+      ),
+      unselectedIconTheme: IconThemeData(
+        color: p.muted,
+        size: IconSizes.navigation,
+      ),
     ),
     navigationBarTheme: NavigationBarThemeData(
       backgroundColor: p.surface,
@@ -222,6 +229,7 @@ ThemeData cortexTheme(Brightness brightness) {
             ),
           ),
     ),
+    materialTapTargetSize: MaterialTapTargetSize.padded,
     iconButtonTheme: IconButtonThemeData(
       style: IconButton.styleFrom(foregroundColor: p.text).copyWith(
         side: WidgetStateProperty.resolveWith(

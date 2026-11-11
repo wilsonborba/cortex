@@ -1,3 +1,4 @@
+import '../../theme/app_icons.dart';
 import '../../handlers/api_action.dart';
 import '../../handlers/process_messages.dart';
 import 'package:flutter/material.dart';
@@ -144,7 +145,7 @@ class _ChatListState extends State<ChatList> {
     if (list.chats.isEmpty) {
       return list.loading
           ? const Center(child: SkeletonBox(width: 160))
-          : EmptyState(title: l.noChatsYet, icon: Icons.chat_bubble_outline);
+          : EmptyState(title: l.noChatsYet, icon: AppIcons.chats);
     }
     return ListView.builder(
       key: const Key('chat-list'),
@@ -179,7 +180,7 @@ class _ChatListState extends State<ChatList> {
               ),
             ),
             leading: chat['is_pinned'] == true
-                ? Icon(Icons.push_pin, size: 14, color: p.muted)
+                ? Icon(AppIcons.pin, size: IconSizes.chip, color: p.muted)
                 : null,
             title: Text(
               '${chat['title']}',
@@ -215,7 +216,7 @@ class _ChatListState extends State<ChatList> {
               child: PopupMenuButton<_Action>(
                 key: Key('menu-$id'),
                 tooltip: l.chatActions,
-                icon: const Icon(Icons.more_horiz, size: 18),
+                icon: const Icon(AppIcons.more, size: IconSizes.action),
                 onSelected: (a) => _act(a, chat),
                 itemBuilder: (_) => [
                   PopupMenuItem(

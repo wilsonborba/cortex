@@ -1,3 +1,4 @@
+import '../../theme/app_icons.dart';
 import '../../../../l10n/generated/app_localizations.dart';
 import 'package:flutter/material.dart';
 import '../../theme/tokens.dart';
@@ -32,7 +33,7 @@ class EmptyState extends StatelessWidget {
     super.key,
     required this.title,
     this.message,
-    this.icon = Icons.inbox_outlined,
+    this.icon = AppIcons.empty,
     this.action,
   });
   final String title;
@@ -90,11 +91,11 @@ class ErrorState extends StatelessWidget {
   @override
   Widget build(BuildContext context) => EmptyState(
     title: message,
-    icon: Icons.error_outline,
+    icon: AppIcons.error,
     action: AppButton(
       label: retryLabel,
       onPressed: onRetry,
-      icon: Icons.refresh,
+      icon: AppIcons.retry,
     ),
   );
 }
@@ -120,7 +121,7 @@ class OfflineBanner extends StatelessWidget {
         ),
         child: Row(
           children: [
-            Icon(Icons.cloud_off_outlined, size: 18, color: p.text),
+            Icon(AppIcons.offline, size: IconSizes.action, color: p.text),
             const SizedBox(width: Space.s8),
             Expanded(child: Text(message, style: TextStyles.compact)),
           ],
@@ -145,14 +146,14 @@ class NoticeLine extends StatelessWidget {
   Widget build(BuildContext context) {
     final p = Palette.from(context);
     final (icon, color) = switch (kind) {
-      NoticeKind.info => (Icons.info_outline, p.muted),
-      NoticeKind.warning => (Icons.warning_amber_outlined, p.text),
-      NoticeKind.error => (Icons.error_outline, p.danger),
+      NoticeKind.info => (AppIcons.info, p.muted),
+      NoticeKind.warning => (AppIcons.warning, p.text),
+      NoticeKind.error => (AppIcons.error, p.danger),
     };
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(icon, size: 16, color: color),
+        Icon(icon, size: IconSizes.action, color: color),
         const SizedBox(width: Space.s8),
         Expanded(
           child: Text(

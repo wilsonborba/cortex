@@ -1,3 +1,4 @@
+import 'package:cortex/presentation/frontend/theme/app_icons.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'package:cortex/core/utils/file_picker.dart';
@@ -367,7 +368,7 @@ void main() {
       await pump(tester, api: api);
       await send(tester, 'bad');
       expect(find.text('Are you kidding me, clown?'), findsOneWidget);
-      expect(find.byIcon(Icons.gpp_bad_outlined), findsOneWidget);
+      expect(find.byIcon(AppIcons.securityBlock), findsOneWidget);
       expect(find.text('Retry'), findsNothing);
       api.streamFor = (_) => stream(
         done: false,

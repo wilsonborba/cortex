@@ -1,3 +1,4 @@
+import '../../theme/app_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -306,7 +307,7 @@ class LandingHeader extends StatelessWidget {
             FoundationFocus(
               child: PopupMenuButton<Locale>(
                 tooltip: l.language,
-                icon: const Icon(Icons.translate),
+                icon: const Icon(AppIcons.language),
                 onSelected: (v) => prefs.locale = v,
                 itemBuilder: (_) => [
                   for (final (code, name) in [
@@ -322,8 +323,8 @@ class LandingHeader extends StatelessWidget {
               tooltip: l.themeSwitch,
               icon: Icon(
                 Theme.of(context).brightness == Brightness.dark
-                    ? Icons.light_mode_outlined
-                    : Icons.dark_mode_outlined,
+                    ? AppIcons.lightTheme
+                    : AppIcons.darkTheme,
               ),
               onPressed: () =>
                   prefs.theme = Theme.of(context).brightness == Brightness.dark
@@ -336,7 +337,7 @@ class LandingHeader extends StatelessWidget {
               child: PopupMenuButton<LandingSection>(
                 key: const Key('section-menu'),
                 tooltip: l.menu,
-                icon: const Icon(Icons.menu),
+                icon: const Icon(AppIcons.menu),
                 onSelected: onSection,
                 itemBuilder: (_) => [
                   for (final s in LandingSection.values)
@@ -486,11 +487,11 @@ class _What extends StatelessWidget {
             spacing: Space.s8,
             children: [
               Chip(
-                avatar: Icon(Icons.picture_as_pdf_outlined, size: 16),
+                avatar: Icon(AppIcons.file, size: IconSizes.action),
                 label: Text('report.pdf'),
               ),
               Chip(
-                avatar: Icon(Icons.graphic_eq, size: 16),
+                avatar: Icon(AppIcons.activity, size: IconSizes.action),
                 label: Text('note.ogg'),
               ),
             ],
@@ -528,7 +529,7 @@ class _Memory extends StatelessWidget {
         AppButton(
           key: const Key('hippocampus-link'),
           label: l.memoryRepo,
-          icon: Icons.open_in_new,
+          icon: AppIcons.externalLink,
           onPressed: () => launchUrl(Uri.parse(hippocampusRepo)),
         ),
       ],

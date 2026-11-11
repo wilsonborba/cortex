@@ -1,3 +1,4 @@
+import '../../theme/app_icons.dart';
 import 'dart:async';
 import '../../handlers/process_messages.dart';
 import 'package:flutter/material.dart';
@@ -65,7 +66,7 @@ class _OutputBlockState extends State<OutputBlock> {
                         SizedBox.square(
                           dimension: 12,
                           child: MediaQuery.disableAnimationsOf(context)
-                              ? const Icon(Icons.hourglass_empty, size: 12)
+                              ? const Icon(AppIcons.loading, size: 12)
                               : CircularProgressIndicator(
                                   strokeWidth: 1.5,
                                   color: p.muted,
@@ -142,7 +143,7 @@ class _OutputBlockState extends State<OutputBlock> {
               children: [
                 for (final (title, url) in o.sources)
                   ActionChip(
-                    avatar: const Icon(Icons.public, size: 16),
+                    avatar: const Icon(AppIcons.web, size: IconSizes.action),
                     label: Text(
                       '$title · ${Uri.tryParse(url)?.host ?? url}',
                       style: TextStyles.label,
@@ -158,7 +159,7 @@ class _OutputBlockState extends State<OutputBlock> {
           TextButton.icon(
             key: const Key('used-memories'),
             onPressed: () => widget.onMemories?.call(o.memories),
-            icon: const Icon(Icons.hub_outlined, size: 16),
+            icon: const Icon(AppIcons.memory, size: IconSizes.action),
             label: Text(l.usedMemories(o.memories.length)),
           ),
         for (final (number, _) in o.notices)
@@ -176,10 +177,10 @@ class _OutputBlockState extends State<OutputBlock> {
               children: [
                 Icon(
                   o.errorNumber == securityBlock
-                      ? Icons.gpp_bad_outlined
-                      : Icons.error_outline,
+                      ? AppIcons.securityBlock
+                      : AppIcons.error,
                   color: p.danger,
-                  size: 18,
+                  size: IconSizes.action,
                 ),
                 const SizedBox(width: Space.s8),
                 Flexible(
@@ -194,7 +195,7 @@ class _OutputBlockState extends State<OutputBlock> {
                   const SizedBox(width: Space.s8),
                   AppButton(
                     label: l.retry,
-                    icon: Icons.refresh,
+                    icon: AppIcons.retry,
                     onPressed: widget.onRetry,
                   ),
                 ],
@@ -251,8 +252,8 @@ class _OutputBlockState extends State<OutputBlock> {
               IconButton(
                 tooltip: _thinking ? l.collapseThinking : l.expandThinking,
                 icon: Icon(
-                  _thinking ? Icons.expand_less : Icons.expand_more,
-                  size: 18,
+                  _thinking ? AppIcons.collapse : AppIcons.expand,
+                  size: IconSizes.action,
                 ),
                 onPressed: () => setState(() => _thinking = !_thinking),
               ),
@@ -360,7 +361,7 @@ class _CodeBlock extends MarkdownElementBuilder {
             right: 0,
             child: IconButton(
               tooltip: l.copy,
-              icon: const Icon(Icons.copy, size: 16),
+              icon: const Icon(AppIcons.copy, size: IconSizes.action),
               onPressed: () {
                 Clipboard.setData(ClipboardData(text: code));
                 ScaffoldMessenger.maybeOf(
@@ -397,7 +398,10 @@ class _CopyMessageButtonState extends State<CopyMessageButton> {
     final l = AppLocalizations.of(context);
     return IconButton(
       tooltip: copied ? l.copied : l.copy,
-      icon: Icon(copied ? Icons.check : Icons.content_copy_outlined, size: 16),
+      icon: Icon(
+        copied ? AppIcons.copied : AppIcons.copy,
+        size: IconSizes.action,
+      ),
       onPressed: widget.text.isEmpty
           ? null
           : () async {

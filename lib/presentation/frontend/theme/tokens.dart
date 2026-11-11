@@ -131,6 +131,12 @@ enum SizeClass {
       : expanded;
 }
 
+abstract final class IconSizes {
+  static const navigation = 18.0;
+  static const action = 16.0;
+  static const chip = 14.0;
+}
+
 abstract final class Controls {
   static double height(SizeClass size) => size == SizeClass.compact ? 44 : 36;
   static const minTouch = 44.0;

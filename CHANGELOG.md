@@ -17,6 +17,10 @@
 
 - Add neutral foundation and strict brand accent roles
 
+- Merge neutral foundation for #49
+
+- Use regular Lucide icons through the app icon map
+
 
 ## v2.0.1 - 2026-11-11
 
