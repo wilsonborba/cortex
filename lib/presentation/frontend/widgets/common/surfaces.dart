@@ -37,7 +37,7 @@ class AppInput extends StatelessWidget {
   );
 }
 
-/// Chip; the selected chip is the selected item, so it carries the accent.
+/// Selected chips use neutral inverse colors.
 class AppChip extends StatelessWidget {
   const AppChip({
     super.key,
@@ -51,23 +51,34 @@ class AppChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final p = Palette.of(Theme.of(context).brightness);
+    final p = Palette.from(context);
     return ChoiceChip(
       // The label color is set on the Text: the chip theme does not apply
       // labelStyle to a selected Material 3 chip.
       label: Text(
         label,
-        style: TextStyles.label.copyWith(color: selected ? p.onAccent : p.text),
+        style: TextStyles.label.copyWith(
+          color: selected ? p.background : p.text,
+        ),
       ),
       selected: selected,
       onSelected: onSelected,
       showCheckmark: false,
       labelStyle: TextStyles.label.copyWith(
-        color: selected ? p.onAccent : p.text,
+        color: selected ? p.background : p.text,
       ),
-      selectedColor: p.accent,
+      selectedColor: p.text,
       backgroundColor: p.surface,
-      side: BorderSide(color: selected ? p.accent : p.border),
+      side: WidgetStateBorderSide.resolveWith(
+        (states) => BorderSide(
+          color: states.contains(WidgetState.focused) || selected
+              ? p.text
+              : p.border,
+          width: states.contains(WidgetState.focused)
+              ? Controls.focusRing
+              : Controls.border,
+        ),
+      ),
       elevation: 0,
       pressElevation: 0,
     );
@@ -84,11 +95,13 @@ class AppCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Card(
     clipBehavior: Clip.antiAlias,
-    child: InkWell(
-      onTap: onTap,
-      child: Padding(
-        padding: padding ?? const EdgeInsets.all(Space.s16),
-        child: child,
+    child: FoundationFocus(
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: padding ?? const EdgeInsets.all(Space.s16),
+          child: child,
+        ),
       ),
     ),
   );

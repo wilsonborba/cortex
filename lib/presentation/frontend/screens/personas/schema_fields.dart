@@ -121,20 +121,20 @@ class SchemaFields extends StatelessWidget {
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        SwitchListTile(
-                          key: key,
-                          contentPadding: EdgeInsets.zero,
-                          title: Text(label),
-                          value: value == true,
-                          onChanged: enabled ? change : null,
+                        FoundationFocus(
+                          child: SwitchListTile(
+                            key: key,
+                            contentPadding: EdgeInsets.zero,
+                            title: Text(label),
+                            value: value == true,
+                            onChanged: enabled ? change : null,
+                          ),
                         ),
                         if (error != null)
                           Text(
                             fieldError(l, error)!,
                             style: TextStyle(
-                              color: Palette.of(
-                                Theme.of(context).brightness,
-                              ).danger,
+                              color: Palette.from(context).danger,
                             ),
                           ),
                       ],

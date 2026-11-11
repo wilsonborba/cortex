@@ -28,7 +28,7 @@ class MemoryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
-    final p = Palette.of(Theme.of(context).brightness);
+    final p = Palette.from(context);
     final node = data.node!;
     final m = node.metadata;
     final linked = data.linked(node.id);
@@ -110,7 +110,9 @@ class MemoryCard extends StatelessWidget {
                 ),
                 decoration: BoxDecoration(
                   border: Border.all(color: p.border),
-                  borderRadius: BorderRadius.circular(Radii.control),
+                  borderRadius: BorderRadius.circular(
+                    FoundationTokens.of(context).controlRadius,
+                  ),
                 ),
                 child: Text(l.superseded, style: meta),
               ),

@@ -69,7 +69,7 @@ class _Sidebar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
-    final p = Palette.of(Theme.of(context).brightness);
+    final p = Palette.from(context);
     final selected = _selected(shell.location);
     return Container(
       key: const Key('sidebar'),
@@ -104,20 +104,30 @@ class _Sidebar extends StatelessWidget {
           ),
           const SizedBox(height: Space.s12),
           for (final (i, d) in _destinations.indexed.skip(1))
-            ListTile(
-              dense: true,
-              leading: Icon(d.icon, color: i == selected ? p.accent : p.text),
-              title: Text(d.label(l), style: TextStyles.compact),
-              selected: i == selected,
-              onTap: () => context.go(d.path),
+            FoundationFocus(
+              child: ListTile(
+                dense: true,
+                leading: Icon(d.icon, color: p.text),
+                shape: Border(
+                  left: BorderSide(
+                    color: i == selected ? p.accent : Colors.transparent,
+                    width: Controls.focusRing,
+                  ),
+                ),
+                title: Text(d.label(l), style: TextStyles.compact),
+                selected: i == selected,
+                onTap: () => context.go(d.path),
+              ),
             ),
           const SizedBox(height: Space.s12),
           // Log out only here, at the bottom of the sidebar (28.9).
-          ListTile(
-            dense: true,
-            leading: Icon(Icons.logout, color: p.text),
-            title: Text(l.logOut, style: TextStyles.compact),
-            onTap: shell.onLogOut,
+          FoundationFocus(
+            child: ListTile(
+              dense: true,
+              leading: Icon(Icons.logout, color: p.text),
+              title: Text(l.logOut, style: TextStyles.compact),
+              onTap: shell.onLogOut,
+            ),
           ),
         ],
       ),
@@ -130,7 +140,7 @@ class _Expanded extends StatelessWidget {
   final AppShell shell;
   @override
   Widget build(BuildContext context) {
-    final p = Palette.of(Theme.of(context).brightness);
+    final p = Palette.from(context);
     final l = AppLocalizations.of(context);
     return Scaffold(
       body: Row(
@@ -151,12 +161,17 @@ class _Expanded extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        ListTile(
-                          title: Text(l.details, style: TextStyles.subsection),
-                          trailing: IconButton(
-                            tooltip: l.close,
-                            icon: const Icon(Icons.close),
-                            onPressed: shell.details.close,
+                        FoundationFocus(
+                          child: ListTile(
+                            title: Text(
+                              l.details,
+                              style: TextStyles.subsection,
+                            ),
+                            trailing: IconButton(
+                              tooltip: l.close,
+                              icon: const Icon(Icons.close),
+                              onPressed: shell.details.close,
+                            ),
                           ),
                         ),
                         Expanded(

@@ -1,6 +1,23 @@
 # Changelog
 
 
+## Unreleased
+
+
+### Chores
+
+- Merge v2.0.1 back to release/v2.0.1
+
+- Merge v2.0.1 back to development
+
+- Merge v2.0.1 back to feature/main
+
+
+### Features
+
+- Add neutral foundation and strict brand accent roles
+
+
 ## v2.0.1 - 2026-11-11
 
 
@@ -44,6 +61,10 @@
 - Merge #48 remove-footer-credit-and-decorative-background
 
 - Prepare development for v2.0.1
+
+- Prepare v2.0.1
+
+- Release v2.0.1
 
 
 ## v2.0.0 - 2026-11-11

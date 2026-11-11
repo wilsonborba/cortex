@@ -195,7 +195,7 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
-    final p = Palette.of(Theme.of(context).brightness);
+    final p = Palette.from(context);
     final title = chat.temporary
         ? l.temporaryChat
         : '${chat.chat?['title'] ?? (chat.isNew ? l.newChat : '')}';
@@ -242,33 +242,38 @@ class _ChatScreenState extends State<ChatScreen> {
                 ),
               ),
               if (!chat.isNew && !chat.temporary) ...[
-                PopupMenuButton<String>(
-                  key: const Key('chat-actions'),
-                  tooltip: l.menu,
-                  icon: Icon(Icons.more_horiz, color: p.muted),
-                  onSelected: (action) {
-                    switch (action) {
-                      case 'rename':
-                        _rename();
-                      case 'pin':
-                        runApiAction(context, chat.togglePin);
-                      case 'delete':
-                        _delete();
-                    }
-                  },
-                  itemBuilder: (_) => [
-                    PopupMenuItem(value: 'rename', child: Text(l.rename)),
-                    PopupMenuItem(
-                      value: 'pin',
-                      child: Text(
-                        chat.chat?['is_pinned'] == true ? l.unpin : l.pin,
+                FoundationFocus(
+                  child: PopupMenuButton<String>(
+                    key: const Key('chat-actions'),
+                    tooltip: l.menu,
+                    icon: Icon(Icons.more_horiz, color: p.muted),
+                    onSelected: (action) {
+                      switch (action) {
+                        case 'rename':
+                          _rename();
+                        case 'pin':
+                          runApiAction(context, chat.togglePin);
+                        case 'delete':
+                          _delete();
+                      }
+                    },
+                    itemBuilder: (_) => [
+                      PopupMenuItem(value: 'rename', child: Text(l.rename)),
+                      PopupMenuItem(
+                        value: 'pin',
+                        child: Text(
+                          chat.chat?['is_pinned'] == true ? l.unpin : l.pin,
+                        ),
                       ),
-                    ),
-                    PopupMenuItem(
-                      value: 'delete',
-                      child: Text(l.delete, style: TextStyle(color: p.danger)),
-                    ),
-                  ],
+                      PopupMenuItem(
+                        value: 'delete',
+                        child: Text(
+                          l.delete,
+                          style: TextStyle(color: p.danger),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ],
@@ -321,7 +326,9 @@ class _ChatScreenState extends State<ChatScreen> {
                                     decoration: BoxDecoration(
                                       color: p.surface,
                                       borderRadius: BorderRadius.circular(
-                                        Radii.card,
+                                        FoundationTokens.of(
+                                          context,
+                                        ).groupRadius,
                                       ),
                                     ),
                                     child: Column(

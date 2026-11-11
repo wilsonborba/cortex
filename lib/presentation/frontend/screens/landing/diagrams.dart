@@ -47,7 +47,7 @@ class _PipelineDiagramState extends State<PipelineDiagram> {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
-    final p = Palette.of(Theme.of(context).brightness);
+    final p = Palette.from(context);
     final stages = [
       (l.stageAccept, l.stageAcceptText),
       (l.stageGather, l.stageGatherText),
@@ -69,15 +69,17 @@ class _PipelineDiagramState extends State<PipelineDiagram> {
               for (final (i, (name, text)) in stages.indexed)
                 AnimatedContainer(
                   duration: Motion.of(context),
-                  curve: Curves.easeOutCubic,
+                  curve: FoundationTokens.curve,
                   key: Key('stage-$i'),
                   width: 170,
                   padding: const EdgeInsets.all(Space.s12),
                   decoration: BoxDecoration(
                     color: p.surface,
-                    borderRadius: BorderRadius.circular(Radii.card),
+                    borderRadius: BorderRadius.circular(
+                      FoundationTokens.of(context).groupRadius,
+                    ),
                     border: Border.all(
-                      color: !still && i == _active ? p.accent : p.border,
+                      color: !still && i == _active ? p.text : p.border,
                       width: 1,
                     ),
                   ),
@@ -125,13 +127,15 @@ class MachinesDiagram extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
-    final p = Palette.of(Theme.of(context).brightness);
+    final p = Palette.from(context);
     Widget box(String title, String text) => Container(
       width: 200,
       padding: const EdgeInsets.all(Space.s12),
       decoration: BoxDecoration(
         color: p.surface,
-        borderRadius: BorderRadius.circular(Radii.card),
+        borderRadius: BorderRadius.circular(
+          FoundationTokens.of(context).groupRadius,
+        ),
         border: Border.all(color: p.border),
       ),
       child: Column(
@@ -170,7 +174,7 @@ class ScopeTree extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
-    final p = Palette.of(Theme.of(context).brightness);
+    final p = Palette.from(context);
     Widget row(int depth, IconData icon, String text) => Padding(
       padding: EdgeInsets.only(left: depth * 24.0, bottom: Space.s4),
       child: Row(
@@ -213,7 +217,7 @@ class ExampleGraph extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
-    final p = Palette.of(Theme.of(context).brightness);
+    final p = Palette.from(context);
     final graph = Graph();
     final labels = <String, String>{};
     Node n(String id, String label) {
@@ -256,7 +260,9 @@ class ExampleGraph extends StatelessWidget {
               decoration: BoxDecoration(
                 color: p.surface,
                 border: Border.all(color: p.border),
-                borderRadius: BorderRadius.circular(Radii.control),
+                borderRadius: BorderRadius.circular(
+                  FoundationTokens.of(context).controlRadius,
+                ),
               ),
               child: Text(labels[node.key!.value]!, style: TextStyles.label),
             ),

@@ -39,7 +39,7 @@ class _PersonaListState extends State<PersonaList> {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
-    final p = Palette.of(Theme.of(context).brightness);
+    final p = Palette.from(context);
     final items = personas.items;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -67,21 +67,26 @@ class _PersonaListState extends State<PersonaList> {
                   onFieldSubmitted: (_) => personas.load(),
                 ),
               ),
-              DropdownButton<String>(
-                key: const Key('persona-filter'),
-                value: personas.type ?? 'all',
-                items: [
-                  DropdownMenuItem(
-                    value: 'all',
-                    child: Text(l.allPersonaTypes),
-                  ),
-                  DropdownMenuItem(value: 'person', child: Text(l.personType)),
-                  DropdownMenuItem(value: 'bot', child: Text(l.botType)),
-                ],
-                onChanged: (value) {
-                  personas.type = value == 'all' ? null : value;
-                  personas.load();
-                },
+              FoundationFocus(
+                child: DropdownButton<String>(
+                  key: const Key('persona-filter'),
+                  value: personas.type ?? 'all',
+                  items: [
+                    DropdownMenuItem(
+                      value: 'all',
+                      child: Text(l.allPersonaTypes),
+                    ),
+                    DropdownMenuItem(
+                      value: 'person',
+                      child: Text(l.personType),
+                    ),
+                    DropdownMenuItem(value: 'bot', child: Text(l.botType)),
+                  ],
+                  onChanged: (value) {
+                    personas.type = value == 'all' ? null : value;
+                    personas.load();
+                  },
+                ),
               ),
               AppButton(
                 label: l.newPersona,
@@ -123,65 +128,72 @@ class _PersonaListState extends State<PersonaList> {
                       color: p.surface,
                       elevation: 0,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(Radii.card),
+                        borderRadius: BorderRadius.circular(
+                          FoundationTokens.of(context).groupRadius,
+                        ),
                         side: BorderSide(color: p.border),
                       ),
-                      child: InkWell(
-                        key: Key('persona-${persona.id}'),
-                        onTap: () => context.go(
-                          '/v1/personas/${Uri.encodeComponent(persona.id)}',
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(Space.s16),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Wrap(
-                                spacing: Space.s8,
-                                crossAxisAlignment: WrapCrossAlignment.center,
-                                children: [
-                                  Icon(
-                                    persona.type == 'bot'
-                                        ? Icons.smart_toy_outlined
-                                        : Icons.person_outline,
-                                  ),
-                                  Text(
-                                    persona.name,
-                                    style: TextStyles.subsection,
-                                  ),
-                                  if (persona.isSelf) Chip(label: Text(l.you)),
-                                ],
-                              ),
-                              Text(
-                                persona.type == 'bot'
-                                    ? l.botType
-                                    : l.personType,
-                                style: TextStyles.label,
-                              ),
-                              if (persona.aliases.isNotEmpty)
+                      child: FoundationFocus(
+                        child: InkWell(
+                          key: Key('persona-${persona.id}'),
+                          onTap: () => context.go(
+                            '/v1/personas/${Uri.encodeComponent(persona.id)}',
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(Space.s16),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
                                 Wrap(
                                   spacing: Space.s8,
+                                  crossAxisAlignment: WrapCrossAlignment.center,
                                   children: [
-                                    for (final alias in persona.aliases)
-                                      Chip(label: Text(alias)),
+                                    Icon(
+                                      persona.type == 'bot'
+                                          ? Icons.smart_toy_outlined
+                                          : Icons.person_outline,
+                                    ),
+                                    Text(
+                                      persona.name,
+                                      style: TextStyles.subsection,
+                                    ),
+                                    if (persona.isSelf)
+                                      Chip(label: Text(l.you)),
                                   ],
                                 ),
-                              if (persona.attributes.isNotEmpty)
-                                Padding(
-                                  padding: const EdgeInsets.only(top: Space.s8),
-                                  child: Text(
-                                    persona.attributes.entries
-                                        .map(
-                                          (e) =>
-                                              '${e.key}: ${personaValue(e.value, l)}',
-                                        )
-                                        .join('\n'),
-                                    maxLines: 3,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: TextStyles.compact,
-                                  ),
+                                Text(
+                                  persona.type == 'bot'
+                                      ? l.botType
+                                      : l.personType,
+                                  style: TextStyles.label,
                                 ),
-                            ],
+                                if (persona.aliases.isNotEmpty)
+                                  Wrap(
+                                    spacing: Space.s8,
+                                    children: [
+                                      for (final alias in persona.aliases)
+                                        Chip(label: Text(alias)),
+                                    ],
+                                  ),
+                                if (persona.attributes.isNotEmpty)
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                      top: Space.s8,
+                                    ),
+                                    child: Text(
+                                      persona.attributes.entries
+                                          .map(
+                                            (e) =>
+                                                '${e.key}: ${personaValue(e.value, l)}',
+                                          )
+                                          .join('\n'),
+                                      maxLines: 3,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyles.compact,
+                                    ),
+                                  ),
+                              ],
+                            ),
                           ),
                         ),
                       ),

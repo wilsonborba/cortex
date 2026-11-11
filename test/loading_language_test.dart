@@ -1,3 +1,4 @@
+import 'package:cortex/presentation/frontend/theme/theme.dart';
 import 'package:cortex/l10n/generated/app_localizations.dart';
 import 'package:cortex/presentation/frontend/widgets/common/states.dart';
 import 'package:flutter/material.dart';
@@ -14,6 +15,7 @@ void main() {
     ]) {
       await tester.pumpWidget(
         MaterialApp(
+          theme: cortexTheme(Brightness.dark),
           locale: locale,
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,

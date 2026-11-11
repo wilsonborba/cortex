@@ -117,7 +117,7 @@ class _ChatDemoState extends State<ChatDemo> {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
-    final p = Palette.of(Theme.of(context).brightness);
+    final p = Palette.from(context);
     return AppCard(
       key: const Key('chat-demo'),
       child: Column(
@@ -132,7 +132,9 @@ class _ChatDemoState extends State<ChatDemo> {
                 ),
                 decoration: BoxDecoration(
                   border: Border.all(color: p.border),
-                  borderRadius: BorderRadius.circular(Radii.control),
+                  borderRadius: BorderRadius.circular(
+                    FoundationTokens.of(context).controlRadius,
+                  ),
                 ),
                 child: Text(
                   l.example,
@@ -190,14 +192,14 @@ class _DemoTranscript extends StatelessWidget {
   Widget build(BuildContext context) {
     final s = script;
     final l = AppLocalizations.of(context);
-    final p = Palette.of(Theme.of(context).brightness);
+    final p = Palette.from(context);
     final done = shown > s.steps.length;
     Widget reveal(bool visible, Widget child) => ExcludeSemantics(
       excluding: !visible,
       child: AnimatedOpacity(
         opacity: visible ? 1 : 0,
         duration: Motion.of(context),
-        curve: Curves.easeOutCubic,
+        curve: FoundationTokens.curve,
         child: child,
       ),
     );
@@ -214,7 +216,9 @@ class _DemoTranscript extends StatelessWidget {
               decoration: BoxDecoration(
                 color: p.background,
                 border: Border.all(color: p.border),
-                borderRadius: BorderRadius.circular(Radii.card),
+                borderRadius: BorderRadius.circular(
+                  FoundationTokens.of(context).groupRadius,
+                ),
               ),
               child: Text(s.prompt, style: TextStyles.body),
             ),
@@ -232,7 +236,7 @@ class _DemoTranscript extends StatelessWidget {
                           ? Icons.radio_button_checked
                           : Icons.check,
                       size: 14,
-                      color: i == shown - 1 && !done ? p.accent : p.muted,
+                      color: i == shown - 1 && !done ? p.text : p.muted,
                     ),
                     const SizedBox(width: Space.s8),
                     Flexible(

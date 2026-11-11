@@ -75,7 +75,7 @@ class _MemoryScreenState extends State<MemoryScreen> {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
-    final p = Palette.of(Theme.of(context).brightness);
+    final p = Palette.from(context);
     final graph = memory.graph;
     final Widget body;
     if (memory.error != null) {
@@ -229,17 +229,19 @@ class _Picker extends StatelessWidget {
     crossAxisAlignment: WrapCrossAlignment.center,
     children: [
       Text('$label:', style: TextStyles.compact),
-      DropdownButton<int>(
-        value: value,
-        underline: const SizedBox(),
-        items: [
-          for (final v in values)
-            DropdownMenuItem(
-              value: v,
-              child: Text('$v', style: TextStyles.compact),
-            ),
-        ],
-        onChanged: (v) => onChanged(v!),
+      FoundationFocus(
+        child: DropdownButton<int>(
+          value: value,
+          underline: const SizedBox(),
+          items: [
+            for (final v in values)
+              DropdownMenuItem(
+                value: v,
+                child: Text('$v', style: TextStyles.compact),
+              ),
+          ],
+          onChanged: (v) => onChanged(v!),
+        ),
       ),
     ],
   );
@@ -252,7 +254,7 @@ class _Legend extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
-    final p = Palette.of(Theme.of(context).brightness);
+    final p = Palette.from(context);
     return Wrap(
       key: const Key('legend'),
       spacing: Space.s12,
@@ -330,7 +332,7 @@ class _GraphViewState extends State<_GraphView>
 
   void _buildGraph() {
     selected.value = widget.selected;
-    final p = Palette.of(Theme.of(context).brightness);
+    final p = Palette.from(context);
     final graph = Graph();
     final nodes = {for (final n in widget.data.nodes) n.id: n};
     // Deterministic starting positions also separate isolated memories.
@@ -376,44 +378,51 @@ class _GraphViewState extends State<_GraphView>
                 label: item.label,
                 child: Tooltip(
                   message: item.label,
-                  child: InkWell(
-                    key: Key('graph-node-${item.id}'),
-                    onTap: () => widget.onTap(item.id),
-                    borderRadius: BorderRadius.circular(Radii.control),
-                    child: SizedBox(
-                      width: 132,
-                      child: Padding(
-                        padding: const EdgeInsets.all(Space.s8),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            AnimatedContainer(
-                              duration: Motion.of(context),
-                              curve: Curves.easeOutCubic,
-                              width: 24,
-                              height: 24,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: on ? p.accent : p.surface,
-                                border: Border.all(
-                                  color: on ? p.accent : p.muted,
+                  child: FoundationFocus(
+                    child: InkWell(
+                      key: Key('graph-node-${item.id}'),
+                      onTap: () => widget.onTap(item.id),
+                      borderRadius: BorderRadius.circular(
+                        FoundationTokens.of(context).controlRadius,
+                      ),
+                      child: SizedBox(
+                        width: 132,
+                        child: Padding(
+                          padding: const EdgeInsets.all(Space.s8),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              AnimatedContainer(
+                                duration: Motion.of(context),
+                                curve: FoundationTokens.curve,
+                                width: 24,
+                                height: 24,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: p.surface,
+                                  border: Border.all(
+                                    color: on ? p.accent : p.muted,
+                                    width: on
+                                        ? Controls.focusRing
+                                        : Controls.border,
+                                  ),
+                                ),
+                                child: Icon(
+                                  nodeIcon(item.displayType),
+                                  size: 14,
+                                  color: p.text,
                                 ),
                               ),
-                              child: Icon(
-                                nodeIcon(item.displayType),
-                                size: 14,
-                                color: on ? p.onAccent : p.text,
+                              const SizedBox(height: Space.s8),
+                              Text(
+                                item.label,
+                                maxLines: 2,
+                                textAlign: TextAlign.center,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyles.label,
                               ),
-                            ),
-                            const SizedBox(height: Space.s8),
-                            Text(
-                              item.label,
-                              maxLines: 2,
-                              textAlign: TextAlign.center,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyles.label,
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
                     ),
@@ -503,30 +512,32 @@ class _ListView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
-    final p = Palette.of(Theme.of(context).brightness);
+    final p = Palette.from(context);
     return ListView.builder(
       key: const Key('memory-list'),
       padding: const EdgeInsets.all(Space.s8),
       itemCount: data.nodes.length,
       itemBuilder: (_, i) {
         final n = data.nodes[i];
-        return ListTile(
-          key: Key('list-node-${n.id}'),
-          dense: true,
-          selected: n.id == selected,
-          selectedTileColor: p.accent.withValues(alpha: 0.12),
-          leading: Icon(nodeIcon(n.displayType), size: 18, color: p.muted),
-          title: Text(
-            n.label,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyles.compact.copyWith(color: p.text),
+        return FoundationFocus(
+          child: ListTile(
+            key: Key('list-node-${n.id}'),
+            dense: true,
+            selected: n.id == selected,
+            selectedTileColor: p.text.withValues(alpha: 0.05),
+            leading: Icon(nodeIcon(n.displayType), size: 18, color: p.muted),
+            title: Text(
+              n.label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyles.compact.copyWith(color: p.text),
+            ),
+            subtitle: Text(
+              nodeTypeName(l, n.displayType),
+              style: TextStyles.label.copyWith(color: p.muted),
+            ),
+            onTap: () => onTap(n.id),
           ),
-          subtitle: Text(
-            nodeTypeName(l, n.displayType),
-            style: TextStyles.label.copyWith(color: p.muted),
-          ),
-          onTap: () => onTap(n.id),
         );
       },
     );

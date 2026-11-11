@@ -55,7 +55,7 @@ class CodeSnippet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final p = Palette.of(Theme.of(context).brightness);
+    final p = Palette.from(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -67,7 +67,9 @@ class CodeSnippet extends StatelessWidget {
           decoration: BoxDecoration(
             color: p.surface,
             border: Border.all(color: p.border),
-            borderRadius: BorderRadius.circular(Radii.card),
+            borderRadius: BorderRadius.circular(
+              FoundationTokens.of(context).groupRadius,
+            ),
           ),
           child: SingleChildScrollView(
             scrollDirection: Axis.horizontal,

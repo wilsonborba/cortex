@@ -6,8 +6,8 @@ ThemeData cortexTheme(Brightness brightness) {
   final p = Palette.of(brightness);
   final scheme = ColorScheme(
     brightness: brightness,
-    primary: p.accent,
-    onPrimary: p.onAccent,
+    primary: p.text,
+    onPrimary: p.background,
     secondary: p.text,
     onSecondary: p.background,
     error: p.danger,
@@ -17,7 +17,7 @@ ThemeData cortexTheme(Brightness brightness) {
     onSurfaceVariant: p.muted,
     outline: p.border,
     outlineVariant: p.border,
-    shadow: Colors.transparent,
+    shadow: Colors.black,
     scrim: p.background.withValues(alpha: 0.6),
   );
   final border = OutlineInputBorder(
@@ -38,6 +38,12 @@ ThemeData cortexTheme(Brightness brightness) {
     useMaterial3: true,
     brightness: brightness,
     colorScheme: scheme,
+    extensions: [p, const FoundationTokens()],
+    textSelectionTheme: TextSelectionThemeData(
+      cursorColor: p.text,
+      selectionColor: p.text.withValues(alpha: 0.25),
+      selectionHandleColor: p.text,
+    ),
     fontFamily: TextStyles.family,
     fontFamilyFallback: TextStyles.fallback,
     textTheme: text,
@@ -69,11 +75,33 @@ ThemeData cortexTheme(Brightness brightness) {
         vertical: Space.s8,
       ),
     ),
-    dialogTheme: DialogThemeData(
-      backgroundColor: p.surface,
-      elevation: 0,
+    // Owner approved Flutter's default menu/dialog elevation on 2026-11-12.
+    popupMenuTheme: PopupMenuThemeData(
+      color: p.raised,
+      surfaceTintColor: Colors.transparent,
+      shadowColor: Colors.black,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(Radii.card),
+      ),
+    ),
+    menuTheme: MenuThemeData(
+      style: MenuStyle(
+        backgroundColor: WidgetStatePropertyAll(p.raised),
+        surfaceTintColor: const WidgetStatePropertyAll(Colors.transparent),
+        shadowColor: const WidgetStatePropertyAll(Colors.black),
+        shape: WidgetStatePropertyAll(
+          RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(Radii.card),
+          ),
+        ),
+      ),
+    ),
+    dialogTheme: DialogThemeData(
+      backgroundColor: p.raised,
+      shadowColor: Colors.black,
+      surfaceTintColor: Colors.transparent,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(Radii.dialog),
         side: BorderSide(color: p.border),
       ),
     ),
@@ -100,19 +128,75 @@ ThemeData cortexTheme(Brightness brightness) {
     navigationRailTheme: NavigationRailThemeData(
       backgroundColor: p.surface,
       indicatorColor: p.text.withValues(alpha: 0.05),
-      selectedIconTheme: IconThemeData(color: p.accent, size: 20),
+      selectedIconTheme: IconThemeData(color: p.text, size: 20),
       unselectedIconTheme: IconThemeData(color: p.muted, size: 20),
     ),
     navigationBarTheme: NavigationBarThemeData(
       backgroundColor: p.surface,
       indicatorColor: p.text.withValues(alpha: 0.05),
       elevation: 0,
+      iconTheme: WidgetStateProperty.resolveWith(
+        (states) => IconThemeData(
+          color: states.contains(WidgetState.selected) ? p.text : p.muted,
+        ),
+      ),
+      labelTextStyle: WidgetStateProperty.resolveWith(
+        (states) => TextStyles.label.copyWith(
+          color: states.contains(WidgetState.selected) ? p.text : p.muted,
+        ),
+      ),
+    ),
+    switchTheme: SwitchThemeData(
+      trackColor: WidgetStateProperty.resolveWith(
+        (states) => states.contains(WidgetState.selected) ? p.text : p.surface,
+      ),
+      thumbColor: WidgetStateProperty.resolveWith(
+        (states) =>
+            states.contains(WidgetState.selected) ? p.background : p.muted,
+      ),
+      trackOutlineColor: WidgetStateProperty.resolveWith(
+        (states) => states.contains(WidgetState.focused) ? p.text : p.border,
+      ),
+      trackOutlineWidth: WidgetStateProperty.resolveWith(
+        (states) => states.contains(WidgetState.focused)
+            ? Controls.focusRing
+            : Controls.border,
+      ),
+    ),
+    segmentedButtonTheme: SegmentedButtonThemeData(
+      style: ButtonStyle(
+        backgroundColor: WidgetStateProperty.resolveWith(
+          (states) =>
+              states.contains(WidgetState.selected) ? p.text : p.surface,
+        ),
+        foregroundColor: WidgetStateProperty.resolveWith(
+          (states) =>
+              states.contains(WidgetState.selected) ? p.background : p.text,
+        ),
+        side: WidgetStateProperty.resolveWith(
+          (states) => BorderSide(
+            color: states.contains(WidgetState.focused) ? p.text : p.border,
+            width: states.contains(WidgetState.focused)
+                ? Controls.focusRing
+                : Controls.border,
+          ),
+        ),
+      ),
     ),
     chipTheme: ChipThemeData(
       backgroundColor: p.surface,
-      selectedColor: p.accent,
+      selectedColor: p.text,
+      secondaryLabelStyle: TextStyles.label.copyWith(color: p.background),
+      checkmarkColor: p.background,
       labelStyle: TextStyles.label.copyWith(color: p.text),
-      side: BorderSide(color: p.border),
+      side: WidgetStateBorderSide.resolveWith(
+        (states) => BorderSide(
+          color: states.contains(WidgetState.focused) ? p.text : p.border,
+          width: states.contains(WidgetState.focused)
+              ? Controls.focusRing
+              : Controls.border,
+        ),
+      ),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(Radii.control),
       ),
@@ -120,16 +204,35 @@ ThemeData cortexTheme(Brightness brightness) {
     // Text buttons and icon buttons are neutral: the accent is only for the
     // primary button and the selected item (C2).
     textButtonTheme: TextButtonThemeData(
-      style: TextButton.styleFrom(
-        foregroundColor: p.text,
-        textStyle: TextStyles.compact,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(Radii.control),
-        ),
-      ),
+      style:
+          TextButton.styleFrom(
+            foregroundColor: p.text,
+            textStyle: TextStyles.compact,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(Radii.control),
+            ),
+          ).copyWith(
+            side: WidgetStateProperty.resolveWith(
+              (states) => BorderSide(
+                color: states.contains(WidgetState.focused)
+                    ? p.text
+                    : Colors.transparent,
+                width: Controls.focusRing,
+              ),
+            ),
+          ),
     ),
     iconButtonTheme: IconButtonThemeData(
-      style: IconButton.styleFrom(foregroundColor: p.text),
+      style: IconButton.styleFrom(foregroundColor: p.text).copyWith(
+        side: WidgetStateProperty.resolveWith(
+          (states) => BorderSide(
+            color: states.contains(WidgetState.focused)
+                ? p.text
+                : Colors.transparent,
+            width: Controls.focusRing,
+          ),
+        ),
+      ),
     ),
     focusColor: p.text.withValues(alpha: 0.12),
     hoverColor: p.text.withValues(alpha: 0.06),

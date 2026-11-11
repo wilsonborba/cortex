@@ -40,7 +40,7 @@ class _OutputBlockState extends State<OutputBlock> {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
-    final p = Palette.of(Theme.of(context).brightness);
+    final p = Palette.from(context);
     final o = widget.output;
     final elapsed = DateTime.now().difference(o.started).inSeconds;
     final total = o.progress;
@@ -48,60 +48,62 @@ class _OutputBlockState extends State<OutputBlock> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (o.running)
-          InkWell(
-            key: const Key('status-line'),
-            onTap: () => setState(() => _stages = !_stages),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: Space.s4),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Wrap(
-                    spacing: Space.s8,
-                    runSpacing: Space.s4,
-                    crossAxisAlignment: WrapCrossAlignment.center,
-                    children: [
-                      SizedBox.square(
-                        dimension: 12,
-                        child: MediaQuery.disableAnimationsOf(context)
-                            ? const Icon(Icons.hourglass_empty, size: 12)
-                            : CircularProgressIndicator(
-                                strokeWidth: 1.5,
-                                color: p.muted,
-                              ),
-                      ),
-                      const SizedBox(width: Space.s8),
-                      Text(
-                        o.step == null
-                            ? l.steps_queue_wait
-                            : stepText(l, o.step!, o.stepParams, o.progress),
-                        style: TextStyles.compact.copyWith(color: p.muted),
-                      ),
-                      const SizedBox(width: Space.s8),
-                      Text(
-                        l.elapsed(elapsed),
-                        style: TextStyles.label.copyWith(color: p.muted),
-                      ),
-                      if (o.expectedMs != null) ...[
+          FoundationFocus(
+            child: InkWell(
+              key: const Key('status-line'),
+              onTap: () => setState(() => _stages = !_stages),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: Space.s4),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Wrap(
+                      spacing: Space.s8,
+                      runSpacing: Space.s4,
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      children: [
+                        SizedBox.square(
+                          dimension: 12,
+                          child: MediaQuery.disableAnimationsOf(context)
+                              ? const Icon(Icons.hourglass_empty, size: 12)
+                              : CircularProgressIndicator(
+                                  strokeWidth: 1.5,
+                                  color: p.muted,
+                                ),
+                        ),
                         const SizedBox(width: Space.s8),
                         Text(
-                          l.usuallyAbout((o.expectedMs! / 1000).round()),
+                          o.step == null
+                              ? l.steps_queue_wait
+                              : stepText(l, o.step!, o.stepParams, o.progress),
+                          style: TextStyles.compact.copyWith(color: p.muted),
+                        ),
+                        const SizedBox(width: Space.s8),
+                        Text(
+                          l.elapsed(elapsed),
                           style: TextStyles.label.copyWith(color: p.muted),
                         ),
+                        if (o.expectedMs != null) ...[
+                          const SizedBox(width: Space.s8),
+                          Text(
+                            l.usuallyAbout((o.expectedMs! / 1000).round()),
+                            style: TextStyles.label.copyWith(color: p.muted),
+                          ),
+                        ],
                       ],
-                    ],
-                  ),
-                  if (total != null && total.length == 2 && total[1] > 0)
-                    Padding(
-                      padding: const EdgeInsets.only(top: Space.s4),
-                      child: LinearProgressIndicator(
-                        value: total[0] / total[1],
-                        color: p.text,
-                        backgroundColor: p.border,
-                        minHeight: 2,
-                      ),
                     ),
-                ],
+                    if (total != null && total.length == 2 && total[1] > 0)
+                      Padding(
+                        padding: const EdgeInsets.only(top: Space.s4),
+                        child: LinearProgressIndicator(
+                          value: total[0] / total[1],
+                          color: p.text,
+                          backgroundColor: p.border,
+                          minHeight: 2,
+                        ),
+                      ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -228,7 +230,9 @@ class _OutputBlockState extends State<OutputBlock> {
       padding: const EdgeInsets.all(Space.s12),
       decoration: BoxDecoration(
         border: Border.all(color: p.border),
-        borderRadius: BorderRadius.circular(Radii.card),
+        borderRadius: BorderRadius.circular(
+          FoundationTokens.of(context).groupRadius,
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -274,7 +278,7 @@ class _Answer extends StatelessWidget {
   final String text;
   @override
   Widget build(BuildContext context) {
-    final p = Palette.of(Theme.of(context).brightness);
+    final p = Palette.from(context);
     return MarkdownBody(
       key: const Key('answer'),
       data: text,
@@ -283,6 +287,10 @@ class _Answer extends StatelessWidget {
           ? null
           : launchUrl(Uri.parse(href), webOnlyWindowName: '_blank'),
       styleSheet: MarkdownStyleSheet(
+        a: TextStyles.body.copyWith(
+          color: p.text,
+          decoration: TextDecoration.underline,
+        ),
         p: TextStyles.body.copyWith(color: p.text),
         code: TextStyles.compact.copyWith(
           fontFamily: TextStyles.mono,
@@ -291,7 +299,9 @@ class _Answer extends StatelessWidget {
         codeblockDecoration: BoxDecoration(
           color: p.surface,
           border: Border.all(color: p.border),
-          borderRadius: BorderRadius.circular(Radii.control),
+          borderRadius: BorderRadius.circular(
+            FoundationTokens.of(context).controlRadius,
+          ),
         ),
         h1: TextStyles.section,
         h2: TextStyles.subsection,
@@ -323,7 +333,9 @@ class _CodeBlock extends MarkdownElementBuilder {
       decoration: BoxDecoration(
         color: p.surface,
         border: Border.all(color: p.border),
-        borderRadius: BorderRadius.circular(Radii.control),
+        borderRadius: BorderRadius.circular(
+          FoundationTokens.of(context).controlRadius,
+        ),
       ),
       child: Stack(
         children: [
