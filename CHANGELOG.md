@@ -1,6 +1,87 @@
 # Changelog
 
 
+## v2.0.0 - 2026-11-11
+
+
+### Bug Fixes
+
+- Loading-language (#38)
+
+- Landing-role-language (#39)
+
+- Landing-header-layout (#40)
+
+- Landing-final-action (#41)
+
+- Preserve-browser-path-on-startup (#42)
+
+
+### Chores
+
+- Merge v1.2.0 back to feature/main
+
+- Add Flutter web project skeleton (#26)
+
+- Merge #26 add Flutter web project skeleton
+
+- Merge #27 design-system
+
+- Merge #28 app-shell
+
+- Merge #29 landing-page
+
+- Merge #30 chat-screen
+
+- Merge #32 memory-graph-and-cards
+
+- Merge #33 persona-schema-forms
+
+- Merge #34 usage-timing-stats-events
+
+- Merge #38 loading-language
+
+- Merge #35 messages-states-accessibility
+
+- Merge #39 landing-role-language
+
+- Merge #40 landing-header-layout
+
+- Merge #41 landing-final-action
+
+- Merge #36 prepare the production web build and deployment
+
+- Merge #42 preserve-browser-path-on-startup
+
+
+### Documentation
+
+- Update for #31
+
+
+### Features
+
+- Design-system (#27)
+
+- App-shell (#28)
+
+- Landing-page (#29)
+
+- Chat-screen (#30)
+
+- Add chat list and temporary chat banner (#31)
+
+- Memory-graph-and-cards (#32)
+
+- Persona-schema-forms (#33)
+
+- Usage-timing-stats-events (#34)
+
+- Messages-states-accessibility (#35)
+
+- Prepare the production web build and deployment (#36)
+
+
 ## v1.2.0 - 2026-11-09
 
 
@@ -46,6 +127,12 @@
 - Default endpoints to live Asodya Auth and API cloud services
 
 - Replace Flutter default web branding with Cortex identity
+
+- Prepare v1.2.0 (#25)
+
+- Consolidate v1.2.0
+
+- Prepare development for v1.2.0
 
 
 ### Features

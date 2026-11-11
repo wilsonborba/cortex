@@ -1,0 +1,25 @@
+pub fn rrf(lists: &[Vec<SearchHit>], k: u32) -> Vec<RankedHit> {
+    let mut values = HashMap::<String, (SearchHit, f64, usize)>::new();
+    let mut order = 0;
+    for list in lists {
+        let mut seen = HashSet::new();
+        for (index, hit) in list.iter().enumerate() {
+            let Some(url) = canonical_url(&hit.url) else {
+                continue;
+            };
+            if !seen.insert(url.clone()) {
+                continue;
+            }
+            let value = values.entry(url.clone()).or_insert_with(|| {
+                order += 1;
+                (
+                    SearchHit {
+                        title: hit.title.clone(),
+                        url,
+                    },
+                    0.0,
+                    order,
+                )
+            });
+            value.1 += 1.0 / (f64::from(k) + (index + 1) as f64);
+        }

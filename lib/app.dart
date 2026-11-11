@@ -1,67 +1,95 @@
+import 'presentation/frontend/widgets/common/connection_banner.dart';
+import 'presentation/frontend/widgets/common/states.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_localizations/flutter_localizations.dart';
-
+import 'package:go_router/go_router.dart';
+import 'dal/remote/auth_api_adapter.dart';
+import 'domain/services/auth_service.dart';
+import 'domain/services/session_controller.dart';
 import 'l10n/generated/app_localizations.dart';
-import 'presentation/frontend/components/app_theme.dart';
-import 'presentation/frontend/handlers/app_preferences_scope.dart';
-import 'presentation/frontend/handlers/session_gate.dart';
+import 'presentation/frontend/preferences.dart';
+import 'presentation/frontend/router.dart';
+import 'presentation/frontend/theme/theme.dart';
 
-/// Root widget: wires the monochrome [AppTheme] (light/dark/system) and the
-/// tri-lingual [AppLocalizations] (en/pt/th), both driven by
-/// [AppPreferencesScope], and hands routing to [SessionGate], which decides
-/// between the landing page and the chat screen depending on whether a
-/// session (or guest flag) is present.
 class CortexApp extends StatefulWidget {
-  const CortexApp({super.key, this.sessionCookieReader});
-
-  /// Test-only seam: overrides [SessionService]'s real browser-cookie check
-  /// (see its doc comment), since VM widget tests have no cookie jar to
-  /// read. Left null in production.
-  final String? Function()? sessionCookieReader;
-
+  const CortexApp({super.key, this.session, this.auth, this.initialLocation});
+  final SessionController? session;
+  final AuthService? auth;
+  final String? initialLocation;
   @override
   State<CortexApp> createState() => _CortexAppState();
 }
 
 class _CortexAppState extends State<CortexApp> {
-  late final AppPreferencesController _preferences;
+  late final SessionController _session = widget.session ?? SessionController();
+  late final AuthService _auth = widget.auth ?? AuthService(AuthApiAdapter());
+  GoRouter? _router;
+  final _preferences = Preferences();
 
   @override
   void initState() {
     super.initState();
-    _preferences = AppPreferencesController();
+    // Capture the browser route before the asynchronous session check.
+    final browserUri = Uri.base;
+    final initialLocation =
+        widget.initialLocation ??
+        (kIsWeb
+            ? '${browserUri.path}${browserUri.hasQuery ? '?${browserUri.query}' : ''}'
+            : WidgetsBinding.instance.platformDispatcher.defaultRouteName);
+    // The first redirect needs the real session state.
+    _session.refresh().then((_) {
+      if (!mounted) return;
+      setState(() {
+        _router = buildRouter(
+          session: _session,
+          auth: _auth,
+          initialLocation: initialLocation,
+        );
+      });
+    });
   }
 
   @override
   void dispose() {
-    _preferences.dispose();
+    _router?.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return AppPreferencesScope(
-      controller: _preferences,
-      child: AnimatedBuilder(
-        animation: _preferences,
-        builder: (context, _) {
-          return MaterialApp(
-            title: 'Cortex',
-            debugShowCheckedModeBanner: false,
-            theme: AppTheme.light(),
-            darkTheme: AppTheme.dark(),
-            themeMode: _preferences.themeMode,
-            locale: _preferences.locale,
-            localizationsDelegates: const [
-              AppLocalizations.delegate,
-              GlobalMaterialLocalizations.delegate,
-              GlobalWidgetsLocalizations.delegate,
-              GlobalCupertinoLocalizations.delegate,
-            ],
-            supportedLocales: AppLocalizations.supportedLocales,
-            home: SessionGate(sessionCookieReader: widget.sessionCookieReader),
-          );
-        },
+    const delegates = [
+      AppLocalizations.delegate,
+      GlobalMaterialLocalizations.delegate,
+      GlobalWidgetsLocalizations.delegate,
+      GlobalCupertinoLocalizations.delegate,
+    ];
+    final router = _router;
+    if (router == null) {
+      return MaterialApp(
+        theme: cortexTheme(Brightness.light),
+        darkTheme: cortexTheme(Brightness.dark),
+        localizationsDelegates: delegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: const Scaffold(body: Center(child: SkeletonBox(width: 240))),
+        builder: (context, child) => ConnectionBanner(child: child!),
+      );
+    }
+    return PreferencesScope(
+      preferences: _preferences,
+      child: ListenableBuilder(
+        listenable: _preferences,
+        builder: (_, _) => MaterialApp.router(
+          title: 'Cortex',
+          builder: (context, child) => ConnectionBanner(child: child!),
+          routerConfig: router,
+          locale: _preferences.locale,
+          themeMode: _preferences.theme,
+          theme: cortexTheme(Brightness.light),
+          darkTheme: cortexTheme(Brightness.dark),
+          localizationsDelegates: delegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+        ),
       ),
     );
   }

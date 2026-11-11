@@ -1,0 +1,8 @@
+    let previous = stages.last().expect("accepted");
+    let start = Instant::now();
+    reporter.start(StageName::Gather);
+    let (mut files, mut memory, mut web) = tokio::join!(
+        services.files(previous),
+        services.memory(previous),
+        services.web(previous)
+    );

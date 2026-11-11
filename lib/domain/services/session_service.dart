@@ -1,7 +1,7 @@
 import '../../core/utils/csrf.dart';
 import '../models/session_status.dart';
 
-/// Reads the authenticated session state for [SessionGate].
+/// Reads the authenticated session state for [SessionController].
 ///
 /// Previously this trusted a `session_active` flag written to
 /// `localStorage` once at login and never re-checked, so a session that
