@@ -118,9 +118,6 @@ class _ChatDemoState extends State<ChatDemo> {
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
     final p = Palette.of(Theme.of(context).brightness);
-    final s = _script(l, _kind);
-    final steps = s.steps.take(_shown).toList();
-    final done = _shown > s.steps.length;
     return AppCard(
       key: const Key('chat-demo'),
       child: Column(
@@ -159,6 +156,56 @@ class _ChatDemoState extends State<ChatDemo> {
             ],
           ),
           const SizedBox(height: Space.s16),
+          // IndexedStack measures every complete localized script. The card
+          // keeps its final height while the selected transcript fades in place.
+          IndexedStack(
+            index: _kind.index,
+            alignment: Alignment.topLeft,
+            children: [
+              for (final kind in DemoKind.values)
+                _DemoTranscript(
+                  script: _script(l, kind),
+                  shown: kind == _kind ? _shown : 0,
+                  active: kind == _kind,
+                ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _DemoTranscript extends StatelessWidget {
+  const _DemoTranscript({
+    required this.script,
+    required this.shown,
+    required this.active,
+  });
+  final _Script script;
+  final int shown;
+  final bool active;
+
+  @override
+  Widget build(BuildContext context) {
+    final s = script;
+    final l = AppLocalizations.of(context);
+    final p = Palette.of(Theme.of(context).brightness);
+    final done = shown > s.steps.length;
+    Widget reveal(bool visible, Widget child) => ExcludeSemantics(
+      excluding: !visible,
+      child: AnimatedOpacity(
+        opacity: visible ? 1 : 0,
+        duration: Motion.of(context),
+        curve: Curves.easeOutCubic,
+        child: child,
+      ),
+    );
+    return SizedBox(
+      width: double.infinity,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
           Align(
             alignment: Alignment.centerRight,
             child: Container(
@@ -173,53 +220,65 @@ class _ChatDemoState extends State<ChatDemo> {
             ),
           ),
           const SizedBox(height: Space.s12),
-          for (final (i, step) in steps.indexed)
-            Padding(
-              padding: const EdgeInsets.only(bottom: Space.s4),
-              child: Row(
-                children: [
-                  Icon(
-                    i == steps.length - 1 && !done
-                        ? Icons.radio_button_checked
-                        : Icons.check,
-                    size: 14,
-                    color: i == steps.length - 1 && !done ? p.accent : p.muted,
+          for (final (i, step) in s.steps.indexed)
+            reveal(
+              i < shown,
+              Padding(
+                padding: const EdgeInsets.only(bottom: Space.s4),
+                child: Row(
+                  children: [
+                    Icon(
+                      i == shown - 1 && !done
+                          ? Icons.radio_button_checked
+                          : Icons.check,
+                      size: 14,
+                      color: i == shown - 1 && !done ? p.accent : p.muted,
+                    ),
+                    const SizedBox(width: Space.s8),
+                    Flexible(
+                      child: Text(
+                        step,
+                        style: TextStyles.compact.copyWith(color: p.muted),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          reveal(
+            done,
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (s.memories.isNotEmpty)
+                  Wrap(
+                    spacing: Space.s8,
+                    children: [
+                      for (final m in s.memories)
+                        Chip(label: Text(m, style: TextStyles.label)),
+                    ],
                   ),
-                  const SizedBox(width: Space.s8),
-                  Flexible(
-                    child: Text(
-                      step,
+                const SizedBox(height: Space.s8),
+                Text(
+                  s.answer,
+                  key: active && done ? const Key('demo-answer') : null,
+                  style: TextStyles.body,
+                ),
+                if (s.sources.isNotEmpty) ...[
+                  const SizedBox(height: Space.s8),
+                  Text(
+                    l.sources,
+                    style: TextStyles.label.copyWith(color: p.muted),
+                  ),
+                  for (final (i, src) in s.sources.indexed)
+                    Text(
+                      '${i + 1}. $src',
                       style: TextStyles.compact.copyWith(color: p.muted),
                     ),
-                  ),
                 ],
-              ),
+              ],
             ),
-          if (done) ...[
-            if (s.memories.isNotEmpty)
-              Wrap(
-                spacing: Space.s8,
-                children: [
-                  for (final m in s.memories)
-                    Chip(label: Text(m, style: TextStyles.label)),
-                ],
-              ),
-            const SizedBox(height: Space.s8),
-            Text(
-              s.answer,
-              key: const Key('demo-answer'),
-              style: TextStyles.body,
-            ),
-            if (s.sources.isNotEmpty) ...[
-              const SizedBox(height: Space.s8),
-              Text(l.sources, style: TextStyles.label.copyWith(color: p.muted)),
-              for (final (i, src) in s.sources.indexed)
-                Text(
-                  '${i + 1}. $src',
-                  style: TextStyles.compact.copyWith(color: p.muted),
-                ),
-            ],
-          ],
+          ),
         ],
       ),
     );

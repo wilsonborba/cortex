@@ -39,71 +39,69 @@ Future<void> loadFonts() async {
 
 void _noop(bool _) {}
 
-/// Every shared component with its states, on the 40 px grid.
+/// Shared components on the plain reading surface, in both themes.
 Widget gallery() => Scaffold(
-  body: GridBackground(
-    child: Padding(
-      padding: const EdgeInsets.all(Space.s24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text('Section title', style: TextStyles.section),
-          const SizedBox(height: Space.s16),
-          Wrap(
-            spacing: Space.s8,
-            runSpacing: Space.s8,
-            children: [
-              AppButton.primary(label: 'Send', onPressed: () {}),
-              AppButton(label: 'Cancel', onPressed: () {}),
-              AppButton.destructive(label: 'Delete chat', onPressed: () {}),
-              const AppButton(label: 'Disabled', onPressed: null),
-              AppButton.primary(label: 'Busy', onPressed: () {}, busy: true),
-            ],
+  body: Padding(
+    padding: const EdgeInsets.all(Space.s24),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('Section title', style: TextStyles.section),
+        const SizedBox(height: Space.s16),
+        Wrap(
+          spacing: Space.s8,
+          runSpacing: Space.s8,
+          children: [
+            AppButton.primary(label: 'Send', onPressed: () {}),
+            AppButton(label: 'Cancel', onPressed: () {}),
+            AppButton.destructive(label: 'Delete chat', onPressed: () {}),
+            const AppButton(label: 'Disabled', onPressed: null),
+            AppButton.primary(label: 'Busy', onPressed: () {}, busy: true),
+          ],
+        ),
+        const SizedBox(height: Space.s16),
+        const SizedBox(
+          width: 360,
+          child: AppInput(label: 'Title', hint: 'Write a title'),
+        ),
+        const SizedBox(height: Space.s8),
+        const SizedBox(
+          width: 360,
+          child: AppInput(label: 'Name', error: 'The name is required'),
+        ),
+        const SizedBox(height: Space.s16),
+        const Row(
+          children: [
+            AppChip(label: 'Fast', selected: true, onSelected: _noop),
+            SizedBox(width: Space.s8),
+            AppChip(label: 'Medium', onSelected: _noop),
+          ],
+        ),
+        const SizedBox(height: Space.s16),
+        const SizedBox(
+          width: 360,
+          child: AppCard(child: Text('A memory card with body text.')),
+        ),
+        const SizedBox(height: Space.s16),
+        const SkeletonBox(width: 240),
+        const SizedBox(height: Space.s16),
+        const NoticeLine(message: 'Memory could not be loaded'),
+        const NoticeLine(
+          message: 'The file was not saved',
+          kind: NoticeKind.error,
+        ),
+        const SizedBox(height: Space.s16),
+        const OfflineBanner(message: 'You are offline'),
+        const SizedBox(height: Space.s16),
+        SizedBox(
+          height: 140,
+          child: ErrorState(
+            message: 'Chats could not be loaded',
+            retryLabel: 'Retry',
+            onRetry: () {},
           ),
-          const SizedBox(height: Space.s16),
-          const SizedBox(
-            width: 360,
-            child: AppInput(label: 'Title', hint: 'Write a title'),
-          ),
-          const SizedBox(height: Space.s8),
-          const SizedBox(
-            width: 360,
-            child: AppInput(label: 'Name', error: 'The name is required'),
-          ),
-          const SizedBox(height: Space.s16),
-          const Row(
-            children: [
-              AppChip(label: 'Fast', selected: true, onSelected: _noop),
-              SizedBox(width: Space.s8),
-              AppChip(label: 'Medium', onSelected: _noop),
-            ],
-          ),
-          const SizedBox(height: Space.s16),
-          const SizedBox(
-            width: 360,
-            child: AppCard(child: Text('A memory card with body text.')),
-          ),
-          const SizedBox(height: Space.s16),
-          const SkeletonBox(width: 240),
-          const SizedBox(height: Space.s16),
-          const NoticeLine(message: 'Memory could not be loaded'),
-          const NoticeLine(
-            message: 'The file was not saved',
-            kind: NoticeKind.error,
-          ),
-          const SizedBox(height: Space.s16),
-          const OfflineBanner(message: 'You are offline'),
-          const SizedBox(height: Space.s16),
-          SizedBox(
-            height: 140,
-            child: ErrorState(
-              message: 'Chats could not be loaded',
-              retryLabel: 'Retry',
-              onRetry: () {},
-            ),
-          ),
-        ],
-      ),
+        ),
+      ],
     ),
   ),
 );

@@ -419,9 +419,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get finalLine => 'Ask your first question.';
 
   @override
-  String get builtBy => 'Built by Wilson Borba';
-
-  @override
   String version(String v) {
     return 'Version $v';
   }

@@ -1,6 +1,47 @@
 # Changelog
 
 
+## Unreleased
+
+
+### Bug Fixes
+
+- Split-public-content-by-subject (#43)
+
+- Keep-demo-layout-stable-and-soften-transitions (#44)
+
+- Restore-chat-order-copy-and-local-timestamps (#45)
+
+- Refine-chat-reading-and-composer-layout (#46)
+
+- Preserve-isolated-memory-nodes-and-frame-graph (#47)
+
+- Keep-composer-labels-readable-and-compact (#46)
+
+- Remove-footer-credit-and-decorative-background (#48)
+
+
+### Chores
+
+- Merge v2.0.0 back to release/v2.0.0
+
+- Merge v2.0.0 back to development
+
+- Merge v2.0.0 back to feature/main
+
+- Merge #43 split-public-content-by-subject
+
+- Merge #44 keep-demo-layout-stable-and-soften-transitions
+
+- Merge #45 restore-chat-order-copy-and-local-timestamps
+
+- Merge #46 refine-chat-reading-and-composer-layout
+
+- Merge #47 preserve-isolated-memory-nodes-and-frame-graph
+
+- Merge #46 keep-composer-labels-readable-and-compact
+
+
 ## v2.0.0 - 2026-11-11
 
 
@@ -58,6 +99,10 @@
 - Merge #36 v2.0.0 preparation
 
 - Prepare development for v2.0.0
+
+- Finalize v2.0.0 changelog
+
+- Release v2.0.0
 
 
 ### Documentation

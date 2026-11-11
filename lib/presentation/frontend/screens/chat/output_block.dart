@@ -1,3 +1,4 @@
+import 'dart:async';
 import '../../handlers/process_messages.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -123,7 +124,13 @@ class _OutputBlockState extends State<OutputBlock> {
             ),
           ),
         if (o.thinking.isNotEmpty) _thinkingSection(l, p, o),
-        if (o.answer.isNotEmpty) _Answer(text: o.answer.toString()),
+        if (o.answer.isNotEmpty) ...[
+          _Answer(text: o.answer.toString()),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: CopyMessageButton(text: o.answer.toString()),
+          ),
+        ],
         if (o.sources.isNotEmpty)
           Padding(
             padding: const EdgeInsets.only(top: Space.s8),
@@ -271,7 +278,7 @@ class _Answer extends StatelessWidget {
     return MarkdownBody(
       key: const Key('answer'),
       data: text,
-      selectable: true,
+      selectable: false,
       onTapLink: (_, href, _) => href == null
           ? null
           : launchUrl(Uri.parse(href), webOnlyWindowName: '_blank'),
@@ -352,6 +359,44 @@ class _CodeBlock extends MarkdownElementBuilder {
           ),
         ],
       ),
+    );
+  }
+}
+
+/// Full-message copy stays available with keyboard and touch input.
+class CopyMessageButton extends StatefulWidget {
+  const CopyMessageButton({super.key, required this.text});
+  final String text;
+  @override
+  State<CopyMessageButton> createState() => _CopyMessageButtonState();
+}
+
+class _CopyMessageButtonState extends State<CopyMessageButton> {
+  bool copied = false;
+  Timer? timer;
+  @override
+  void dispose() {
+    timer?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
+    return IconButton(
+      tooltip: copied ? l.copied : l.copy,
+      icon: Icon(copied ? Icons.check : Icons.content_copy_outlined, size: 16),
+      onPressed: widget.text.isEmpty
+          ? null
+          : () async {
+              await Clipboard.setData(ClipboardData(text: widget.text));
+              if (!mounted) return;
+              setState(() => copied = true);
+              timer?.cancel();
+              timer = Timer(const Duration(seconds: 2), () {
+                if (mounted) setState(() => copied = false);
+              });
+            },
     );
   }
 }

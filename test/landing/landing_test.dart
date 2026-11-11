@@ -138,7 +138,7 @@ void main() {
     },
   );
 
-  testWidgets('each section link updates the path and shows the section', (
+  testWidgets('each page link changes the path and shows only that subject', (
     tester,
   ) async {
     final (router, _) = await pump(tester, '/v1/home');
@@ -152,17 +152,77 @@ void main() {
       await tester.tap(find.byKey(Key('link-$link')));
       await frames(tester);
       expect(path(router), target);
+      for (final other in [
+        'How one request works',
+        'Memory with Hippocampus',
+        'Engineering',
+        'AI chat workspace',
+      ]) {
+        if (other != title) {
+          // Engineering also labels the shared navigation link.
+          final matches = find.text(other);
+          expect(
+            matches,
+            other == 'Engineering' ? findsOneWidget : findsNothing,
+          );
+        }
+      }
       final y = tester.getTopLeft(find.text(title).last).dy;
       expect(y, inInclusiveRange(0, 900), reason: link);
     }
   });
 
-  testWidgets('a section path opens the page at that section', (tester) async {
+  testWidgets('a direct FAQ path opens only the FAQ subject', (tester) async {
     await pump(tester, '/v1/home/faq');
     expect(
       tester.getTopLeft(find.text('Do I need an account?')).dy,
       inInclusiveRange(0, 900),
     );
+  });
+
+  testWidgets('public routes isolate their subjects in EN, PT-BR and TH', (
+    tester,
+  ) async {
+    for (final locale in [
+      const Locale('en'),
+      const Locale('pt', 'BR'),
+      const Locale('th'),
+    ]) {
+      final l = await AppLocalizations.delegate.load(locale);
+      final subjects = {
+        '/v1/home': [l.heroTitle, l.whatTitle],
+        '/v1/home/how-it-works': [l.pipelineTitle, l.webTitle, l.liveTitle],
+        '/v1/home/memory': [l.memoryTitle],
+        '/v1/home/engineering': [l.engTitle, l.researchTitle, l.securityTitle],
+        '/v1/home/faq': [l.faq],
+      };
+      for (final route in subjects.entries) {
+        await tester.pumpWidget(const SizedBox());
+        await pump(
+          tester,
+          route.key,
+          locale: locale,
+          size: const Size(390, 800),
+        );
+        final body = find.descendant(
+          of: find.byWidgetPredicate(
+            (widget) => widget is Semantics && widget.properties.header == true,
+          ),
+          matching: find.byType(Text),
+        );
+        final text = tester.widgetList<Text>(body).map((w) => w.data).toList();
+        for (final subject in subjects.entries) {
+          for (final heading in subject.value) {
+            expect(
+              text.contains(heading),
+              subject.key == route.key,
+              reason: '$locale ${route.key}: $heading',
+            );
+          }
+        }
+        expect(tester.takeException(), isNull);
+      }
+    }
   });
 
   testWidgets('the demo replays each of the 4 prompts', (tester) async {
@@ -184,6 +244,36 @@ void main() {
     }
     expect(find.text('Example'), findsOneWidget);
     expect(find.byType(TextField), findsNothing);
+  });
+
+  testWidgets('demo geometry stays still during replay and prompt changes', (
+    tester,
+  ) async {
+    for (final locale in [
+      const Locale('en'),
+      const Locale('pt', 'BR'),
+      const Locale('th'),
+    ]) {
+      for (final width in [390.0, 1300.0]) {
+        await tester.pumpWidget(const SizedBox());
+        await pump(tester, '/v1/home', locale: locale, size: Size(width, 900));
+        final card = find.byKey(const Key('chat-demo'));
+        final original = tester.getSize(card);
+        for (final kind in DemoKind.values) {
+          await tester.ensureVisible(find.byKey(Key('demo-${kind.name}')));
+          await tester.tap(find.byKey(Key('demo-${kind.name}')));
+          for (var frame = 0; frame < 9; frame++) {
+            await tester.pump(const Duration(milliseconds: 400));
+            expect(
+              tester.getSize(card),
+              original,
+              reason: '$locale $width $kind',
+            );
+          }
+        }
+        expect(tester.takeException(), isNull);
+      }
+    }
   });
 
   testWidgets('with Reduce Motion the demo shows the end state at once', (
