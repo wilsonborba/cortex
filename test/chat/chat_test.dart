@@ -202,6 +202,28 @@ Future<void> send(WidgetTester tester, String text) async {
 }
 
 void main() {
+  testWidgets('composer uses the reading column and fits a narrow viewport', (
+    tester,
+  ) async {
+    final (chat, _) = await pump(tester);
+    expect(
+      tester.getSize(find.byKey(const Key('composer'))).width,
+      lessThanOrEqualTo(760),
+    );
+    expect(
+      tester.getTopLeft(find.byKey(const Key('composer'))).dx,
+      greaterThan(100),
+    );
+    tester.view.physicalSize = const Size(390, 844);
+    await tester.pump();
+    expect(
+      tester.getSize(find.byKey(const Key('composer'))).width,
+      lessThan(390),
+    );
+    expect(tester.takeException(), isNull);
+    await stopReconnecting(tester, chat);
+  });
+
   testWidgets(
     'full stream: steps, tokens, sources, memories and the stats line',
     (tester) async {

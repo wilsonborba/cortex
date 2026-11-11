@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:cortex/app.dart';
+import 'package:cortex/core/settings.dart';
 
 void main() {
   testWidgets('the public landing shows login and the build version', (
@@ -17,7 +18,7 @@ void main() {
       findsOneWidget,
     );
     expect(find.text('Log in'), findsOneWidget);
-    expect(find.text('Version 2.0.0-dev'), findsOneWidget);
+    expect(find.text('Version ${AppSettings.buildVersion}'), findsOneWidget);
     expect(
       tester.widget<MaterialApp>(find.byType(MaterialApp)).routerConfig,
       isNotNull,
