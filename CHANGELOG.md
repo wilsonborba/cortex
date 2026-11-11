@@ -1,6 +1,23 @@
 # Changelog
 
 
+## Unreleased
+
+
+### Bug Fixes
+
+- Split-public-content-by-subject (#43)
+
+
+### Chores
+
+- Merge v2.0.0 back to release/v2.0.0
+
+- Merge v2.0.0 back to development
+
+- Merge v2.0.0 back to feature/main
+
+
 ## v2.0.0 - 2026-11-11
 
 
@@ -58,6 +75,10 @@
 - Merge #36 v2.0.0 preparation
 
 - Prepare development for v2.0.0
+
+- Finalize v2.0.0 changelog
+
+- Release v2.0.0
 
 
 ### Documentation
