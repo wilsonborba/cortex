@@ -1,3 +1,4 @@
+import 'package:cortex/presentation/frontend/widgets/common/surfaces.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'package:cortex/dal/remote/auth_api_adapter.dart';
@@ -339,7 +340,7 @@ void main() {
       await tester.tap(
         find.descendant(
           of: find.byKey(const Key('depth')),
-          matching: find.byType(DropdownButton<int>),
+          matching: find.byType(AppSelect<int>),
         ),
       );
       await tester.pumpAndSettle();
@@ -348,7 +349,7 @@ void main() {
       await tester.tap(
         find.descendant(
           of: find.byKey(const Key('limit')),
-          matching: find.byType(DropdownButton<int>),
+          matching: find.byType(AppSelect<int>),
         ),
       );
       await tester.pumpAndSettle();

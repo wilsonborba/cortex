@@ -305,7 +305,7 @@ class LandingHeader extends StatelessWidget {
             const SizedBox(width: Space.s8),
           if (size != SizeClass.compact && prefs != null) ...[
             FoundationFocus(
-              child: PopupMenuButton<Locale>(
+              child: AppMenu<Locale>(
                 tooltip: l.language,
                 icon: const Icon(AppIcons.language),
                 onSelected: (v) => prefs.locale = v,
@@ -334,7 +334,7 @@ class LandingHeader extends StatelessWidget {
           ],
           if (compact)
             FoundationFocus(
-              child: PopupMenuButton<LandingSection>(
+              child: AppMenu<LandingSection>(
                 key: const Key('section-menu'),
                 tooltip: l.menu,
                 icon: const Icon(AppIcons.menu),

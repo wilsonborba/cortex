@@ -21,6 +21,10 @@
 
 - Use regular Lucide icons through the app icon map
 
+- Merge Lucide icons for #50
+
+- Unify buttons and accessible Material menus
+
 
 ## v2.0.1 - 2026-11-11
 

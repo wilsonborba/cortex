@@ -1,3 +1,4 @@
+import '../../widgets/common/surfaces.dart';
 import '../../handlers/process_messages.dart';
 import 'dart:convert';
 import 'package:flutter/material.dart';
@@ -262,7 +263,7 @@ class _PersonaFormState extends State<PersonaForm> {
                   ),
                 ),
               if (widget.id == null)
-                DropdownButtonFormField<String>(
+                AppSelectFormField<String>(
                   key: const Key('persona-type'),
                   initialValue: type,
                   decoration: InputDecoration(labelText: l.personaType),

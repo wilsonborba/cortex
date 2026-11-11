@@ -1,3 +1,4 @@
+import '../../widgets/common/surfaces.dart';
 import '../../theme/app_icons.dart';
 import 'dart:math' as math;
 import '../../handlers/process_messages.dart';
@@ -231,7 +232,7 @@ class _Picker extends StatelessWidget {
     children: [
       Text('$label:', style: TextStyles.compact),
       FoundationFocus(
-        child: DropdownButton<int>(
+        child: AppSelect<int>(
           value: value,
           underline: const SizedBox(),
           items: [
@@ -525,7 +526,7 @@ class _ListView extends StatelessWidget {
             key: Key('list-node-${n.id}'),
             dense: true,
             selected: n.id == selected,
-            selectedTileColor: p.text.withValues(alpha: 0.05),
+            selectedTileColor: p.raised,
             leading: Icon(
               nodeIcon(n.displayType),
               size: IconSizes.action,
