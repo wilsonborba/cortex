@@ -246,6 +246,36 @@ void main() {
     expect(find.byType(TextField), findsNothing);
   });
 
+  testWidgets('demo geometry stays still during replay and prompt changes', (
+    tester,
+  ) async {
+    for (final locale in [
+      const Locale('en'),
+      const Locale('pt', 'BR'),
+      const Locale('th'),
+    ]) {
+      for (final width in [390.0, 1300.0]) {
+        await tester.pumpWidget(const SizedBox());
+        await pump(tester, '/v1/home', locale: locale, size: Size(width, 900));
+        final card = find.byKey(const Key('chat-demo'));
+        final original = tester.getSize(card);
+        for (final kind in DemoKind.values) {
+          await tester.ensureVisible(find.byKey(Key('demo-${kind.name}')));
+          await tester.tap(find.byKey(Key('demo-${kind.name}')));
+          for (var frame = 0; frame < 9; frame++) {
+            await tester.pump(const Duration(milliseconds: 400));
+            expect(
+              tester.getSize(card),
+              original,
+              reason: '$locale $width $kind',
+            );
+          }
+        }
+        expect(tester.takeException(), isNull);
+      }
+    }
+  });
+
   testWidgets('with Reduce Motion the demo shows the end state at once', (
     tester,
   ) async {
