@@ -1171,4 +1171,13 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get codeLabel => 'โค้ด';
+
+  @override
+  String get composerOptions => 'ตัวเลือก';
+
+  @override
+  String get composerEmptyReason => 'เขียนข้อความก่อนส่ง';
+
+  @override
+  String get composerUploadReason => 'รอให้อัปโหลดไฟล์เสร็จก่อน';
 }

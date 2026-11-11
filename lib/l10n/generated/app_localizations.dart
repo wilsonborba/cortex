@@ -2295,6 +2295,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Code'**
   String get codeLabel;
+
+  /// No description provided for @composerOptions.
+  ///
+  /// In en, this message translates to:
+  /// **'Options'**
+  String get composerOptions;
+
+  /// No description provided for @composerEmptyReason.
+  ///
+  /// In en, this message translates to:
+  /// **'Write a message before sending.'**
+  String get composerEmptyReason;
+
+  /// No description provided for @composerUploadReason.
+  ///
+  /// In en, this message translates to:
+  /// **'Wait for the file upload to finish.'**
+  String get composerUploadReason;
 }
 
 class _AppLocalizationsDelegate

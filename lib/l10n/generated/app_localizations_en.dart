@@ -1177,4 +1177,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get codeLabel => 'Code';
+
+  @override
+  String get composerOptions => 'Options';
+
+  @override
+  String get composerEmptyReason => 'Write a message before sending.';
+
+  @override
+  String get composerUploadReason => 'Wait for the file upload to finish.';
 }

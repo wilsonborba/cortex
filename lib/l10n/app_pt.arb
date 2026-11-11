@@ -396,5 +396,8 @@
   "answerStarted": "Resposta iniciada",
   "answerComplete": "Resposta concluída",
   "thoughtFor": "Pensou por {seconds} s",
-  "codeLabel": "Código"
+  "codeLabel": "Código",
+  "composerOptions": "Opções",
+  "composerEmptyReason": "Escreva uma mensagem antes de enviar.",
+  "composerUploadReason": "Aguarde o término do envio do arquivo."
 }

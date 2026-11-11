@@ -396,5 +396,8 @@
   "answerStarted": "เริ่มตอบแล้ว",
   "answerComplete": "ตอบเสร็จแล้ว",
   "thoughtFor": "ใช้เวลาคิด {seconds} วินาที",
-  "codeLabel": "โค้ด"
+  "codeLabel": "โค้ด",
+  "composerOptions": "ตัวเลือก",
+  "composerEmptyReason": "เขียนข้อความก่อนส่ง",
+  "composerUploadReason": "รอให้อัปโหลดไฟล์เสร็จก่อน"
 }

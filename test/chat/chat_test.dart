@@ -55,6 +55,7 @@ class Api {
   List<String> Function(http.BaseRequest) streamFor = (_) => stream();
   bool keepOpen = false;
   int maxTokens = 5120;
+  List<Map<String, dynamic>> personas = [];
   Map<String, dynamic> page = {
     'chat': {'session_id': sid, 'title': 'Saved chat', 'is_pinned': false},
     'inputs': [],
@@ -97,7 +98,7 @@ class Api {
         },
       });
     }
-    if (path == '/personas') return json({'message': '', 'data': []});
+    if (path == '/personas') return json({'message': '', 'data': personas});
     if (path == '/files') {
       return json({
         'message': 'File saved',

@@ -111,6 +111,9 @@ abstract final class Space {
   static const detailsWidth = 320.0;
   static const chatColumnWidth = 768.0;
   static const userBubbleFraction = 0.8;
+  static const webMenuWidth = 176.0;
+  static const topicInputWidth = 160.0;
+  static const personaMenuWidth = 240.0;
   static const readingMaxChars = 68;
 }
 
@@ -143,6 +146,8 @@ abstract final class IconSizes {
 }
 
 abstract final class Controls {
+  static const composerMaxLines = 8;
+  static const budgetWarningFraction = 0.8;
   static double height(SizeClass size) => size == SizeClass.compact ? 44 : 36;
   static const minTouch = 44.0;
   static const border = 1.0;

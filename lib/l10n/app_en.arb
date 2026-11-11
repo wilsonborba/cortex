@@ -485,5 +485,8 @@
   "answerStarted": "Answer started",
   "answerComplete": "Answer complete",
   "thoughtFor": "Thought for {seconds} s",
-  "codeLabel": "Code"
+  "codeLabel": "Code",
+  "composerOptions": "Options",
+  "composerEmptyReason": "Write a message before sending.",
+  "composerUploadReason": "Wait for the file upload to finish."
 }
