@@ -1,3 +1,4 @@
+import '../../theme/app_icons.dart';
 import '../../handlers/process_messages.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -60,7 +61,7 @@ class _PersonaListState extends State<PersonaList> {
                     suffixIcon: IconButton(
                       tooltip: l.searchPersonas,
                       onPressed: personas.load,
-                      icon: const Icon(Icons.search),
+                      icon: const Icon(AppIcons.search),
                     ),
                   ),
                   onChanged: (value) => personas.query = value,
@@ -90,7 +91,7 @@ class _PersonaListState extends State<PersonaList> {
               ),
               AppButton(
                 label: l.newPersona,
-                icon: Icons.add,
+                icon: AppIcons.add,
                 onPressed: () => context.go('/v1/personas/new'),
               ),
             ],
@@ -116,7 +117,7 @@ class _PersonaListState extends State<PersonaList> {
                         onRetry: personas.load,
                       )
               : items.isEmpty
-              ? EmptyState(title: l.noPersonas, icon: Icons.person_outline)
+              ? EmptyState(title: l.noPersonas, icon: AppIcons.entity)
               : ListView.separated(
                   padding: const EdgeInsets.all(Space.s16),
                   itemCount: items.length,
@@ -150,8 +151,8 @@ class _PersonaListState extends State<PersonaList> {
                                   children: [
                                     Icon(
                                       persona.type == 'bot'
-                                          ? Icons.smart_toy_outlined
-                                          : Icons.person_outline,
+                                          ? AppIcons.bot
+                                          : AppIcons.entity,
                                     ),
                                     Text(
                                       persona.name,

@@ -1,3 +1,4 @@
+import '../../theme/app_icons.dart';
 import '../../handlers/api_action.dart';
 import '../../handlers/process_messages.dart';
 import 'package:flutter/material.dart';
@@ -126,8 +127,8 @@ class ComposerState extends State<Composer> {
                                     child:
                                         MediaQuery.disableAnimationsOf(context)
                                         ? const Icon(
-                                            Icons.hourglass_empty,
-                                            size: 14,
+                                            AppIcons.loading,
+                                            size: IconSizes.chip,
                                           )
                                         : const CircularProgressIndicator(
                                             strokeWidth: 1.5,
@@ -135,9 +136,9 @@ class ComposerState extends State<Composer> {
                                   )
                                 : Icon(
                                     f.errorNumber != null
-                                        ? Icons.error_outline
-                                        : Icons.attach_file,
-                                    size: 16,
+                                        ? AppIcons.error
+                                        : AppIcons.attach,
+                                    size: IconSizes.action,
                                     color: f.errorNumber != null
                                         ? p.danger
                                         : null,
@@ -193,7 +194,7 @@ class ComposerState extends State<Composer> {
                       IconButton(
                         key: const Key('attach'),
                         tooltip: l.attach,
-                        icon: const Icon(Icons.attach_file),
+                        icon: const Icon(AppIcons.attach),
                         onPressed: running ? null : _attach,
                       ),
                       SizedBox(
@@ -306,13 +307,13 @@ class ComposerState extends State<Composer> {
                           ? AppButton(
                               key: const Key('stop'),
                               label: l.stop,
-                              icon: Icons.stop,
+                              icon: AppIcons.stop,
                               onPressed: () => runApiAction(context, chat.stop),
                             )
                           : AppButton.primary(
                               key: const Key('send'),
                               label: l.send,
-                              icon: Icons.arrow_upward,
+                              icon: AppIcons.send,
                               onPressed:
                                   over ||
                                       chat.files.any((f) => f.uploading) ||

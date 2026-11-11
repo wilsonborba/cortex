@@ -1,3 +1,4 @@
+import '../../theme/app_icons.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:graphview/GraphView.dart';
@@ -112,7 +113,7 @@ class _PipelineDiagramState extends State<PipelineDiagram> {
                 setState(() => _playing = !_playing);
                 _sync();
               },
-              icon: Icon(_playing ? Icons.pause : Icons.play_arrow),
+              icon: Icon(_playing ? AppIcons.pause : AppIcons.play),
               label: Text(_playing ? l.pause : l.play),
             ),
         ],
@@ -154,11 +155,11 @@ class MachinesDiagram extends StatelessWidget {
         crossAxisAlignment: WrapCrossAlignment.center,
         children: [
           box('Cortex API', 'Rust, MSI'),
-          Icon(Icons.east, color: p.muted),
+          Icon(AppIcons.next, color: p.muted),
           box('MSI GPU', 'Ollama, local LLM'),
-          Icon(Icons.east, color: p.muted),
+          Icon(AppIcons.next, color: p.muted),
           box('Hippocampus', 'Rust, memory'),
-          Icon(Icons.east, color: p.muted),
+          Icon(AppIcons.next, color: p.muted),
           box('Pong', 'Embeddings'),
           box('FSM', 'Files'),
           box('Database server', 'PostgreSQL, CouchDB, Redis'),
@@ -188,7 +189,7 @@ class ScopeTree extends StatelessWidget {
                 fontFamily: TextStyles.mono,
               ),
             ),
-          Icon(icon, size: 16, color: p.text),
+          Icon(icon, size: IconSizes.action, color: p.text),
           const SizedBox(width: Space.s8),
           Flexible(child: Text(text, style: TextStyles.compact)),
         ],
@@ -200,11 +201,11 @@ class ScopeTree extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          row(0, Icons.folder_outlined, 'workspace: cortex'),
-          row(1, Icons.apps, 'app: cortex'),
-          row(2, Icons.person_outline, 'user: x-uuid'),
-          row(2, Icons.smart_toy_outlined, 'no user: A2A'),
-          row(1, Icons.apps, 'app: certifications'),
+          row(0, AppIcons.folder, 'workspace: cortex'),
+          row(1, AppIcons.apps, 'app: cortex'),
+          row(2, AppIcons.entity, 'user: x-uuid'),
+          row(2, AppIcons.bot, 'no user: A2A'),
+          row(1, AppIcons.apps, 'app: certifications'),
         ],
       ),
     );

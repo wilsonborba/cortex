@@ -1,3 +1,4 @@
+import '../../theme/app_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../../../domain/models/memory_graph.dart';
@@ -6,11 +7,11 @@ import '../../theme/tokens.dart';
 import '../chat/chat_list.dart';
 
 IconData nodeIcon(String type) => switch (type) {
-  'memory' => Icons.lightbulb_outline,
-  'tag' => Icons.sell_outlined,
-  'persona' => Icons.person_outline,
-  'entity' => Icons.category_outlined,
-  _ => Icons.description_outlined,
+  'memory' => AppIcons.note,
+  'tag' => AppIcons.tag,
+  'persona' => AppIcons.entity,
+  'entity' => AppIcons.category,
+  _ => AppIcons.file,
 };
 
 String initials(String name) {
@@ -47,10 +48,10 @@ class MemoryCard extends StatelessWidget {
     final (typeIcon, typeName) = node.type != 'memory'
         ? (nodeIcon(node.displayType), nodeTypeName(l, node.displayType))
         : m['memory_type'] == 'file'
-        ? (Icons.description_outlined, l.typeFile)
+        ? (AppIcons.file, l.typeFile)
         : m['memory_type'] == 'episodic'
-        ? (Icons.chat_bubble_outline, l.typeChat)
-        : (Icons.sticky_note_2_outlined, l.typeNote);
+        ? (AppIcons.chats, l.typeChat)
+        : (AppIcons.document, l.typeNote);
     final created = '${m['created_at'] ?? ''}';
     final meta = TextStyles.label.copyWith(color: p.muted);
     Widget section(String label, List<Widget> children) => children.isEmpty
@@ -84,7 +85,7 @@ class MemoryCard extends StatelessWidget {
             Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(typeIcon, size: 16, color: p.muted),
+                Icon(typeIcon, size: IconSizes.action, color: p.muted),
                 const SizedBox(width: Space.s4),
                 Text(typeName, key: const Key('card-type'), style: meta),
               ],
@@ -163,7 +164,7 @@ class MemoryCard extends StatelessWidget {
         section(l.linkedFiles, [
           for (final f in files)
             ActionChip(
-              avatar: const Icon(Icons.description_outlined, size: 16),
+              avatar: const Icon(AppIcons.file, size: IconSizes.action),
               label: Text(f.label, style: TextStyles.label),
               onPressed: () => onOpen?.call(f.id),
             ),
@@ -171,7 +172,7 @@ class MemoryCard extends StatelessWidget {
         section(l.linkedMemories, [
           for (final n in memories)
             ActionChip(
-              avatar: const Icon(Icons.lightbulb_outline, size: 16),
+              avatar: const Icon(AppIcons.note, size: IconSizes.action),
               label: Text(
                 n.label,
                 style: TextStyles.label,
@@ -199,7 +200,7 @@ class MemoryCard extends StatelessWidget {
                 IconButton(
                   key: const Key('copy-id'),
                   tooltip: l.copy,
-                  icon: const Icon(Icons.copy, size: 16),
+                  icon: const Icon(AppIcons.copy, size: IconSizes.action),
                   onPressed: () {
                     Clipboard.setData(ClipboardData(text: node.id));
                     ScaffoldMessenger.maybeOf(

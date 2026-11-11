@@ -1,3 +1,4 @@
+import '../theme/app_icons.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -15,10 +16,10 @@ class _Destination {
 }
 
 final _destinations = [
-  _Destination('/v1/chats', Icons.chat_bubble_outline, (l) => l.chats),
-  _Destination('/v1/memory', Icons.hub_outlined, (l) => l.memory),
-  _Destination('/v1/personas', Icons.person_outline, (l) => l.personas),
-  _Destination('/v1/usage', Icons.insights_outlined, (l) => l.usage),
+  _Destination('/v1/chats', AppIcons.chats, (l) => l.chats),
+  _Destination('/v1/memory', AppIcons.memory, (l) => l.memory),
+  _Destination('/v1/personas', AppIcons.personas, (l) => l.personas),
+  _Destination('/v1/usage', AppIcons.usage, (l) => l.usage),
 ];
 
 int _selected(String location) {
@@ -84,30 +85,31 @@ class _Sidebar extends StatelessWidget {
         children: [
           AppButton.primary(
             label: l.newChat,
-            icon: Icons.add,
+            icon: AppIcons.newChat,
             onPressed: () => context.go('/v1/chats'),
           ),
           const SizedBox(height: Space.s8),
           AppButton(
             label: l.temporaryChat,
-            icon: Icons.visibility_off_outlined,
+            icon: AppIcons.temporaryChat,
             onPressed: () => context.go('/v1/chats/temporary'),
           ),
           const SizedBox(height: Space.s16),
           Expanded(
             child:
                 shell.chatList ??
-                EmptyState(
-                  title: l.noChatsYet,
-                  icon: Icons.chat_bubble_outline,
-                ),
+                EmptyState(title: l.noChatsYet, icon: AppIcons.chats),
           ),
           const SizedBox(height: Space.s12),
           for (final (i, d) in _destinations.indexed.skip(1))
             FoundationFocus(
               child: ListTile(
                 dense: true,
-                leading: Icon(d.icon, color: p.text),
+                leading: Icon(
+                  d.icon,
+                  color: p.text,
+                  size: IconSizes.navigation,
+                ),
                 shape: Border(
                   left: BorderSide(
                     color: i == selected ? p.accent : Colors.transparent,
@@ -124,7 +126,7 @@ class _Sidebar extends StatelessWidget {
           FoundationFocus(
             child: ListTile(
               dense: true,
-              leading: Icon(Icons.logout, color: p.text),
+              leading: Icon(AppIcons.logOut, color: p.text),
               title: Text(l.logOut, style: TextStyles.compact),
               onTap: shell.onLogOut,
             ),
@@ -169,7 +171,7 @@ class _Expanded extends StatelessWidget {
                             ),
                             trailing: IconButton(
                               tooltip: l.close,
-                              icon: const Icon(Icons.close),
+                              icon: const Icon(AppIcons.close),
                               onPressed: shell.details.close,
                             ),
                           ),
@@ -262,7 +264,7 @@ class _Medium extends StatelessWidget {
               labelType: NavigationRailLabelType.all,
               leading: IconButton.filled(
                 tooltip: l.newChat,
-                icon: const Icon(Icons.add),
+                icon: const Icon(AppIcons.newChat, size: IconSizes.navigation),
                 onPressed: () => context.go('/v1/chats'),
               ),
               trailing: Expanded(
@@ -272,7 +274,10 @@ class _Medium extends StatelessWidget {
                     padding: const EdgeInsets.only(bottom: Space.s16),
                     child: IconButton(
                       tooltip: l.logOut,
-                      icon: const Icon(Icons.logout),
+                      icon: const Icon(
+                        AppIcons.logOut,
+                        size: IconSizes.navigation,
+                      ),
                       onPressed: shell.onLogOut,
                     ),
                   ),
@@ -281,7 +286,7 @@ class _Medium extends StatelessWidget {
               destinations: [
                 for (final d in _destinations)
                   NavigationRailDestination(
-                    icon: Icon(d.icon),
+                    icon: Icon(d.icon, size: IconSizes.navigation),
                     label: Text(d.label(l)),
                   ),
               ],
@@ -312,7 +317,10 @@ class _Compact extends StatelessWidget {
         selectedIndex: _selected(shell.location),
         destinations: [
           for (final d in _destinations)
-            NavigationDestination(icon: Icon(d.icon), label: d.label(l)),
+            NavigationDestination(
+              icon: Icon(d.icon, size: IconSizes.navigation),
+              label: d.label(l),
+            ),
         ],
         onDestinationSelected: (i) => context.go(_destinations[i].path),
       ),

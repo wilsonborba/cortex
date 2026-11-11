@@ -24,7 +24,8 @@ Future<void> loadFonts() async {
     }
     await loader.load();
   }
-  final icons = FontLoader('MaterialIcons')
+  // Material widgets still own their internal arrows and picker controls.
+  final material = FontLoader('MaterialIcons')
     ..addFont(
       Future.value(
         ByteData.sublistView(
@@ -34,7 +35,12 @@ Future<void> loadFonts() async {
         ),
       ),
     );
-  await icons.load();
+  await material.load();
+  final lucide = FontLoader('packages/lucide_icons_flutter/Lucide')
+    ..addFont(
+      rootBundle.load('packages/lucide_icons_flutter/assets/lucide.ttf'),
+    );
+  await lucide.load();
 }
 
 void _noop(bool _) {}

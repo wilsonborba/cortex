@@ -1,3 +1,4 @@
+import '../../theme/app_icons.dart';
 import 'package:flutter/material.dart';
 import '../../theme/tokens.dart';
 
@@ -78,14 +79,14 @@ class AppButton extends StatelessWidget {
         ? SizedBox.square(
             dimension: 16,
             child: MediaQuery.disableAnimationsOf(context)
-                ? Icon(Icons.hourglass_empty, size: 16, color: fg)
+                ? Icon(AppIcons.loading, size: IconSizes.action, color: fg)
                 : CircularProgressIndicator(strokeWidth: 2, color: fg),
           )
         : Row(
             mainAxisSize: MainAxisSize.min,
             children: [
               if (icon != null) ...[
-                Icon(icon, size: 18),
+                Icon(icon, size: IconSizes.action),
                 const SizedBox(width: Space.s8),
               ],
               Flexible(child: Text(label, overflow: TextOverflow.ellipsis)),

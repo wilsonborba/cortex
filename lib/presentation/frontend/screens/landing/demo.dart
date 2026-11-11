@@ -1,3 +1,4 @@
+import '../../theme/app_icons.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import '../../../../l10n/generated/app_localizations.dart';
@@ -233,9 +234,9 @@ class _DemoTranscript extends StatelessWidget {
                   children: [
                     Icon(
                       i == shown - 1 && !done
-                          ? Icons.radio_button_checked
-                          : Icons.check,
-                      size: 14,
+                          ? AppIcons.active
+                          : AppIcons.copied,
+                      size: IconSizes.chip,
                       color: i == shown - 1 && !done ? p.text : p.muted,
                     ),
                     const SizedBox(width: Space.s8),

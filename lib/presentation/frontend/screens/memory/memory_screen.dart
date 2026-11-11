@@ -1,3 +1,4 @@
+import '../../theme/app_icons.dart';
 import 'dart:math' as math;
 import '../../handlers/process_messages.dart';
 import 'package:flutter/material.dart';
@@ -87,7 +88,7 @@ class _MemoryScreenState extends State<MemoryScreen> {
     } else if (graph == null) {
       body = const Center(child: SkeletonBox(width: 240));
     } else if (graph.nodes.isEmpty) {
-      body = EmptyState(title: l.noMemories, icon: Icons.hub_outlined);
+      body = EmptyState(title: l.noMemories, icon: AppIcons.memory);
     } else {
       body = view == MemoryView.graph
           ? _GraphView(data: graph, selected: widget.nodeId, onTap: _go)
@@ -130,12 +131,12 @@ class _MemoryScreenState extends State<MemoryScreen> {
                   ButtonSegment(
                     value: MemoryView.graph,
                     label: Text(l.graphView),
-                    icon: const Icon(Icons.hub_outlined, size: 16),
+                    icon: const Icon(AppIcons.memory, size: IconSizes.action),
                   ),
                   ButtonSegment(
                     value: MemoryView.list,
                     label: Text(l.listView),
-                    icon: const Icon(Icons.list, size: 16),
+                    icon: const Icon(AppIcons.list, size: IconSizes.action),
                   ),
                 ],
                 selected: {view},
@@ -269,7 +270,7 @@ class _Legend extends StatelessWidget {
           Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(nodeIcon(type), size: 14, color: p.muted),
+              Icon(nodeIcon(type), size: IconSizes.chip, color: p.muted),
               const SizedBox(width: Space.s4),
               Text(
                 nodeTypeName(l, type),
@@ -409,7 +410,7 @@ class _GraphViewState extends State<_GraphView>
                                 ),
                                 child: Icon(
                                   nodeIcon(item.displayType),
-                                  size: 14,
+                                  size: IconSizes.chip,
                                   color: p.text,
                                 ),
                               ),
@@ -525,7 +526,11 @@ class _ListView extends StatelessWidget {
             dense: true,
             selected: n.id == selected,
             selectedTileColor: p.text.withValues(alpha: 0.05),
-            leading: Icon(nodeIcon(n.displayType), size: 18, color: p.muted),
+            leading: Icon(
+              nodeIcon(n.displayType),
+              size: IconSizes.action,
+              color: p.muted,
+            ),
             title: Text(
               n.label,
               maxLines: 1,
