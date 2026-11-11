@@ -527,6 +527,12 @@ class _ListView extends StatelessWidget {
             dense: true,
             selected: n.id == selected,
             selectedTileColor: p.raised,
+            shape: Border(
+              left: BorderSide(
+                color: n.id == selected ? p.accent : Colors.transparent,
+                width: Controls.focusRing,
+              ),
+            ),
             leading: Icon(
               nodeIcon(n.displayType),
               size: IconSizes.action,

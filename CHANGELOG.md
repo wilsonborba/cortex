@@ -4,6 +4,11 @@
 ## Unreleased
 
 
+### Bug Fixes
+
+- Preserve quiet surfaces and selected list markers
+
+
 ### Chores
 
 - Merge v2.0.1 back to release/v2.0.1

@@ -60,7 +60,11 @@ class AppButton extends StatelessWidget {
       elevation: const WidgetStatePropertyAll(0),
       shadowColor: const WidgetStatePropertyAll(Colors.transparent),
       backgroundColor: WidgetStatePropertyAll(
-        enabled ? bg : bg.withValues(alpha: 0.4),
+        kind == ButtonKind.quiet
+            ? Colors.transparent
+            : enabled
+            ? bg
+            : bg.withValues(alpha: 0.4),
       ),
       foregroundColor: WidgetStatePropertyAll(enabled ? fg : p.muted),
       overlayColor: WidgetStatePropertyAll(fg.withValues(alpha: 0.08)),
