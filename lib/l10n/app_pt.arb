@@ -390,5 +390,11 @@
   "expandSidebar": "Expandir barra lateral",
   "languageEnglish": "English",
   "languagePortugueseBrazil": "Português (Brasil)",
-  "languageThai": "ไทย"
+  "languageThai": "ไทย",
+  "chatDisclaimer": "O Cortex pode cometer erros. Verifique os fatos importantes.",
+  "copyFailed": "Não foi possível copiar. Selecione o texto e tente novamente.",
+  "answerStarted": "Resposta iniciada",
+  "answerComplete": "Resposta concluída",
+  "thoughtFor": "Pensou por {seconds} s",
+  "codeLabel": "Código"
 }

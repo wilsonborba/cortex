@@ -243,6 +243,15 @@ ThemeData cortexTheme(Brightness brightness) {
             ),
           ),
     ),
+    snackBarTheme: SnackBarThemeData(
+      backgroundColor: p.raised,
+      contentTextStyle: TextStyles.compact.copyWith(color: p.text),
+      actionTextColor: p.text,
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(Radii.card),
+      ),
+    ),
     tooltipTheme: TooltipThemeData(
       waitDuration: const Duration(milliseconds: 400),
       textStyle: TextStyles.label.copyWith(color: p.text),

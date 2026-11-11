@@ -2259,6 +2259,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'ไทย'**
   String get languageThai;
+
+  /// No description provided for @chatDisclaimer.
+  ///
+  /// In en, this message translates to:
+  /// **'Cortex can make mistakes. Check important facts.'**
+  String get chatDisclaimer;
+
+  /// No description provided for @copyFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not copy. Select the text and try again.'**
+  String get copyFailed;
+
+  /// No description provided for @answerStarted.
+  ///
+  /// In en, this message translates to:
+  /// **'Answer started'**
+  String get answerStarted;
+
+  /// No description provided for @answerComplete.
+  ///
+  /// In en, this message translates to:
+  /// **'Answer complete'**
+  String get answerComplete;
+
+  /// No description provided for @thoughtFor.
+  ///
+  /// In en, this message translates to:
+  /// **'Thought for {seconds} s'**
+  String thoughtFor(Object seconds);
+
+  /// No description provided for @codeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Code'**
+  String get codeLabel;
 }
 
 class _AppLocalizationsDelegate
