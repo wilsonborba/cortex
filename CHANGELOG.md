@@ -8,6 +8,8 @@
 
 - Split-public-content-by-subject (#43)
 
+- Keep-demo-layout-stable-and-soften-transitions (#44)
+
 
 ### Chores
 
@@ -16,6 +18,8 @@
 - Merge v2.0.0 back to development
 
 - Merge v2.0.0 back to feature/main
+
+- Merge #43 split-public-content-by-subject
 
 
 ## v2.0.0 - 2026-11-11
