@@ -100,191 +100,965 @@ abstract class AppLocalizations {
     Locale('th'),
   ];
 
-  /// Brand name, kept the same across all languages.
-  ///
-  /// In en, this message translates to:
-  /// **'Cortex'**
-  String get appTitle;
-
-  /// No description provided for @landingTag.
-  ///
-  /// In en, this message translates to:
-  /// **'EXPERIMENTAL NEURAL MVP'**
-  String get landingTag;
-
-  /// No description provided for @landingHeroTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Intelligence without distraction.'**
-  String get landingHeroTitle;
-
-  /// No description provided for @landingHeroSubtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'An early-stage, experimental workspace for high-focus reasoning and persistent chat. Designed for deep thinking with strict privacy.'**
-  String get landingHeroSubtitle;
-
-  /// No description provided for @getStarted.
-  ///
-  /// In en, this message translates to:
-  /// **'Get Started'**
-  String get getStarted;
-
-  /// No description provided for @ssoAuthHint.
-  ///
-  /// In en, this message translates to:
-  /// **'[ Single Sign-On • Requires Account ]'**
-  String get ssoAuthHint;
-
-  /// No description provided for @aboutAsodya.
-  ///
-  /// In en, this message translates to:
-  /// **'About Asodya'**
-  String get aboutAsodya;
-
   /// No description provided for @logIn.
   ///
   /// In en, this message translates to:
   /// **'Log in'**
   String get logIn;
 
-  /// No description provided for @signUp.
-  ///
-  /// In en, this message translates to:
-  /// **'Sign up'**
-  String get signUp;
-
-  /// No description provided for @footerWorkspace.
-  ///
-  /// In en, this message translates to:
-  /// **'ASODYA CORTEX // EXPERIMENTAL MVP (TIER 0)'**
-  String get footerWorkspace;
-
-  /// No description provided for @allRightsReserved.
-  ///
-  /// In en, this message translates to:
-  /// **'© 2026 ASODYA. ALL RIGHTS RESERVED.'**
-  String get allRightsReserved;
-
-  /// No description provided for @card1Number.
-  ///
-  /// In en, this message translates to:
-  /// **'01 / ARCHITECTURE'**
-  String get card1Number;
-
-  /// No description provided for @card1Title.
-  ///
-  /// In en, this message translates to:
-  /// **'Neural Reasoning'**
-  String get card1Title;
-
-  /// No description provided for @card1Description.
-  ///
-  /// In en, this message translates to:
-  /// **'Real-time contextual token streaming powered by lightweight Tier 0 models and isolated execution parameters.'**
-  String get card1Description;
-
-  /// No description provided for @card2Number.
-  ///
-  /// In en, this message translates to:
-  /// **'02 / INTEGRITY'**
-  String get card2Number;
-
-  /// No description provided for @card2Title.
-  ///
-  /// In en, this message translates to:
-  /// **'Privacy by Default'**
-  String get card2Title;
-
-  /// No description provided for @card2Description.
-  ///
-  /// In en, this message translates to:
-  /// **'System telemetry is strictly isolated at the infrastructure boundary. Your prompts and conversations remain private.'**
-  String get card2Description;
-
-  /// No description provided for @card3Number.
-  ///
-  /// In en, this message translates to:
-  /// **'03 / CONTINUITY'**
-  String get card3Number;
-
-  /// No description provided for @card3Title.
-  ///
-  /// In en, this message translates to:
-  /// **'Persistent Drafts'**
-  String get card3Title;
-
-  /// No description provided for @card3Description.
-  ///
-  /// In en, this message translates to:
-  /// **'Local draft caching and resilient session recovery across devices through unified Asodya SSO token exchange.'**
-  String get card3Description;
-
-  /// No description provided for @newConversation.
-  ///
-  /// In en, this message translates to:
-  /// **'New Conversation'**
-  String get newConversation;
-
-  /// No description provided for @noConversationsYetTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'No conversations yet'**
-  String get noConversationsYetTitle;
-
-  /// No description provided for @noConversationsYetBody.
-  ///
-  /// In en, this message translates to:
-  /// **'Start a new conversation to begin chatting with Cortex.'**
-  String get noConversationsYetBody;
-
-  /// No description provided for @history.
-  ///
-  /// In en, this message translates to:
-  /// **'HISTORY'**
-  String get history;
-
-  /// No description provided for @clearAll.
-  ///
-  /// In en, this message translates to:
-  /// **'Clear All'**
-  String get clearAll;
-
-  /// No description provided for @clearAllTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Clear All Conversations'**
-  String get clearAllTitle;
-
-  /// No description provided for @clearAllConfirmation.
-  ///
-  /// In en, this message translates to:
-  /// **'Are you sure you want to permanently delete all conversations? This action cannot be undone.'**
-  String get clearAllConfirmation;
-
-  /// No description provided for @cancel.
-  ///
-  /// In en, this message translates to:
-  /// **'Cancel'**
-  String get cancel;
-
   /// No description provided for @logOut.
   ///
   /// In en, this message translates to:
-  /// **'Log Out'**
+  /// **'Log out'**
   String get logOut;
 
-  /// No description provided for @logOutTitle.
+  /// No description provided for @newChat.
   ///
   /// In en, this message translates to:
-  /// **'Log Out'**
-  String get logOutTitle;
+  /// **'New chat'**
+  String get newChat;
 
-  /// No description provided for @logOutConfirmation.
+  /// No description provided for @temporaryChat.
   ///
   /// In en, this message translates to:
-  /// **'You\'ll be signed out of Cortex on this device and need to sign in again.'**
-  String get logOutConfirmation;
+  /// **'Temporary chat'**
+  String get temporaryChat;
+
+  /// No description provided for @chats.
+  ///
+  /// In en, this message translates to:
+  /// **'Chats'**
+  String get chats;
+
+  /// No description provided for @memory.
+  ///
+  /// In en, this message translates to:
+  /// **'Memory'**
+  String get memory;
+
+  /// No description provided for @personas.
+  ///
+  /// In en, this message translates to:
+  /// **'Personas'**
+  String get personas;
+
+  /// No description provided for @usage.
+  ///
+  /// In en, this message translates to:
+  /// **'Usage'**
+  String get usage;
+
+  /// No description provided for @timing.
+  ///
+  /// In en, this message translates to:
+  /// **'Timing'**
+  String get timing;
+
+  /// No description provided for @stats.
+  ///
+  /// In en, this message translates to:
+  /// **'Statistics'**
+  String get stats;
+
+  /// No description provided for @events.
+  ///
+  /// In en, this message translates to:
+  /// **'Events'**
+  String get events;
+
+  /// No description provided for @newPersona.
+  ///
+  /// In en, this message translates to:
+  /// **'New persona'**
+  String get newPersona;
+
+  /// No description provided for @details.
+  ///
+  /// In en, this message translates to:
+  /// **'Details'**
+  String get details;
+
+  /// No description provided for @close.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get close;
+
+  /// No description provided for @notFoundTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Page not found'**
+  String get notFoundTitle;
+
+  /// No description provided for @notFoundMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This path or item does not exist.'**
+  String get notFoundMessage;
+
+  /// No description provided for @goToChats.
+  ///
+  /// In en, this message translates to:
+  /// **'Go to chats'**
+  String get goToChats;
+
+  /// No description provided for @signingIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Opening the login'**
+  String get signingIn;
+
+  /// No description provided for @noChatsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No chats yet'**
+  String get noChatsYet;
+
+  /// No description provided for @output.
+  ///
+  /// In en, this message translates to:
+  /// **'Output'**
+  String get output;
+
+  /// No description provided for @product.
+  ///
+  /// In en, this message translates to:
+  /// **'Product'**
+  String get product;
+
+  /// No description provided for @howItWorks.
+  ///
+  /// In en, this message translates to:
+  /// **'How it works'**
+  String get howItWorks;
+
+  /// No description provided for @engineering.
+  ///
+  /// In en, this message translates to:
+  /// **'Engineering'**
+  String get engineering;
+
+  /// No description provided for @faq.
+  ///
+  /// In en, this message translates to:
+  /// **'FAQ'**
+  String get faq;
+
+  /// No description provided for @language.
+  ///
+  /// In en, this message translates to:
+  /// **'Language'**
+  String get language;
+
+  /// No description provided for @themeSwitch.
+  ///
+  /// In en, this message translates to:
+  /// **'Theme'**
+  String get themeSwitch;
+
+  /// No description provided for @menu.
+  ///
+  /// In en, this message translates to:
+  /// **'Menu'**
+  String get menu;
+
+  /// No description provided for @heroLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'AI chat workspace'**
+  String get heroLabel;
+
+  /// No description provided for @heroTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Chat with your memory, files and the web'**
+  String get heroTitle;
+
+  /// No description provided for @heroLead.
+  ///
+  /// In en, this message translates to:
+  /// **'Cortex answers with a local model and shows each step: memory, files, web sources and thinking.'**
+  String get heroLead;
+
+  /// No description provided for @startChat.
+  ///
+  /// In en, this message translates to:
+  /// **'Start a chat'**
+  String get startChat;
+
+  /// No description provided for @seeHow.
+  ///
+  /// In en, this message translates to:
+  /// **'See how it works'**
+  String get seeHow;
+
+  /// No description provided for @example.
+  ///
+  /// In en, this message translates to:
+  /// **'Example'**
+  String get example;
+
+  /// No description provided for @demoMemoryPrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'What did I decide about the usage balancer?'**
+  String get demoMemoryPrompt;
+
+  /// No description provided for @demoFastPrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'What is the latest stable Rust version?'**
+  String get demoFastPrompt;
+
+  /// No description provided for @demoDeepPrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Compare SQLite and PostgreSQL for a small web app.'**
+  String get demoDeepPrompt;
+
+  /// No description provided for @demoThinkPrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'A train leaves at 09:40 and arrives at 13:05. How many minutes?'**
+  String get demoThinkPrompt;
+
+  /// No description provided for @demoMemoryAnswer.
+  ///
+  /// In en, this message translates to:
+  /// **'You decided on a fair share per user over 24 hours, with a base weight of 1 for new users.'**
+  String get demoMemoryAnswer;
+
+  /// No description provided for @demoFastAnswer.
+  ///
+  /// In en, this message translates to:
+  /// **'The answer comes from the pages read now, and each source is listed below the answer.'**
+  String get demoFastAnswer;
+
+  /// No description provided for @demoDeepAnswer.
+  ///
+  /// In en, this message translates to:
+  /// **'For one small app with few writers, SQLite is simpler; for many writers at the same time, PostgreSQL is safer.'**
+  String get demoDeepAnswer;
+
+  /// No description provided for @demoThinkAnswer.
+  ///
+  /// In en, this message translates to:
+  /// **'The trip takes 205 minutes.'**
+  String get demoThinkAnswer;
+
+  /// No description provided for @demoReplay.
+  ///
+  /// In en, this message translates to:
+  /// **'Replay'**
+  String get demoReplay;
+
+  /// No description provided for @stepSecurity.
+  ///
+  /// In en, this message translates to:
+  /// **'Security check OK'**
+  String get stepSecurity;
+
+  /// No description provided for @stepMemorySearch.
+  ///
+  /// In en, this message translates to:
+  /// **'Searching your memory'**
+  String get stepMemorySearch;
+
+  /// No description provided for @stepMemoriesFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Memories found'**
+  String get stepMemoriesFound;
+
+  /// No description provided for @stepQueries.
+  ///
+  /// In en, this message translates to:
+  /// **'Preparing search queries'**
+  String get stepQueries;
+
+  /// No description provided for @stepWebSearch.
+  ///
+  /// In en, this message translates to:
+  /// **'Searching the web'**
+  String get stepWebSearch;
+
+  /// No description provided for @stepPageRead.
+  ///
+  /// In en, this message translates to:
+  /// **'Reading the web page'**
+  String get stepPageRead;
+
+  /// No description provided for @stepThinking.
+  ///
+  /// In en, this message translates to:
+  /// **'Thinking step'**
+  String get stepThinking;
+
+  /// No description provided for @stepAnswer.
+  ///
+  /// In en, this message translates to:
+  /// **'Writing the answer'**
+  String get stepAnswer;
+
+  /// No description provided for @sources.
+  ///
+  /// In en, this message translates to:
+  /// **'Sources'**
+  String get sources;
+
+  /// No description provided for @whatTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'What it does'**
+  String get whatTitle;
+
+  /// No description provided for @whatMemory.
+  ///
+  /// In en, this message translates to:
+  /// **'Chat with memory'**
+  String get whatMemory;
+
+  /// No description provided for @whatMemoryText.
+  ///
+  /// In en, this message translates to:
+  /// **'Cortex finds up to 5 of your memories that match the question and shows which ones it used.'**
+  String get whatMemoryText;
+
+  /// No description provided for @whatWeb.
+  ///
+  /// In en, this message translates to:
+  /// **'Web research'**
+  String get whatWeb;
+
+  /// No description provided for @whatWebText.
+  ///
+  /// In en, this message translates to:
+  /// **'Fast, medium or deep: more queries and more pages for harder questions, with every source shown.'**
+  String get whatWebText;
+
+  /// No description provided for @whatFiles.
+  ///
+  /// In en, this message translates to:
+  /// **'Files'**
+  String get whatFiles;
+
+  /// No description provided for @whatFilesText.
+  ///
+  /// In en, this message translates to:
+  /// **'PDF (with OCR for scanned pages), DOCX with tables, audio up to 10 minutes and images.'**
+  String get whatFilesText;
+
+  /// No description provided for @whatThinking.
+  ///
+  /// In en, this message translates to:
+  /// **'Thinking'**
+  String get whatThinking;
+
+  /// No description provided for @whatThinkingText.
+  ///
+  /// In en, this message translates to:
+  /// **'Plan, work and check steps before the final answer, at most 2 rounds, and you can stop thinking at any time.'**
+  String get whatThinkingText;
+
+  /// No description provided for @pipelineTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'How one request works'**
+  String get pipelineTitle;
+
+  /// No description provided for @stageAccept.
+  ///
+  /// In en, this message translates to:
+  /// **'Accept'**
+  String get stageAccept;
+
+  /// No description provided for @stageGather.
+  ///
+  /// In en, this message translates to:
+  /// **'Gather'**
+  String get stageGather;
+
+  /// No description provided for @stageAssemble.
+  ///
+  /// In en, this message translates to:
+  /// **'Assemble'**
+  String get stageAssemble;
+
+  /// No description provided for @stageThink.
+  ///
+  /// In en, this message translates to:
+  /// **'Think'**
+  String get stageThink;
+
+  /// No description provided for @stageAnswer.
+  ///
+  /// In en, this message translates to:
+  /// **'Answer'**
+  String get stageAnswer;
+
+  /// No description provided for @stageSave.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get stageSave;
+
+  /// No description provided for @stageAcceptText.
+  ///
+  /// In en, this message translates to:
+  /// **'Size and token checks, then the security check.'**
+  String get stageAcceptText;
+
+  /// No description provided for @stageGatherText.
+  ///
+  /// In en, this message translates to:
+  /// **'Files, memory and web at the same time.'**
+  String get stageGatherText;
+
+  /// No description provided for @stageAssembleText.
+  ///
+  /// In en, this message translates to:
+  /// **'Fills the 8192-token context in a fixed order.'**
+  String get stageAssembleText;
+
+  /// No description provided for @stageThinkText.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional plan, work and check.'**
+  String get stageThinkText;
+
+  /// No description provided for @stageAnswerText.
+  ///
+  /// In en, this message translates to:
+  /// **'One model call, streamed token by token.'**
+  String get stageAnswerText;
+
+  /// No description provided for @stageSaveText.
+  ///
+  /// In en, this message translates to:
+  /// **'History, memory, usage and the run record.'**
+  String get stageSaveText;
+
+  /// No description provided for @pipelineDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Diagram of the six stages of one request: Accept, Gather with files, memory and web in parallel, Assemble, Think, Answer and Save.'**
+  String get pipelineDescription;
+
+  /// No description provided for @pause.
+  ///
+  /// In en, this message translates to:
+  /// **'Pause'**
+  String get pause;
+
+  /// No description provided for @play.
+  ///
+  /// In en, this message translates to:
+  /// **'Play'**
+  String get play;
+
+  /// No description provided for @memoryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Memory with Hippocampus'**
+  String get memoryTitle;
+
+  /// No description provided for @memoryScope.
+  ///
+  /// In en, this message translates to:
+  /// **'Every memory has a scope: workspace, app and user. A search never leaves the scope.'**
+  String get memoryScope;
+
+  /// No description provided for @memorySearch.
+  ///
+  /// In en, this message translates to:
+  /// **'Word search and semantic search are merged with Reciprocal Rank Fusion (RRF).'**
+  String get memorySearch;
+
+  /// No description provided for @memoryPersonas.
+  ///
+  /// In en, this message translates to:
+  /// **'Personas: the person you are, a bot voice for a chat, and people you name in a question.'**
+  String get memoryPersonas;
+
+  /// No description provided for @memoryRepo.
+  ///
+  /// In en, this message translates to:
+  /// **'Hippocampus repository'**
+  String get memoryRepo;
+
+  /// No description provided for @scopeDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Tree of a memory scope: a workspace holds apps, and an app holds users.'**
+  String get scopeDescription;
+
+  /// No description provided for @graphDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Example memory graph: memories linked to tags, entities and files.'**
+  String get graphDescription;
+
+  /// No description provided for @webTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Web research'**
+  String get webTitle;
+
+  /// No description provided for @webMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Mode'**
+  String get webMode;
+
+  /// No description provided for @webQueries.
+  ///
+  /// In en, this message translates to:
+  /// **'Queries'**
+  String get webQueries;
+
+  /// No description provided for @webPages.
+  ///
+  /// In en, this message translates to:
+  /// **'Pages'**
+  String get webPages;
+
+  /// No description provided for @webDepth.
+  ///
+  /// In en, this message translates to:
+  /// **'Link depth'**
+  String get webDepth;
+
+  /// No description provided for @webTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Time limit'**
+  String get webTime;
+
+  /// No description provided for @webFast.
+  ///
+  /// In en, this message translates to:
+  /// **'Fast'**
+  String get webFast;
+
+  /// No description provided for @webMedium.
+  ///
+  /// In en, this message translates to:
+  /// **'Medium'**
+  String get webMedium;
+
+  /// No description provided for @webDeep.
+  ///
+  /// In en, this message translates to:
+  /// **'Deep'**
+  String get webDeep;
+
+  /// No description provided for @webFastPages.
+  ///
+  /// In en, this message translates to:
+  /// **'5'**
+  String get webFastPages;
+
+  /// No description provided for @webMediumPages.
+  ///
+  /// In en, this message translates to:
+  /// **'5 per level'**
+  String get webMediumPages;
+
+  /// No description provided for @webMethod.
+  ///
+  /// In en, this message translates to:
+  /// **'Pages are cut into chunks of about 500 tokens and ranked with BM25 and RRF. Web text uses no embeddings, and sources stay apart from your memory.'**
+  String get webMethod;
+
+  /// No description provided for @seconds.
+  ///
+  /// In en, this message translates to:
+  /// **'{n} s'**
+  String seconds(int n);
+
+  /// No description provided for @liveTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Live control'**
+  String get liveTitle;
+
+  /// No description provided for @liveSteps.
+  ///
+  /// In en, this message translates to:
+  /// **'Live steps: every stage and step is streamed as it happens.'**
+  String get liveSteps;
+
+  /// No description provided for @liveReconnect.
+  ///
+  /// In en, this message translates to:
+  /// **'Reconnect: the answer keeps running on the server, and you can come back to it.'**
+  String get liveReconnect;
+
+  /// No description provided for @liveStop.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop: you can stop an answer at any time.'**
+  String get liveStop;
+
+  /// No description provided for @liveStopThinking.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop thinking: go to the final answer with the notes so far.'**
+  String get liveStopThinking;
+
+  /// No description provided for @engTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Engineering'**
+  String get engTitle;
+
+  /// No description provided for @engMachines.
+  ///
+  /// In en, this message translates to:
+  /// **'Local machines on one network: the MSI GPU runs the language model, Pong runs embeddings, FSM keeps the files, and a database server keeps the data.'**
+  String get engMachines;
+
+  /// No description provided for @engRust.
+  ///
+  /// In en, this message translates to:
+  /// **'The Cortex and Hippocampus APIs are written in Rust.'**
+  String get engRust;
+
+  /// No description provided for @engLocal.
+  ///
+  /// In en, this message translates to:
+  /// **'Local models only. No cloud language model.'**
+  String get engLocal;
+
+  /// No description provided for @machinesDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Diagram of the machines: the Cortex API sends model calls to the MSI GPU, memory calls to Hippocampus, which uses Pong for embeddings, FSM for files and the database server.'**
+  String get machinesDescription;
+
+  /// No description provided for @codeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Real code'**
+  String get codeTitle;
+
+  /// No description provided for @codeRrf.
+  ///
+  /// In en, this message translates to:
+  /// **'Reciprocal Rank Fusion of web search lists'**
+  String get codeRrf;
+
+  /// No description provided for @codeGather.
+  ///
+  /// In en, this message translates to:
+  /// **'Files, memory and web gathered at the same time'**
+  String get codeGather;
+
+  /// No description provided for @codeNames.
+  ///
+  /// In en, this message translates to:
+  /// **'Tag search inside one scope'**
+  String get codeNames;
+
+  /// No description provided for @researchTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Research basis'**
+  String get researchTitle;
+
+  /// No description provided for @securityTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Security and privacy'**
+  String get securityTitle;
+
+  /// No description provided for @securityShield.
+  ///
+  /// In en, this message translates to:
+  /// **'Every input passes a security check with fixed rules and a classifier before anything is saved.'**
+  String get securityShield;
+
+  /// No description provided for @securityIsolation.
+  ///
+  /// In en, this message translates to:
+  /// **'Each user sees only their own chats, files and memories, inside each app.'**
+  String get securityIsolation;
+
+  /// No description provided for @securityLogs.
+  ///
+  /// In en, this message translates to:
+  /// **'Logs and run records hold no chat text.'**
+  String get securityLogs;
+
+  /// No description provided for @faqLoginQ.
+  ///
+  /// In en, this message translates to:
+  /// **'Do I need an account?'**
+  String get faqLoginQ;
+
+  /// No description provided for @faqLoginA.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes. You log in with your Asodya account before the first chat.'**
+  String get faqLoginA;
+
+  /// No description provided for @faqModelQ.
+  ///
+  /// In en, this message translates to:
+  /// **'Which model answers?'**
+  String get faqModelQ;
+
+  /// No description provided for @faqModelA.
+  ///
+  /// In en, this message translates to:
+  /// **'A local text model, and a local vision model when you send an image.'**
+  String get faqModelA;
+
+  /// No description provided for @faqDataQ.
+  ///
+  /// In en, this message translates to:
+  /// **'Where does my data live?'**
+  String get faqDataQ;
+
+  /// No description provided for @faqDataA.
+  ///
+  /// In en, this message translates to:
+  /// **'On Asodya machines: chats in the database, memories in Hippocampus and files in FSM.'**
+  String get faqDataA;
+
+  /// No description provided for @faqTempQ.
+  ///
+  /// In en, this message translates to:
+  /// **'What is a temporary chat?'**
+  String get faqTempQ;
+
+  /// No description provided for @faqTempA.
+  ///
+  /// In en, this message translates to:
+  /// **'A chat that is not saved: it ends after one hour or when you close it, and it creates no memory.'**
+  String get faqTempA;
+
+  /// No description provided for @faqLangQ.
+  ///
+  /// In en, this message translates to:
+  /// **'Which languages?'**
+  String get faqLangQ;
+
+  /// No description provided for @faqLangA.
+  ///
+  /// In en, this message translates to:
+  /// **'The app is in English, Portuguese and Thai.'**
+  String get faqLangA;
+
+  /// No description provided for @finalLine.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask your first question.'**
+  String get finalLine;
+
+  /// No description provided for @builtBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Built by Wilson Borba'**
+  String get builtBy;
+
+  /// No description provided for @version.
+  ///
+  /// In en, this message translates to:
+  /// **'Version {v}'**
+  String version(String v);
+
+  /// No description provided for @logoDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Cortex logo'**
+  String get logoDescription;
+
+  /// No description provided for @chatGreeting.
+  ///
+  /// In en, this message translates to:
+  /// **'What do you want to know?'**
+  String get chatGreeting;
+
+  /// No description provided for @composerHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Write a message'**
+  String get composerHint;
+
+  /// No description provided for @attach.
+  ///
+  /// In en, this message translates to:
+  /// **'Attach files'**
+  String get attach;
+
+  /// No description provided for @webLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Web'**
+  String get webLabel;
+
+  /// No description provided for @webOff.
+  ///
+  /// In en, this message translates to:
+  /// **'Off'**
+  String get webOff;
+
+  /// No description provided for @memoryToggle.
+  ///
+  /// In en, this message translates to:
+  /// **'Memory'**
+  String get memoryToggle;
+
+  /// No description provided for @topicHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Topic (optional)'**
+  String get topicHint;
+
+  /// No description provided for @thinkingToggle.
+  ///
+  /// In en, this message translates to:
+  /// **'Thinking'**
+  String get thinkingToggle;
+
+  /// No description provided for @personaPicker.
+  ///
+  /// In en, this message translates to:
+  /// **'Bot persona'**
+  String get personaPicker;
+
+  /// No description provided for @noPersona.
+  ///
+  /// In en, this message translates to:
+  /// **'No persona'**
+  String get noPersona;
+
+  /// No description provided for @send.
+  ///
+  /// In en, this message translates to:
+  /// **'Send'**
+  String get send;
+
+  /// No description provided for @stop.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop'**
+  String get stop;
+
+  /// No description provided for @stopThinking.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop thinking'**
+  String get stopThinking;
+
+  /// No description provided for @usuallyAbout.
+  ///
+  /// In en, this message translates to:
+  /// **'Usually about {n} s'**
+  String usuallyAbout(int n);
+
+  /// No description provided for @elapsed.
+  ///
+  /// In en, this message translates to:
+  /// **'{n} s'**
+  String elapsed(int n);
+
+  /// No description provided for @stagesTimeline.
+  ///
+  /// In en, this message translates to:
+  /// **'Stages'**
+  String get stagesTimeline;
+
+  /// No description provided for @thinkingSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Thinking'**
+  String get thinkingSection;
+
+  /// No description provided for @rolePlan.
+  ///
+  /// In en, this message translates to:
+  /// **'Plan'**
+  String get rolePlan;
+
+  /// No description provided for @roleWork.
+  ///
+  /// In en, this message translates to:
+  /// **'Work'**
+  String get roleWork;
+
+  /// No description provided for @roleCheck.
+  ///
+  /// In en, this message translates to:
+  /// **'Check'**
+  String get roleCheck;
+
+  /// No description provided for @roleNotes.
+  ///
+  /// In en, this message translates to:
+  /// **'Notes'**
+  String get roleNotes;
+
+  /// No description provided for @roundN.
+  ///
+  /// In en, this message translates to:
+  /// **'round {n}'**
+  String roundN(int n);
+
+  /// No description provided for @usedMemories.
+  ///
+  /// In en, this message translates to:
+  /// **'Used {n} memories'**
+  String usedMemories(int n);
+
+  /// No description provided for @copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy'**
+  String get copy;
+
+  /// No description provided for @copied.
+  ///
+  /// In en, this message translates to:
+  /// **'Copied'**
+  String get copied;
+
+  /// No description provided for @retry.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get retry;
+
+  /// No description provided for @jumpToLatest.
+  ///
+  /// In en, this message translates to:
+  /// **'Jump to latest'**
+  String get jumpToLatest;
+
+  /// No description provided for @reconnecting.
+  ///
+  /// In en, this message translates to:
+  /// **'Reconnecting...'**
+  String get reconnecting;
+
+  /// No description provided for @rename.
+  ///
+  /// In en, this message translates to:
+  /// **'Rename'**
+  String get rename;
+
+  /// No description provided for @pin.
+  ///
+  /// In en, this message translates to:
+  /// **'Pin'**
+  String get pin;
+
+  /// No description provided for @unpin.
+  ///
+  /// In en, this message translates to:
+  /// **'Unpin'**
+  String get unpin;
 
   /// No description provided for @delete.
   ///
@@ -292,713 +1066,1127 @@ abstract class AppLocalizations {
   /// **'Delete'**
   String get delete;
 
-  /// No description provided for @webResearchPill.
+  /// No description provided for @cancel.
   ///
   /// In en, this message translates to:
-  /// **'Web Research'**
-  String get webResearchPill;
+  /// **'Cancel'**
+  String get cancel;
 
-  /// No description provided for @memoryEnginePill.
+  /// No description provided for @save.
   ///
   /// In en, this message translates to:
-  /// **'Memory Engine'**
-  String get memoryEnginePill;
+  /// **'Save'**
+  String get save;
 
-  /// No description provided for @attachTooltip.
+  /// No description provided for @deleteChatTitle.
   ///
   /// In en, this message translates to:
-  /// **'Attach files or images'**
-  String get attachTooltip;
+  /// **'Delete this chat?'**
+  String get deleteChatTitle;
 
-  /// No description provided for @userBadgePro.
+  /// No description provided for @deleteChatMessage.
   ///
   /// In en, this message translates to:
-  /// **'PRO // ASODYA AUTH'**
-  String get userBadgePro;
+  /// **'The chat and its memories are deleted. This cannot be undone.'**
+  String get deleteChatMessage;
 
-  /// No description provided for @tier0Badge.
+  /// No description provided for @tokenCounter.
   ///
   /// In en, this message translates to:
-  /// **'TIER 0 // CORTEX-T0'**
-  String get tier0Badge;
+  /// **'{n} of {max} tokens'**
+  String tokenCounter(int n, int max);
 
-  /// No description provided for @collapseSidebar.
+  /// No description provided for @overLimit.
   ///
   /// In en, this message translates to:
-  /// **'Collapse sidebar'**
-  String get collapseSidebar;
+  /// **'The message is over the input limit.'**
+  String get overLimit;
 
-  /// No description provided for @expandSidebar.
+  /// No description provided for @uploading.
   ///
   /// In en, this message translates to:
-  /// **'Expand sidebar'**
-  String get expandSidebar;
+  /// **'Uploading'**
+  String get uploading;
 
-  /// No description provided for @openSettings.
+  /// No description provided for @statsLine.
   ///
   /// In en, this message translates to:
-  /// **'Settings'**
-  String get openSettings;
+  /// **'{time} · {s} s · {input} in, {output} out tokens'**
+  String statsLine(String time, String s, int input, int output);
 
-  /// No description provided for @sessionOptions.
+  /// No description provided for @cancelledLine.
   ///
   /// In en, this message translates to:
-  /// **'Session options'**
-  String get sessionOptions;
+  /// **'Stopped'**
+  String get cancelledLine;
 
-  /// No description provided for @tierZeroLabel.
+  /// No description provided for @steps_web_queries.
   ///
   /// In en, this message translates to:
-  /// **'Tier 0 - Free & Fast'**
-  String get tierZeroLabel;
+  /// **'Preparing search queries'**
+  String get steps_web_queries;
 
-  /// No description provided for @messageHint.
+  /// No description provided for @steps_queue_wait.
   ///
   /// In en, this message translates to:
-  /// **'Message Cortex (Tier 0)...'**
-  String get messageHint;
+  /// **'Waiting for the model'**
+  String get steps_queue_wait;
 
-  /// No description provided for @lockedFeatureNotice.
+  /// No description provided for @steps_model_load.
   ///
   /// In en, this message translates to:
-  /// **'{tier}: this feature unlocks on a higher tier.'**
-  String lockedFeatureNotice(String tier);
+  /// **'Loading the model'**
+  String get steps_model_load;
 
-  /// No description provided for @attachFileLocked.
+  /// No description provided for @steps_model_ready.
   ///
   /// In en, this message translates to:
-  /// **'Attach file (locked on {tier})'**
-  String attachFileLocked(String tier);
+  /// **'The model is ready'**
+  String get steps_model_ready;
 
-  /// No description provided for @webBrowsingLocked.
+  /// No description provided for @steps_security_ok.
   ///
   /// In en, this message translates to:
-  /// **'Web browsing (locked on {tier})'**
-  String webBrowsingLocked(String tier);
+  /// **'Security check OK'**
+  String get steps_security_ok;
 
-  /// No description provided for @memoryRecallOnTooltip.
+  /// No description provided for @steps_file_read_page.
   ///
   /// In en, this message translates to:
-  /// **'Memory recall on: this reply will use cortex_api\'s native /execute with server-side memory recall'**
-  String get memoryRecallOnTooltip;
+  /// **'Reading the file page'**
+  String get steps_file_read_page;
 
-  /// No description provided for @memoryRecallOffTooltip.
+  /// No description provided for @steps_file_ocr_page.
   ///
   /// In en, this message translates to:
-  /// **'Turn on memory recall (native /execute)'**
-  String get memoryRecallOffTooltip;
+  /// **'Reading the page image'**
+  String get steps_file_ocr_page;
 
-  /// No description provided for @memoryRecallTitle.
+  /// No description provided for @steps_file_transcribe.
   ///
   /// In en, this message translates to:
-  /// **'Memory recall'**
-  String get memoryRecallTitle;
+  /// **'Transcribing audio'**
+  String get steps_file_transcribe;
 
-  /// No description provided for @memoryRecallSubtitle.
+  /// No description provided for @steps_memory_search.
   ///
   /// In en, this message translates to:
-  /// **'Uses cortex_api\'s native /execute with server-side memory recall, available on Tier 0'**
-  String get memoryRecallSubtitle;
+  /// **'Searching your memory'**
+  String get steps_memory_search;
 
-  /// No description provided for @webBrowsingTitle.
+  /// No description provided for @steps_memory_found.
   ///
   /// In en, this message translates to:
-  /// **'Web browsing'**
-  String get webBrowsingTitle;
+  /// **'Memories found'**
+  String get steps_memory_found;
 
-  /// No description provided for @webBrowsingSubtitle.
+  /// No description provided for @steps_web_search.
   ///
   /// In en, this message translates to:
-  /// **'Grounds the reply with a web search, available on Tier 0'**
-  String get webBrowsingSubtitle;
+  /// **'Searching the web'**
+  String get steps_web_search;
 
-  /// No description provided for @webSearchOnTooltip.
+  /// No description provided for @steps_web_page_read.
   ///
   /// In en, this message translates to:
-  /// **'Web search on: this reply will be grounded with a web search (needs_web)'**
-  String get webSearchOnTooltip;
+  /// **'Reading the web page'**
+  String get steps_web_page_read;
 
-  /// No description provided for @webSearchOffTooltip.
+  /// No description provided for @steps_chunks_selected.
   ///
   /// In en, this message translates to:
-  /// **'Turn on web search grounding (needs_web)'**
-  String get webSearchOffTooltip;
+  /// **'Text parts selected'**
+  String get steps_chunks_selected;
 
-  /// No description provided for @sourcesCount.
+  /// No description provided for @steps_thinking_step.
   ///
   /// In en, this message translates to:
-  /// **'Sources ({count})'**
-  String sourcesCount(int count);
+  /// **'Thinking step'**
+  String get steps_thinking_step;
 
-  /// No description provided for @attachFile.
+  /// No description provided for @steps_thinking_stopped.
   ///
   /// In en, this message translates to:
-  /// **'Attach a file'**
-  String get attachFile;
+  /// **'Thinking stopped by the user'**
+  String get steps_thinking_stopped;
 
-  /// No description provided for @attachImage.
+  /// No description provided for @temporaryBanner.
   ///
   /// In en, this message translates to:
-  /// **'Image'**
-  String get attachImage;
+  /// **'Temporary: not saved, lost when you refresh.'**
+  String get temporaryBanner;
 
-  /// No description provided for @attachDocument.
-  ///
-  /// In en, this message translates to:
-  /// **'Document'**
-  String get attachDocument;
-
-  /// No description provided for @removeAttachment.
-  ///
-  /// In en, this message translates to:
-  /// **'Remove attachment'**
-  String get removeAttachment;
-
-  /// No description provided for @documentAttachmentBackendGap.
-  ///
-  /// In en, this message translates to:
-  /// **'Supported files: images, audio, PDF, Word (.docx), and plain text/JSON/XML.'**
-  String get documentAttachmentBackendGap;
-
-  /// No description provided for @voiceStartRecording.
-  ///
-  /// In en, this message translates to:
-  /// **'Record a voice message'**
-  String get voiceStartRecording;
-
-  /// No description provided for @voiceFeatureNotReady.
-  ///
-  /// In en, this message translates to:
-  /// **'Voice messages: not ready yet'**
-  String get voiceFeatureNotReady;
-
-  /// No description provided for @suggestionSystemTag.
-  ///
-  /// In en, this message translates to:
-  /// **'SYSTEM ANALYSIS'**
-  String get suggestionSystemTag;
-
-  /// No description provided for @suggestionSystemTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Analyze system telemetry & bottlenecks'**
-  String get suggestionSystemTitle;
-
-  /// No description provided for @suggestionSystemSubtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Identify latency bottlenecks and profile memory usage.'**
-  String get suggestionSystemSubtitle;
-
-  /// No description provided for @suggestionSystemPrompt.
-  ///
-  /// In en, this message translates to:
-  /// **'Analyze current system metrics and identify memory/latency bottlenecks.'**
-  String get suggestionSystemPrompt;
-
-  /// No description provided for @suggestionArchitectureTag.
-  ///
-  /// In en, this message translates to:
-  /// **'ARCHITECTURE'**
-  String get suggestionArchitectureTag;
-
-  /// No description provided for @suggestionArchitectureTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Explore distributed architecture tradeoffs'**
-  String get suggestionArchitectureTitle;
-
-  /// No description provided for @suggestionArchitectureSubtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Compare streaming facades against batch execution models.'**
-  String get suggestionArchitectureSubtitle;
-
-  /// No description provided for @suggestionArchitecturePrompt.
-  ///
-  /// In en, this message translates to:
-  /// **'Explain the architectural tradeoffs between token streaming facades vs RPC execute.'**
-  String get suggestionArchitecturePrompt;
-
-  /// No description provided for @suggestionPipelineTag.
-  ///
-  /// In en, this message translates to:
-  /// **'PIPELINE CODE'**
-  String get suggestionPipelineTag;
-
-  /// No description provided for @suggestionPipelineTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Draft an asynchronous API gateway'**
-  String get suggestionPipelineTitle;
-
-  /// No description provided for @suggestionPipelineSubtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Build a resilient service with streaming SSE & health guards.'**
-  String get suggestionPipelineSubtitle;
-
-  /// No description provided for @suggestionPipelinePrompt.
-  ///
-  /// In en, this message translates to:
-  /// **'Write a Python FastAPI service connecting to an isolated AI gateway with health checks.'**
-  String get suggestionPipelinePrompt;
-
-  /// No description provided for @voiceCancelRecording.
-  ///
-  /// In en, this message translates to:
-  /// **'Cancel recording'**
-  String get voiceCancelRecording;
-
-  /// No description provided for @voiceSendRecording.
-  ///
-  /// In en, this message translates to:
-  /// **'Send voice message'**
-  String get voiceSendRecording;
-
-  /// No description provided for @micPermissionDenied.
-  ///
-  /// In en, this message translates to:
-  /// **'Microphone access is unavailable or was denied.'**
-  String get micPermissionDenied;
-
-  /// No description provided for @voiceMessageTooShort.
-  ///
-  /// In en, this message translates to:
-  /// **'Recording was too short to send.'**
-  String get voiceMessageTooShort;
-
-  /// No description provided for @incognitoModeTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Incognito chat'**
-  String get incognitoModeTitle;
-
-  /// No description provided for @incognitoModeSubtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Ephemeral session: no history is saved and memory is explicitly off'**
-  String get incognitoModeSubtitle;
-
-  /// No description provided for @newIncognitoChat.
-  ///
-  /// In en, this message translates to:
-  /// **'Start incognito chat'**
-  String get newIncognitoChat;
-
-  /// No description provided for @couldNotSendMessage.
-  ///
-  /// In en, this message translates to:
-  /// **'Could not send message: {error}'**
-  String couldNotSendMessage(String error);
-
-  /// No description provided for @scrollToBottomTooltip.
-  ///
-  /// In en, this message translates to:
-  /// **'Scroll to bottom'**
-  String get scrollToBottomTooltip;
-
-  /// No description provided for @codeBlockPlainLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'code'**
-  String get codeBlockPlainLabel;
-
-  /// No description provided for @codeBlockCopyLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Copy'**
-  String get codeBlockCopyLabel;
-
-  /// No description provided for @copyMessageTooltip.
-  ///
-  /// In en, this message translates to:
-  /// **'Copy message'**
-  String get copyMessageTooltip;
-
-  /// No description provided for @codeBlockCopiedLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Copied!'**
-  String get codeBlockCopiedLabel;
-
-  /// No description provided for @continueGenerationLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Continue generation'**
-  String get continueGenerationLabel;
-
-  /// No description provided for @continueGenerationTooltip.
-  ///
-  /// In en, this message translates to:
-  /// **'The connection dropped mid-reply. This retries the request from scratch (cortex_api cannot resume a partial reply) and replaces this message once a new answer comes in.'**
-  String get continueGenerationTooltip;
-
-  /// No description provided for @settingsTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Settings'**
-  String get settingsTitle;
-
-  /// No description provided for @exportChatTooltip.
-  ///
-  /// In en, this message translates to:
-  /// **'Export chat as Markdown'**
-  String get exportChatTooltip;
-
-  /// No description provided for @themeLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Theme'**
-  String get themeLabel;
-
-  /// No description provided for @themeLight.
-  ///
-  /// In en, this message translates to:
-  /// **'Light'**
-  String get themeLight;
-
-  /// No description provided for @themeDark.
-  ///
-  /// In en, this message translates to:
-  /// **'Dark'**
-  String get themeDark;
-
-  /// No description provided for @themeSystem.
-  ///
-  /// In en, this message translates to:
-  /// **'System'**
-  String get themeSystem;
-
-  /// No description provided for @languageLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Language'**
-  String get languageLabel;
-
-  /// No description provided for @languageEnglish.
-  ///
-  /// In en, this message translates to:
-  /// **'English'**
-  String get languageEnglish;
-
-  /// No description provided for @languagePortuguese.
-  ///
-  /// In en, this message translates to:
-  /// **'Portuguese'**
-  String get languagePortuguese;
-
-  /// No description provided for @languageThai.
-  ///
-  /// In en, this message translates to:
-  /// **'Thai'**
-  String get languageThai;
-
-  /// No description provided for @improveInputLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Improve my input'**
-  String get improveInputLabel;
-
-  /// No description provided for @improveInputSubtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Automatically rewrites and clarifies prompts with local reasoning model before generation'**
-  String get improveInputSubtitle;
-
-  /// No description provided for @incognitoBadge.
-  ///
-  /// In en, this message translates to:
-  /// **'INCOGNITO'**
-  String get incognitoBadge;
-
-  /// No description provided for @startIncognito.
-  ///
-  /// In en, this message translates to:
-  /// **'Start Incognito Chat'**
-  String get startIncognito;
-
-  /// No description provided for @exitIncognito.
-  ///
-  /// In en, this message translates to:
-  /// **'Exit Incognito'**
-  String get exitIncognito;
-
-  /// No description provided for @memoryGraphTooltip.
-  ///
-  /// In en, this message translates to:
-  /// **'Memory graph'**
-  String get memoryGraphTooltip;
-
-  /// No description provided for @memoryGraphTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Memory graph'**
-  String get memoryGraphTitle;
-
-  /// No description provided for @memoryGraphEmptyTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'No memories yet'**
-  String get memoryGraphEmptyTitle;
-
-  /// No description provided for @memoryGraphEmptyBody.
-  ///
-  /// In en, this message translates to:
-  /// **'Once Cortex remembers something, it will show up here as a graph.'**
-  String get memoryGraphEmptyBody;
-
-  /// No description provided for @memoryGraphTruncatedNotice.
-  ///
-  /// In en, this message translates to:
-  /// **'This view does not show the full graph, some nodes were left out.'**
-  String get memoryGraphTruncatedNotice;
-
-  /// No description provided for @memoryGraphNoContextAvailable.
-  ///
-  /// In en, this message translates to:
-  /// **'No context available for this node.'**
-  String get memoryGraphNoContextAvailable;
-
-  /// No description provided for @memoryGraphTimeJustNow.
+  /// No description provided for @justNow.
   ///
   /// In en, this message translates to:
   /// **'Just now'**
-  String get memoryGraphTimeJustNow;
+  String get justNow;
 
-  /// No description provided for @memoryGraphTimeMinutesAgo.
+  /// No description provided for @minutesAgo.
   ///
   /// In en, this message translates to:
-  /// **'{count}m ago'**
-  String memoryGraphTimeMinutesAgo(int count);
+  /// **'{n} min ago'**
+  String minutesAgo(int n);
 
-  /// No description provided for @memoryGraphTimeHoursAgo.
+  /// No description provided for @hoursAgo.
   ///
   /// In en, this message translates to:
-  /// **'{count}h ago'**
-  String memoryGraphTimeHoursAgo(int count);
+  /// **'{n} h ago'**
+  String hoursAgo(int n);
 
-  /// No description provided for @memoryGraphTimeDaysAgo.
+  /// No description provided for @daysAgo.
   ///
   /// In en, this message translates to:
-  /// **'{count}d ago'**
-  String memoryGraphTimeDaysAgo(int count);
+  /// **'{n} d ago'**
+  String daysAgo(int n);
 
-  /// No description provided for @memoryGraphTypeMemory.
+  /// No description provided for @running.
+  ///
+  /// In en, this message translates to:
+  /// **'Running'**
+  String get running;
+
+  /// No description provided for @chatActions.
+  ///
+  /// In en, this message translates to:
+  /// **'Chat actions'**
+  String get chatActions;
+
+  /// No description provided for @deleteFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'The chat was not deleted.'**
+  String get deleteFailed;
+
+  /// No description provided for @chatsLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Chats could not be loaded.'**
+  String get chatsLoadFailed;
+
+  /// No description provided for @graphView.
+  ///
+  /// In en, this message translates to:
+  /// **'Graph'**
+  String get graphView;
+
+  /// No description provided for @listView.
+  ///
+  /// In en, this message translates to:
+  /// **'List'**
+  String get listView;
+
+  /// No description provided for @depthLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Depth'**
+  String get depthLabel;
+
+  /// No description provided for @limitLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Limit'**
+  String get limitLabel;
+
+  /// No description provided for @legendMemory.
   ///
   /// In en, this message translates to:
   /// **'Memory'**
-  String get memoryGraphTypeMemory;
+  String get legendMemory;
 
-  /// No description provided for @memoryGraphTypeAttachment.
-  ///
-  /// In en, this message translates to:
-  /// **'Attachment'**
-  String get memoryGraphTypeAttachment;
-
-  /// No description provided for @memoryGraphTypeTag.
+  /// No description provided for @legendTag.
   ///
   /// In en, this message translates to:
   /// **'Tag'**
-  String get memoryGraphTypeTag;
+  String get legendTag;
 
-  /// No description provided for @memoryGraphTypeEntity.
+  /// No description provided for @legendEntity.
   ///
   /// In en, this message translates to:
   /// **'Entity'**
-  String get memoryGraphTypeEntity;
+  String get legendEntity;
 
-  /// No description provided for @memoryGraphTypeResource.
+  /// No description provided for @legendFile.
   ///
   /// In en, this message translates to:
-  /// **'Resource'**
-  String get memoryGraphTypeResource;
+  /// **'File'**
+  String get legendFile;
 
-  /// No description provided for @memoryGraphTypeCluster.
+  /// No description provided for @noMemories.
   ///
   /// In en, this message translates to:
-  /// **'Cluster'**
-  String get memoryGraphTypeCluster;
+  /// **'No memories yet'**
+  String get noMemories;
 
-  /// No description provided for @memoryGraphClusterCount.
+  /// No description provided for @memoryLoadFailed.
   ///
   /// In en, this message translates to:
-  /// **'+{count} more'**
-  String memoryGraphClusterCount(int count);
+  /// **'Memory could not be loaded.'**
+  String get memoryLoadFailed;
 
-  /// No description provided for @memoryGraphClusterExpandedCount.
+  /// No description provided for @memoryNotFound.
   ///
   /// In en, this message translates to:
-  /// **'{count} shown'**
-  String memoryGraphClusterExpandedCount(int count);
+  /// **'This memory was not found.'**
+  String get memoryNotFound;
 
-  /// No description provided for @memoryGraphResetPositionsTooltip.
+  /// No description provided for @superseded.
   ///
   /// In en, this message translates to:
-  /// **'Reset positions'**
-  String get memoryGraphResetPositionsTooltip;
+  /// **'Superseded'**
+  String get superseded;
 
-  /// No description provided for @supportTitle.
+  /// No description provided for @detailsLabel.
   ///
   /// In en, this message translates to:
-  /// **'Support'**
-  String get supportTitle;
+  /// **'Details'**
+  String get detailsLabel;
 
-  /// No description provided for @newTicketAction.
+  /// No description provided for @linkedFiles.
   ///
   /// In en, this message translates to:
-  /// **'New ticket'**
-  String get newTicketAction;
+  /// **'Files'**
+  String get linkedFiles;
 
-  /// No description provided for @noSupportTicketsYetTitle.
+  /// No description provided for @linkedMemories.
   ///
   /// In en, this message translates to:
-  /// **'No support tickets yet'**
-  String get noSupportTicketsYetTitle;
+  /// **'Linked memories'**
+  String get linkedMemories;
 
-  /// No description provided for @noSupportTicketsYetBody.
+  /// No description provided for @typeChat.
   ///
   /// In en, this message translates to:
-  /// **'Start a new ticket if you need help or want to report something.'**
-  String get noSupportTicketsYetBody;
+  /// **'Chat'**
+  String get typeChat;
 
-  /// No description provided for @ticketStatusOpen.
+  /// No description provided for @typeFile.
   ///
   /// In en, this message translates to:
-  /// **'Open'**
-  String get ticketStatusOpen;
+  /// **'File'**
+  String get typeFile;
 
-  /// No description provided for @ticketStatusPending.
+  /// No description provided for @typeNote.
   ///
   /// In en, this message translates to:
-  /// **'Pending'**
-  String get ticketStatusPending;
+  /// **'Note'**
+  String get typeNote;
 
-  /// No description provided for @ticketStatusResolved.
+  /// No description provided for @graphTruncated.
   ///
   /// In en, this message translates to:
-  /// **'Resolved'**
-  String get ticketStatusResolved;
+  /// **'Only part of the graph is shown. Raise the limit to see more.'**
+  String get graphTruncated;
 
-  /// No description provided for @ticketStatusClosed.
+  /// No description provided for @memoryGraphDescription.
   ///
   /// In en, this message translates to:
-  /// **'Closed'**
-  String get ticketStatusClosed;
+  /// **'Memory graph. The list view shows the same nodes as text.'**
+  String get memoryGraphDescription;
 
-  /// No description provided for @ticketSubjectLabel.
+  /// No description provided for @legendPersona.
   ///
   /// In en, this message translates to:
-  /// **'Subject'**
-  String get ticketSubjectLabel;
+  /// **'Persona'**
+  String get legendPersona;
 
-  /// No description provided for @ticketSubjectHint.
+  /// No description provided for @linkedPersonas.
   ///
   /// In en, this message translates to:
-  /// **'What\'s this about? (optional)'**
-  String get ticketSubjectHint;
+  /// **'Linked personas'**
+  String get linkedPersonas;
 
-  /// No description provided for @ticketBodyLabel.
+  /// No description provided for @searchPersonas.
   ///
   /// In en, this message translates to:
-  /// **'Message'**
-  String get ticketBodyLabel;
+  /// **'Search personas'**
+  String get searchPersonas;
 
-  /// No description provided for @ticketReplyHint.
+  /// No description provided for @allPersonaTypes.
   ///
   /// In en, this message translates to:
-  /// **'Type your message...'**
-  String get ticketReplyHint;
+  /// **'All types'**
+  String get allPersonaTypes;
 
-  /// No description provided for @attachImageAction.
+  /// No description provided for @personType.
   ///
   /// In en, this message translates to:
-  /// **'Attach image'**
-  String get attachImageAction;
+  /// **'Person'**
+  String get personType;
 
-  /// No description provided for @submitAction.
+  /// No description provided for @botType.
   ///
   /// In en, this message translates to:
-  /// **'Submit'**
-  String get submitAction;
+  /// **'Bot'**
+  String get botType;
 
-  /// No description provided for @supportTicketDetailTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Support ticket'**
-  String get supportTicketDetailTitle;
-
-  /// No description provided for @ticketThreadUnavailableNotice.
-  ///
-  /// In en, this message translates to:
-  /// **'Message history is temporarily unavailable. Your ticket is still open.'**
-  String get ticketThreadUnavailableNotice;
-
-  /// No description provided for @supportTeamLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Support team'**
-  String get supportTeamLabel;
-
-  /// No description provided for @youLabel.
+  /// No description provided for @you.
   ///
   /// In en, this message translates to:
   /// **'You'**
-  String get youLabel;
+  String get you;
 
-  /// No description provided for @attachmentLabel.
+  /// No description provided for @noPersonas.
   ///
   /// In en, this message translates to:
-  /// **'Attachment'**
-  String get attachmentLabel;
+  /// **'No personas yet'**
+  String get noPersonas;
 
-  /// No description provided for @tryAgainAction.
+  /// No description provided for @personasLoadFailed.
   ///
   /// In en, this message translates to:
-  /// **'Try again'**
-  String get tryAgainAction;
+  /// **'Personas could not be loaded.'**
+  String get personasLoadFailed;
 
-  /// No description provided for @errorLoadingTicketsMessage.
+  /// No description provided for @personaFormFailed.
   ///
   /// In en, this message translates to:
-  /// **'Couldn\'t load your support tickets.'**
-  String get errorLoadingTicketsMessage;
+  /// **'The persona form could not be loaded.'**
+  String get personaFormFailed;
 
-  /// No description provided for @ticketActionFailedMessage.
+  /// No description provided for @personaSaveFailed.
   ///
   /// In en, this message translates to:
-  /// **'Something went wrong. Please try again.'**
-  String get ticketActionFailedMessage;
+  /// **'The persona could not be saved. Check the marked fields.'**
+  String get personaSaveFailed;
 
-  /// No description provided for @genericErrorTitle.
+  /// No description provided for @editPersona.
   ///
   /// In en, this message translates to:
-  /// **'Something went wrong'**
-  String get genericErrorTitle;
+  /// **'Edit persona'**
+  String get editPersona;
 
-  /// No description provided for @genericErrorMessage.
+  /// No description provided for @personaType.
   ///
   /// In en, this message translates to:
-  /// **'We hit an unexpected problem. You can let us know so we can look into it.'**
-  String get genericErrorMessage;
+  /// **'Type'**
+  String get personaType;
 
-  /// No description provided for @contactSupportAction.
+  /// No description provided for @personaName.
   ///
   /// In en, this message translates to:
-  /// **'Contact support'**
-  String get contactSupportAction;
+  /// **'Name'**
+  String get personaName;
 
-  /// No description provided for @errorReportTicketSubject.
+  /// No description provided for @personaAliases.
   ///
   /// In en, this message translates to:
-  /// **'Unexpected error in Cortex'**
-  String get errorReportTicketSubject;
+  /// **'Aliases'**
+  String get personaAliases;
 
-  /// No description provided for @errorReportTicketBodyIntro.
+  /// No description provided for @personaIsSelf.
   ///
   /// In en, this message translates to:
-  /// **'I ran into an unexpected problem while using Cortex. Here are some technical details that might help:'**
-  String get errorReportTicketBodyIntro;
+  /// **'This persona is you'**
+  String get personaIsSelf;
+
+  /// No description provided for @personaRequiredLegend.
+  ///
+  /// In en, this message translates to:
+  /// **'* Required field'**
+  String get personaRequiredLegend;
+
+  /// No description provided for @personaSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Persona saved'**
+  String get personaSaved;
+
+  /// No description provided for @deletePersona.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete persona'**
+  String get deletePersona;
+
+  /// No description provided for @deletePersonaConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete this persona and its attributes?'**
+  String get deletePersonaConfirm;
+
+  /// No description provided for @personaFieldRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'This field is required.'**
+  String get personaFieldRequired;
+
+  /// No description provided for @personaFieldUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'This field is not in the stored schema.'**
+  String get personaFieldUnknown;
+
+  /// No description provided for @personaFieldType.
+  ///
+  /// In en, this message translates to:
+  /// **'Use the type shown for this field.'**
+  String get personaFieldType;
+
+  /// No description provided for @personaFieldInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Check this field.'**
+  String get personaFieldInvalid;
+
+  /// No description provided for @addPersonaItem.
+  ///
+  /// In en, this message translates to:
+  /// **'Add item'**
+  String get addPersonaItem;
+
+  /// No description provided for @removePersonaItem.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove item'**
+  String get removePersonaItem;
+
+  /// No description provided for @choosePersonaDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a date'**
+  String get choosePersonaDate;
+
+  /// No description provided for @clear.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear'**
+  String get clear;
+
+  /// No description provided for @personaYes.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes'**
+  String get personaYes;
+
+  /// No description provided for @personaNo.
+  ///
+  /// In en, this message translates to:
+  /// **'No'**
+  String get personaNo;
+
+  /// No description provided for @personaInteger.
+  ///
+  /// In en, this message translates to:
+  /// **'Whole number'**
+  String get personaInteger;
+
+  /// No description provided for @personaNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Number'**
+  String get personaNumber;
+
+  /// No description provided for @personaActionFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not complete the action. Try again.'**
+  String get personaActionFailed;
+
+  /// No description provided for @usageLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Usage could not be loaded.'**
+  String get usageLoadFailed;
+
+  /// No description provided for @notAvailableYet.
+  ///
+  /// In en, this message translates to:
+  /// **'Not available yet'**
+  String get notAvailableYet;
+
+  /// No description provided for @usageWindow.
+  ///
+  /// In en, this message translates to:
+  /// **'Your usage in the last {hours} hours'**
+  String usageWindow(int hours);
+
+  /// No description provided for @usageInputTokens.
+  ///
+  /// In en, this message translates to:
+  /// **'Input tokens'**
+  String get usageInputTokens;
+
+  /// No description provided for @usageOutputTokens.
+  ///
+  /// In en, this message translates to:
+  /// **'Output tokens'**
+  String get usageOutputTokens;
+
+  /// No description provided for @usageTotalTokens.
+  ///
+  /// In en, this message translates to:
+  /// **'Total tokens'**
+  String get usageTotalTokens;
+
+  /// No description provided for @usageImages.
+  ///
+  /// In en, this message translates to:
+  /// **'Images'**
+  String get usageImages;
+
+  /// No description provided for @usageAudio.
+  ///
+  /// In en, this message translates to:
+  /// **'Audio items'**
+  String get usageAudio;
+
+  /// No description provided for @usagePriority.
+  ///
+  /// In en, this message translates to:
+  /// **'Your priority'**
+  String get usagePriority;
+
+  /// No description provided for @usagePriorityHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'The next model call goes to the waiting user with the lowest token use divided by their weight. A call that has started will finish.'**
+  String get usagePriorityHelp;
+
+  /// No description provided for @usageWeight.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight'**
+  String get usageWeight;
+
+  /// No description provided for @usageAccountAge.
+  ///
+  /// In en, this message translates to:
+  /// **'Account age part'**
+  String get usageAccountAge;
+
+  /// No description provided for @usageFrequency.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign-in frequency part'**
+  String get usageFrequency;
+
+  /// No description provided for @usageAccountDays.
+  ///
+  /// In en, this message translates to:
+  /// **'Account age in days'**
+  String get usageAccountDays;
+
+  /// No description provided for @usageSignInDays.
+  ///
+  /// In en, this message translates to:
+  /// **'Days with a sign-in in the last 90 days'**
+  String get usageSignInDays;
+
+  /// No description provided for @usageWeightFormula.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight = 1 + account age part + sign-in frequency part.'**
+  String get usageWeightFormula;
+
+  /// No description provided for @usageKind.
+  ///
+  /// In en, this message translates to:
+  /// **'{mode}, {thinking}'**
+  String usageKind(String mode, String thinking);
+
+  /// No description provided for @usageThinkingOn.
+  ///
+  /// In en, this message translates to:
+  /// **'thinking on'**
+  String get usageThinkingOn;
+
+  /// No description provided for @usageThinkingOff.
+  ///
+  /// In en, this message translates to:
+  /// **'thinking off'**
+  String get usageThinkingOff;
+
+  /// No description provided for @usageSeconds.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} s'**
+  String usageSeconds(String value);
+
+  /// No description provided for @usageTimingHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Average of the last 20 completed answers for each kind. Failed and cancelled answers are excluded.'**
+  String get usageTimingHelp;
+
+  /// No description provided for @usageEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No usage records yet'**
+  String get usageEmpty;
+
+  /// No description provided for @usageMetric.
+  ///
+  /// In en, this message translates to:
+  /// **'Measure'**
+  String get usageMetric;
+
+  /// No description provided for @usageRuns.
+  ///
+  /// In en, this message translates to:
+  /// **'Total answers'**
+  String get usageRuns;
+
+  /// No description provided for @usageAverageTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Average time'**
+  String get usageAverageTime;
+
+  /// No description provided for @usageAverageInput.
+  ///
+  /// In en, this message translates to:
+  /// **'Average input tokens'**
+  String get usageAverageInput;
+
+  /// No description provided for @usageAverageOutput.
+  ///
+  /// In en, this message translates to:
+  /// **'Average output tokens'**
+  String get usageAverageOutput;
+
+  /// No description provided for @usageAverageTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'Average total tokens'**
+  String get usageAverageTotal;
+
+  /// No description provided for @usageSuccessRate.
+  ///
+  /// In en, this message translates to:
+  /// **'Success rate'**
+  String get usageSuccessRate;
+
+  /// No description provided for @usageRequest.
+  ///
+  /// In en, this message translates to:
+  /// **'Request ID'**
+  String get usageRequest;
+
+  /// No description provided for @usageOutput.
+  ///
+  /// In en, this message translates to:
+  /// **'Output ID'**
+  String get usageOutput;
+
+  /// No description provided for @usageUser.
+  ///
+  /// In en, this message translates to:
+  /// **'User'**
+  String get usageUser;
+
+  /// No description provided for @usageModel.
+  ///
+  /// In en, this message translates to:
+  /// **'Model'**
+  String get usageModel;
+
+  /// No description provided for @usageRole.
+  ///
+  /// In en, this message translates to:
+  /// **'Role'**
+  String get usageRole;
+
+  /// No description provided for @usageStarted.
+  ///
+  /// In en, this message translates to:
+  /// **'Started'**
+  String get usageStarted;
+
+  /// No description provided for @usageFinished.
+  ///
+  /// In en, this message translates to:
+  /// **'Finished'**
+  String get usageFinished;
+
+  /// No description provided for @usageNoUser.
+  ///
+  /// In en, this message translates to:
+  /// **'No user'**
+  String get usageNoUser;
+
+  /// No description provided for @loadMore.
+  ///
+  /// In en, this message translates to:
+  /// **'Load more'**
+  String get loadMore;
+
+  /// No description provided for @loading.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading'**
+  String get loading;
+
+  /// No description provided for @process1001.
+  ///
+  /// In en, this message translates to:
+  /// **'The route was not found'**
+  String get process1001;
+
+  /// No description provided for @process1002.
+  ///
+  /// In en, this message translates to:
+  /// **'The method is not allowed'**
+  String get process1002;
+
+  /// No description provided for @process1003.
+  ///
+  /// In en, this message translates to:
+  /// **'The request data is not valid'**
+  String get process1003;
+
+  /// No description provided for @process1004.
+  ///
+  /// In en, this message translates to:
+  /// **'The JSON body is not valid'**
+  String get process1004;
+
+  /// No description provided for @process1005.
+  ///
+  /// In en, this message translates to:
+  /// **'The x-uuid header is required'**
+  String get process1005;
+
+  /// No description provided for @process1006.
+  ///
+  /// In en, this message translates to:
+  /// **'The content type is not supported'**
+  String get process1006;
+
+  /// No description provided for @process1007.
+  ///
+  /// In en, this message translates to:
+  /// **'The request body is too large'**
+  String get process1007;
+
+  /// No description provided for @process1008.
+  ///
+  /// In en, this message translates to:
+  /// **'The server could not complete the request'**
+  String get process1008;
+
+  /// No description provided for @process1009.
+  ///
+  /// In en, this message translates to:
+  /// **'The app_id is not allowed'**
+  String get process1009;
+
+  /// No description provided for @process1010.
+  ///
+  /// In en, this message translates to:
+  /// **'The server is under heavy load. Try later'**
+  String get process1010;
+
+  /// No description provided for @process1011.
+  ///
+  /// In en, this message translates to:
+  /// **'The local call queue failed'**
+  String get process1011;
+
+  /// No description provided for @process1012.
+  ///
+  /// In en, this message translates to:
+  /// **'The local model call failed'**
+  String get process1012;
+
+  /// No description provided for @process1201.
+  ///
+  /// In en, this message translates to:
+  /// **'The input is over the token limit'**
+  String get process1201;
+
+  /// No description provided for @process1013.
+  ///
+  /// In en, this message translates to:
+  /// **'The usage data is not available'**
+  String get process1013;
+
+  /// No description provided for @process1014.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you kidding me, clown?'**
+  String get process1014;
+
+  /// No description provided for @process1015.
+  ///
+  /// In en, this message translates to:
+  /// **'The input security check is not available'**
+  String get process1015;
+
+  /// No description provided for @process1016.
+  ///
+  /// In en, this message translates to:
+  /// **'The chat was not found'**
+  String get process1016;
+
+  /// No description provided for @process1017.
+  ///
+  /// In en, this message translates to:
+  /// **'The chat history could not be loaded or changed'**
+  String get process1017;
+
+  /// No description provided for @process1018.
+  ///
+  /// In en, this message translates to:
+  /// **'The output was not found'**
+  String get process1018;
+
+  /// No description provided for @process1019.
+  ///
+  /// In en, this message translates to:
+  /// **'The exchange memory could not be saved'**
+  String get process1019;
+
+  /// No description provided for @process1020.
+  ///
+  /// In en, this message translates to:
+  /// **'Web search is not available'**
+  String get process1020;
+
+  /// No description provided for @process1021.
+  ///
+  /// In en, this message translates to:
+  /// **'The web page timed out'**
+  String get process1021;
+
+  /// No description provided for @process1022.
+  ///
+  /// In en, this message translates to:
+  /// **'The web page is over the size limit'**
+  String get process1022;
+
+  /// No description provided for @process1023.
+  ///
+  /// In en, this message translates to:
+  /// **'The web page is not HTML'**
+  String get process1023;
+
+  /// No description provided for @process1024.
+  ///
+  /// In en, this message translates to:
+  /// **'The web page could not be read'**
+  String get process1024;
+
+  /// No description provided for @process1025.
+  ///
+  /// In en, this message translates to:
+  /// **'The web page has no readable main text'**
+  String get process1025;
+
+  /// No description provided for @process1026.
+  ///
+  /// In en, this message translates to:
+  /// **'The web time limit was reached'**
+  String get process1026;
+
+  /// No description provided for @process1027.
+  ///
+  /// In en, this message translates to:
+  /// **'The web page limit was reached'**
+  String get process1027;
+
+  /// No description provided for @process1028.
+  ///
+  /// In en, this message translates to:
+  /// **'The web crawl rules could not be loaded'**
+  String get process1028;
+
+  /// No description provided for @process1029.
+  ///
+  /// In en, this message translates to:
+  /// **'Memory could not be loaded'**
+  String get process1029;
+
+  /// No description provided for @process1030.
+  ///
+  /// In en, this message translates to:
+  /// **'The file type is not supported'**
+  String get process1030;
+
+  /// No description provided for @process1031.
+  ///
+  /// In en, this message translates to:
+  /// **'The file is over the size limit'**
+  String get process1031;
+
+  /// No description provided for @process1032.
+  ///
+  /// In en, this message translates to:
+  /// **'The file text could not be read'**
+  String get process1032;
+
+  /// No description provided for @process1033.
+  ///
+  /// In en, this message translates to:
+  /// **'The file is over the OCR page limit'**
+  String get process1033;
+
+  /// No description provided for @process1034.
+  ///
+  /// In en, this message translates to:
+  /// **'The file image text could not be read'**
+  String get process1034;
+
+  /// No description provided for @process1035.
+  ///
+  /// In en, this message translates to:
+  /// **'Temporary chat storage is not available'**
+  String get process1035;
+
+  /// No description provided for @process1036.
+  ///
+  /// In en, this message translates to:
+  /// **'The thinking time limit was reached'**
+  String get process1036;
+
+  /// No description provided for @process1037.
+  ///
+  /// In en, this message translates to:
+  /// **'The live log stream is for the LAN'**
+  String get process1037;
+
+  /// No description provided for @process1038.
+  ///
+  /// In en, this message translates to:
+  /// **'Telemetry data could not be loaded'**
+  String get process1038;
+
+  /// No description provided for @process1039.
+  ///
+  /// In en, this message translates to:
+  /// **'The memory graph node was not found'**
+  String get process1039;
+
+  /// No description provided for @process1040.
+  ///
+  /// In en, this message translates to:
+  /// **'The file was not saved'**
+  String get process1040;
+
+  /// No description provided for @process1041.
+  ///
+  /// In en, this message translates to:
+  /// **'The file was not found'**
+  String get process1041;
+
+  /// No description provided for @process1042.
+  ///
+  /// In en, this message translates to:
+  /// **'The output events are not available'**
+  String get process1042;
+
+  /// No description provided for @process1043.
+  ///
+  /// In en, this message translates to:
+  /// **'The output is not running'**
+  String get process1043;
+
+  /// No description provided for @process1044.
+  ///
+  /// In en, this message translates to:
+  /// **'The chat memories could not be deleted'**
+  String get process1044;
+
+  /// No description provided for @process1045.
+  ///
+  /// In en, this message translates to:
+  /// **'The persona was not found'**
+  String get process1045;
+
+  /// No description provided for @process1046.
+  ///
+  /// In en, this message translates to:
+  /// **'The persona data is not valid'**
+  String get process1046;
+
+  /// No description provided for @process1047.
+  ///
+  /// In en, this message translates to:
+  /// **'Personas could not be loaded or changed'**
+  String get process1047;
+
+  /// No description provided for @process1048.
+  ///
+  /// In en, this message translates to:
+  /// **'The audio is over the 10 minute limit'**
+  String get process1048;
+
+  /// No description provided for @process1049.
+  ///
+  /// In en, this message translates to:
+  /// **'The audio could not be transcribed'**
+  String get process1049;
+
+  /// No description provided for @process1050.
+  ///
+  /// In en, this message translates to:
+  /// **'The file worker did not answer'**
+  String get process1050;
+
+  /// No description provided for @processUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong ({number}).'**
+  String processUnknown(int number);
+
+  /// No description provided for @processGeneric.
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong. Try again.'**
+  String get processGeneric;
+
+  /// No description provided for @networkOffline.
+  ///
+  /// In en, this message translates to:
+  /// **'You are offline. Check your connection and retry.'**
+  String get networkOffline;
+
+  /// No description provided for @stepUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Working'**
+  String get stepUnknown;
+
+  /// No description provided for @statusStarted.
+  ///
+  /// In en, this message translates to:
+  /// **'Started'**
+  String get statusStarted;
+
+  /// No description provided for @statusDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get statusDone;
+
+  /// No description provided for @statusFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed'**
+  String get statusFailed;
+
+  /// No description provided for @statusCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get statusCancelled;
+
+  /// No description provided for @statusSkipped.
+  ///
+  /// In en, this message translates to:
+  /// **'Skipped'**
+  String get statusSkipped;
+
+  /// No description provided for @expandThinking.
+  ///
+  /// In en, this message translates to:
+  /// **'Expand thinking'**
+  String get expandThinking;
+
+  /// No description provided for @collapseThinking.
+  ///
+  /// In en, this message translates to:
+  /// **'Collapse thinking'**
+  String get collapseThinking;
 }
 
 class _AppLocalizationsDelegate

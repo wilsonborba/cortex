@@ -1,0 +1,210 @@
+{
+  "source": "cortex_api/src/core/process_numbers.rs",
+  "commit": "ae37b914e0d919cfd83c14ace8f9bedb6f3f4c95",
+  "entries": [
+    {
+      "number": 1001,
+      "message": "The route was not found"
+    },
+    {
+      "number": 1002,
+      "message": "The method is not allowed"
+    },
+    {
+      "number": 1003,
+      "message": "The request data is not valid"
+    },
+    {
+      "number": 1004,
+      "message": "The JSON body is not valid"
+    },
+    {
+      "number": 1005,
+      "message": "The x-uuid header is required"
+    },
+    {
+      "number": 1006,
+      "message": "The content type is not supported"
+    },
+    {
+      "number": 1007,
+      "message": "The request body is too large"
+    },
+    {
+      "number": 1008,
+      "message": "The server could not complete the request"
+    },
+    {
+      "number": 1009,
+      "message": "The app_id is not allowed"
+    },
+    {
+      "number": 1010,
+      "message": "The server is under heavy load. Try later"
+    },
+    {
+      "number": 1011,
+      "message": "The local call queue failed"
+    },
+    {
+      "number": 1012,
+      "message": "The local model call failed"
+    },
+    {
+      "number": 1201,
+      "message": "The input is over the token limit"
+    },
+    {
+      "number": 1013,
+      "message": "The usage data is not available"
+    },
+    {
+      "number": 1014,
+      "message": "Are you kidding me, clown?"
+    },
+    {
+      "number": 1015,
+      "message": "The input security check is not available"
+    },
+    {
+      "number": 1016,
+      "message": "The chat was not found"
+    },
+    {
+      "number": 1017,
+      "message": "The chat history could not be loaded or changed"
+    },
+    {
+      "number": 1018,
+      "message": "The output was not found"
+    },
+    {
+      "number": 1019,
+      "message": "The exchange memory could not be saved"
+    },
+    {
+      "number": 1020,
+      "message": "Web search is not available"
+    },
+    {
+      "number": 1021,
+      "message": "The web page timed out"
+    },
+    {
+      "number": 1022,
+      "message": "The web page is over the size limit"
+    },
+    {
+      "number": 1023,
+      "message": "The web page is not HTML"
+    },
+    {
+      "number": 1024,
+      "message": "The web page could not be read"
+    },
+    {
+      "number": 1025,
+      "message": "The web page has no readable main text"
+    },
+    {
+      "number": 1026,
+      "message": "The web time limit was reached"
+    },
+    {
+      "number": 1027,
+      "message": "The web page limit was reached"
+    },
+    {
+      "number": 1028,
+      "message": "The web crawl rules could not be loaded"
+    },
+    {
+      "number": 1029,
+      "message": "Memory could not be loaded"
+    },
+    {
+      "number": 1030,
+      "message": "The file type is not supported"
+    },
+    {
+      "number": 1031,
+      "message": "The file is over the size limit"
+    },
+    {
+      "number": 1032,
+      "message": "The file text could not be read"
+    },
+    {
+      "number": 1033,
+      "message": "The file is over the OCR page limit"
+    },
+    {
+      "number": 1034,
+      "message": "The file image text could not be read"
+    },
+    {
+      "number": 1035,
+      "message": "Temporary chat storage is not available"
+    },
+    {
+      "number": 1036,
+      "message": "The thinking time limit was reached"
+    },
+    {
+      "number": 1037,
+      "message": "The live log stream is for the LAN"
+    },
+    {
+      "number": 1038,
+      "message": "Telemetry data could not be loaded"
+    },
+    {
+      "number": 1039,
+      "message": "The memory graph node was not found"
+    },
+    {
+      "number": 1040,
+      "message": "The file was not saved"
+    },
+    {
+      "number": 1041,
+      "message": "The file was not found"
+    },
+    {
+      "number": 1042,
+      "message": "The output events are not available"
+    },
+    {
+      "number": 1043,
+      "message": "The output is not running"
+    },
+    {
+      "number": 1044,
+      "message": "The chat memories could not be deleted"
+    },
+    {
+      "number": 1045,
+      "message": "The persona was not found"
+    },
+    {
+      "number": 1046,
+      "message": "The persona data is not valid"
+    },
+    {
+      "number": 1047,
+      "message": "Personas could not be loaded or changed"
+    },
+    {
+      "number": 1048,
+      "message": "The audio is over the 10 minute limit"
+    },
+    {
+      "number": 1049,
+      "message": "The audio could not be transcribed"
+    },
+    {
+      "number": 1050,
+      "message": "The file worker did not answer"
+    }
+  ]
+}
