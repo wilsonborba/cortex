@@ -10,6 +10,8 @@
 
 - Keep-demo-layout-stable-and-soften-transitions (#44)
 
+- Restore-chat-order-copy-and-local-timestamps (#45)
+
 
 ### Chores
 
@@ -20,6 +22,8 @@
 - Merge v2.0.0 back to feature/main
 
 - Merge #43 split-public-content-by-subject
+
+- Merge #44 keep-demo-layout-stable-and-soften-transitions
 
 
 ## v2.0.0 - 2026-11-11
