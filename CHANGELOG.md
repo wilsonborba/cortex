@@ -18,6 +18,8 @@
 
 - Keep-composer-labels-readable-and-compact (#46)
 
+- Remove-footer-credit-and-decorative-background (#48)
+
 
 ### Chores
 
@@ -36,6 +38,8 @@
 - Merge #46 refine-chat-reading-and-composer-layout
 
 - Merge #47 preserve-isolated-memory-nodes-and-frame-graph
+
+- Merge #46 keep-composer-labels-readable-and-compact
 
 
 ## v2.0.0 - 2026-11-11

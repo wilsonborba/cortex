@@ -856,12 +856,6 @@ abstract class AppLocalizations {
   /// **'Ask your first question.'**
   String get finalLine;
 
-  /// No description provided for @builtBy.
-  ///
-  /// In en, this message translates to:
-  /// **'Built by Wilson Borba'**
-  String get builtBy;
-
   /// No description provided for @version.
   ///
   /// In en, this message translates to:

@@ -425,9 +425,6 @@ class AppLocalizationsPt extends AppLocalizations {
   String get finalLine => 'Faça sua primeira pergunta.';
 
   @override
-  String get builtBy => 'Feito por Wilson Borba';
-
-  @override
   String version(String v) {
     return 'Versão $v';
   }
