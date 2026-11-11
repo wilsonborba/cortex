@@ -378,5 +378,17 @@
       }
     }
   },
-  "noPersonaMatches": "Nenhuma persona corresponde a estes filtros"
+  "noPersonaMatches": "Nenhuma persona corresponde a estes filtros",
+  "account": "Conta",
+  "settings": "Configurações",
+  "appearance": "Aparência",
+  "systemChoice": "Sistema",
+  "lightChoice": "Claro",
+  "darkChoice": "Escuro",
+  "browserPreferenceNote": "Estas escolhas são salvas neste navegador.",
+  "collapseSidebar": "Recolher barra lateral",
+  "expandSidebar": "Expandir barra lateral",
+  "languageEnglish": "English",
+  "languagePortugueseBrazil": "Português (Brasil)",
+  "languageThai": "ไทย"
 }

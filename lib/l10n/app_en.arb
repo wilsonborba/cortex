@@ -467,5 +467,17 @@
       }
     }
   },
-  "noPersonaMatches": "No personas match these filters"
+  "noPersonaMatches": "No personas match these filters",
+  "account": "Account",
+  "settings": "Settings",
+  "appearance": "Appearance",
+  "systemChoice": "System",
+  "lightChoice": "Light",
+  "darkChoice": "Dark",
+  "browserPreferenceNote": "These choices are saved in this browser.",
+  "collapseSidebar": "Collapse sidebar",
+  "expandSidebar": "Expand sidebar",
+  "languageEnglish": "English",
+  "languagePortugueseBrazil": "Português (Brasil)",
+  "languageThai": "ไทย"
 }

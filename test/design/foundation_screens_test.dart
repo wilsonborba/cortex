@@ -119,6 +119,7 @@ void main() {
             session: session,
             auth: memory.Auth(),
             api: api,
+            emailLoader: () async => 'reader@example.test',
             initialLocation: entry.value,
           );
           final preferences = Preferences();

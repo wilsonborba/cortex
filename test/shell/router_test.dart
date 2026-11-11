@@ -54,6 +54,7 @@ Future<(GoRouter, FakeAuth, DetailsController)> pump(
     auth: auth,
     details: details,
     initialLocation: location,
+    emailLoader: () async => null,
     screen: (_, title) => Center(child: Text('screen: $title')),
   );
   await tester.pumpWidget(
@@ -137,9 +138,10 @@ void main() {
       final (_, _, details) = await pump(tester, '/v1/chats');
       expect(tester.getSize(find.byKey(const Key('sidebar'))).width, 280);
       expect(find.text('New chat'), findsOneWidget);
-      expect(find.text('Log out'), findsOneWidget);
+      expect(find.text('Log out'), findsNothing);
+      expect(find.byKey(const Key('account-button')), findsOneWidget);
       expect(
-        tester.getTopLeft(find.text('Log out')).dy,
+        tester.getTopLeft(find.byKey(const Key('account-button'))).dy,
         greaterThan(tester.getTopLeft(find.text('Usage')).dy),
       );
       details.show(const Text('step detail'));
@@ -164,14 +166,16 @@ void main() {
     expect(find.byKey(const Key('details-sheet')), findsOneWidget);
   });
 
-  testWidgets('compact: bottom bar with 4 items', (tester) async {
+  testWidgets('compact: drawer navigation and account footer', (tester) async {
     final (router, _, _) = await pump(
       tester,
       '/v1/chats',
       size: const Size(400, 800),
     );
-    expect(find.byKey(const Key('bottom-bar')), findsOneWidget);
-    expect(find.byType(NavigationDestination), findsNWidgets(4));
+    expect(find.byType(NavigationBar), findsNothing);
+    await tester.tap(find.byKey(const Key('drawer-button')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('account-button')), findsOneWidget);
     await tester.tap(find.text('Personas'));
     await tester.pumpAndSettle();
     expect(path(router), '/v1/personas');
