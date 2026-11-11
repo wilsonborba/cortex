@@ -1,6 +1,7 @@
 import 'presentation/frontend/widgets/common/connection_banner.dart';
 import 'presentation/frontend/widgets/common/states.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:go_router/go_router.dart';
 import 'dal/remote/auth_api_adapter.dart';
@@ -29,6 +30,13 @@ class _CortexAppState extends State<CortexApp> {
   @override
   void initState() {
     super.initState();
+    // Capture the browser route before the asynchronous session check.
+    final browserUri = Uri.base;
+    final initialLocation =
+        widget.initialLocation ??
+        (kIsWeb
+            ? '${browserUri.path}${browserUri.hasQuery ? '?${browserUri.query}' : ''}'
+            : WidgetsBinding.instance.platformDispatcher.defaultRouteName);
     // The first redirect needs the real session state.
     _session.refresh().then((_) {
       if (!mounted) return;
@@ -36,9 +44,7 @@ class _CortexAppState extends State<CortexApp> {
         _router = buildRouter(
           session: _session,
           auth: _auth,
-          initialLocation:
-              widget.initialLocation ??
-              WidgetsBinding.instance.platformDispatcher.defaultRouteName,
+          initialLocation: initialLocation,
         );
       });
     });
