@@ -1,3 +1,4 @@
+import 'dart:math' as math;
 import '../../handlers/process_messages.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -33,7 +34,7 @@ class _MemoryScreenState extends State<MemoryScreen> {
   void initState() {
     super.initState();
     memory.addListener(_changed);
-    _refreshAfterBuild();
+    _refreshAfterBuild(refreshGraph: widget.nodeId == null);
   }
 
   @override
@@ -44,7 +45,7 @@ class _MemoryScreenState extends State<MemoryScreen> {
       memory.addListener(_changed);
     }
     if (old.controller != widget.controller || old.nodeId != widget.nodeId) {
-      _refreshAfterBuild();
+      _refreshAfterBuild(refreshGraph: old.controller != widget.controller);
     }
   }
 
@@ -58,10 +59,12 @@ class _MemoryScreenState extends State<MemoryScreen> {
     if (mounted) setState(() {});
   }
 
-  void _refreshAfterBuild() {
+  void _refreshAfterBuild({bool refreshGraph = false}) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
-      if (memory.graph == null && !memory.loading) memory.load();
+      if ((refreshGraph || memory.graph == null) && !memory.loading) {
+        memory.load();
+      }
       memory.open(widget.nodeId);
     });
   }
@@ -278,7 +281,7 @@ class _Legend extends StatelessWidget {
 }
 
 /// Pan and zoom graph (32.1); a node tap opens its path.
-class _GraphView extends StatelessWidget {
+class _GraphView extends StatefulWidget {
   const _GraphView({
     required this.data,
     required this.selected,
@@ -288,94 +291,198 @@ class _GraphView extends StatelessWidget {
   final String? selected;
   final ValueChanged<String> onTap;
   @override
-  Widget build(BuildContext context) {
-    final l = AppLocalizations.of(context);
+  State<_GraphView> createState() => _GraphViewState();
+}
+
+class _GraphViewState extends State<_GraphView>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _motion = AnimationController(
+    vsync: this,
+    duration: Duration.zero,
+  );
+  final _transform = TransformationController();
+  final _canvasKey = GlobalKey();
+  Size? _viewport;
+  bool _fitPending = true;
+  final selected = ValueNotifier<String?>(null);
+  late Widget canvas;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _buildGraph();
+  }
+
+  @override
+  void didUpdateWidget(_GraphView old) {
+    super.didUpdateWidget(old);
+    selected.value = widget.selected;
+    if (!identical(old.data, widget.data)) _buildGraph();
+  }
+
+  @override
+  void dispose() {
+    selected.dispose();
+    _motion.dispose();
+    _transform.dispose();
+    super.dispose();
+  }
+
+  void _buildGraph() {
+    selected.value = widget.selected;
     final p = Palette.of(Theme.of(context).brightness);
     final graph = Graph();
-    final nodes = {for (final n in data.nodes) n.id: n};
-    for (final n in data.nodes) {
-      graph.addNode(Node.Id(n.id));
+    final nodes = {for (final n in widget.data.nodes) n.id: n};
+    // Deterministic starting positions also separate isolated memories.
+    for (final (i, n) in widget.data.nodes.indexed) {
+      final angle = i * math.pi * 2 / nodes.length;
+      final node = Node.Id(n.id);
+      // A zero origin lets graphview initialize its rectangle cache after
+      // measuring node dimensions; the other seeds remain deterministic.
+      node.position = i == 0
+          ? Offset.zero
+          : Offset(math.cos(angle) * 160, math.sin(angle) * 160);
+      graph.addNode(node);
     }
-    for (final e in data.edges) {
-      if (nodes.containsKey(e.source) && nodes.containsKey(e.target)) {
+    for (final edge in widget.data.edges) {
+      if (nodes.containsKey(edge.source) && nodes.containsKey(edge.target)) {
         graph.addEdge(
-          graph.getNodeUsingId(e.source),
-          graph.getNodeUsingId(e.target),
+          graph.getNodeUsingId(edge.source),
+          graph.getNodeUsingId(edge.target),
         );
       }
     }
-    return Stack(
-      children: [
-        Positioned.fill(
-          child: Semantics(
-            label: l.memoryGraphDescription,
-            child: InteractiveViewer(
-              key: const Key('memory-graph'),
-              constrained: false,
-              boundaryMargin: const EdgeInsets.all(400),
-              minScale: 0.2,
-              maxScale: 3,
-              child: GraphView(
-                graph: graph,
-                algorithm: FruchtermanReingoldAlgorithm(
-                  FruchtermanReingoldConfiguration(iterations: 300),
-                ),
-                paint: Paint()
-                  ..color = p.border
-                  ..strokeWidth = 1
-                  ..style = PaintingStyle.stroke,
-                builder: (node) {
-                  final n = nodes[node.key!.value]!;
-                  final on = n.id == selected;
-                  return InkWell(
-                    key: Key('graph-node-${n.id}'),
-                    onTap: () => onTap(n.id),
+    _fitPending = true;
+    canvas = GraphViewWidget(
+      key: _canvasKey,
+      nodeAnimationController: _motion,
+      enableAnimation: false,
+      paint: Paint()
+        ..color = p.border
+        ..strokeWidth = 1
+        ..style = PaintingStyle.stroke,
+      delegate: _MemoryGraphDelegate(
+        graph: graph,
+        algorithm: _MemoryLayout(),
+        builder: (node) {
+          final item = nodes[node.key!.value]!;
+          return ValueListenableBuilder<String?>(
+            valueListenable: selected,
+            builder: (context, focus, _) {
+              final on = item.id == focus;
+              return Semantics(
+                button: true,
+                selected: on,
+                label: item.label,
+                child: Tooltip(
+                  message: item.label,
+                  child: InkWell(
+                    key: Key('graph-node-${item.id}'),
+                    onTap: () => widget.onTap(item.id),
                     borderRadius: BorderRadius.circular(Radii.control),
-                    child: Container(
-                      constraints: const BoxConstraints(maxWidth: 200),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: Space.s8,
-                        vertical: Space.s4,
-                      ),
-                      decoration: BoxDecoration(
-                        color: p.surface,
-                        border: Border.all(
-                          color: on ? p.text : p.border,
-                          width: on ? 2 : 1,
-                        ),
-                        borderRadius: BorderRadius.circular(Radii.control),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            nodeIcon(n.displayType),
-                            size: 14,
-                            color: p.muted,
-                          ),
-                          const SizedBox(width: Space.s4),
-                          Flexible(
-                            child: Text(
-                              n.label,
-                              maxLines: 1,
+                    child: SizedBox(
+                      width: 132,
+                      child: Padding(
+                        padding: const EdgeInsets.all(Space.s8),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            AnimatedContainer(
+                              duration: Motion.of(context),
+                              curve: Curves.easeOutCubic,
+                              width: 24,
+                              height: 24,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: on ? p.accent : p.surface,
+                                border: Border.all(
+                                  color: on ? p.accent : p.muted,
+                                ),
+                              ),
+                              child: Icon(
+                                nodeIcon(item.displayType),
+                                size: 14,
+                                color: on ? p.onAccent : p.text,
+                              ),
+                            ),
+                            const SizedBox(height: Space.s8),
+                            Text(
+                              item.label,
+                              maxLines: 2,
+                              textAlign: TextAlign.center,
                               overflow: TextOverflow.ellipsis,
                               style: TextStyles.label,
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
-                  );
-                },
-              ),
-            ),
+                  ),
+                ),
+              );
+            },
+          );
+        },
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
+    return Stack(
+      children: [
+        Positioned.fill(
+          child: LayoutBuilder(
+            builder: (context, box) {
+              final viewport = Size(box.maxWidth, box.maxHeight);
+              if (_fitPending || _viewport != viewport) {
+                _fitPending = false;
+                _viewport = viewport;
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  if (!mounted) return;
+                  final render = _canvasKey.currentContext?.findRenderObject();
+                  if (render is! RenderBox ||
+                      !render.hasSize ||
+                      render.size.isEmpty) {
+                    return;
+                  }
+                  final scale = math
+                      .min(
+                        (viewport.width - 48) / render.size.width,
+                        (viewport.height - 64) / render.size.height,
+                      )
+                      .clamp(0.01, 1.0);
+                  _transform.value = Matrix4.diagonal3Values(scale, scale, 1)
+                    ..setTranslationRaw(
+                      (viewport.width - render.size.width * scale) / 2,
+                      (viewport.height - render.size.height * scale) / 2,
+                      0,
+                    );
+                });
+              }
+              return Semantics(
+                key: const Key('memory-graph'),
+                label: l.memoryGraphDescription,
+                child: InteractiveViewer(
+                  transformationController: _transform,
+                  constrained: false,
+                  boundaryMargin: const EdgeInsets.all(1000),
+                  minScale: 0.01,
+                  maxScale: 3,
+                  child: canvas,
+                ),
+              );
+            },
           ),
         ),
         Positioned(
           left: Space.s16,
           bottom: Space.s16,
           child: _Legend(
-            hasEntities: data.nodes.any((node) => node.displayType == 'entity'),
+            hasEntities: widget.data.nodes.any(
+              (n) => n.displayType == 'entity',
+            ),
           ),
         ),
       ],
@@ -422,6 +529,41 @@ class _ListView extends StatelessWidget {
           onTap: () => onTap(n.id),
         );
       },
+    );
+  }
+}
+
+/// graphview 1.5.1 derives visible nodes from edges, losing isolated memories.
+/// The scoped API result already defines the complete set of visible nodes.
+class _MemoryGraphDelegate extends GraphChildDelegate {
+  _MemoryGraphDelegate({
+    required super.graph,
+    required super.algorithm,
+    required super.builder,
+  }) : super(controller: null);
+  @override
+  Graph getVisibleGraphOnly() => graph;
+}
+
+/// Retain the first isolated component, including a graph with just one node.
+class _MemoryLayout extends FruchtermanReingoldAlgorithm {
+  _MemoryLayout()
+    : super(
+        FruchtermanReingoldConfiguration(iterations: 300, shuffleNodes: false),
+      );
+  @override
+  void combineSingleNodeCluster(List<NodeCluster> clusters) {
+    NodeCluster? first;
+    for (final cluster in clusters) {
+      if (cluster.size() != 1) continue;
+      if (first == null) {
+        first = cluster;
+      } else {
+        first.concat(cluster);
+      }
+    }
+    clusters.removeWhere(
+      (cluster) => cluster.size() == 1 && !identical(cluster, first),
     );
   }
 }
