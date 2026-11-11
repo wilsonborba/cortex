@@ -1,3 +1,4 @@
+import '../../widgets/common/surfaces.dart';
 import '../../theme/app_icons.dart';
 import '../../handlers/process_messages.dart';
 import 'package:flutter/material.dart';
@@ -69,7 +70,7 @@ class _PersonaListState extends State<PersonaList> {
                 ),
               ),
               FoundationFocus(
-                child: DropdownButton<String>(
+                child: AppSelect<String>(
                   key: const Key('persona-filter'),
                   value: personas.type ?? 'all',
                   items: [
@@ -117,7 +118,12 @@ class _PersonaListState extends State<PersonaList> {
                         onRetry: personas.load,
                       )
               : items.isEmpty
-              ? EmptyState(title: l.noPersonas, icon: AppIcons.entity)
+              ? EmptyState(
+                  title: personas.query.isNotEmpty || personas.type != null
+                      ? l.noPersonaMatches
+                      : l.noPersonas,
+                  icon: AppIcons.entity,
+                )
               : ListView.separated(
                   padding: const EdgeInsets.all(Space.s16),
                   itemCount: items.length,

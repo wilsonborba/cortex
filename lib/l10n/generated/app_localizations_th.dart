@@ -1110,4 +1110,7 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get collapseThinking => 'ย่อการคิด';
+
+  @override
+  String get noPersonaMatches => 'ไม่พบเพอร์โซนาที่ตรงกับตัวกรองเหล่านี้';
 }

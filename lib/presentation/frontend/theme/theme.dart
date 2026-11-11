@@ -120,7 +120,7 @@ ThemeData cortexTheme(Brightness brightness) {
       minTileHeight: Controls.minTouch,
       contentPadding: const EdgeInsets.symmetric(horizontal: Space.s12),
       iconColor: p.muted,
-      selectedTileColor: p.text.withValues(alpha: 0.05),
+      selectedTileColor: p.raised,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(Radii.control),
       ),
@@ -150,6 +150,20 @@ ThemeData cortexTheme(Brightness brightness) {
       labelTextStyle: WidgetStateProperty.resolveWith(
         (states) => TextStyles.label.copyWith(
           color: states.contains(WidgetState.selected) ? p.text : p.muted,
+        ),
+      ),
+    ),
+    checkboxTheme: CheckboxThemeData(
+      fillColor: WidgetStateProperty.resolveWith(
+        (states) => states.contains(WidgetState.selected) ? p.text : p.surface,
+      ),
+      checkColor: WidgetStatePropertyAll(p.background),
+      side: WidgetStateBorderSide.resolveWith(
+        (states) => BorderSide(
+          color: states.contains(WidgetState.focused) ? p.text : p.border,
+          width: states.contains(WidgetState.focused)
+              ? Controls.focusRing
+              : Controls.border,
         ),
       ),
     ),
@@ -229,6 +243,18 @@ ThemeData cortexTheme(Brightness brightness) {
             ),
           ),
     ),
+    tooltipTheme: TooltipThemeData(
+      waitDuration: const Duration(milliseconds: 400),
+      textStyle: TextStyles.label.copyWith(color: p.text),
+      decoration: BoxDecoration(
+        color: p.raised,
+        borderRadius: BorderRadius.circular(Radii.control),
+      ),
+    ),
+    scrollbarTheme: ScrollbarThemeData(
+      thumbColor: WidgetStatePropertyAll(p.muted),
+    ),
+    progressIndicatorTheme: ProgressIndicatorThemeData(color: p.muted),
     materialTapTargetSize: MaterialTapTargetSize.padded,
     iconButtonTheme: IconButtonThemeData(
       style: IconButton.styleFrom(foregroundColor: p.text).copyWith(

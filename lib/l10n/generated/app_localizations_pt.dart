@@ -1131,4 +1131,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get collapseThinking => 'Recolher raciocínio';
+
+  @override
+  String get noPersonaMatches => 'Nenhuma persona corresponde a estes filtros';
 }

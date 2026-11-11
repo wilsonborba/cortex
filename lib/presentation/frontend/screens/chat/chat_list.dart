@@ -172,7 +172,7 @@ class _ChatListState extends State<ChatList> {
             key: Key('chat-$id'),
             dense: true,
             selected: selected,
-            selectedTileColor: p.text.withValues(alpha: 0.05),
+            selectedTileColor: p.raised,
             shape: Border(
               left: BorderSide(
                 color: selected ? p.accent : Colors.transparent,
@@ -213,7 +213,7 @@ class _ChatListState extends State<ChatList> {
             ),
             onTap: () => GoRouter.maybeOf(context)?.go('/v1/chats/$id'),
             trailing: FoundationFocus(
-              child: PopupMenuButton<_Action>(
+              child: AppMenu<_Action>(
                 key: Key('menu-$id'),
                 tooltip: l.chatActions,
                 icon: const Icon(AppIcons.more, size: IconSizes.action),

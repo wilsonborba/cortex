@@ -2,7 +2,7 @@ import '../../theme/app_icons.dart';
 import 'package:flutter/material.dart';
 import '../../theme/tokens.dart';
 
-enum ButtonKind { primary, secondary, destructive }
+enum ButtonKind { primary, secondary, quiet, destructive }
 
 /// One primary button per view (24, decision C2): the only accent besides the
 /// selected item. Sentence case labels, no brackets, no all caps.
@@ -14,6 +14,7 @@ class AppButton extends StatelessWidget {
     this.kind = ButtonKind.secondary,
     this.icon,
     this.busy = false,
+    this.statesController,
   });
   const AppButton.primary({
     super.key,
@@ -21,6 +22,7 @@ class AppButton extends StatelessWidget {
     required this.onPressed,
     this.icon,
     this.busy = false,
+    this.statesController,
   }) : kind = ButtonKind.primary;
   const AppButton.destructive({
     super.key,
@@ -28,12 +30,14 @@ class AppButton extends StatelessWidget {
     required this.onPressed,
     this.icon,
     this.busy = false,
+    this.statesController,
   }) : kind = ButtonKind.destructive;
   final String label;
   final VoidCallback? onPressed;
   final ButtonKind kind;
   final IconData? icon;
   final bool busy;
+  final WidgetStatesController? statesController;
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +46,8 @@ class AppButton extends StatelessWidget {
     final (bg, fg, side) = switch (kind) {
       ButtonKind.primary => (p.accent, p.onAccent, p.accent),
       ButtonKind.destructive => (p.danger, p.onDanger, p.danger),
-      ButtonKind.secondary => (p.surface, p.text, p.border),
+      ButtonKind.secondary => (p.surface, p.text, p.text),
+      ButtonKind.quiet => (Colors.transparent, p.text, Colors.transparent),
     };
     final enabled = onPressed != null && !busy;
     final style = ButtonStyle(
@@ -55,7 +60,11 @@ class AppButton extends StatelessWidget {
       elevation: const WidgetStatePropertyAll(0),
       shadowColor: const WidgetStatePropertyAll(Colors.transparent),
       backgroundColor: WidgetStatePropertyAll(
-        enabled ? bg : bg.withValues(alpha: 0.4),
+        kind == ButtonKind.quiet
+            ? Colors.transparent
+            : enabled
+            ? bg
+            : bg.withValues(alpha: 0.4),
       ),
       foregroundColor: WidgetStatePropertyAll(enabled ? fg : p.muted),
       overlayColor: WidgetStatePropertyAll(fg.withValues(alpha: 0.08)),
@@ -75,23 +84,32 @@ class AppButton extends StatelessWidget {
       ),
       textStyle: WidgetStatePropertyAll(TextStyles.label),
     );
-    final child = busy
-        ? SizedBox.square(
-            dimension: 16,
+    final labelRow = Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (icon != null) ...[
+          Icon(icon, size: IconSizes.action),
+          const SizedBox(width: Space.s8),
+        ],
+        Flexible(child: Text(label, overflow: TextOverflow.ellipsis)),
+      ],
+    );
+    final child = Stack(
+      alignment: Alignment.center,
+      children: [
+        Opacity(opacity: busy ? 0 : 1, child: labelRow),
+        if (busy)
+          SizedBox.square(
+            dimension: IconSizes.action,
             child: MediaQuery.disableAnimationsOf(context)
-                ? Icon(AppIcons.loading, size: IconSizes.action, color: fg)
-                : CircularProgressIndicator(strokeWidth: 2, color: fg),
-          )
-        : Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (icon != null) ...[
-                Icon(icon, size: IconSizes.action),
-                const SizedBox(width: Space.s8),
-              ],
-              Flexible(child: Text(label, overflow: TextOverflow.ellipsis)),
-            ],
-          );
+                ? Icon(AppIcons.loading, size: IconSizes.action, color: p.muted)
+                : CircularProgressIndicator(
+                    strokeWidth: Controls.focusRing,
+                    color: p.muted,
+                  ),
+          ),
+      ],
+    );
     return Semantics(
       button: true,
       enabled: enabled,
@@ -99,6 +117,7 @@ class AppButton extends StatelessWidget {
       excludeSemantics: true,
       child: FilledButton(
         style: style,
+        statesController: statesController,
         onPressed: enabled ? onPressed : null,
         child: child,
       ),

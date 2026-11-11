@@ -1,3 +1,4 @@
+import '../../widgets/common/surfaces.dart';
 import '../../theme/app_icons.dart';
 import '../../handlers/api_action.dart';
 import '../../handlers/process_messages.dart';
@@ -202,7 +203,7 @@ class ComposerState extends State<Composer> {
                             ? 136
                             : 176,
                         child: FoundationFocus(
-                          child: DropdownButton<WebChoice>(
+                          child: AppSelect<WebChoice>(
                             isExpanded: true,
                             isDense: true,
                             itemHeight: null,
@@ -272,7 +273,7 @@ class ComposerState extends State<Composer> {
                               ? MediaQuery.sizeOf(context).width - Space.s24
                               : 240,
                           child: FoundationFocus(
-                            child: DropdownButton<String?>(
+                            child: AppSelect<String?>(
                               isExpanded: true,
                               itemHeight: null,
                               key: const Key('persona-picker'),

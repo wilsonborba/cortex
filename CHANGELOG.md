@@ -4,6 +4,11 @@
 ## Unreleased
 
 
+### Bug Fixes
+
+- Preserve quiet surfaces and selected list markers
+
+
 ### Chores
 
 - Merge v2.0.1 back to release/v2.0.1
@@ -20,6 +25,12 @@
 - Merge neutral foundation for #49
 
 - Use regular Lucide icons through the app icon map
+
+- Merge Lucide icons for #50
+
+- Unify buttons and accessible Material menus
+
+- Verify control inventory and distinguish empty filter results
 
 
 ## v2.0.1 - 2026-11-11

@@ -244,7 +244,7 @@ class _ChatScreenState extends State<ChatScreen> {
               ),
               if (!chat.isNew && !chat.temporary) ...[
                 FoundationFocus(
-                  child: PopupMenuButton<String>(
+                  child: AppMenu<String>(
                     key: const Key('chat-actions'),
                     tooltip: l.menu,
                     icon: Icon(AppIcons.more, color: p.muted),

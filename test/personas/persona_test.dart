@@ -221,7 +221,7 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.byKey(const Key('persona-filter')));
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Bot').last);
+      await tester.tap(find.widgetWithText(MenuItemButton, 'Bot'));
       await tester.pumpAndSettle();
       final last = api.requests
           .where((r) => r.$2.path.endsWith('/personas'))
