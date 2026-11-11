@@ -390,5 +390,11 @@
   "expandSidebar": "ขยายแถบด้านข้าง",
   "languageEnglish": "English",
   "languagePortugueseBrazil": "Português (Brasil)",
-  "languageThai": "ไทย"
+  "languageThai": "ไทย",
+  "chatDisclaimer": "Cortex อาจทำผิดพลาด โปรดตรวจสอบข้อเท็จจริงที่สำคัญ",
+  "copyFailed": "คัดลอกไม่ได้ โปรดเลือกข้อความแล้วลองอีกครั้ง",
+  "answerStarted": "เริ่มตอบแล้ว",
+  "answerComplete": "ตอบเสร็จแล้ว",
+  "thoughtFor": "ใช้เวลาคิด {seconds} วินาที",
+  "codeLabel": "โค้ด"
 }

@@ -209,7 +209,7 @@ void main() {
     final (chat, _) = await pump(tester);
     expect(
       tester.getSize(find.byKey(const Key('composer'))).width,
-      lessThanOrEqualTo(760),
+      lessThanOrEqualTo(768),
     );
     expect(
       tester.getTopLeft(find.byKey(const Key('composer'))).dx,
@@ -285,6 +285,9 @@ void main() {
       final (chat, _) = await pump(tester, api: api);
       await send(tester, 'think');
       expect(find.byKey(const Key('thinking-section')), findsOneWidget);
+      expect(find.textContaining('step one'), findsNothing);
+      await tester.tap(find.byTooltip('Expand thinking'));
+      await tester.pump();
       expect(find.textContaining('step one'), findsOneWidget);
       await tester.tap(find.byKey(const Key('stop-thinking')));
       await tester.pump(const Duration(milliseconds: 50));

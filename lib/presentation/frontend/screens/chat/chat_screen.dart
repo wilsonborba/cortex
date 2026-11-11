@@ -24,11 +24,13 @@ class ChatScreen extends StatefulWidget {
     this.temporary = false,
     this.controller,
     this.picker,
+    this.now,
   });
   final CortexApi api;
   final DetailsController details;
   final String? sessionId;
   final bool temporary;
+  final DateTime Function()? now;
 
   /// Injected in tests.
   final ChatController? controller;
@@ -50,7 +52,9 @@ class _ChatScreenState extends State<ChatScreen> {
   final _scroll = ScrollController();
   final _composer = GlobalKey<ComposerState>();
   bool _atBottom = true;
-  bool _preservingScroll = false;
+  bool _loadingOlder = false;
+  final _newerSliver = GlobalKey();
+  Exchange? _firstPageFirst;
   int _lastLength = 0;
   String? _navigated;
 
@@ -74,27 +78,20 @@ class _ChatScreenState extends State<ChatScreen> {
     if (!_scroll.hasClients) return;
     final bottom = _scroll.position.maxScrollExtent - _scroll.offset < 48;
     if (bottom != _atBottom) setState(() => _atBottom = bottom);
-    if (_scroll.offset <= 0 && chat.hasOlder) _loadOlder();
+    if (_scroll.offset <= _scroll.position.minScrollExtent + Space.s48 &&
+        chat.hasOlder) {
+      _loadOlder();
+    }
   }
 
   Future<void> _loadOlder() async {
-    if (_preservingScroll || chat.loadingOlder || !_scroll.hasClients) return;
-    _preservingScroll = true;
-    final extent = _scroll.position.maxScrollExtent;
-    final offset = _scroll.offset;
-    await chat.loadOlder();
-    if (!mounted) return;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted && _scroll.hasClients) {
-        _scroll.jumpTo(
-          (offset + _scroll.position.maxScrollExtent - extent).clamp(
-            0,
-            _scroll.position.maxScrollExtent,
-          ),
-        );
-      }
-      _preservingScroll = false;
-    });
+    if (_loadingOlder || chat.loadingOlder || !_scroll.hasClients) return;
+    _loadingOlder = true;
+    try {
+      await chat.loadOlder();
+    } finally {
+      _loadingOlder = false;
+    }
   }
 
   void _changed() {
@@ -111,12 +108,17 @@ class _ChatScreenState extends State<ChatScreen> {
         if (mounted) GoRouter.maybeOf(context)?.go('/v1/chats/$session');
       });
     }
+    if (chat.exchanges.isNotEmpty &&
+        (_firstPageFirst == null ||
+            !chat.exchanges.contains(_firstPageFirst))) {
+      _firstPageFirst = chat.exchanges.first;
+    }
     // Follow new text only when the user is at the bottom (30.9).
     final length = chat.exchanges.fold<int>(
       0,
       (n, e) => n + e.output.answer.length + e.output.lastEventId,
     );
-    if (!_preservingScroll && _atBottom && length != _lastLength) {
+    if (!_loadingOlder && _atBottom && length != _lastLength) {
       WidgetsBinding.instance.addPostFrameCallback((_) => _jump());
     }
     _lastLength = length;
@@ -193,6 +195,99 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
+  int get _olderCount {
+    final index = chat.exchanges.indexOf(_firstPageFirst!);
+    return index < 0 ? 0 : index;
+  }
+
+  Widget _exchange(Exchange e, int index) {
+    final p = Palette.from(context);
+    final compact =
+        SizeClass.of(MediaQuery.sizeOf(context).width) == SizeClass.compact;
+    return Padding(
+      key: ValueKey('exchange-${e.inputId ?? e.output.outputId ?? index}'),
+      padding: EdgeInsets.symmetric(
+        horizontal: compact ? Space.s16 : Space.s24,
+      ),
+      child: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: Space.chatColumnWidth),
+          child: LayoutBuilder(
+            builder: (context, box) => Padding(
+              padding: EdgeInsets.only(
+                top: e == _firstPageFirst || index == 0 ? Space.s24 : 0,
+                bottom: index == _olderCount - 1 ? Space.s8 : Space.s32,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: Container(
+                      constraints: BoxConstraints(
+                        maxWidth: box.maxWidth * Space.userBubbleFraction,
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: Space.s16,
+                        vertical: Space.s12,
+                      ),
+                      decoration: BoxDecoration(
+                        color: p.surface,
+                        borderRadius: BorderRadius.circular(
+                          FoundationTokens.of(context).groupRadius,
+                        ),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          if (e.text.isNotEmpty)
+                            Text(e.text, style: TextStyles.body),
+                          for (final file in e.files)
+                            Text(
+                              file,
+                              style: TextStyles.label.copyWith(color: p.muted),
+                            ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      if (e.createdAt != null)
+                        Flexible(
+                          child: Text(
+                            '${MaterialLocalizations.of(context).formatMediumDate(e.createdAt!.toLocal())} ${MaterialLocalizations.of(context).formatTimeOfDay(TimeOfDay.fromDateTime(e.createdAt!.toLocal()), alwaysUse24HourFormat: MediaQuery.alwaysUse24HourFormatOf(context))}',
+                            key: ValueKey('message-time-${e.inputId}'),
+                            style: TextStyles.label.copyWith(color: p.muted),
+                          ),
+                        ),
+                      SelectionContainer.disabled(
+                        child: CopyMessageButton(text: e.text),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: Space.s12),
+                  OutputBlock(
+                    output: e.output,
+                    now: widget.now,
+                    onStopThinking: () =>
+                        runApiAction(context, chat.stopThinking),
+                    onMemories: _showMemories,
+                    onRetry:
+                        e.output.running || index != chat.exchanges.length - 1
+                        ? null
+                        : () => chat.send(e.text),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
@@ -232,6 +327,10 @@ class _ChatScreenState extends State<ChatScreen> {
           ),
           child: Row(
             children: [
+              if (chat.temporary) ...[
+                const Icon(AppIcons.temporaryChat, size: IconSizes.action),
+                const SizedBox(width: Space.s8),
+              ],
               Expanded(
                 child: Text(
                   title,
@@ -298,93 +397,31 @@ class _ChatScreenState extends State<ChatScreen> {
                 )
               else
                 SelectionArea(
-                  child: ListView.builder(
+                  child: CustomScrollView(
                     key: const Key('messages'),
                     controller: _scroll,
-                    padding: const EdgeInsets.all(Space.s24),
-                    itemCount: chat.exchanges.length,
-                    itemBuilder: (_, i) {
-                      final e = chat.exchanges[i];
-                      return Center(
-                        key: ObjectKey(e),
-                        child: ConstrainedBox(
-                          constraints: const BoxConstraints(maxWidth: 760),
-                          child: Padding(
-                            padding: const EdgeInsets.only(bottom: Space.s32),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: [
-                                Align(
-                                  alignment: Alignment.centerRight,
-                                  child: Container(
-                                    constraints: const BoxConstraints(
-                                      maxWidth: 560,
-                                    ),
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: Space.s16,
-                                      vertical: Space.s12,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: p.surface,
-                                      borderRadius: BorderRadius.circular(
-                                        FoundationTokens.of(
-                                          context,
-                                        ).groupRadius,
-                                      ),
-                                    ),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.end,
-                                      children: [
-                                        if (e.text.isNotEmpty)
-                                          Text(e.text, style: TextStyles.body),
-                                        const SizedBox(height: Space.s8),
-                                        Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            if (e.createdAt != null)
-                                              Flexible(
-                                                child: Text(
-                                                  '${MaterialLocalizations.of(context).formatMediumDate(e.createdAt!.toLocal())} ${MaterialLocalizations.of(context).formatTimeOfDay(TimeOfDay.fromDateTime(e.createdAt!.toLocal()), alwaysUse24HourFormat: MediaQuery.alwaysUse24HourFormatOf(context))}',
-                                                  key: ValueKey(
-                                                    'message-time-${e.inputId}',
-                                                  ),
-                                                  style: TextStyles.label
-                                                      .copyWith(color: p.muted),
-                                                ),
-                                              ),
-                                            CopyMessageButton(text: e.text),
-                                          ],
-                                        ),
-                                        for (final f in e.files)
-                                          Text(
-                                            f,
-                                            style: TextStyles.label.copyWith(
-                                              color: p.muted,
-                                            ),
-                                          ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(height: Space.s12),
-                                OutputBlock(
-                                  output: e.output,
-                                  onStopThinking: () =>
-                                      runApiAction(context, chat.stopThinking),
-                                  onMemories: _showMemories,
-                                  onRetry:
-                                      e.output.running ||
-                                          i != chat.exchanges.length - 1
-                                      ? null
-                                      : () => chat.send(e.text),
-                                ),
-                              ],
-                            ),
+                    center: _newerSliver,
+                    slivers: [
+                      SliverList(
+                        delegate: SliverChildBuilderDelegate(
+                          (context, index) => _exchange(
+                            chat.exchanges[_olderCount - 1 - index],
+                            _olderCount - 1 - index,
                           ),
+                          childCount: _olderCount,
                         ),
-                      );
-                    },
+                      ),
+                      SliverList(
+                        key: _newerSliver,
+                        delegate: SliverChildBuilderDelegate(
+                          (context, index) => _exchange(
+                            chat.exchanges[_olderCount + index],
+                            _olderCount + index,
+                          ),
+                          childCount: chat.exchanges.length - _olderCount,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               if (!_atBottom)
@@ -415,6 +452,20 @@ class _ChatScreenState extends State<ChatScreen> {
           chat: chat,
           picker: widget.picker ?? pickFiles,
         ),
+        Padding(
+          padding: const EdgeInsets.only(
+            left: Space.s16,
+            right: Space.s16,
+            bottom: Space.s8,
+          ),
+          child: Text(
+            l.chatDisclaimer,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyles.label.copyWith(color: p.muted),
+            textAlign: TextAlign.center,
+          ),
+        ),
       ],
     );
   }
@@ -431,7 +482,7 @@ class _Empty extends StatelessWidget {
         padding: const EdgeInsets.all(Space.s24),
         child: Center(
           child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 560),
+            constraints: const BoxConstraints(maxWidth: Space.chatColumnWidth),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [

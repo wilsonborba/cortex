@@ -1171,4 +1171,26 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get languageThai => 'ไทย';
+
+  @override
+  String get chatDisclaimer =>
+      'O Cortex pode cometer erros. Verifique os fatos importantes.';
+
+  @override
+  String get copyFailed =>
+      'Não foi possível copiar. Selecione o texto e tente novamente.';
+
+  @override
+  String get answerStarted => 'Resposta iniciada';
+
+  @override
+  String get answerComplete => 'Resposta concluída';
+
+  @override
+  String thoughtFor(Object seconds) {
+    return 'Pensou por $seconds s';
+  }
+
+  @override
+  String get codeLabel => 'Código';
 }

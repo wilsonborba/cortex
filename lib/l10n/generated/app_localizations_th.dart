@@ -1150,4 +1150,25 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get languageThai => 'ไทย';
+
+  @override
+  String get chatDisclaimer =>
+      'Cortex อาจทำผิดพลาด โปรดตรวจสอบข้อเท็จจริงที่สำคัญ';
+
+  @override
+  String get copyFailed => 'คัดลอกไม่ได้ โปรดเลือกข้อความแล้วลองอีกครั้ง';
+
+  @override
+  String get answerStarted => 'เริ่มตอบแล้ว';
+
+  @override
+  String get answerComplete => 'ตอบเสร็จแล้ว';
+
+  @override
+  String thoughtFor(Object seconds) {
+    return 'ใช้เวลาคิด $seconds วินาที';
+  }
+
+  @override
+  String get codeLabel => 'โค้ด';
 }

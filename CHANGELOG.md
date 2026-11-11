@@ -36,6 +36,10 @@
 
 - Add account menu settings and persistent preferences
 
+- Merge account settings redesign for #52
+
+- Rebuild transcript with anchored history and clear answer states
+
 
 ## v2.0.1 - 2026-11-11
 

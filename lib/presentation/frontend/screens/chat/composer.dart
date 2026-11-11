@@ -92,7 +92,7 @@ class ComposerState extends State<Composer> {
       ),
       child: Center(
         child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 760),
+          constraints: const BoxConstraints(maxWidth: Space.chatColumnWidth),
           child: Container(
             key: const Key('composer'),
             padding: const EdgeInsets.all(Space.s12),
