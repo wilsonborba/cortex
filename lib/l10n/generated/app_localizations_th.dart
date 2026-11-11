@@ -413,9 +413,6 @@ class AppLocalizationsTh extends AppLocalizations {
   String get finalLine => 'ถามคำถามแรกของคุณ';
 
   @override
-  String get builtBy => 'สร้างโดย Wilson Borba';
-
-  @override
   String version(String v) {
     return 'เวอร์ชัน $v';
   }

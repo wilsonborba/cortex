@@ -49,6 +49,7 @@ class _ChatScreenState extends State<ChatScreen> {
   final _scroll = ScrollController();
   final _composer = GlobalKey<ComposerState>();
   bool _atBottom = true;
+  bool _preservingScroll = false;
   int _lastLength = 0;
   String? _navigated;
 
@@ -72,7 +73,27 @@ class _ChatScreenState extends State<ChatScreen> {
     if (!_scroll.hasClients) return;
     final bottom = _scroll.position.maxScrollExtent - _scroll.offset < 48;
     if (bottom != _atBottom) setState(() => _atBottom = bottom);
-    if (_scroll.offset <= 0 && chat.hasOlder) chat.loadOlder();
+    if (_scroll.offset <= 0 && chat.hasOlder) _loadOlder();
+  }
+
+  Future<void> _loadOlder() async {
+    if (_preservingScroll || chat.loadingOlder || !_scroll.hasClients) return;
+    _preservingScroll = true;
+    final extent = _scroll.position.maxScrollExtent;
+    final offset = _scroll.offset;
+    await chat.loadOlder();
+    if (!mounted) return;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted && _scroll.hasClients) {
+        _scroll.jumpTo(
+          (offset + _scroll.position.maxScrollExtent - extent).clamp(
+            0,
+            _scroll.position.maxScrollExtent,
+          ),
+        );
+      }
+      _preservingScroll = false;
+    });
   }
 
   void _changed() {
@@ -94,7 +115,7 @@ class _ChatScreenState extends State<ChatScreen> {
       0,
       (n, e) => n + e.output.answer.length + e.output.lastEventId,
     );
-    if (_atBottom && length != _lastLength) {
+    if (!_preservingScroll && _atBottom && length != _lastLength) {
       WidgetsBinding.instance.addPostFrameCallback((_) => _jump());
     }
     _lastLength = length;
@@ -214,32 +235,40 @@ class _ChatScreenState extends State<ChatScreen> {
                 child: Text(
                   title,
                   key: const Key('chat-title'),
-                  style: TextStyles.subsection,
+                  style: TextStyles.compact.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
               if (!chat.isNew && !chat.temporary) ...[
-                IconButton(
-                  key: const Key('rename'),
-                  tooltip: l.rename,
-                  icon: const Icon(Icons.edit_outlined),
-                  onPressed: _rename,
-                ),
-                IconButton(
-                  key: const Key('pin'),
-                  tooltip: chat.chat?['is_pinned'] == true ? l.unpin : l.pin,
-                  icon: Icon(
-                    chat.chat?['is_pinned'] == true
-                        ? Icons.push_pin
-                        : Icons.push_pin_outlined,
-                  ),
-                  onPressed: () => runApiAction(context, chat.togglePin),
-                ),
-                IconButton(
-                  key: const Key('delete'),
-                  tooltip: l.delete,
-                  icon: Icon(Icons.delete_outline, color: p.danger),
-                  onPressed: _delete,
+                PopupMenuButton<String>(
+                  key: const Key('chat-actions'),
+                  tooltip: l.menu,
+                  icon: Icon(Icons.more_horiz, color: p.muted),
+                  onSelected: (action) {
+                    switch (action) {
+                      case 'rename':
+                        _rename();
+                      case 'pin':
+                        runApiAction(context, chat.togglePin);
+                      case 'delete':
+                        _delete();
+                    }
+                  },
+                  itemBuilder: (_) => [
+                    PopupMenuItem(value: 'rename', child: Text(l.rename)),
+                    PopupMenuItem(
+                      value: 'pin',
+                      child: Text(
+                        chat.chat?['is_pinned'] == true ? l.unpin : l.pin,
+                      ),
+                    ),
+                    PopupMenuItem(
+                      value: 'delete',
+                      child: Text(l.delete, style: TextStyle(color: p.danger)),
+                    ),
+                  ],
                 ),
               ],
             ],
@@ -262,69 +291,93 @@ class _ChatScreenState extends State<ChatScreen> {
                       _composer.currentState?.text.text = prompt,
                 )
               else
-                ListView.builder(
-                  key: const Key('messages'),
-                  controller: _scroll,
-                  padding: const EdgeInsets.all(Space.s24),
-                  itemCount: chat.exchanges.length,
-                  itemBuilder: (_, i) {
-                    final e = chat.exchanges[i];
-                    return Center(
-                      child: ConstrainedBox(
-                        constraints: const BoxConstraints(maxWidth: 820),
-                        child: Padding(
-                          padding: const EdgeInsets.only(bottom: Space.s32),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              Align(
-                                alignment: Alignment.centerRight,
-                                child: Container(
-                                  constraints: const BoxConstraints(
-                                    maxWidth: 560,
-                                  ),
-                                  padding: const EdgeInsets.all(Space.s12),
-                                  decoration: BoxDecoration(
-                                    color: p.surface,
-                                    border: Border.all(color: p.border),
-                                    borderRadius: BorderRadius.circular(
-                                      Radii.card,
+                SelectionArea(
+                  child: ListView.builder(
+                    key: const Key('messages'),
+                    controller: _scroll,
+                    padding: const EdgeInsets.all(Space.s24),
+                    itemCount: chat.exchanges.length,
+                    itemBuilder: (_, i) {
+                      final e = chat.exchanges[i];
+                      return Center(
+                        key: ObjectKey(e),
+                        child: ConstrainedBox(
+                          constraints: const BoxConstraints(maxWidth: 760),
+                          child: Padding(
+                            padding: const EdgeInsets.only(bottom: Space.s32),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                Align(
+                                  alignment: Alignment.centerRight,
+                                  child: Container(
+                                    constraints: const BoxConstraints(
+                                      maxWidth: 560,
+                                    ),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: Space.s16,
+                                      vertical: Space.s12,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: p.surface,
+                                      borderRadius: BorderRadius.circular(
+                                        Radii.card,
+                                      ),
+                                    ),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.end,
+                                      children: [
+                                        if (e.text.isNotEmpty)
+                                          Text(e.text, style: TextStyles.body),
+                                        const SizedBox(height: Space.s8),
+                                        Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            if (e.createdAt != null)
+                                              Flexible(
+                                                child: Text(
+                                                  '${MaterialLocalizations.of(context).formatMediumDate(e.createdAt!.toLocal())} ${MaterialLocalizations.of(context).formatTimeOfDay(TimeOfDay.fromDateTime(e.createdAt!.toLocal()), alwaysUse24HourFormat: MediaQuery.alwaysUse24HourFormatOf(context))}',
+                                                  key: ValueKey(
+                                                    'message-time-${e.inputId}',
+                                                  ),
+                                                  style: TextStyles.label
+                                                      .copyWith(color: p.muted),
+                                                ),
+                                              ),
+                                            CopyMessageButton(text: e.text),
+                                          ],
+                                        ),
+                                        for (final f in e.files)
+                                          Text(
+                                            f,
+                                            style: TextStyles.label.copyWith(
+                                              color: p.muted,
+                                            ),
+                                          ),
+                                      ],
                                     ),
                                   ),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.end,
-                                    children: [
-                                      if (e.text.isNotEmpty)
-                                        Text(e.text, style: TextStyles.body),
-                                      for (final f in e.files)
-                                        Text(
-                                          f,
-                                          style: TextStyles.label.copyWith(
-                                            color: p.muted,
-                                          ),
-                                        ),
-                                    ],
-                                  ),
                                 ),
-                              ),
-                              const SizedBox(height: Space.s12),
-                              OutputBlock(
-                                output: e.output,
-                                onStopThinking: () =>
-                                    runApiAction(context, chat.stopThinking),
-                                onMemories: _showMemories,
-                                onRetry:
-                                    e.output.running ||
-                                        i != chat.exchanges.length - 1
-                                    ? null
-                                    : () => chat.send(e.text),
-                              ),
-                            ],
+                                const SizedBox(height: Space.s12),
+                                OutputBlock(
+                                  output: e.output,
+                                  onStopThinking: () =>
+                                      runApiAction(context, chat.stopThinking),
+                                  onMemories: _showMemories,
+                                  onRetry:
+                                      e.output.running ||
+                                          i != chat.exchanges.length - 1
+                                      ? null
+                                      : () => chat.send(e.text),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                    );
-                  },
+                      );
+                    },
+                  ),
                 ),
               if (!_atBottom)
                 Positioned(
@@ -362,37 +415,40 @@ class _Empty extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
-    return SingleChildScrollView(
-      child: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 560),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                l.chatGreeting,
-                style: TextStyles.section,
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: Space.s24),
-              Wrap(
-                spacing: Space.s8,
-                runSpacing: Space.s8,
-                alignment: WrapAlignment.center,
-                children: [
-                  for (final prompt in [
-                    l.demoMemoryPrompt,
-                    l.demoFastPrompt,
-                    l.demoDeepPrompt,
-                    l.demoThinkPrompt,
-                  ])
-                    ActionChip(
-                      label: Text(prompt, style: TextStyles.label),
-                      onPressed: () => onPrompt(prompt),
-                    ),
-                ],
-              ),
-            ],
+    return Center(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(Space.s24),
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 560),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  l.chatGreeting,
+                  style: TextStyles.section,
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: Space.s24),
+                Wrap(
+                  spacing: Space.s8,
+                  runSpacing: Space.s8,
+                  alignment: WrapAlignment.center,
+                  children: [
+                    for (final prompt in [
+                      l.demoMemoryPrompt,
+                      l.demoFastPrompt,
+                      l.demoDeepPrompt,
+                      l.demoThinkPrompt,
+                    ])
+                      ActionChip(
+                        label: Text(prompt, style: TextStyles.label),
+                        onPressed: () => onPrompt(prompt),
+                      ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),

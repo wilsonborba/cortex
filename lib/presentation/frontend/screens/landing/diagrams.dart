@@ -67,7 +67,9 @@ class _PipelineDiagramState extends State<PipelineDiagram> {
             runSpacing: Space.s12,
             children: [
               for (final (i, (name, text)) in stages.indexed)
-                Container(
+                AnimatedContainer(
+                  duration: Motion.of(context),
+                  curve: Curves.easeOutCubic,
                   key: Key('stage-$i'),
                   width: 170,
                   padding: const EdgeInsets.all(Space.s12),
@@ -76,7 +78,7 @@ class _PipelineDiagramState extends State<PipelineDiagram> {
                     borderRadius: BorderRadius.circular(Radii.card),
                     border: Border.all(
                       color: !still && i == _active ? p.accent : p.border,
-                      width: !still && i == _active ? 2 : 1,
+                      width: 1,
                     ),
                   ),
                   child: Column(

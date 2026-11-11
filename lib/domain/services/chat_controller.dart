@@ -21,11 +21,13 @@ class Exchange {
   Exchange({
     required this.text,
     this.inputId,
+    this.createdAt,
     this.files = const [],
     required this.output,
   });
   final String text;
   final String? inputId;
+  final DateTime? createdAt;
   final List<String> files;
   final OutputView output;
 }
@@ -69,6 +71,7 @@ class ChatController extends ChangeNotifier {
   bool loading = false;
   bool reconnecting = false;
   bool hasOlder = false;
+  bool loadingOlder = false;
   ApiError? loadError;
   StreamSubscription<ChatEvent>? _sub;
   bool _disposed = false;
@@ -118,10 +121,11 @@ class ChatController extends ChangeNotifier {
           o['input_id']: o,
       };
       final older = [
-        for (final i in (page['inputs'] as List? ?? const []))
+        for (final i in (page['inputs'] as List? ?? const []).reversed)
           Exchange(
             text: '${i['text']}',
             inputId: '${i['input_id']}',
+            createdAt: DateTime.tryParse('${i['created_at']}')?.toLocal(),
             output: outputs[i['input_id']] == null
                 ? OutputView(status: 'failed')
                 : OutputView.fromHistory(
@@ -141,9 +145,14 @@ class ChatController extends ChangeNotifier {
   }
 
   Future<void> loadOlder() async {
-    if (!hasOlder || exchanges.isEmpty) return;
-    await _loadPage(before: exchanges.first.inputId);
-    _notify();
+    if (!hasOlder || exchanges.isEmpty || loadingOlder) return;
+    loadingOlder = true;
+    try {
+      await _loadPage(before: exchanges.first.inputId);
+    } finally {
+      loadingOlder = false;
+      _notify();
+    }
   }
 
   int estimate(String text) => budget.estimate(utf8.encode(text).length);
@@ -190,7 +199,14 @@ class ChatController extends ChangeNotifier {
         if (f.fileId != null) f.name,
     ];
     final output = OutputView();
-    exchanges.add(Exchange(text: text, files: names, output: output));
+    exchanges.add(
+      Exchange(
+        text: text,
+        createdAt: DateTime.now(),
+        files: names,
+        output: output,
+      ),
+    );
     final body = <String, Object?>{
       'text': text,
       'file_ids': ids,

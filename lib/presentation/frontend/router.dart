@@ -88,7 +88,7 @@ GoRouter buildRouter({
         builder: (_, _) =>
             LandingPage(onSignIn: () => auth.signIn(returnPath: '/v1/chats')),
       ),
-      // Not nested: one landing page per section path.
+      // Flat public paths: each page contains only its own subject.
       GoRoute(
         path: '/v1/home/:section',
         builder: (_, s) => homeSections.contains(s.pathParameters['section'])

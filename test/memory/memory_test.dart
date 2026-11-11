@@ -13,6 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:graphview/GraphView.dart' as gv;
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 
@@ -77,6 +78,8 @@ class Api {
   bool deferGraph = false;
   bool failGraph = false;
   bool empty = false;
+  bool isolated = false;
+  bool single = false;
   String? title;
   late final client = MockClient((r) async {
     requests.add(r.url);
@@ -92,7 +95,10 @@ class Api {
       if (empty) {
         return response({'nodes': [], 'edges': [], 'truncated': false});
       }
-      return response(graph(title: title));
+      final value = graph(title: title);
+      if (isolated || single) value['edges'] = [];
+      if (single) value['nodes'] = (value['nodes'] as List).take(1).toList();
+      return response(value);
     }
     if (path.startsWith('/memory-graph/nodes/')) {
       final id = Uri.decodeComponent(
@@ -154,6 +160,61 @@ Future<GoRouter> pump(
 }
 
 void main() {
+  testWidgets('a single saved memory remains visible without links', (
+    tester,
+  ) async {
+    final api = Api()..single = true;
+    await pump(tester, api);
+    final viewport = tester.getRect(find.byType(InteractiveViewer));
+    final node = tester.getRect(find.byKey(const Key('graph-node-$memoryId')));
+    expect(viewport.contains(node.center), isTrue);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('returning to Memory fetches fresh saved nodes', (tester) async {
+    final api = Api();
+    final router = await pump(tester, api);
+    final initial = api.requests
+        .where((r) => r.path.endsWith('/memory-graph'))
+        .length;
+    router.go('/v1/home/faq');
+    await tester.pumpAndSettle();
+    router.go('/v1/memory');
+    await tester.pumpAndSettle();
+    expect(
+      api.requests.where((r) => r.path.endsWith('/memory-graph')).length,
+      initial + 1,
+    );
+  });
+
+  testWidgets('isolated nodes are framed and selection keeps the layout', (
+    tester,
+  ) async {
+    final api = Api()..isolated = true;
+    final router = await pump(tester, api, path: '/v1/memory/$memoryId');
+    final before = tester.widget<gv.GraphViewWidget>(
+      find.byType(gv.GraphViewWidget),
+    );
+    final viewport = tester.getRect(find.byType(InteractiveViewer));
+    for (final id in nodeIds) {
+      expect(
+        viewport.contains(
+          tester.getRect(find.byKey(Key('graph-node-$id'))).center,
+        ),
+        isTrue,
+        reason: id,
+      );
+    }
+    router.go('/v1/memory/entity:p1');
+    await tester.pumpAndSettle();
+    final after = tester.widget<gv.GraphViewWidget>(
+      find.byType(gv.GraphViewWidget),
+    );
+    expect(identical(before.delegate.graph, after.delegate.graph), isTrue);
+    expect(after.enableAnimation, isFalse);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('graph and list show the same API nodes and node paths', (
     tester,
   ) async {

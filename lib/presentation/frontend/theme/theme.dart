@@ -87,6 +87,27 @@ ThemeData cortexTheme(Brightness brightness) {
         side: BorderSide(color: p.border),
       ),
     ),
+    listTileTheme: ListTileThemeData(
+      minTileHeight: Controls.minTouch,
+      contentPadding: const EdgeInsets.symmetric(horizontal: Space.s12),
+      iconColor: p.muted,
+      selectedTileColor: p.text.withValues(alpha: 0.05),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(Radii.control),
+      ),
+      titleTextStyle: TextStyles.compact.copyWith(color: p.text),
+    ),
+    navigationRailTheme: NavigationRailThemeData(
+      backgroundColor: p.surface,
+      indicatorColor: p.text.withValues(alpha: 0.05),
+      selectedIconTheme: IconThemeData(color: p.accent, size: 20),
+      unselectedIconTheme: IconThemeData(color: p.muted, size: 20),
+    ),
+    navigationBarTheme: NavigationBarThemeData(
+      backgroundColor: p.surface,
+      indicatorColor: p.text.withValues(alpha: 0.05),
+      elevation: 0,
+    ),
     chipTheme: ChipThemeData(
       backgroundColor: p.surface,
       selectedColor: p.accent,
