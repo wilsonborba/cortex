@@ -378,5 +378,17 @@
       }
     }
   },
-  "noPersonaMatches": "ไม่พบเพอร์โซนาที่ตรงกับตัวกรองเหล่านี้"
+  "noPersonaMatches": "ไม่พบเพอร์โซนาที่ตรงกับตัวกรองเหล่านี้",
+  "account": "บัญชี",
+  "settings": "การตั้งค่า",
+  "appearance": "รูปแบบการแสดงผล",
+  "systemChoice": "ระบบ",
+  "lightChoice": "สว่าง",
+  "darkChoice": "มืด",
+  "browserPreferenceNote": "ตัวเลือกเหล่านี้จะถูกบันทึกในเบราว์เซอร์นี้",
+  "collapseSidebar": "ย่อแถบด้านข้าง",
+  "expandSidebar": "ขยายแถบด้านข้าง",
+  "languageEnglish": "English",
+  "languagePortugueseBrazil": "Português (Brasil)",
+  "languageThai": "ไทย"
 }

@@ -1113,4 +1113,41 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get noPersonaMatches => 'ไม่พบเพอร์โซนาที่ตรงกับตัวกรองเหล่านี้';
+
+  @override
+  String get account => 'บัญชี';
+
+  @override
+  String get settings => 'การตั้งค่า';
+
+  @override
+  String get appearance => 'รูปแบบการแสดงผล';
+
+  @override
+  String get systemChoice => 'ระบบ';
+
+  @override
+  String get lightChoice => 'สว่าง';
+
+  @override
+  String get darkChoice => 'มืด';
+
+  @override
+  String get browserPreferenceNote =>
+      'ตัวเลือกเหล่านี้จะถูกบันทึกในเบราว์เซอร์นี้';
+
+  @override
+  String get collapseSidebar => 'ย่อแถบด้านข้าง';
+
+  @override
+  String get expandSidebar => 'ขยายแถบด้านข้าง';
+
+  @override
+  String get languageEnglish => 'English';
+
+  @override
+  String get languagePortugueseBrazil => 'Português (Brasil)';
+
+  @override
+  String get languageThai => 'ไทย';
 }

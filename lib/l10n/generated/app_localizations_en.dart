@@ -1119,4 +1119,41 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noPersonaMatches => 'No personas match these filters';
+
+  @override
+  String get account => 'Account';
+
+  @override
+  String get settings => 'Settings';
+
+  @override
+  String get appearance => 'Appearance';
+
+  @override
+  String get systemChoice => 'System';
+
+  @override
+  String get lightChoice => 'Light';
+
+  @override
+  String get darkChoice => 'Dark';
+
+  @override
+  String get browserPreferenceNote =>
+      'These choices are saved in this browser.';
+
+  @override
+  String get collapseSidebar => 'Collapse sidebar';
+
+  @override
+  String get expandSidebar => 'Expand sidebar';
+
+  @override
+  String get languageEnglish => 'English';
+
+  @override
+  String get languagePortugueseBrazil => 'Português (Brasil)';
+
+  @override
+  String get languageThai => 'ไทย';
 }

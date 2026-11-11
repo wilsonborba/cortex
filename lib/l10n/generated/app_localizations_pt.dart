@@ -1134,4 +1134,41 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get noPersonaMatches => 'Nenhuma persona corresponde a estes filtros';
+
+  @override
+  String get account => 'Conta';
+
+  @override
+  String get settings => 'Configurações';
+
+  @override
+  String get appearance => 'Aparência';
+
+  @override
+  String get systemChoice => 'Sistema';
+
+  @override
+  String get lightChoice => 'Claro';
+
+  @override
+  String get darkChoice => 'Escuro';
+
+  @override
+  String get browserPreferenceNote =>
+      'Estas escolhas são salvas neste navegador.';
+
+  @override
+  String get collapseSidebar => 'Recolher barra lateral';
+
+  @override
+  String get expandSidebar => 'Expandir barra lateral';
+
+  @override
+  String get languageEnglish => 'English';
+
+  @override
+  String get languagePortugueseBrazil => 'Português (Brasil)';
+
+  @override
+  String get languageThai => 'ไทย';
 }

@@ -32,6 +32,10 @@
 
 - Verify control inventory and distinguish empty filter results
 
+- Merge shared control design for #51
+
+- Add account menu settings and persistent preferences
+
 
 ## v2.0.1 - 2026-11-11
 

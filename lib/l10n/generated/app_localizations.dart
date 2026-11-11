@@ -2187,6 +2187,78 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No personas match these filters'**
   String get noPersonaMatches;
+
+  /// No description provided for @account.
+  ///
+  /// In en, this message translates to:
+  /// **'Account'**
+  String get account;
+
+  /// No description provided for @settings.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get settings;
+
+  /// No description provided for @appearance.
+  ///
+  /// In en, this message translates to:
+  /// **'Appearance'**
+  String get appearance;
+
+  /// No description provided for @systemChoice.
+  ///
+  /// In en, this message translates to:
+  /// **'System'**
+  String get systemChoice;
+
+  /// No description provided for @lightChoice.
+  ///
+  /// In en, this message translates to:
+  /// **'Light'**
+  String get lightChoice;
+
+  /// No description provided for @darkChoice.
+  ///
+  /// In en, this message translates to:
+  /// **'Dark'**
+  String get darkChoice;
+
+  /// No description provided for @browserPreferenceNote.
+  ///
+  /// In en, this message translates to:
+  /// **'These choices are saved in this browser.'**
+  String get browserPreferenceNote;
+
+  /// No description provided for @collapseSidebar.
+  ///
+  /// In en, this message translates to:
+  /// **'Collapse sidebar'**
+  String get collapseSidebar;
+
+  /// No description provided for @expandSidebar.
+  ///
+  /// In en, this message translates to:
+  /// **'Expand sidebar'**
+  String get expandSidebar;
+
+  /// No description provided for @languageEnglish.
+  ///
+  /// In en, this message translates to:
+  /// **'English'**
+  String get languageEnglish;
+
+  /// No description provided for @languagePortugueseBrazil.
+  ///
+  /// In en, this message translates to:
+  /// **'Português (Brasil)'**
+  String get languagePortugueseBrazil;
+
+  /// No description provided for @languageThai.
+  ///
+  /// In en, this message translates to:
+  /// **'ไทย'**
+  String get languageThai;
 }
 
 class _AppLocalizationsDelegate

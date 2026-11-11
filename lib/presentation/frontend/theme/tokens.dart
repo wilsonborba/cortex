@@ -106,6 +106,9 @@ abstract final class Space {
   static const s24 = 24.0, s32 = 32.0, s40 = 40.0, s48 = 48.0, s64 = 64.0;
   static const section = s64;
   static const contentMaxWidth = 1200.0;
+  static const sidebarWidth = 280.0;
+  static const railWidth = 56.0;
+  static const detailsWidth = 320.0;
   static const readingMaxChars = 68;
 }
 

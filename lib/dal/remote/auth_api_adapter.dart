@@ -72,6 +72,21 @@ class AuthApiAdapter {
     return encrypter.encrypt(payload).base64;
   }
 
+  /// Read only the signed-in email. Other profile fields are discarded.
+  Future<String?> currentEmail() async {
+    try {
+      final response = await _httpClient.get(
+        Uri.parse('$apiForAppsBaseUrl/user/info/v1/'),
+      );
+      if (response.statusCode != 200) return null;
+      final data = (jsonDecode(utf8.decode(response.bodyBytes)) as Map)['data'];
+      final email = data is Map ? data['email'] : null;
+      return email is String && email.trim().isNotEmpty ? email.trim() : null;
+    } catch (_) {
+      return null;
+    }
+  }
+
   Future<bool> exchangeToken(String token) async {
     try {
       final response = await _httpClient.post(
