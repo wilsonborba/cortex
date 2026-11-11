@@ -53,6 +53,12 @@
 
 - Merge #42 preserve-browser-path-on-startup
 
+- Prepare v2.0.0 (#36)
+
+- Merge #36 v2.0.0 preparation
+
+- Prepare development for v2.0.0
+
 
 ### Documentation
 
