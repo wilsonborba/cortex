@@ -73,7 +73,7 @@ const research = [
 enum LandingSection { product, howItWorks, memory, engineering, faq }
 
 extension _LandingSectionX on LandingSection {
-  /// /v1/home/:section (28.1); Product is the top of the page.
+  /// Existing public paths, one subject per page (owner correction #43).
   String get path => switch (this) {
     LandingSection.product => '/v1/home',
     LandingSection.howItWorks => '/v1/home/how-it-works',
@@ -97,45 +97,21 @@ extension _LandingSectionX on LandingSection {
   };
 }
 
-/// One-page public landing (24.B, issue #29). Native scroll only.
-class LandingPage extends StatefulWidget {
+/// Public subject pages with shared navigation and localized content.
+class LandingPage extends StatelessWidget {
   const LandingPage({super.key, required this.onSignIn, this.section});
   final VoidCallback onSignIn;
   final String? section;
-  @override
-  State<LandingPage> createState() => _LandingPageState();
-}
-
-class _LandingPageState extends State<LandingPage> {
-  final _keys = {for (final s in LandingSection.values) s: GlobalKey()};
-
-  @override
-  void initState() {
-    super.initState();
-    final target = _LandingSectionX.fromSlug(widget.section);
-    if (target != null) {
-      WidgetsBinding.instance.addPostFrameCallback((_) => _scrollTo(target));
-    }
-  }
-
-  void _scrollTo(LandingSection s) {
-    final c = _keys[s]!.currentContext;
-    if (c != null) {
-      Scrollable.ensureVisible(c, duration: Motion.of(context), alignment: 0);
-    }
-  }
-
-  void _go(LandingSection s) {
-    context.go(s.path);
-    _scrollTo(s);
-  }
 
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
     final size = SizeClass.of(MediaQuery.sizeOf(context).width);
+    final current =
+        _LandingSectionX.fromSlug(this.section) ?? LandingSection.product;
+    void go(LandingSection subject) => context.go(subject.path);
     Widget section(LandingSection? key, String title, Widget body) => Padding(
-      key: key == null ? null : _keys[key],
+      key: key == null ? null : ValueKey(key),
       padding: const EdgeInsets.only(top: Space.section),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -152,7 +128,7 @@ class _LandingPageState extends State<LandingPage> {
     return Scaffold(
       body: Column(
         children: [
-          LandingHeader(size: size, onSignIn: widget.onSignIn, onSection: _go),
+          LandingHeader(size: size, onSignIn: onSignIn, onSection: go),
           Expanded(
             child: GridBackground(
               child: SingleChildScrollView(
@@ -168,81 +144,90 @@ class _LandingPageState extends State<LandingPage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          KeyedSubtree(
-                            key: _keys[LandingSection.product],
-                            child: _Hero(
+                          if (current == LandingSection.product) ...[
+                            _Hero(
                               size: size,
-                              onSignIn: widget.onSignIn,
-                              onHow: () => _go(LandingSection.howItWorks),
+                              onSignIn: onSignIn,
+                              onHow: () => go(LandingSection.howItWorks),
                             ),
-                          ),
-                          section(null, l.whatTitle, _What(size: size)),
-                          section(
-                            LandingSection.howItWorks,
-                            l.pipelineTitle,
-                            const PipelineDiagram(),
-                          ),
-                          section(
-                            LandingSection.memory,
-                            l.memoryTitle,
-                            _Memory(size: size),
-                          ),
-                          section(null, l.webTitle, const _Web()),
-                          section(
-                            null,
-                            l.liveTitle,
-                            _Bullets([
-                              l.liveSteps,
-                              l.liveReconnect,
-                              l.liveStop,
-                              l.liveStopThinking,
-                            ]),
-                          ),
-                          section(
-                            LandingSection.engineering,
-                            l.engTitle,
-                            const _Engineering(),
-                          ),
-                          section(null, l.researchTitle, const _Research()),
-                          section(
-                            null,
-                            l.securityTitle,
-                            _Bullets([
-                              l.securityShield,
-                              l.securityIsolation,
-                              l.securityLogs,
-                            ]),
-                          ),
-                          section(LandingSection.faq, l.faq, const _Faq()),
-                          Padding(
-                            padding: const EdgeInsets.only(top: Space.section),
-                            child: Flex(
-                              key: const Key('landing-final-action'),
-                              direction: size == SizeClass.compact
-                                  ? Axis.vertical
-                                  : Axis.horizontal,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                if (size == SizeClass.compact)
-                                  Text(l.finalLine, style: TextStyles.section)
-                                else
-                                  Expanded(
-                                    child: Text(
-                                      l.finalLine,
-                                      style: TextStyles.section,
+                            section(null, l.whatTitle, _What(size: size)),
+                          ],
+                          if (current == LandingSection.howItWorks)
+                            section(
+                              LandingSection.howItWorks,
+                              l.pipelineTitle,
+                              const PipelineDiagram(),
+                            ),
+                          if (current == LandingSection.memory)
+                            section(
+                              LandingSection.memory,
+                              l.memoryTitle,
+                              _Memory(size: size),
+                            ),
+                          if (current == LandingSection.howItWorks) ...[
+                            section(null, l.webTitle, const _Web()),
+                            section(
+                              null,
+                              l.liveTitle,
+                              _Bullets([
+                                l.liveSteps,
+                                l.liveReconnect,
+                                l.liveStop,
+                                l.liveStopThinking,
+                              ]),
+                            ),
+                          ],
+                          if (current == LandingSection.engineering) ...[
+                            section(
+                              LandingSection.engineering,
+                              l.engTitle,
+                              const _Engineering(),
+                            ),
+                            section(null, l.researchTitle, const _Research()),
+                            section(
+                              null,
+                              l.securityTitle,
+                              _Bullets([
+                                l.securityShield,
+                                l.securityIsolation,
+                                l.securityLogs,
+                              ]),
+                            ),
+                          ],
+                          if (current == LandingSection.faq)
+                            section(LandingSection.faq, l.faq, const _Faq()),
+                          if (current == LandingSection.product)
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                top: Space.section,
+                              ),
+                              child: Flex(
+                                key: const Key('landing-final-action'),
+                                direction: size == SizeClass.compact
+                                    ? Axis.vertical
+                                    : Axis.horizontal,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  if (size == SizeClass.compact)
+                                    Text(l.finalLine, style: TextStyles.section)
+                                  else
+                                    Expanded(
+                                      child: Text(
+                                        l.finalLine,
+                                        style: TextStyles.section,
+                                      ),
                                     ),
+                                  const SizedBox(
+                                    width: Space.s16,
+                                    height: Space.s16,
                                   ),
-                                const SizedBox(
-                                  width: Space.s16,
-                                  height: Space.s16,
-                                ),
-                                AppButton.primary(
-                                  label: l.startChat,
-                                  onPressed: widget.onSignIn,
-                                ),
-                              ],
+                                  AppButton.primary(
+                                    label: l.startChat,
+                                    onPressed: onSignIn,
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
                           const _Footer(),
                         ],
                       ),
