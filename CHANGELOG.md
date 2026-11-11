@@ -1,7 +1,7 @@
 # Changelog
 
 
-## Unreleased
+## v2.0.1 - 2026-11-11
 
 
 ### Bug Fixes
@@ -40,6 +40,10 @@
 - Merge #47 preserve-isolated-memory-nodes-and-frame-graph
 
 - Merge #46 keep-composer-labels-readable-and-compact
+
+- Merge #48 remove-footer-credit-and-decorative-background
+
+- Prepare development for v2.0.1
 
 
 ## v2.0.0 - 2026-11-11
