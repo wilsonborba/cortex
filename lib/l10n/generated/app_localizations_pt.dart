@@ -1193,4 +1193,13 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get codeLabel => 'Código';
+
+  @override
+  String get composerOptions => 'Opções';
+
+  @override
+  String get composerEmptyReason => 'Escreva uma mensagem antes de enviar.';
+
+  @override
+  String get composerUploadReason => 'Aguarde o término do envio do arquivo.';
 }

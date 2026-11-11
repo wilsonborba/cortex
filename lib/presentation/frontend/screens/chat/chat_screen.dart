@@ -56,6 +56,7 @@ class _ChatScreenState extends State<ChatScreen> {
   final _newerSliver = GlobalKey();
   Exchange? _firstPageFirst;
   int _lastLength = 0;
+  double? _viewportDimension;
   String? _navigated;
 
   @override
@@ -380,90 +381,149 @@ class _ChatScreenState extends State<ChatScreen> {
           ),
         ),
         Expanded(
-          child: Stack(
-            children: [
-              if (chat.loadError != null)
-                ErrorState(
-                  message: apiFailure(l, chat.loadError),
-                  retryLabel: l.retry,
-                  onRetry: chat.open,
-                )
-              else if (chat.loading && chat.exchanges.isEmpty)
-                const Center(child: SkeletonBox(width: 240))
-              else if (chat.exchanges.isEmpty)
-                _Empty(
-                  onPrompt: (prompt) =>
-                      _composer.currentState?.text.text = prompt,
-                )
-              else
-                SelectionArea(
-                  child: CustomScrollView(
-                    key: const Key('messages'),
-                    controller: _scroll,
-                    center: _newerSliver,
-                    slivers: [
-                      SliverList(
-                        delegate: SliverChildBuilderDelegate(
-                          (context, index) => _exchange(
-                            chat.exchanges[_olderCount - 1 - index],
-                            _olderCount - 1 - index,
+          child: LayoutBuilder(
+            builder: (context, limits) {
+              double textHeight(String value, TextStyle style) {
+                final painter =
+                    TextPainter(
+                      text: TextSpan(text: value, style: style),
+                      maxLines: 1,
+                      textDirection: Directionality.of(context),
+                      textScaler: MediaQuery.textScalerOf(context),
+                    )..layout(
+                      maxWidth: (limits.maxWidth - Space.s32).clamp(
+                        0,
+                        double.infinity,
+                      ),
+                    );
+                final height = painter.height;
+                painter.dispose();
+                return height;
+              }
+
+              final footerHeight =
+                  textHeight(l.chatDisclaimer, TextStyles.label) + Space.s8;
+              final readingLine = textHeight(' ', TextStyles.body);
+              final composerMaxHeight =
+                  (limits.maxHeight - footerHeight - readingLine)
+                      .clamp(0, double.infinity)
+                      .toDouble();
+              return Column(
+                children: [
+                  Expanded(
+                    child: Stack(
+                      children: [
+                        if (chat.loadError != null)
+                          ErrorState(
+                            message: apiFailure(l, chat.loadError),
+                            retryLabel: l.retry,
+                            onRetry: chat.open,
+                          )
+                        else if (chat.loading && chat.exchanges.isEmpty)
+                          const Center(child: SkeletonBox(width: 240))
+                        else if (chat.exchanges.isEmpty)
+                          _Empty(
+                            onPrompt: (prompt) =>
+                                _composer.currentState?.text.text = prompt,
+                          )
+                        else
+                          SelectionArea(
+                            child:
+                                NotificationListener<ScrollMetricsNotification>(
+                                  onNotification: (notification) {
+                                    final changed =
+                                        _viewportDimension !=
+                                        notification.metrics.viewportDimension;
+                                    _viewportDimension =
+                                        notification.metrics.viewportDimension;
+                                    if (changed && _atBottom) {
+                                      WidgetsBinding.instance
+                                          .addPostFrameCallback((_) {
+                                            if (mounted && _atBottom) _jump();
+                                          });
+                                    }
+                                    return false;
+                                  },
+                                  child: CustomScrollView(
+                                    key: const Key('messages'),
+                                    controller: _scroll,
+                                    center: _newerSliver,
+                                    slivers: [
+                                      SliverList(
+                                        delegate: SliverChildBuilderDelegate(
+                                          (context, index) => _exchange(
+                                            chat.exchanges[_olderCount -
+                                                1 -
+                                                index],
+                                            _olderCount - 1 - index,
+                                          ),
+                                          childCount: _olderCount,
+                                        ),
+                                      ),
+                                      SliverList(
+                                        key: _newerSliver,
+                                        delegate: SliverChildBuilderDelegate(
+                                          (context, index) => _exchange(
+                                            chat.exchanges[_olderCount + index],
+                                            _olderCount + index,
+                                          ),
+                                          childCount:
+                                              chat.exchanges.length -
+                                              _olderCount,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
                           ),
-                          childCount: _olderCount,
-                        ),
-                      ),
-                      SliverList(
-                        key: _newerSliver,
-                        delegate: SliverChildBuilderDelegate(
-                          (context, index) => _exchange(
-                            chat.exchanges[_olderCount + index],
-                            _olderCount + index,
+                        if (!_atBottom)
+                          Positioned(
+                            bottom: Space.s16,
+                            left: 0,
+                            right: 0,
+                            child: Center(
+                              child: ActionChip(
+                                key: const Key('jump-latest'),
+                                avatar: const Icon(
+                                  AppIcons.jumpToLatest,
+                                  size: IconSizes.action,
+                                ),
+                                label: Text(l.jumpToLatest),
+                                onPressed: () {
+                                  _jump();
+                                  setState(() => _atBottom = true);
+                                },
+                              ),
+                            ),
                           ),
-                          childCount: chat.exchanges.length - _olderCount,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              if (!_atBottom)
-                Positioned(
-                  bottom: Space.s16,
-                  left: 0,
-                  right: 0,
-                  child: Center(
-                    child: ActionChip(
-                      key: const Key('jump-latest'),
-                      avatar: const Icon(
-                        AppIcons.jumpToLatest,
-                        size: IconSizes.action,
-                      ),
-                      label: Text(l.jumpToLatest),
-                      onPressed: () {
-                        _jump();
-                        setState(() => _atBottom = true);
-                      },
+                      ],
                     ),
                   ),
-                ),
-            ],
-          ),
-        ),
-        Composer(
-          key: _composer,
-          chat: chat,
-          picker: widget.picker ?? pickFiles,
-        ),
-        Padding(
-          padding: const EdgeInsets.only(
-            left: Space.s16,
-            right: Space.s16,
-            bottom: Space.s8,
-          ),
-          child: Text(
-            l.chatDisclaimer,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyles.label.copyWith(color: p.muted),
-            textAlign: TextAlign.center,
+                  ConstrainedBox(
+                    constraints: BoxConstraints(maxHeight: composerMaxHeight),
+                    child: Composer(
+                      key: _composer,
+                      chat: chat,
+                      picker: widget.picker ?? pickFiles,
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(
+                      left: Space.s16,
+                      right: Space.s16,
+                      bottom: Space.s8,
+                    ),
+                    child: Text(
+                      l.chatDisclaimer,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyles.label.copyWith(color: p.muted),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ],
+              );
+            },
           ),
         ),
       ],

@@ -40,6 +40,10 @@
 
 - Rebuild transcript with anchored history and clear answer states
 
+- Merge transcript redesign for #53
+
+- Rebuild composer with safe input and compact options
+
 
 ## v2.0.1 - 2026-11-11
 
