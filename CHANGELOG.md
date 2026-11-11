@@ -14,6 +14,8 @@
 
 - Landing-final-action (#41)
 
+- Preserve-browser-path-on-startup (#42)
+
 
 ### Chores
 
@@ -46,6 +48,8 @@
 - Merge #40 landing-header-layout
 
 - Merge #41 landing-final-action
+
+- Merge #36 prepare the production web build and deployment
 
 
 ### Documentation
