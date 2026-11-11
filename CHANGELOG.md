@@ -12,6 +12,8 @@
 
 - Restore-chat-order-copy-and-local-timestamps (#45)
 
+- Refine-chat-reading-and-composer-layout (#46)
+
 
 ### Chores
 
@@ -24,6 +26,8 @@
 - Merge #43 split-public-content-by-subject
 
 - Merge #44 keep-demo-layout-stable-and-soften-transitions
+
+- Merge #45 restore-chat-order-copy-and-local-timestamps
 
 
 ## v2.0.0 - 2026-11-11

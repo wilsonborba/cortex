@@ -102,7 +102,7 @@ class _Sidebar extends StatelessWidget {
                   icon: Icons.chat_bubble_outline,
                 ),
           ),
-          const Divider(),
+          const SizedBox(height: Space.s12),
           for (final (i, d) in _destinations.indexed.skip(1))
             ListTile(
               dense: true,
@@ -111,7 +111,7 @@ class _Sidebar extends StatelessWidget {
               selected: i == selected,
               onTap: () => context.go(d.path),
             ),
-          const Divider(),
+          const SizedBox(height: Space.s12),
           // Log out only here, at the bottom of the sidebar (28.9).
           ListTile(
             dense: true,
