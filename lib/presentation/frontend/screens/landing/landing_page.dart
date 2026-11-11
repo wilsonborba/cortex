@@ -250,7 +250,7 @@ class LandingHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
-    final p = Palette.of(Theme.of(context).brightness);
+    final p = Palette.from(context);
     final prefs = PreferencesScope.maybeOf(context);
     // Five links fit only on the expanded width; medium and compact use a menu.
     final compact = size != SizeClass.expanded;
@@ -303,18 +303,20 @@ class LandingHeader extends StatelessWidget {
           ] else
             const SizedBox(width: Space.s8),
           if (size != SizeClass.compact && prefs != null) ...[
-            PopupMenuButton<Locale>(
-              tooltip: l.language,
-              icon: const Icon(Icons.translate),
-              onSelected: (v) => prefs.locale = v,
-              itemBuilder: (_) => [
-                for (final (code, name) in [
-                  ('en', 'English'),
-                  ('pt', 'Português'),
-                  ('th', 'ไทย'),
-                ])
-                  PopupMenuItem(value: Locale(code), child: Text(name)),
-              ],
+            FoundationFocus(
+              child: PopupMenuButton<Locale>(
+                tooltip: l.language,
+                icon: const Icon(Icons.translate),
+                onSelected: (v) => prefs.locale = v,
+                itemBuilder: (_) => [
+                  for (final (code, name) in [
+                    ('en', 'English'),
+                    ('pt', 'Português'),
+                    ('th', 'ไทย'),
+                  ])
+                    PopupMenuItem(value: Locale(code), child: Text(name)),
+                ],
+              ),
             ),
             IconButton(
               tooltip: l.themeSwitch,
@@ -330,15 +332,17 @@ class LandingHeader extends StatelessWidget {
             ),
           ],
           if (compact)
-            PopupMenuButton<LandingSection>(
-              key: const Key('section-menu'),
-              tooltip: l.menu,
-              icon: const Icon(Icons.menu),
-              onSelected: onSection,
-              itemBuilder: (_) => [
-                for (final s in LandingSection.values)
-                  PopupMenuItem(value: s, child: Text(s.label(l))),
-              ],
+            FoundationFocus(
+              child: PopupMenuButton<LandingSection>(
+                key: const Key('section-menu'),
+                tooltip: l.menu,
+                icon: const Icon(Icons.menu),
+                onSelected: onSection,
+                itemBuilder: (_) => [
+                  for (final s in LandingSection.values)
+                    PopupMenuItem(value: s, child: Text(s.label(l))),
+                ],
+              ),
             ),
           const SizedBox(width: Space.s8),
           if (compact)
@@ -365,7 +369,7 @@ class _Hero extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
-    final p = Palette.of(Theme.of(context).brightness);
+    final p = Palette.from(context);
     final text = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -432,7 +436,7 @@ class _What extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
-    final p = Palette.of(Theme.of(context).brightness);
+    final p = Palette.from(context);
     Widget block(String title, String text, Widget ui) => SizedBox(
       width: size == SizeClass.compact ? double.infinity : 270,
       child: AppCard(
@@ -568,7 +572,7 @@ class _Web extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
-    final p = Palette.of(Theme.of(context).brightness);
+    final p = Palette.from(context);
     // Values of cortex_api config.rs (areas 4 and 5).
     final rows = [
       [l.webFast, '1', l.webFastPages, '0', l.seconds(15)],
@@ -650,29 +654,31 @@ class _Research extends StatelessWidget {
   const _Research();
   @override
   Widget build(BuildContext context) {
-    final p = Palette.of(Theme.of(context).brightness);
+    final p = Palette.from(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         for (final (title, who, url) in research)
-          InkWell(
-            onTap: () => launchUrl(Uri.parse(url)),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: Space.s4),
-              child: Text.rich(
-                TextSpan(
-                  children: [
-                    TextSpan(
-                      text: title,
-                      style: TextStyles.compact.copyWith(
-                        decoration: TextDecoration.underline,
+          FoundationFocus(
+            child: InkWell(
+              onTap: () => launchUrl(Uri.parse(url)),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: Space.s4),
+                child: Text.rich(
+                  TextSpan(
+                    children: [
+                      TextSpan(
+                        text: title,
+                        style: TextStyles.compact.copyWith(
+                          decoration: TextDecoration.underline,
+                        ),
                       ),
-                    ),
-                    TextSpan(
-                      text: '  $who',
-                      style: TextStyles.compact.copyWith(color: p.muted),
-                    ),
-                  ],
+                      TextSpan(
+                        text: '  $who',
+                        style: TextStyles.compact.copyWith(color: p.muted),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -687,7 +693,7 @@ class _Faq extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
-    final p = Palette.of(Theme.of(context).brightness);
+    final p = Palette.from(context);
     return Column(
       children: [
         for (final (q, a) in [
@@ -720,7 +726,7 @@ class _Bullets extends StatelessWidget {
   final List<String> items;
   @override
   Widget build(BuildContext context) {
-    final p = Palette.of(Theme.of(context).brightness);
+    final p = Palette.from(context);
     return ConstrainedBox(
       constraints: const BoxConstraints(maxWidth: 640),
       child: Column(
@@ -752,7 +758,7 @@ class _Footer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
-    final p = Palette.of(Theme.of(context).brightness);
+    final p = Palette.from(context);
     return Container(
       margin: const EdgeInsets.only(top: Space.section),
       padding: const EdgeInsets.symmetric(vertical: Space.s24),

@@ -10,7 +10,7 @@ class SkeletonBox extends StatelessWidget {
   final double height;
   @override
   Widget build(BuildContext context) {
-    final p = Palette.of(Theme.of(context).brightness);
+    final p = Palette.from(context);
     return Semantics(
       label: AppLocalizations.of(context).loading,
       child: Container(
@@ -18,7 +18,9 @@ class SkeletonBox extends StatelessWidget {
         height: height,
         decoration: BoxDecoration(
           color: p.border,
-          borderRadius: BorderRadius.circular(Radii.control),
+          borderRadius: BorderRadius.circular(
+            FoundationTokens.of(context).controlRadius,
+          ),
         ),
       ),
     );
@@ -39,7 +41,7 @@ class EmptyState extends StatelessWidget {
   final Widget? action;
   @override
   Widget build(BuildContext context) {
-    final p = Palette.of(Theme.of(context).brightness);
+    final p = Palette.from(context);
     return Center(
       child: SingleChildScrollView(
         child: ConstrainedBox(
@@ -103,7 +105,7 @@ class OfflineBanner extends StatelessWidget {
   final String message;
   @override
   Widget build(BuildContext context) {
-    final p = Palette.of(Theme.of(context).brightness);
+    final p = Palette.from(context);
     return Semantics(
       liveRegion: true,
       child: Container(
@@ -141,7 +143,7 @@ class NoticeLine extends StatelessWidget {
   final NoticeKind kind;
   @override
   Widget build(BuildContext context) {
-    final p = Palette.of(Theme.of(context).brightness);
+    final p = Palette.from(context);
     final (icon, color) = switch (kind) {
       NoticeKind.info => (Icons.info_outline, p.muted),
       NoticeKind.warning => (Icons.warning_amber_outlined, p.text),

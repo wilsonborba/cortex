@@ -132,7 +132,7 @@ class _ChatListState extends State<ChatList> {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
-    final p = Palette.of(Theme.of(context).brightness);
+    final p = Palette.from(context);
     final now = (widget.now ?? DateTime.now)();
     if (list.error != null && list.chats.isEmpty) {
       return ErrorState(
@@ -166,63 +166,70 @@ class _ChatListState extends State<ChatList> {
         final chat = list.chats[i];
         final id = '${chat['session_id']}';
         final selected = widget.location.startsWith('/v1/chats/$id');
-        return ListTile(
-          key: Key('chat-$id'),
-          dense: true,
-          selected: selected,
-          selectedTileColor: p.accent.withValues(alpha: 0.12),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(Radii.control),
-          ),
-          leading: chat['is_pinned'] == true
-              ? Icon(Icons.push_pin, size: 14, color: p.muted)
-              : null,
-          title: Text(
-            '${chat['title']}',
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyles.compact.copyWith(color: p.text),
-          ),
-          subtitle: Row(
-            children: [
-              if (list.running.contains(id)) ...[
-                Semantics(
-                  label: l.running,
-                  child: Container(
-                    key: Key('running-$id'),
-                    width: 6,
-                    height: 6,
-                    decoration: BoxDecoration(
-                      color: p.accent,
-                      shape: BoxShape.circle,
+        return FoundationFocus(
+          child: ListTile(
+            key: Key('chat-$id'),
+            dense: true,
+            selected: selected,
+            selectedTileColor: p.text.withValues(alpha: 0.05),
+            shape: Border(
+              left: BorderSide(
+                color: selected ? p.accent : Colors.transparent,
+                width: Controls.focusRing,
+              ),
+            ),
+            leading: chat['is_pinned'] == true
+                ? Icon(Icons.push_pin, size: 14, color: p.muted)
+                : null,
+            title: Text(
+              '${chat['title']}',
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyles.compact.copyWith(color: p.text),
+            ),
+            subtitle: Row(
+              children: [
+                if (list.running.contains(id)) ...[
+                  Semantics(
+                    label: l.running,
+                    child: Container(
+                      key: Key('running-$id'),
+                      width: 6,
+                      height: 6,
+                      decoration: BoxDecoration(
+                        color: p.text,
+                        shape: BoxShape.circle,
+                      ),
                     ),
                   ),
+                  const SizedBox(width: Space.s4),
+                ],
+                Text(
+                  relativeTime(l, chat['updated_at'] as String?, now),
+                  style: TextStyles.label.copyWith(color: p.muted),
                 ),
-                const SizedBox(width: Space.s4),
               ],
-              Text(
-                relativeTime(l, chat['updated_at'] as String?, now),
-                style: TextStyles.label.copyWith(color: p.muted),
+            ),
+            onTap: () => GoRouter.maybeOf(context)?.go('/v1/chats/$id'),
+            trailing: FoundationFocus(
+              child: PopupMenuButton<_Action>(
+                key: Key('menu-$id'),
+                tooltip: l.chatActions,
+                icon: const Icon(Icons.more_horiz, size: 18),
+                onSelected: (a) => _act(a, chat),
+                itemBuilder: (_) => [
+                  PopupMenuItem(
+                    value: _Action.pin,
+                    child: Text(chat['is_pinned'] == true ? l.unpin : l.pin),
+                  ),
+                  PopupMenuItem(value: _Action.rename, child: Text(l.rename)),
+                  PopupMenuItem(
+                    value: _Action.delete,
+                    child: Text(l.delete, style: TextStyle(color: p.danger)),
+                  ),
+                ],
               ),
-            ],
-          ),
-          onTap: () => GoRouter.maybeOf(context)?.go('/v1/chats/$id'),
-          trailing: PopupMenuButton<_Action>(
-            key: Key('menu-$id'),
-            tooltip: l.chatActions,
-            icon: const Icon(Icons.more_horiz, size: 18),
-            onSelected: (a) => _act(a, chat),
-            itemBuilder: (_) => [
-              PopupMenuItem(
-                value: _Action.pin,
-                child: Text(chat['is_pinned'] == true ? l.unpin : l.pin),
-              ),
-              PopupMenuItem(value: _Action.rename, child: Text(l.rename)),
-              PopupMenuItem(
-                value: _Action.delete,
-                child: Text(l.delete, style: TextStyle(color: p.danger)),
-              ),
-            ],
+            ),
           ),
         );
       },

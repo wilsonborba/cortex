@@ -74,7 +74,7 @@ class ComposerState extends State<Composer> {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
-    final p = Palette.of(Theme.of(context).brightness);
+    final p = Palette.from(context);
     final chat = widget.chat;
     final o = chat.options;
     final tokens = chat.estimate(text.text);
@@ -95,9 +95,11 @@ class ComposerState extends State<Composer> {
             key: const Key('composer'),
             padding: const EdgeInsets.all(Space.s12),
             decoration: BoxDecoration(
-              color: p.surface,
+              color: p.raised,
               border: Border.all(color: p.border),
-              borderRadius: BorderRadius.circular(Radii.card),
+              borderRadius: BorderRadius.circular(
+                FoundationTokens.of(context).composerRadius,
+              ),
             ),
             child: ChipTheme(
               data: Theme.of(context).chipTheme.copyWith(
@@ -198,29 +200,31 @@ class ComposerState extends State<Composer> {
                         width: MediaQuery.sizeOf(context).width < 600
                             ? 136
                             : 176,
-                        child: DropdownButton<WebChoice>(
-                          isExpanded: true,
-                          isDense: true,
-                          itemHeight: null,
-                          key: const Key('web-choice'),
-                          value: o.web,
-                          underline: const SizedBox(),
-                          items: [
-                            for (final (v, label) in [
-                              (WebChoice.off, l.webOff),
-                              (WebChoice.fast, l.webFast),
-                              (WebChoice.medium, l.webMedium),
-                              (WebChoice.deep, l.webDeep),
-                            ])
-                              DropdownMenuItem(
-                                value: v,
-                                child: Text(
-                                  '${l.webLabel}: $label',
-                                  style: TextStyles.compact,
+                        child: FoundationFocus(
+                          child: DropdownButton<WebChoice>(
+                            isExpanded: true,
+                            isDense: true,
+                            itemHeight: null,
+                            key: const Key('web-choice'),
+                            value: o.web,
+                            underline: const SizedBox(),
+                            items: [
+                              for (final (v, label) in [
+                                (WebChoice.off, l.webOff),
+                                (WebChoice.fast, l.webFast),
+                                (WebChoice.medium, l.webMedium),
+                                (WebChoice.deep, l.webDeep),
+                              ])
+                                DropdownMenuItem(
+                                  value: v,
+                                  child: Text(
+                                    '${l.webLabel}: $label',
+                                    style: TextStyles.compact,
+                                  ),
                                 ),
-                              ),
-                          ],
-                          onChanged: (v) => setState(() => o.web = v!),
+                            ],
+                            onChanged: (v) => setState(() => o.web = v!),
+                          ),
                         ),
                       ),
                       FilterChip(
@@ -228,7 +232,7 @@ class ComposerState extends State<Composer> {
                         label: Text(
                           l.memoryToggle,
                           style: TextStyles.compact.copyWith(
-                            color: o.memory ? p.accent : p.muted,
+                            color: o.memory ? p.text : p.muted,
                           ),
                         ),
                         selected: o.memory,
@@ -252,7 +256,7 @@ class ComposerState extends State<Composer> {
                         label: Text(
                           l.thinkingToggle,
                           style: TextStyles.compact.copyWith(
-                            color: o.thinking ? p.accent : p.muted,
+                            color: o.thinking ? p.text : p.muted,
                           ),
                         ),
                         selected: o.thinking,
@@ -266,34 +270,36 @@ class ComposerState extends State<Composer> {
                           width: MediaQuery.sizeOf(context).width < 600
                               ? MediaQuery.sizeOf(context).width - Space.s24
                               : 240,
-                          child: DropdownButton<String?>(
-                            isExpanded: true,
-                            itemHeight: null,
-                            key: const Key('persona-picker'),
-                            value: o.personaId,
-                            hint: Text(
-                              l.personaPicker,
-                              style: TextStyles.compact,
-                            ),
-                            underline: const SizedBox(),
-                            items: [
-                              DropdownMenuItem<String?>(
-                                value: null,
-                                child: Text(
-                                  l.noPersona,
-                                  style: TextStyles.compact,
-                                ),
+                          child: FoundationFocus(
+                            child: DropdownButton<String?>(
+                              isExpanded: true,
+                              itemHeight: null,
+                              key: const Key('persona-picker'),
+                              value: o.personaId,
+                              hint: Text(
+                                l.personaPicker,
+                                style: TextStyles.compact,
                               ),
-                              for (final persona in chat.personas)
+                              underline: const SizedBox(),
+                              items: [
                                 DropdownMenuItem<String?>(
-                                  value: '${persona['persona_id']}',
+                                  value: null,
                                   child: Text(
-                                    '${persona['name']}',
+                                    l.noPersona,
                                     style: TextStyles.compact,
                                   ),
                                 ),
-                            ],
-                            onChanged: (v) => setState(() => o.personaId = v),
+                                for (final persona in chat.personas)
+                                  DropdownMenuItem<String?>(
+                                    value: '${persona['persona_id']}',
+                                    child: Text(
+                                      '${persona['name']}',
+                                      style: TextStyles.compact,
+                                    ),
+                                  ),
+                              ],
+                              onChanged: (v) => setState(() => o.personaId = v),
+                            ),
                           ),
                         ),
                       running

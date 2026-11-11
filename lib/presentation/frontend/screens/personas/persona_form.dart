@@ -258,9 +258,7 @@ class _PersonaFormState extends State<PersonaForm> {
                   padding: const EdgeInsets.only(bottom: Space.s16),
                   child: Text(
                     apiFailure(l, error),
-                    style: TextStyle(
-                      color: Palette.of(Theme.of(context).brightness).danger,
-                    ),
+                    style: TextStyle(color: Palette.from(context).danger),
                   ),
                 ),
               if (widget.id == null)
@@ -311,14 +309,16 @@ class _PersonaFormState extends State<PersonaForm> {
                       ?.value,
                 ),
               ),
-              SwitchListTile(
-                key: const Key('persona-self'),
-                contentPadding: EdgeInsets.zero,
-                title: Text(l.personaIsSelf),
-                value: isSelf,
-                onChanged: busy
-                    ? null
-                    : (value) => setState(() => isSelf = value),
+              FoundationFocus(
+                child: SwitchListTile(
+                  key: const Key('persona-self'),
+                  contentPadding: EdgeInsets.zero,
+                  title: Text(l.personaIsSelf),
+                  value: isSelf,
+                  onChanged: busy
+                      ? null
+                      : (value) => setState(() => isSelf = value),
+                ),
               ),
               Text(l.personaRequiredLegend, style: TextStyles.label),
               const SizedBox(height: Space.s12),

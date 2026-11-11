@@ -36,7 +36,7 @@ class AppButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final p = Palette.of(Theme.of(context).brightness);
+    final p = Palette.from(context);
     final size = SizeClass.of(MediaQuery.sizeOf(context).width);
     final (bg, fg, side) = switch (kind) {
       ButtonKind.primary => (p.accent, p.onAccent, p.accent),
@@ -61,7 +61,9 @@ class AppButton extends StatelessWidget {
       animationDuration: Motion.of(context),
       shape: WidgetStateProperty.resolveWith(
         (states) => RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(Radii.control),
+          borderRadius: BorderRadius.circular(
+            FoundationTokens.of(context).controlRadius,
+          ),
           side: BorderSide(
             color: states.contains(WidgetState.focused) ? p.text : side,
             width: states.contains(WidgetState.focused)
