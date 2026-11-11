@@ -45,6 +45,8 @@
 
 - Merge #40 landing-header-layout
 
+- Merge #41 landing-final-action
+
 
 ### Documentation
 
@@ -70,6 +72,8 @@
 - Usage-timing-stats-events (#34)
 
 - Messages-states-accessibility (#35)
+
+- Prepare the production web build and deployment (#36)
 
 
 ## v1.2.0 - 2026-11-09

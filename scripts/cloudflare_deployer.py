@@ -6,10 +6,11 @@ import hashlib
 import mimetypes
 import urllib.request
 import time
+import subprocess
 from pathlib import Path
 
 # Load credentials
-env_file = Path("/home/wilsonborba/.config/cloudflare/env")
+env_file = Path.home() / ".config/cloudflare/env"
 with open(env_file) as f:
     for line in f:
         line = line.strip()
@@ -49,9 +50,7 @@ def cf_request(method, endpoint, data=None, headers=None):
                 return {}
             return json.loads(res_bytes.decode("utf-8"))
     except urllib.error.HTTPError as e:
-        err_content = e.read().decode("utf-8")
-        print(f"HTTP Error {e.code} on {method} {endpoint}: {err_content}")
-        raise
+        raise RuntimeError(f"Cloudflare request failed with HTTP {e.code}") from None
 
 def deploy_pages_project(project_name, build_dir, custom_domain=None, branch="main", timestamp_str=None):
     build_path = Path(build_dir)
@@ -148,7 +147,10 @@ def deploy_pages_project(project_name, build_dir, custom_domain=None, branch="ma
 
     add_field("branch", branch)
     add_field("commit_dirty", "false")
-    add_field("commit_hash", "production-build")
+    commit = subprocess.check_output(
+        ["git", "rev-parse", "HEAD"], cwd=build_path.parents[1], text=True
+    ).strip()
+    add_field("commit_hash", commit)
     add_field("commit_message", f"Deploy {project_name} - {timestamp_str or ''}")
     add_field("manifest", json.dumps(manifest, separators=(',', ':')))
     form_data.extend(f"--{boundary}--\r\n".encode())
@@ -172,6 +174,7 @@ def deploy_pages_project(project_name, build_dir, custom_domain=None, branch="ma
         print(f"Deployment created: {dep_id} -> {dep_url}")
 
     # 8. Poll until success
+    deployed = False
     for _ in range(30):
         try:
             s = cf_request("GET", f"/accounts/{ACCOUNT_ID}/pages/projects/{project_name}/deployments/{dep_id}")
@@ -179,6 +182,7 @@ def deploy_pages_project(project_name, build_dir, custom_domain=None, branch="ma
             status = stage["status"]
             print(f"Deploy status: {stage['name']} -> {status}")
             if status == "success":
+                deployed = True
                 break
             if status == "failure":
                 raise RuntimeError(f"Deployment failed at stage {stage['name']}")
@@ -188,6 +192,9 @@ def deploy_pages_project(project_name, build_dir, custom_domain=None, branch="ma
             else:
                 raise
         time.sleep(2)
+
+    if not deployed:
+        raise RuntimeError("Deployment did not reach success before the timeout")
 
     # 9. Attach Custom Domain AFTER first deployment is live
     if custom_domain:
@@ -205,6 +212,6 @@ def deploy_pages_project(project_name, build_dir, custom_domain=None, branch="ma
         except Exception as e:
             print(f"Custom domain attach note: {e}")
 
-    print(f"✅ Successfully deployed {project_name} to {dep_url}")
+    print(f"Successfully deployed {project_name} to {dep_url}")
     if custom_domain:
         print(f"   Live at: https://{custom_domain}")
