@@ -14,6 +14,8 @@
 
 - Refine-chat-reading-and-composer-layout (#46)
 
+- Preserve-isolated-memory-nodes-and-frame-graph (#47)
+
 
 ### Chores
 
@@ -28,6 +30,8 @@
 - Merge #44 keep-demo-layout-stable-and-soften-transitions
 
 - Merge #45 restore-chat-order-copy-and-local-timestamps
+
+- Merge #46 refine-chat-reading-and-composer-layout
 
 
 ## v2.0.0 - 2026-11-11
