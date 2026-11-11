@@ -18,6 +18,7 @@ void main() {
       findsOneWidget,
     );
     expect(find.text('Log in'), findsOneWidget);
+    expect(find.textContaining('Wilson Borba'), findsNothing);
     expect(find.text('Version ${AppSettings.buildVersion}'), findsOneWidget);
     expect(
       tester.widget<MaterialApp>(find.byType(MaterialApp)).routerConfig,
