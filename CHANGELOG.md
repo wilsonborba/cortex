@@ -1,7 +1,7 @@
 # Changelog
 
 
-## Unreleased
+## v2.0.0 - 2026-11-11
 
 
 ### Bug Fixes
@@ -50,6 +50,8 @@
 - Merge #41 landing-final-action
 
 - Merge #36 prepare the production web build and deployment
+
+- Merge #42 preserve-browser-path-on-startup
 
 
 ### Documentation
