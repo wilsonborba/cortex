@@ -2181,6 +2181,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Collapse thinking'**
   String get collapseThinking;
+
+  /// No description provided for @noPersonaMatches.
+  ///
+  /// In en, this message translates to:
+  /// **'No personas match these filters'**
+  String get noPersonaMatches;
 }
 
 class _AppLocalizationsDelegate

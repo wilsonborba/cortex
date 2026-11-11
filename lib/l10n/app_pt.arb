@@ -377,5 +377,6 @@
         "type": "int"
       }
     }
-  }
+  },
+  "noPersonaMatches": "Nenhuma persona corresponde a estes filtros"
 }

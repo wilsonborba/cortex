@@ -1116,4 +1116,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get collapseThinking => 'Collapse thinking';
+
+  @override
+  String get noPersonaMatches => 'No personas match these filters';
 }
