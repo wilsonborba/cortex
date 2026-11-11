@@ -8,6 +8,7 @@ import 'package:cortex/presentation/frontend/screens/chat/chat_screen.dart';
 import 'package:cortex/presentation/frontend/shell/details_panel.dart';
 import 'package:cortex/presentation/frontend/theme/theme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
@@ -453,5 +454,123 @@ void main() {
       isTrue,
     );
     expect(find.textContaining('replayed'), findsOneWidget);
+  });
+  test(
+    'history reload and older pages preserve chronological input/output pairs',
+    () async {
+      final fake = Api();
+      Map<String, dynamic> page(int start) => {
+        'chat': {'session_id': sid},
+        'inputs': [
+          for (var i = start + 19; i >= start; i--)
+            {
+              'input_id': 'i-$i',
+              'text': 'question $i',
+              'created_at': '2026-11-11T22:30:00Z',
+            },
+        ],
+        'outputs': [
+          for (var i = start; i < start + 20; i++)
+            {
+              'input_id': 'i-$i',
+              'output_id': 'o-$i',
+              'status': 'done',
+              'text': 'answer $i',
+            },
+        ],
+      };
+      fake.page = page(20);
+      final controller = ChatController(
+        api: CortexApi(
+          baseUrl: 'https://api.test/apps/cortex/v1',
+          client: fake.client,
+        ),
+        sessionId: sid,
+      );
+      addTearDown(controller.dispose);
+      await controller.open();
+      expect(controller.exchanges.map((e) => e.text), [
+        for (var i = 20; i < 40; i++) 'question $i',
+      ]);
+      await controller.open();
+      expect(controller.exchanges.length, 20);
+      fake.page = page(0);
+      await Future.wait([controller.loadOlder(), controller.loadOlder()]);
+      expect(controller.exchanges.map((e) => e.text), [
+        for (var i = 0; i < 40; i++) 'question $i',
+      ]);
+      for (var i = 0; i < 40; i++) {
+        expect(controller.exchanges[i].output.answer.toString(), 'answer $i');
+      }
+      expect(
+        fake.requests.where((r) => r.$2.contains('before=i-20')).length,
+        1,
+      );
+      expect(
+        controller.exchanges.first.createdAt,
+        DateTime.parse('2026-11-11T22:30:00Z').toLocal(),
+      );
+    },
+  );
+
+  testWidgets('both message roles copy and user timestamps use local time', (
+    tester,
+  ) async {
+    final fake = Api();
+    fake.page = {
+      'chat': {'session_id': sid, 'title': 'Saved chat'},
+      'inputs': [
+        {
+          'input_id': 'i-time',
+          'text': 'Copy this question',
+          'created_at': '2026-11-11T22:30:00Z',
+        },
+      ],
+      'outputs': [
+        {
+          'input_id': 'i-time',
+          'output_id': oid,
+          'status': 'done',
+          'text': 'Copy **this answer**',
+        },
+      ],
+    };
+    String? clipboard;
+    tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+      SystemChannels.platform,
+      (call) async {
+        if (call.method == 'Clipboard.setData') {
+          clipboard = (call.arguments as Map)['text'] as String;
+        }
+        return null;
+      },
+    );
+    addTearDown(
+      () => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+        SystemChannels.platform,
+        null,
+      ),
+    );
+    final (chat, _) = await pump(tester, session: sid, api: fake);
+    expect(find.byType(SelectionArea), findsOneWidget);
+    final stamp = tester.widget<Text>(
+      find.byKey(const ValueKey('message-time-i-time')),
+    );
+    final context = tester.element(
+      find.byKey(const ValueKey('message-time-i-time')),
+    );
+    final local = DateTime.parse('2026-11-11T22:30:00Z').toLocal();
+    final format = MaterialLocalizations.of(context);
+    expect(
+      stamp.data,
+      '${format.formatMediumDate(local)} ${format.formatTimeOfDay(TimeOfDay.fromDateTime(local), alwaysUse24HourFormat: MediaQuery.alwaysUse24HourFormatOf(context))}',
+    );
+    await tester.tap(find.byTooltip('Copy').first);
+    await tester.pump();
+    expect(clipboard, 'Copy this question');
+    await tester.tap(find.byTooltip('Copy').last);
+    await tester.pump();
+    expect(clipboard, 'Copy **this answer**');
+    await stopReconnecting(tester, chat);
   });
 }
