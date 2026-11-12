@@ -503,5 +503,8 @@
   "exampleTag": "Planning",
   "exampleFile": "Plan document",
   "exampleEntity": "Project",
-  "graphBack": "Back"
+  "graphBack": "Back",
+  "personasPurpose": "People and bot voices used in your chats.",
+  "personaIdentity": "Identity",
+  "personaSchemaFields": "Schema fields"
 }

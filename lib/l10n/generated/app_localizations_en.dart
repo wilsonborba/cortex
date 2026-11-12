@@ -1231,4 +1231,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get graphBack => 'Back';
+
+  @override
+  String get personasPurpose => 'People and bot voices used in your chats.';
+
+  @override
+  String get personaIdentity => 'Identity';
+
+  @override
+  String get personaSchemaFields => 'Schema fields';
 }

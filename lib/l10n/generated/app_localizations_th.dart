@@ -1225,4 +1225,13 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get graphBack => 'กลับ';
+
+  @override
+  String get personasPurpose => 'บุคคลและรูปแบบการตอบของบอตที่ใช้ในแชตของคุณ';
+
+  @override
+  String get personaIdentity => 'ข้อมูลประจำตัว';
+
+  @override
+  String get personaSchemaFields => 'ฟิลด์จากสคีมา';
 }

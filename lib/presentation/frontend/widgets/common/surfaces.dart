@@ -8,6 +8,7 @@ class AppInput extends StatelessWidget {
   const AppInput({
     super.key,
     this.controller,
+    this.focusNode,
     this.label,
     this.hint,
     this.error,
@@ -16,6 +17,7 @@ class AppInput extends StatelessWidget {
     this.enabled = true,
   });
   final TextEditingController? controller;
+  final FocusNode? focusNode;
   final String? label;
   final String? hint;
   final String? error;
@@ -34,6 +36,7 @@ class AppInput extends StatelessWidget {
       ],
       TextField(
         controller: controller,
+        focusNode: focusNode,
         enabled: enabled,
         maxLines: maxLines,
         onSubmitted: onSubmitted,
@@ -167,7 +170,9 @@ class AppSelect<T> extends StatefulWidget {
     this.itemHeight,
     this.underline,
     this.hint,
+    this.focusNode,
   });
+  final FocusNode? focusNode;
   final T? value;
   final List<DropdownMenuItem<T>> items;
   final ValueChanged<T?>? onChanged;
@@ -179,10 +184,11 @@ class AppSelect<T> extends StatefulWidget {
 }
 
 class _AppSelectState<T> extends State<AppSelect<T>> {
-  final focus = FocusNode();
+  final ownedFocus = FocusNode();
+  FocusNode get focus => widget.focusNode ?? ownedFocus;
   @override
   void dispose() {
-    focus.dispose();
+    ownedFocus.dispose();
     super.dispose();
   }
 
@@ -235,6 +241,7 @@ class AppSelectFormField<T> extends FormField<T> {
   AppSelectFormField({
     super.key,
     super.initialValue,
+    FocusNode? focusNode,
     required List<DropdownMenuItem<T>> items,
     ValueChanged<T?>? onChanged,
     InputDecoration decoration = const InputDecoration(),
@@ -243,6 +250,7 @@ class AppSelectFormField<T> extends FormField<T> {
          builder: (state) => InputDecorator(
            decoration: decoration.copyWith(errorText: state.errorText),
            child: AppSelect<T>(
+             focusNode: focusNode,
              value: state.value,
              items: items,
              onChanged: onChanged == null

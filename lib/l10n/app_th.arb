@@ -414,5 +414,8 @@
   "exampleTag": "การวางแผน",
   "exampleFile": "เอกสารแผน",
   "exampleEntity": "โครงการ",
-  "graphBack": "กลับ"
+  "graphBack": "กลับ",
+  "personasPurpose": "บุคคลและรูปแบบการตอบของบอตที่ใช้ในแชตของคุณ",
+  "personaIdentity": "ข้อมูลประจำตัว",
+  "personaSchemaFields": "ฟิลด์จากสคีมา"
 }

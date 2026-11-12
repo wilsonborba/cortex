@@ -108,7 +108,7 @@ class Api {
       if (rejects > 0) {
         rejects--;
         return reply({
-          'error_number': 1042,
+          'error_number': 1046,
           'errors': [
             {'field_path': 'nickname', 'message': 'Missing required field'},
           ],
@@ -157,6 +157,7 @@ Future<GoRouter> pump(
   Locale locale = const Locale('en'),
   double scale = 1,
   Size size = const Size(1200, 950),
+  Brightness brightness = Brightness.dark,
 }) async {
   tester.view.physicalSize = size;
   tester.view.devicePixelRatio = 1;
@@ -176,7 +177,8 @@ Future<GoRouter> pump(
     MaterialApp.router(
       routerConfig: router,
       locale: locale,
-      theme: cortexTheme(Brightness.dark),
+      debugShowCheckedModeBanner: false,
+      theme: cortexTheme(brightness),
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       builder: (context, child) => MediaQuery(
@@ -206,6 +208,63 @@ Future<void> save(WidgetTester tester) async {
 
 void main() {
   testWidgets(
+    'invalid save retains typed identity and focuses the first wrong schema field',
+    (tester) async {
+      final api = Api()..rejects = 1;
+      await pump(tester, api, path: '/v1/personas/new');
+      await enter(tester, 'persona-name', 'Synthetic reader');
+      await enter(tester, 'attribute-nickname', 'Typed value');
+      await save(tester);
+      final field = tester.widget<TextField>(
+        find.descendant(
+          of: find.byKey(const Key('attribute-nickname')),
+          matching: find.byType(TextField),
+        ),
+      );
+      expect(field.focusNode!.hasFocus, isTrue);
+      expect(
+        tester
+            .widget<EditableText>(
+              find.descendant(
+                of: find.byKey(const Key('persona-name')),
+                matching: find.byType(EditableText),
+              ),
+            )
+            .controller
+            .text,
+        'Synthetic reader',
+      );
+      expect(
+        tester
+            .widget<EditableText>(
+              find.descendant(
+                of: find.byKey(const Key('attribute-nickname')),
+                matching: find.byType(EditableText),
+              ),
+            )
+            .controller
+            .text,
+        'Typed value',
+      );
+    },
+  );
+  testWidgets(
+    'compact list has no overflow in Thai and Portuguese at 200 percent',
+    (tester) async {
+      for (final locale in [const Locale('th'), const Locale('pt', 'BR')]) {
+        await pump(
+          tester,
+          Api(),
+          locale: locale,
+          scale: 2,
+          size: const Size(390, 844),
+        );
+        expect(tester.takeException(), isNull);
+      }
+    },
+  );
+
+  testWidgets(
     'list uses API order, aliases, self label, search and type filter',
     (tester) async {
       final api = Api();
@@ -219,9 +278,12 @@ void main() {
       await tester.enterText(find.byType(TextFormField).first, 'Zeta');
       await tester.tap(find.byTooltip('Search personas'));
       await tester.pumpAndSettle();
-      await tester.tap(find.byKey(const Key('persona-filter')));
-      await tester.pumpAndSettle();
-      await tester.tap(find.widgetWithText(MenuItemButton, 'Bot'));
+      await tester.tap(
+        find.descendant(
+          of: find.byKey(const Key('persona-filter')),
+          matching: find.text('Bot'),
+        ),
+      );
       await tester.pumpAndSettle();
       final last = api.requests
           .where((r) => r.$2.path.endsWith('/personas'))
@@ -288,6 +350,7 @@ void main() {
       );
       await tester.ensureVisible(aliases);
       await tester.enterText(aliases, 'Nick');
+      await tester.pumpAndSettle();
       await tester.tap(
         find.descendant(
           of: find.byKey(const Key('persona-aliases')),
@@ -301,6 +364,7 @@ void main() {
       );
       await tester.ensureVisible(interest);
       await tester.enterText(interest, 'Rust');
+      await tester.pumpAndSettle();
       await tester.tap(
         find.descendant(
           of: find.byKey(const Key('attribute-interests')),
@@ -359,7 +423,12 @@ void main() {
       expect(router.routeInformationProvider.value.uri.path, '/v1/personas/p1');
       expect(
         tester
-            .widget<TextField>(find.byKey(const Key('persona-name')))
+            .widget<TextField>(
+              find.descendant(
+                of: find.byKey(const Key('persona-name')),
+                matching: find.byType(TextField),
+              ),
+            )
             .controller!
             .text,
         'Changed',
