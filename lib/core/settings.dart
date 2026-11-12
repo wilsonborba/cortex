@@ -3,7 +3,7 @@ class AppSettings {
   static const bool isDevelopment = bool.fromEnvironment('DEVELOPMENT_MODE');
   static const String buildVersion = String.fromEnvironment(
     'BUILD_VERSION',
-    defaultValue: '2.0.1-dev',
+    defaultValue: '2.1.0',
   );
   static const String cortexApiBaseUrl =
       'https://api.asodya.com/apps/cortex/v1';
