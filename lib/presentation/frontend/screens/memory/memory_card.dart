@@ -1,13 +1,15 @@
 import '../../theme/app_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:go_router/go_router.dart';
 import '../../../../domain/models/memory_graph.dart';
 import '../../../../l10n/generated/app_localizations.dart';
 import '../../theme/tokens.dart';
 import '../chat/chat_list.dart';
 
 IconData nodeIcon(String type) => switch (type) {
-  'memory' => AppIcons.note,
+  'memory' => AppIcons.document,
+  'chat' => AppIcons.chats,
   'tag' => AppIcons.tag,
   'persona' => AppIcons.entity,
   'entity' => AppIcons.category,
@@ -37,6 +39,10 @@ class MemoryCard extends StatelessWidget {
     final personas = linked.where((n) => n.displayType == 'persona').toList();
     final tags = linked.where((n) => n.type == 'tag').toList();
     final memories = linked.where((n) => n.type == 'memory').toList();
+    final chats = [
+      if (node.type == 'chat') node,
+      ...linked.where((n) => n.type == 'chat'),
+    ];
     final summary = '${m['summary'] ?? ''}'.trim();
     final title = '${m['title'] ?? ''}'.trim().isNotEmpty
         ? '${m['title']}'
@@ -181,6 +187,16 @@ class MemoryCard extends StatelessWidget {
               onPressed: () => onOpen?.call(n.id),
             ),
         ]),
+        for (final chat in chats)
+          if (chat.metadata['source_system'] == 'cortex' &&
+              chat.metadata['external_id'] is String)
+            TextButton.icon(
+              onPressed: () => GoRouter.maybeOf(context)?.go(
+                '/v1/chats/${Uri.encodeComponent(chat.metadata['external_id'])}',
+              ),
+              icon: const Icon(AppIcons.chats, size: IconSizes.action),
+              label: Text(l.openChat),
+            ),
         const SizedBox(height: Space.s12),
         ExpansionTile(
           key: const Key('card-details'),
@@ -219,8 +235,44 @@ class MemoryCard extends StatelessWidget {
 
 String nodeTypeName(AppLocalizations l, String type) => switch (type) {
   'memory' => l.legendMemory,
+  'chat' => l.typeChat,
   'tag' => l.legendTag,
   'persona' => l.legendPersona,
   'entity' => l.legendEntity,
   _ => l.legendFile,
 };
+
+class GraphLegend extends StatelessWidget {
+  const GraphLegend({super.key, required this.hasEntities});
+  final bool hasEntities;
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
+    final p = Palette.from(context);
+    return Wrap(
+      key: const Key('legend'),
+      spacing: Space.s12,
+      children: [
+        for (final type in [
+          'memory',
+          'chat',
+          'tag',
+          'persona',
+          'file',
+          if (hasEntities) 'entity',
+        ])
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(nodeIcon(type), size: IconSizes.chip, color: p.muted),
+              const SizedBox(width: Space.s4),
+              Text(
+                nodeTypeName(l, type),
+                style: TextStyles.label.copyWith(color: p.muted),
+              ),
+            ],
+          ),
+      ],
+    );
+  }
+}

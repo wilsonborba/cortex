@@ -204,6 +204,20 @@ Future<void> send(WidgetTester tester, String text) async {
 }
 
 void main() {
+  testWidgets('graph link is shown only when history provides a chat node', (
+    tester,
+  ) async {
+    final fake = Api();
+    (fake.page['chat'] as Map)['memory_node_id'] = 'resource:synthetic-chat';
+    await pump(tester, session: sid, api: fake);
+    expect(find.byKey(const Key('show-in-memory-graph')), findsOneWidget);
+    expect(find.byTooltip('Show in memory graph'), findsOneWidget);
+    await tester.pumpWidget(const SizedBox());
+    final empty = Api();
+    await pump(tester, session: sid, api: empty);
+    expect(find.byKey(const Key('show-in-memory-graph')), findsNothing);
+  });
+
   testWidgets('composer uses the reading column and fits a narrow viewport', (
     tester,
   ) async {

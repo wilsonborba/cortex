@@ -342,6 +342,15 @@ class _ChatScreenState extends State<ChatScreen> {
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
+              if (chat.chat?['memory_node_id'] case final String nodeId)
+                IconButton(
+                  key: const Key('show-in-memory-graph'),
+                  tooltip: l.showInGraph,
+                  onPressed: () => GoRouter.maybeOf(
+                    context,
+                  )?.go('/v1/memory/${Uri.encodeComponent(nodeId)}'),
+                  icon: const Icon(AppIcons.memory, size: IconSizes.action),
+                ),
               if (!chat.isNew && !chat.temporary) ...[
                 FoundationFocus(
                   child: AppMenu<String>(

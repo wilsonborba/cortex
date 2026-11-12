@@ -1,7 +1,9 @@
 import '../../theme/app_icons.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:graphview/GraphView.dart';
+import 'dart:math' as math;
+import '../../../../domain/models/memory_graph.dart';
+import '../memory/graph_canvas.dart';
 import '../../../../l10n/generated/app_localizations.dart';
 import '../../theme/tokens.dart';
 
@@ -212,62 +214,40 @@ class ScopeTree extends StatelessWidget {
   }
 }
 
-/// Example memory graph with graphview (marked Example, no personal data).
+/// The public example uses the same fitted canvas with synthetic localised data.
 class ExampleGraph extends StatelessWidget {
   const ExampleGraph({super.key});
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
-    final p = Palette.from(context);
-    final graph = Graph();
-    final labels = <String, String>{};
-    Node n(String id, String label) {
-      labels[id] = label;
-      return Node.Id(id);
-    }
-
-    final m1 = n('m1', 'Memory: usage balancer'),
-        m2 = n('m2', 'Memory: web modes');
-    final t1 = n('t1', 'tag: cortex'),
-        e1 = n('e1', 'entity: Ollama'),
-        f1 = n('f1', 'file: plan.pdf');
-    graph
-      ..addEdge(m1, t1)
-      ..addEdge(m2, t1)
-      ..addEdge(m1, e1)
-      ..addEdge(m2, f1);
-    final config = FruchtermanReingoldAlgorithm(
-      FruchtermanReingoldConfiguration(iterations: 300),
+    final data = MemoryGraphData(
+      [
+        GraphNode('example-chat', 'chat', l.exampleChat, const {}),
+        GraphNode('example-one', 'memory', l.exampleMemoryOne, const {}),
+        GraphNode('example-two', 'memory', l.exampleMemoryTwo, const {}),
+        GraphNode('example-tag', 'tag', l.exampleTag, const {}),
+        GraphNode('example-file', 'file', l.exampleFile, const {}),
+        GraphNode('example-project', 'entity', l.exampleEntity, const {}),
+      ],
+      const [
+        GraphEdge('example-one', 'example-chat', 'created_in'),
+        GraphEdge('example-two', 'example-chat', 'created_in'),
+        GraphEdge('example-one', 'example-tag', 'tagged_with'),
+        GraphEdge('example-two', 'example-file', 'references'),
+        GraphEdge('example-one', 'example-project', 'mentions'),
+      ],
+      false,
+      null,
     );
     return Semantics(
       label: l.graphDescription,
-      excludeSemantics: true,
-      child: SizedBox(
-        height: 260,
-        child: InteractiveViewer(
-          constrained: false,
-          child: GraphView(
-            graph: graph,
-            algorithm: config,
-            paint: Paint()
-              ..color = p.muted
-              ..strokeWidth = 1
-              ..style = PaintingStyle.stroke,
-            builder: (node) => Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: Space.s8,
-                vertical: Space.s4,
-              ),
-              decoration: BoxDecoration(
-                color: p.surface,
-                border: Border.all(color: p.border),
-                borderRadius: BorderRadius.circular(
-                  FoundationTokens.of(context).controlRadius,
-                ),
-              ),
-              child: Text(labels[node.key!.value]!, style: TextStyles.label),
-            ),
+      child: LayoutBuilder(
+        builder: (context, box) => SizedBox(
+          height: math.max(
+            GraphTokens.exampleMinHeight,
+            box.maxWidth * GraphTokens.exampleRatio,
           ),
+          child: GraphCanvas(data: data, showControls: false, onSelect: (_) {}),
         ),
       ),
     );

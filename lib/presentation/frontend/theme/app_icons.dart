@@ -53,6 +53,7 @@ abstract final class AppIcons {
   static const list = LucideIcons.list;
   static const folder = LucideIcons.folder;
   static const apps = LucideIcons.layoutGrid;
+  static const back = LucideIcons.arrowLeft;
   static const next = LucideIcons.arrowRight;
   static const loading = LucideIcons.hourglass;
   static const offline = LucideIcons.cloudOff;

@@ -399,5 +399,20 @@
   "codeLabel": "Código",
   "composerOptions": "Opções",
   "composerEmptyReason": "Escreva uma mensagem antes de enviar.",
-  "composerUploadReason": "Aguarde o término do envio do arquivo."
+  "composerUploadReason": "Aguarde o término do envio do arquivo.",
+  "graphZoomIn": "Aproximar",
+  "graphZoomOut": "Afastar",
+  "graphFit": "Enquadrar grafo",
+  "graphSearch": "Buscar memórias",
+  "graphNoLinks": "Estas memórias ainda não têm links",
+  "graphMissingNode": "Este nó não está no resultado atual.",
+  "openChat": "Abrir conversa",
+  "showInGraph": "Mostrar no grafo de memória",
+  "exampleChat": "Conversa de planejamento",
+  "exampleMemoryOne": "Planejar os próximos passos",
+  "exampleMemoryTwo": "Comparar as opções",
+  "exampleTag": "Planejamento",
+  "exampleFile": "Documento do plano",
+  "exampleEntity": "Projeto",
+  "graphBack": "Voltar"
 }
