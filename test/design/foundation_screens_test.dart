@@ -143,16 +143,27 @@ void main() {
             ),
           );
           await tester.pumpAndSettle();
-          await tester.runAsync(
-            () => Future<void>.delayed(const Duration(milliseconds: 100)),
-          );
+          await tester.runAsync(() async {
+            final futures = tester
+                .widgetList<FutureBuilder<TextSpan>>(
+                  find.byType(FutureBuilder<TextSpan>),
+                )
+                .map((widget) => widget.future)
+                .whereType<Future<TextSpan>>();
+            await Future.wait(futures);
+          });
           await tester.pumpAndSettle();
           expect(tester.takeException(), isNull);
-          // The existing public example uses unseeded force positions.
-          // Capture its evidence on update, but do not assert random coordinates.
-          // Issue 55 replaces this renderer with the aligned custom canvas.
-          if ((width == 390 || width == 1300) &&
-              (entry.key != 'public_memory' || autoUpdateGoldenFiles)) {
+          if (entry.key == 'public_memory') {
+            expect(
+              find.textContaining(
+                'pub async fn scoped_names',
+                findRichText: true,
+              ),
+              findsOneWidget,
+            );
+          }
+          {
             await expectLater(
               find.byType(MaterialApp),
               matchesGoldenFile(

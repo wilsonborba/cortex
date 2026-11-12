@@ -14,11 +14,12 @@ void main() {
   setUpAll(loadFonts);
   final fixed = DateTime(2026, 11, 12, 12);
   for (final mode in Brightness.values) {
-    for (final width in [390.0, 1300.0]) {
+    for (final width in [390.0, 768.0, 1024.0, 1300.0, 1440.0]) {
       for (final scenario in [
         'empty',
         'running',
         'finished',
+        'long',
         'failed',
         'thinking',
       ]) {
@@ -47,10 +48,15 @@ void main() {
                   ..started = fixed.subtract(const Duration(seconds: 2))
                   ..step = 'memory.search'
                   ..expectedMs = 30000;
-            if (scenario == 'finished') {
+            if (scenario == 'finished' || scenario == 'long') {
               output.answer.write(
                 '## A clear example\n\nThis synthetic response includes a code sample and one reference.\n\n```rust\nlet example = "readable";\nprintln!("{example}");\n```\n\nCheck important facts before using the result.',
               );
+              if (scenario == 'long') {
+                output.answer.write(
+                  '\n\n${List.generate(24, (i) => '### Example section ${i + 1}\n\nThis is synthetic long-form reading content. It keeps a clear reading column and allows selection.\n\n').join()}\n```text\n${List.filled(20, 'a long synthetic code token').join('_')}\n```\n',
+                );
+              }
               output.sources.add((
                 'Example reference',
                 'https://example.com/reference',
