@@ -334,20 +334,6 @@ class AppLocalizationsTh extends AppLocalizations {
   String get engTitle => 'วิศวกรรม';
 
   @override
-  String get engMachines =>
-      'เครื่องในเครือข่ายเดียวกัน: GPU ของ MSI รันโมเดลภาษา Pong รัน embedding, FSM เก็บไฟล์ และเซิร์ฟเวอร์ฐานข้อมูลเก็บข้อมูล';
-
-  @override
-  String get engRust => 'API ของ Cortex และ Hippocampus เขียนด้วย Rust';
-
-  @override
-  String get engLocal => 'ใช้โมเดลในเครื่องเท่านั้น ไม่มีโมเดลภาษาบนคลาวด์';
-
-  @override
-  String get machinesDescription =>
-      'แผนภาพเครื่อง: API ของ Cortex ส่งการเรียกโมเดลไปที่ GPU ของ MSI และการเรียกความจำไปที่ Hippocampus ซึ่งใช้ Pong สำหรับ embedding, FSM สำหรับไฟล์ และเซิร์ฟเวอร์ฐานข้อมูล';
-
-  @override
   String get codeTitle => 'โค้ดจริง';
 
   @override
@@ -1234,4 +1220,234 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get personaSchemaFields => 'ฟิลด์จากสคีมา';
+
+  @override
+  String get engIntro =>
+      'Cortex เป็นแอปแชตที่ใช้ Flutter web และ API ที่เขียนด้วย Rust Cortex จัดการขั้นตอนของคำขอ ส่วน Hippocampus ดูแลความทรงจำตามขอบเขต บุคลิก และข้อมูลอ้างอิงไฟล์ เกตเวย์ตรวจสอบสิทธิ์ก่อนส่งคำขอไปยัง API';
+
+  @override
+  String get engContextTitle => 'บริบทของระบบ';
+
+  @override
+  String get engContainersTitle => 'ส่วนประกอบภายในระบบ';
+
+  @override
+  String get engPipelineTitle => 'ขั้นตอนการทำงานของคำขอ';
+
+  @override
+  String get engDecisionsTitle => 'การตัดสินใจทางวิศวกรรม';
+
+  @override
+  String get engContextAlt =>
+      'ผู้ใช้เข้าถึง Cortex ผ่านเกตเวย์ Cortex เรียกใช้บริการความทรงจำและระบบรันโมเดล Hippocampus ใช้ที่เก็บไฟล์ Cortex และ Hippocampus จัดเก็บข้อมูลของตนเอง';
+
+  @override
+  String get engContainersAlt =>
+      'ไคลเอนต์ Flutter web เรียกเกตเวย์เพื่อตรวจสอบสิทธิ์และส่งคำขอไปยัง Cortex API ที่เขียนด้วย Rust จากนั้น API เรียก Hippocampus และระบบรันโมเดล PostgreSQL เก็บแชตและข้อมูลกำกับความทรงจำ Hippocampus เก็บเอกสารใน CouchDB ส่วน Valkey เก็บบันทึกเหตุการณ์และบริบทแคชของ Cortex';
+
+  @override
+  String get engContextWord => 'บริบท';
+
+  @override
+  String get engDecisionWord => 'การตัดสินใจ';
+
+  @override
+  String get engResultWord => 'ผลลัพธ์';
+
+  @override
+  String get engSource => 'ดูซอร์สโค้ด';
+
+  @override
+  String get engUser => 'ผู้ใช้';
+
+  @override
+  String get engCortex => 'Cortex';
+
+  @override
+  String get engGateway => 'เกตเวย์';
+
+  @override
+  String get engMemoryService => 'Hippocampus';
+
+  @override
+  String get engModelRuntime => 'ระบบรันโมเดล';
+
+  @override
+  String get engFileStorage => 'ที่เก็บไฟล์';
+
+  @override
+  String get engDatabases => 'ฐานข้อมูล';
+
+  @override
+  String get engApps => 'Cortex และ Hippocampus';
+
+  @override
+  String get engFrontend => 'ส่วนติดต่อผู้ใช้';
+
+  @override
+  String get engApi => 'Cortex API';
+
+  @override
+  String get engPostgres => 'ข้อมูลเชิงสัมพันธ์';
+
+  @override
+  String get engDocumentStore => 'ที่เก็บเอกสาร';
+
+  @override
+  String get engCache => 'บันทึกเหตุการณ์และแคช';
+
+  @override
+  String get engSends => 'ส่งคำขอ';
+
+  @override
+  String get engForwards => 'ตรวจสอบสิทธิ์และส่งต่อ';
+
+  @override
+  String get engRecalls => 'เรียกคืนและบันทึก';
+
+  @override
+  String get engGenerates => 'ขอคำตอบ';
+
+  @override
+  String get engPersists => 'จัดเก็บข้อมูล';
+
+  @override
+  String get engStoresDocs => 'เก็บเอกสาร';
+
+  @override
+  String get engCaches => 'เก็บเหตุการณ์และบริบท';
+
+  @override
+  String get engStoresFiles => 'เก็บไฟล์';
+
+  @override
+  String get engFrontendRole => 'แสดงแชตและมุมมองความทรงจำ';
+
+  @override
+  String get engGatewayRole => 'ตรวจสอบสิทธิ์และส่งต่อคำขอ';
+
+  @override
+  String get engApiRole => 'ดำเนินการคำขอทั้งหกขั้นตอน';
+
+  @override
+  String get engMemoryRole => 'ดูแลความทรงจำตามขอบเขตและบุคลิก';
+
+  @override
+  String get engModelRole => 'รันโมเดลภาษาภายในระบบ';
+
+  @override
+  String get engPostgresRole => 'เก็บแชตและข้อมูลกำกับความทรงจำ';
+
+  @override
+  String get engDocumentRole => 'เก็บเอกสารของความทรงจำ';
+
+  @override
+  String get engCacheRole => 'เก็บเหตุการณ์สำหรับการเชื่อมต่อใหม่และแคชบริบท';
+
+  @override
+  String get engAcceptDetail => 'ตรวจสอบข้อมูล ขอบเขต และขีดจำกัด';
+
+  @override
+  String get engGatherDetail => 'อ่านไฟล์ ความทรงจำ และแหล่งข้อมูลเว็บพร้อมกัน';
+
+  @override
+  String get engAssembleDetail => 'ประกอบบริบทภายในขีดจำกัด';
+
+  @override
+  String get engThinkDetail => 'ดำเนินขั้นตอนการคิดเมื่อมีการร้องขอ';
+
+  @override
+  String get engAnswerDetail => 'ส่งคำตอบและเหตุการณ์แบบต่อเนื่อง';
+
+  @override
+  String get engSaveDetail => 'บันทึกคำตอบที่เสร็จแล้วและความทรงจำของการโต้ตอบ';
+
+  @override
+  String get engRustTitle => 'แบ็กเอนด์ Rust';
+
+  @override
+  String get engRustContext =>
+      'กระบวนการมีขั้นตอนและสถานะข้อผิดพลาดที่แตกต่างกัน';
+
+  @override
+  String get engRustDecision =>
+      'ใช้ Rust และชนิดข้อมูลของขั้นตอนที่ชัดเจนสำหรับแบ็กเอนด์ทั้งสอง';
+
+  @override
+  String get engRustResult =>
+      'คอมไพเลอร์และการทดสอบสามารถตรวจสอบข้อกำหนดของขั้นตอนได้';
+
+  @override
+  String get engJournalTitle => 'เชื่อมต่อใหม่ด้วยบันทึกเหตุการณ์';
+
+  @override
+  String get engJournalContext =>
+      'เบราว์เซอร์อาจขาดการเชื่อมต่อขณะกำลังสร้างคำตอบ';
+
+  @override
+  String get engJournalDecision =>
+      'เก็บเหตุการณ์ที่มีหมายเลขและอ่านต่อจากเหตุการณ์ล่าสุดที่ทราบ';
+
+  @override
+  String get engJournalResult =>
+      'ไคลเอนต์สามารถรับข้อมูลต่อได้ภายในช่วงเวลาที่เก็บบันทึกเหตุการณ์';
+
+  @override
+  String get engGatherTitle => 'รวบรวมแหล่งข้อมูลพร้อมกัน';
+
+  @override
+  String get engGatherContext => 'การอ่านไฟล์ ความทรงจำ และเว็บไม่ขึ้นต่อกัน';
+
+  @override
+  String get engGatherDecision =>
+      'เริ่มงานแหล่งข้อมูลทั้งสามพร้อมกันในขั้น Gather';
+
+  @override
+  String get engGatherResult =>
+      'แต่ละแหล่งข้อมูลเริ่มทำงานได้โดยไม่ต้องรออีกแหล่ง';
+
+  @override
+  String get engMemoryTitle => 'หนึ่งความทรงจำต่อคำตอบที่เสร็จแล้ว';
+
+  @override
+  String get engMemoryContext =>
+      'คำตอบที่เสร็จแล้วควรมีประโยชน์สำหรับการเรียกคืนในภายหลัง';
+
+  @override
+  String get engMemoryDecision =>
+      'บันทึกการโต้ตอบโดยตรง พร้อมชื่อจากข้อความเข้าและลิงก์แชต';
+
+  @override
+  String get engMemoryResult =>
+      'การบันทึกไม่เรียกโมเดลเพิ่มและเก็บข้อมูลอ้างอิงของความทรงจำ';
+
+  @override
+  String get engResearchContext => 'บริบทและการค้นคืน';
+
+  @override
+  String get engResearchPrompts => 'พรอมต์และรูปแบบผลลัพธ์';
+
+  @override
+  String get engResearchReasoning => 'การให้เหตุผลและการตรวจสอบ';
+
+  @override
+  String get engTechFlutter => 'Flutter web';
+
+  @override
+  String get engTechHTTP => 'HTTP';
+
+  @override
+  String get engTechRust => 'Rust';
+
+  @override
+  String get engTechOllama => 'Ollama';
+
+  @override
+  String get engTechPostgreSQL => 'PostgreSQL';
+
+  @override
+  String get engTechCouchDB => 'CouchDB';
+
+  @override
+  String get engTechValkey => 'Valkey';
 }

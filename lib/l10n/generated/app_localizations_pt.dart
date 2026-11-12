@@ -342,22 +342,6 @@ class AppLocalizationsPt extends AppLocalizations {
   String get engTitle => 'Engenharia';
 
   @override
-  String get engMachines =>
-      'Máquinas locais em uma rede: a GPU do MSI executa o modelo de linguagem, o Pong executa embeddings, o FSM guarda os arquivos e um servidor de banco guarda os dados.';
-
-  @override
-  String get engRust =>
-      'As APIs do Cortex e do Hippocampus são escritas em Rust.';
-
-  @override
-  String get engLocal =>
-      'Somente modelos locais. Nenhum modelo de linguagem na nuvem.';
-
-  @override
-  String get machinesDescription =>
-      'Diagrama das máquinas: a API do Cortex envia chamadas de modelo à GPU do MSI e chamadas de memória ao Hippocampus, que usa o Pong para embeddings, o FSM para arquivos e o servidor de banco.';
-
-  @override
   String get codeTitle => 'Código real';
 
   @override
@@ -1257,4 +1241,238 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get personaSchemaFields => 'Campos do esquema';
+
+  @override
+  String get engIntro =>
+      'O Cortex é um aplicativo de conversa com cliente Flutter web e API em Rust. O Cortex executa o fluxo da requisição; o Hippocampus cuida das memórias por escopo, personas e registros de arquivos. O gateway autentica cada requisição antes de encaminhá-la à API.';
+
+  @override
+  String get engContextTitle => 'Contexto do sistema';
+
+  @override
+  String get engContainersTitle => 'Dentro do sistema';
+
+  @override
+  String get engPipelineTitle => 'Fluxo da requisição';
+
+  @override
+  String get engDecisionsTitle => 'Decisões de engenharia';
+
+  @override
+  String get engContextAlt =>
+      'O usuário acessa o Cortex pelo gateway. O Cortex usa o serviço de memória e o ambiente de modelos. O Hippocampus usa o armazenamento de arquivos. Cortex e Hippocampus persistem seus próprios dados.';
+
+  @override
+  String get engContainersAlt =>
+      'O cliente Flutter web chama o gateway, que autentica e encaminha as requisições à API Cortex em Rust. A API usa Hippocampus e o ambiente de modelos. PostgreSQL guarda conversas e metadados de memória. Hippocampus guarda documentos no CouchDB. Valkey mantém os eventos e o contexto em cache do Cortex.';
+
+  @override
+  String get engContextWord => 'Contexto';
+
+  @override
+  String get engDecisionWord => 'Decisão';
+
+  @override
+  String get engResultWord => 'Resultado';
+
+  @override
+  String get engSource => 'Ver código-fonte';
+
+  @override
+  String get engUser => 'Usuário';
+
+  @override
+  String get engCortex => 'Cortex';
+
+  @override
+  String get engGateway => 'Gateway';
+
+  @override
+  String get engMemoryService => 'Hippocampus';
+
+  @override
+  String get engModelRuntime => 'Ambiente de modelos';
+
+  @override
+  String get engFileStorage => 'Armazenamento de arquivos';
+
+  @override
+  String get engDatabases => 'Bancos de dados';
+
+  @override
+  String get engApps => 'Cortex e Hippocampus';
+
+  @override
+  String get engFrontend => 'Frontend';
+
+  @override
+  String get engApi => 'Cortex API';
+
+  @override
+  String get engPostgres => 'Dados relacionais';
+
+  @override
+  String get engDocumentStore => 'Armazenamento de documentos';
+
+  @override
+  String get engCache => 'Eventos e cache';
+
+  @override
+  String get engSends => 'Envia requisições';
+
+  @override
+  String get engForwards => 'Autentica e encaminha';
+
+  @override
+  String get engRecalls => 'Busca e salva';
+
+  @override
+  String get engGenerates => 'Solicita respostas';
+
+  @override
+  String get engPersists => 'Persiste dados';
+
+  @override
+  String get engStoresDocs => 'Guarda documentos';
+
+  @override
+  String get engCaches => 'Guarda eventos e contexto';
+
+  @override
+  String get engStoresFiles => 'Guarda arquivos';
+
+  @override
+  String get engFrontendRole => 'Exibe conversas e memórias.';
+
+  @override
+  String get engGatewayRole => 'Autentica e encaminha requisições.';
+
+  @override
+  String get engApiRole => 'Executa as seis etapas da requisição.';
+
+  @override
+  String get engMemoryRole => 'Cuida das memórias por escopo e personas.';
+
+  @override
+  String get engModelRole => 'Executa modelos de linguagem locais.';
+
+  @override
+  String get engPostgresRole => 'Guarda conversas e metadados de memória.';
+
+  @override
+  String get engDocumentRole => 'Guarda documentos de memória.';
+
+  @override
+  String get engCacheRole =>
+      'Mantém eventos para reconexão e contexto em cache.';
+
+  @override
+  String get engAcceptDetail => 'Verifica entrada, escopo e limites.';
+
+  @override
+  String get engGatherDetail =>
+      'Lê arquivos, memórias e fontes web ao mesmo tempo.';
+
+  @override
+  String get engAssembleDetail => 'Monta o contexto dentro do limite.';
+
+  @override
+  String get engThinkDetail => 'Executa a etapa de raciocínio solicitada.';
+
+  @override
+  String get engAnswerDetail => 'Transmite a resposta e seus eventos.';
+
+  @override
+  String get engSaveDetail =>
+      'Salva a resposta concluída e a memória da interação.';
+
+  @override
+  String get engRustTitle => 'Backends em Rust';
+
+  @override
+  String get engRustContext =>
+      'O fluxo tem etapas e estados de falha distintos.';
+
+  @override
+  String get engRustDecision =>
+      'Usar Rust e tipos de etapas explícitos nos dois backends.';
+
+  @override
+  String get engRustResult =>
+      'O contrato das etapas pode ser verificado pelo compilador e pelos testes.';
+
+  @override
+  String get engJournalTitle => 'Reconexão com registro de eventos';
+
+  @override
+  String get engJournalContext =>
+      'O navegador pode perder a conexão durante uma resposta.';
+
+  @override
+  String get engJournalDecision =>
+      'Guardar eventos numerados e ler após o último evento conhecido.';
+
+  @override
+  String get engJournalResult =>
+      'O cliente pode retomar a transmissão durante o período de retenção dos eventos.';
+
+  @override
+  String get engGatherTitle => 'Buscar fontes em paralelo';
+
+  @override
+  String get engGatherContext =>
+      'As leituras de arquivos, memória e web não dependem umas das outras.';
+
+  @override
+  String get engGatherDecision =>
+      'Iniciar as três tarefas de fontes juntas em Gather.';
+
+  @override
+  String get engGatherResult =>
+      'Uma fonte não precisa esperar outra para começar.';
+
+  @override
+  String get engMemoryTitle => 'Uma memória por resposta concluída';
+
+  @override
+  String get engMemoryContext =>
+      'Uma resposta concluída deve continuar útil para consultas futuras.';
+
+  @override
+  String get engMemoryDecision =>
+      'Salvar a interação diretamente, com título baseado na entrada e link da conversa.';
+
+  @override
+  String get engMemoryResult =>
+      'O salvamento não usa chamada extra ao modelo e mantém a referência da memória.';
+
+  @override
+  String get engResearchContext => 'Contexto e busca';
+
+  @override
+  String get engResearchPrompts => 'Prompts e formato de saída';
+
+  @override
+  String get engResearchReasoning => 'Raciocínio e verificação';
+
+  @override
+  String get engTechFlutter => 'Flutter web';
+
+  @override
+  String get engTechHTTP => 'HTTP';
+
+  @override
+  String get engTechRust => 'Rust';
+
+  @override
+  String get engTechOllama => 'Ollama';
+
+  @override
+  String get engTechPostgreSQL => 'PostgreSQL';
+
+  @override
+  String get engTechCouchDB => 'CouchDB';
+
+  @override
+  String get engTechValkey => 'Valkey';
 }

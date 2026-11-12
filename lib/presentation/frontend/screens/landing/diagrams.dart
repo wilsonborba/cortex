@@ -124,53 +124,6 @@ class _PipelineDiagramState extends State<PipelineDiagram> {
   }
 }
 
-/// The machines of 24.B.2.g, drawn in code.
-class MachinesDiagram extends StatelessWidget {
-  const MachinesDiagram({super.key});
-  @override
-  Widget build(BuildContext context) {
-    final l = AppLocalizations.of(context);
-    final p = Palette.from(context);
-    Widget box(String title, String text) => Container(
-      width: 200,
-      padding: const EdgeInsets.all(Space.s12),
-      decoration: BoxDecoration(
-        color: p.surface,
-        borderRadius: BorderRadius.circular(
-          FoundationTokens.of(context).groupRadius,
-        ),
-        border: Border.all(color: p.border),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(title, style: TextStyles.label),
-          Text(text, style: TextStyles.compact.copyWith(color: p.muted)),
-        ],
-      ),
-    );
-    return Semantics(
-      label: l.machinesDescription,
-      child: Wrap(
-        spacing: Space.s12,
-        runSpacing: Space.s12,
-        crossAxisAlignment: WrapCrossAlignment.center,
-        children: [
-          box('Cortex API', 'Rust, MSI'),
-          Icon(AppIcons.next, color: p.muted),
-          box('MSI GPU', 'Ollama, local LLM'),
-          Icon(AppIcons.next, color: p.muted),
-          box('Hippocampus', 'Rust, memory'),
-          Icon(AppIcons.next, color: p.muted),
-          box('Pong', 'Embeddings'),
-          box('FSM', 'Files'),
-          box('Database server', 'PostgreSQL, CouchDB, Redis'),
-        ],
-      ),
-    );
-  }
-}
-
 /// Memory scope tree: workspace, app, user (24.B.2.d).
 class ScopeTree extends StatelessWidget {
   const ScopeTree({super.key});

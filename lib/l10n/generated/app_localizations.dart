@@ -712,30 +712,6 @@ abstract class AppLocalizations {
   /// **'Engineering'**
   String get engTitle;
 
-  /// No description provided for @engMachines.
-  ///
-  /// In en, this message translates to:
-  /// **'Local machines on one network: the MSI GPU runs the language model, Pong runs embeddings, FSM keeps the files, and a database server keeps the data.'**
-  String get engMachines;
-
-  /// No description provided for @engRust.
-  ///
-  /// In en, this message translates to:
-  /// **'The Cortex and Hippocampus APIs are written in Rust.'**
-  String get engRust;
-
-  /// No description provided for @engLocal.
-  ///
-  /// In en, this message translates to:
-  /// **'Local models only. No cloud language model.'**
-  String get engLocal;
-
-  /// No description provided for @machinesDescription.
-  ///
-  /// In en, this message translates to:
-  /// **'Diagram of the machines: the Cortex API sends model calls to the MSI GPU, memory calls to Hippocampus, which uses Pong for embeddings, FSM for files and the database server.'**
-  String get machinesDescription;
-
   /// No description provided for @codeTitle.
   ///
   /// In en, this message translates to:
@@ -2421,6 +2397,438 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Schema fields'**
   String get personaSchemaFields;
+
+  /// No description provided for @engIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'Cortex is a chat application with a Flutter web client and a Rust API. Cortex runs the request pipeline; Hippocampus owns scoped memories, personas and file records. The gateway authenticates each request before it reaches the API.'**
+  String get engIntro;
+
+  /// No description provided for @engContextTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'System context'**
+  String get engContextTitle;
+
+  /// No description provided for @engContainersTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Inside the system'**
+  String get engContainersTitle;
+
+  /// No description provided for @engPipelineTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'The request pipeline'**
+  String get engPipelineTitle;
+
+  /// No description provided for @engDecisionsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Engineering decisions'**
+  String get engDecisionsTitle;
+
+  /// No description provided for @engContextAlt.
+  ///
+  /// In en, this message translates to:
+  /// **'The user reaches Cortex through the gateway. Cortex calls the memory service and the model runtime. Hippocampus uses file storage. Cortex and Hippocampus persist their own data.'**
+  String get engContextAlt;
+
+  /// No description provided for @engContainersAlt.
+  ///
+  /// In en, this message translates to:
+  /// **'The Flutter web client calls the gateway, which authenticates and forwards requests to the Rust Cortex API. The API calls Hippocampus and the model runtime. PostgreSQL stores chats and memory metadata. Hippocampus stores documents in CouchDB. Valkey keeps the Cortex event journal and cached context.'**
+  String get engContainersAlt;
+
+  /// No description provided for @engContextWord.
+  ///
+  /// In en, this message translates to:
+  /// **'Context'**
+  String get engContextWord;
+
+  /// No description provided for @engDecisionWord.
+  ///
+  /// In en, this message translates to:
+  /// **'Decision'**
+  String get engDecisionWord;
+
+  /// No description provided for @engResultWord.
+  ///
+  /// In en, this message translates to:
+  /// **'Result'**
+  String get engResultWord;
+
+  /// No description provided for @engSource.
+  ///
+  /// In en, this message translates to:
+  /// **'View source'**
+  String get engSource;
+
+  /// No description provided for @engUser.
+  ///
+  /// In en, this message translates to:
+  /// **'User'**
+  String get engUser;
+
+  /// No description provided for @engCortex.
+  ///
+  /// In en, this message translates to:
+  /// **'Cortex'**
+  String get engCortex;
+
+  /// No description provided for @engGateway.
+  ///
+  /// In en, this message translates to:
+  /// **'Gateway'**
+  String get engGateway;
+
+  /// No description provided for @engMemoryService.
+  ///
+  /// In en, this message translates to:
+  /// **'Hippocampus'**
+  String get engMemoryService;
+
+  /// No description provided for @engModelRuntime.
+  ///
+  /// In en, this message translates to:
+  /// **'Model runtime'**
+  String get engModelRuntime;
+
+  /// No description provided for @engFileStorage.
+  ///
+  /// In en, this message translates to:
+  /// **'File storage'**
+  String get engFileStorage;
+
+  /// No description provided for @engDatabases.
+  ///
+  /// In en, this message translates to:
+  /// **'Databases'**
+  String get engDatabases;
+
+  /// No description provided for @engApps.
+  ///
+  /// In en, this message translates to:
+  /// **'Cortex and Hippocampus'**
+  String get engApps;
+
+  /// No description provided for @engFrontend.
+  ///
+  /// In en, this message translates to:
+  /// **'Frontend'**
+  String get engFrontend;
+
+  /// No description provided for @engApi.
+  ///
+  /// In en, this message translates to:
+  /// **'Cortex API'**
+  String get engApi;
+
+  /// No description provided for @engPostgres.
+  ///
+  /// In en, this message translates to:
+  /// **'Relational data'**
+  String get engPostgres;
+
+  /// No description provided for @engDocumentStore.
+  ///
+  /// In en, this message translates to:
+  /// **'Document store'**
+  String get engDocumentStore;
+
+  /// No description provided for @engCache.
+  ///
+  /// In en, this message translates to:
+  /// **'Event journal and cache'**
+  String get engCache;
+
+  /// No description provided for @engSends.
+  ///
+  /// In en, this message translates to:
+  /// **'Sends requests'**
+  String get engSends;
+
+  /// No description provided for @engForwards.
+  ///
+  /// In en, this message translates to:
+  /// **'Authenticates and forwards'**
+  String get engForwards;
+
+  /// No description provided for @engRecalls.
+  ///
+  /// In en, this message translates to:
+  /// **'Recalls and saves'**
+  String get engRecalls;
+
+  /// No description provided for @engGenerates.
+  ///
+  /// In en, this message translates to:
+  /// **'Requests answers'**
+  String get engGenerates;
+
+  /// No description provided for @engPersists.
+  ///
+  /// In en, this message translates to:
+  /// **'Persists data'**
+  String get engPersists;
+
+  /// No description provided for @engStoresDocs.
+  ///
+  /// In en, this message translates to:
+  /// **'Stores documents'**
+  String get engStoresDocs;
+
+  /// No description provided for @engCaches.
+  ///
+  /// In en, this message translates to:
+  /// **'Stores events and context'**
+  String get engCaches;
+
+  /// No description provided for @engStoresFiles.
+  ///
+  /// In en, this message translates to:
+  /// **'Stores files'**
+  String get engStoresFiles;
+
+  /// No description provided for @engFrontendRole.
+  ///
+  /// In en, this message translates to:
+  /// **'Shows chats and memory views.'**
+  String get engFrontendRole;
+
+  /// No description provided for @engGatewayRole.
+  ///
+  /// In en, this message translates to:
+  /// **'Authenticates and forwards requests.'**
+  String get engGatewayRole;
+
+  /// No description provided for @engApiRole.
+  ///
+  /// In en, this message translates to:
+  /// **'Runs the six request stages.'**
+  String get engApiRole;
+
+  /// No description provided for @engMemoryRole.
+  ///
+  /// In en, this message translates to:
+  /// **'Owns scoped memories and personas.'**
+  String get engMemoryRole;
+
+  /// No description provided for @engModelRole.
+  ///
+  /// In en, this message translates to:
+  /// **'Runs local language models.'**
+  String get engModelRole;
+
+  /// No description provided for @engPostgresRole.
+  ///
+  /// In en, this message translates to:
+  /// **'Stores chats and memory metadata.'**
+  String get engPostgresRole;
+
+  /// No description provided for @engDocumentRole.
+  ///
+  /// In en, this message translates to:
+  /// **'Stores memory documents.'**
+  String get engDocumentRole;
+
+  /// No description provided for @engCacheRole.
+  ///
+  /// In en, this message translates to:
+  /// **'Keeps events for replay and caches context.'**
+  String get engCacheRole;
+
+  /// No description provided for @engAcceptDetail.
+  ///
+  /// In en, this message translates to:
+  /// **'Checks input, scope and limits.'**
+  String get engAcceptDetail;
+
+  /// No description provided for @engGatherDetail.
+  ///
+  /// In en, this message translates to:
+  /// **'Reads files, memory and web sources at the same time.'**
+  String get engGatherDetail;
+
+  /// No description provided for @engAssembleDetail.
+  ///
+  /// In en, this message translates to:
+  /// **'Builds the context within its budget.'**
+  String get engAssembleDetail;
+
+  /// No description provided for @engThinkDetail.
+  ///
+  /// In en, this message translates to:
+  /// **'Runs the requested thinking step.'**
+  String get engThinkDetail;
+
+  /// No description provided for @engAnswerDetail.
+  ///
+  /// In en, this message translates to:
+  /// **'Streams the answer and its events.'**
+  String get engAnswerDetail;
+
+  /// No description provided for @engSaveDetail.
+  ///
+  /// In en, this message translates to:
+  /// **'Stores the finished answer and its exchange memory.'**
+  String get engSaveDetail;
+
+  /// No description provided for @engRustTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Rust backends'**
+  String get engRustTitle;
+
+  /// No description provided for @engRustContext.
+  ///
+  /// In en, this message translates to:
+  /// **'The pipeline has distinct stages and failure states.'**
+  String get engRustContext;
+
+  /// No description provided for @engRustDecision.
+  ///
+  /// In en, this message translates to:
+  /// **'Use Rust and explicit stage types for both backends.'**
+  String get engRustDecision;
+
+  /// No description provided for @engRustResult.
+  ///
+  /// In en, this message translates to:
+  /// **'The stage contract can be checked by the compiler and tests.'**
+  String get engRustResult;
+
+  /// No description provided for @engJournalTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Reconnect with an event journal'**
+  String get engJournalTitle;
+
+  /// No description provided for @engJournalContext.
+  ///
+  /// In en, this message translates to:
+  /// **'A browser can lose its connection while an answer runs.'**
+  String get engJournalContext;
+
+  /// No description provided for @engJournalDecision.
+  ///
+  /// In en, this message translates to:
+  /// **'Store numbered events and read after the last known event.'**
+  String get engJournalDecision;
+
+  /// No description provided for @engJournalResult.
+  ///
+  /// In en, this message translates to:
+  /// **'A client can resume the stream within the journal retention window.'**
+  String get engJournalResult;
+
+  /// No description provided for @engGatherTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Gather sources together'**
+  String get engGatherTitle;
+
+  /// No description provided for @engGatherContext.
+  ///
+  /// In en, this message translates to:
+  /// **'Files, memory and web reads do not depend on each other.'**
+  String get engGatherContext;
+
+  /// No description provided for @engGatherDecision.
+  ///
+  /// In en, this message translates to:
+  /// **'Start the three source jobs together in Gather.'**
+  String get engGatherDecision;
+
+  /// No description provided for @engGatherResult.
+  ///
+  /// In en, this message translates to:
+  /// **'One source does not need to wait for another to start.'**
+  String get engGatherResult;
+
+  /// No description provided for @engMemoryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'One memory per finished answer'**
+  String get engMemoryTitle;
+
+  /// No description provided for @engMemoryContext.
+  ///
+  /// In en, this message translates to:
+  /// **'A finished answer must remain useful for later recall.'**
+  String get engMemoryContext;
+
+  /// No description provided for @engMemoryDecision.
+  ///
+  /// In en, this message translates to:
+  /// **'Save the exchange directly, with its input title and chat link.'**
+  String get engMemoryDecision;
+
+  /// No description provided for @engMemoryResult.
+  ///
+  /// In en, this message translates to:
+  /// **'The save uses no extra model call and keeps its memory assignment.'**
+  String get engMemoryResult;
+
+  /// No description provided for @engResearchContext.
+  ///
+  /// In en, this message translates to:
+  /// **'Context and retrieval'**
+  String get engResearchContext;
+
+  /// No description provided for @engResearchPrompts.
+  ///
+  /// In en, this message translates to:
+  /// **'Prompts and output format'**
+  String get engResearchPrompts;
+
+  /// No description provided for @engResearchReasoning.
+  ///
+  /// In en, this message translates to:
+  /// **'Reasoning and verification'**
+  String get engResearchReasoning;
+
+  /// No description provided for @engTechFlutter.
+  ///
+  /// In en, this message translates to:
+  /// **'Flutter web'**
+  String get engTechFlutter;
+
+  /// No description provided for @engTechHTTP.
+  ///
+  /// In en, this message translates to:
+  /// **'HTTP'**
+  String get engTechHTTP;
+
+  /// No description provided for @engTechRust.
+  ///
+  /// In en, this message translates to:
+  /// **'Rust'**
+  String get engTechRust;
+
+  /// No description provided for @engTechOllama.
+  ///
+  /// In en, this message translates to:
+  /// **'Ollama'**
+  String get engTechOllama;
+
+  /// No description provided for @engTechPostgreSQL.
+  ///
+  /// In en, this message translates to:
+  /// **'PostgreSQL'**
+  String get engTechPostgreSQL;
+
+  /// No description provided for @engTechCouchDB.
+  ///
+  /// In en, this message translates to:
+  /// **'CouchDB'**
+  String get engTechCouchDB;
+
+  /// No description provided for @engTechValkey.
+  ///
+  /// In en, this message translates to:
+  /// **'Valkey'**
+  String get engTechValkey;
 }
 
 class _AppLocalizationsDelegate
