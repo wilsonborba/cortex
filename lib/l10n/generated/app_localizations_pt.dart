@@ -1247,4 +1247,14 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get graphBack => 'Voltar';
+
+  @override
+  String get personasPurpose =>
+      'Pessoas e vozes de bots usadas nas suas conversas.';
+
+  @override
+  String get personaIdentity => 'Identidade';
+
+  @override
+  String get personaSchemaFields => 'Campos do esquema';
 }

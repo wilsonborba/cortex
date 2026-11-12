@@ -48,6 +48,17 @@
 
 - Replace graphview with a stable canvas (#55)
 
+- Merge custom graph canvas (#55)
+
+- Redesign list and schema forms (#56)
+
+
+### Tests
+
+- Review grouped graph and list screens (#55)
+
+- Merge grouped screen evidence (#55)
+
 
 ## v2.0.1 - 2026-11-11
 

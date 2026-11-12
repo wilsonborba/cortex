@@ -2403,6 +2403,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Back'**
   String get graphBack;
+
+  /// No description provided for @personasPurpose.
+  ///
+  /// In en, this message translates to:
+  /// **'People and bot voices used in your chats.'**
+  String get personasPurpose;
+
+  /// No description provided for @personaIdentity.
+  ///
+  /// In en, this message translates to:
+  /// **'Identity'**
+  String get personaIdentity;
+
+  /// No description provided for @personaSchemaFields.
+  ///
+  /// In en, this message translates to:
+  /// **'Schema fields'**
+  String get personaSchemaFields;
 }
 
 class _AppLocalizationsDelegate

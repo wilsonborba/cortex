@@ -414,5 +414,8 @@
   "exampleTag": "Planejamento",
   "exampleFile": "Documento do plano",
   "exampleEntity": "Projeto",
-  "graphBack": "Voltar"
+  "graphBack": "Voltar",
+  "personasPurpose": "Pessoas e vozes de bots usadas nas suas conversas.",
+  "personaIdentity": "Identidade",
+  "personaSchemaFields": "Campos do esquema"
 }

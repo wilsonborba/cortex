@@ -109,6 +109,7 @@ abstract final class Space {
   static const sidebarWidth = 280.0;
   static const railWidth = 56.0;
   static const detailsWidth = 320.0;
+  static const personaFormWidth = 640.0;
   static const chatColumnWidth = 768.0;
   static const userBubbleFraction = 0.8;
   static const webMenuWidth = 176.0;
