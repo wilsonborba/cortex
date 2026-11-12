@@ -12,6 +12,7 @@ import '../../widgets/common/surfaces.dart';
 import 'code_snippet.dart';
 import 'demo.dart';
 import 'diagrams.dart';
+import 'engineering_page.dart';
 
 const hippocampusRepo = 'https://github.com/wilsonborba/hippocampus';
 const asodyaSite = 'https://asodya.com';
@@ -179,7 +180,7 @@ class LandingPage extends StatelessWidget {
                           section(
                             LandingSection.engineering,
                             l.engTitle,
-                            const _Engineering(),
+                            const EngineeringContent(),
                           ),
                           section(null, l.researchTitle, const _Research()),
                           section(
@@ -629,28 +630,6 @@ class _Web extends StatelessWidget {
   }
 }
 
-class _Engineering extends StatelessWidget {
-  const _Engineering();
-  @override
-  Widget build(BuildContext context) {
-    final l = AppLocalizations.of(context);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _Bullets([l.engMachines, l.engRust, l.engLocal]),
-        const SizedBox(height: Space.s16),
-        const MachinesDiagram(),
-        const SizedBox(height: Space.s24),
-        CodeSnippet(
-          asset: 'lib/presentation/frontend/assets/snippets/gather.rs.txt',
-          path: 'cortex_api/src/domain/services/pipeline.rs',
-          caption: l.codeGather,
-        ),
-      ],
-    );
-  }
-}
-
 class _Research extends StatelessWidget {
   const _Research();
   @override
@@ -659,31 +638,44 @@ class _Research extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        for (final (title, who, url) in research)
-          FoundationFocus(
-            child: InkWell(
-              onTap: () => launchUrl(Uri.parse(url)),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: Space.s4),
-                child: Text.rich(
-                  TextSpan(
-                    children: [
-                      TextSpan(
-                        text: title,
-                        style: TextStyles.compact.copyWith(
-                          decoration: TextDecoration.underline,
+        for (final group in [
+          (AppLocalizations.of(context).engResearchContext, research.take(7)),
+          (
+            AppLocalizations.of(context).engResearchPrompts,
+            research.skip(7).take(2),
+          ),
+          (AppLocalizations.of(context).engResearchReasoning, research.skip(9)),
+        ]) ...[
+          Padding(
+            padding: const EdgeInsets.only(top: Space.s16, bottom: Space.s8),
+            child: Text(group.$1, style: TextStyles.subsection),
+          ),
+          for (final (title, who, url) in group.$2)
+            FoundationFocus(
+              child: InkWell(
+                onTap: () => launchUrl(Uri.parse(url)),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: Space.s4),
+                  child: Text.rich(
+                    TextSpan(
+                      children: [
+                        TextSpan(
+                          text: title,
+                          style: TextStyles.compact.copyWith(
+                            decoration: TextDecoration.underline,
+                          ),
                         ),
-                      ),
-                      TextSpan(
-                        text: '  $who',
-                        style: TextStyles.compact.copyWith(color: p.muted),
-                      ),
-                    ],
+                        TextSpan(
+                          text: '  $who',
+                          style: TextStyles.compact.copyWith(color: p.muted),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
+        ],
       ],
     );
   }

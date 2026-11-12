@@ -52,6 +52,10 @@
 
 - Redesign list and schema forms (#56)
 
+- Merge list and form redesign (#56)
+
+- Explain the system and its decisions (#57)
+
 
 ### Tests
 
