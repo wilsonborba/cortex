@@ -118,6 +118,7 @@ void main() {
         await tester.pumpWidget(
           MaterialApp(
             locale: locale,
+            theme: cortexTheme(Brightness.dark),
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
             home: Scaffold(body: OutputBlock(output: output)),
@@ -143,6 +144,7 @@ void main() {
         await tester.pumpWidget(
           MaterialApp(
             locale: locale,
+            theme: cortexTheme(Brightness.dark),
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
             home: ConnectionBanner(

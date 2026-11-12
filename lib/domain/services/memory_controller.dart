@@ -32,6 +32,7 @@ class MemoryController extends ChangeNotifier {
       final result = await api.memoryGraph(depth: depth, limit: limit);
       if (_disposed || request != _graphRequest) return;
       graph = result;
+      if (result.edges.isEmpty) view = MemoryView.list;
       error = null;
     } on ApiError catch (e) {
       if (_disposed || request != _graphRequest) return;

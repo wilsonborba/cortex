@@ -1,16 +1,19 @@
+import '../../theme/app_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:go_router/go_router.dart';
 import '../../../../domain/models/memory_graph.dart';
 import '../../../../l10n/generated/app_localizations.dart';
 import '../../theme/tokens.dart';
 import '../chat/chat_list.dart';
 
 IconData nodeIcon(String type) => switch (type) {
-  'memory' => Icons.lightbulb_outline,
-  'tag' => Icons.sell_outlined,
-  'persona' => Icons.person_outline,
-  'entity' => Icons.category_outlined,
-  _ => Icons.description_outlined,
+  'memory' => AppIcons.document,
+  'chat' => AppIcons.chats,
+  'tag' => AppIcons.tag,
+  'persona' => AppIcons.entity,
+  'entity' => AppIcons.category,
+  _ => AppIcons.file,
 };
 
 String initials(String name) {
@@ -28,7 +31,7 @@ class MemoryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
-    final p = Palette.of(Theme.of(context).brightness);
+    final p = Palette.from(context);
     final node = data.node!;
     final m = node.metadata;
     final linked = data.linked(node.id);
@@ -36,6 +39,10 @@ class MemoryCard extends StatelessWidget {
     final personas = linked.where((n) => n.displayType == 'persona').toList();
     final tags = linked.where((n) => n.type == 'tag').toList();
     final memories = linked.where((n) => n.type == 'memory').toList();
+    final chats = [
+      if (node.type == 'chat') node,
+      ...linked.where((n) => n.type == 'chat'),
+    ];
     final summary = '${m['summary'] ?? ''}'.trim();
     final title = '${m['title'] ?? ''}'.trim().isNotEmpty
         ? '${m['title']}'
@@ -47,10 +54,10 @@ class MemoryCard extends StatelessWidget {
     final (typeIcon, typeName) = node.type != 'memory'
         ? (nodeIcon(node.displayType), nodeTypeName(l, node.displayType))
         : m['memory_type'] == 'file'
-        ? (Icons.description_outlined, l.typeFile)
+        ? (AppIcons.file, l.typeFile)
         : m['memory_type'] == 'episodic'
-        ? (Icons.chat_bubble_outline, l.typeChat)
-        : (Icons.sticky_note_2_outlined, l.typeNote);
+        ? (AppIcons.chats, l.typeChat)
+        : (AppIcons.document, l.typeNote);
     final created = '${m['created_at'] ?? ''}';
     final meta = TextStyles.label.copyWith(color: p.muted);
     Widget section(String label, List<Widget> children) => children.isEmpty
@@ -84,7 +91,7 @@ class MemoryCard extends StatelessWidget {
             Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(typeIcon, size: 16, color: p.muted),
+                Icon(typeIcon, size: IconSizes.action, color: p.muted),
                 const SizedBox(width: Space.s4),
                 Text(typeName, key: const Key('card-type'), style: meta),
               ],
@@ -110,7 +117,9 @@ class MemoryCard extends StatelessWidget {
                 ),
                 decoration: BoxDecoration(
                   border: Border.all(color: p.border),
-                  borderRadius: BorderRadius.circular(Radii.control),
+                  borderRadius: BorderRadius.circular(
+                    FoundationTokens.of(context).controlRadius,
+                  ),
                 ),
                 child: Text(l.superseded, style: meta),
               ),
@@ -161,7 +170,7 @@ class MemoryCard extends StatelessWidget {
         section(l.linkedFiles, [
           for (final f in files)
             ActionChip(
-              avatar: const Icon(Icons.description_outlined, size: 16),
+              avatar: const Icon(AppIcons.file, size: IconSizes.action),
               label: Text(f.label, style: TextStyles.label),
               onPressed: () => onOpen?.call(f.id),
             ),
@@ -169,7 +178,7 @@ class MemoryCard extends StatelessWidget {
         section(l.linkedMemories, [
           for (final n in memories)
             ActionChip(
-              avatar: const Icon(Icons.lightbulb_outline, size: 16),
+              avatar: const Icon(AppIcons.note, size: IconSizes.action),
               label: Text(
                 n.label,
                 style: TextStyles.label,
@@ -178,6 +187,16 @@ class MemoryCard extends StatelessWidget {
               onPressed: () => onOpen?.call(n.id),
             ),
         ]),
+        for (final chat in chats)
+          if (chat.metadata['source_system'] == 'cortex' &&
+              chat.metadata['external_id'] is String)
+            TextButton.icon(
+              onPressed: () => GoRouter.maybeOf(context)?.go(
+                '/v1/chats/${Uri.encodeComponent(chat.metadata['external_id'])}',
+              ),
+              icon: const Icon(AppIcons.chats, size: IconSizes.action),
+              label: Text(l.openChat),
+            ),
         const SizedBox(height: Space.s12),
         ExpansionTile(
           key: const Key('card-details'),
@@ -197,7 +216,7 @@ class MemoryCard extends StatelessWidget {
                 IconButton(
                   key: const Key('copy-id'),
                   tooltip: l.copy,
-                  icon: const Icon(Icons.copy, size: 16),
+                  icon: const Icon(AppIcons.copy, size: IconSizes.action),
                   onPressed: () {
                     Clipboard.setData(ClipboardData(text: node.id));
                     ScaffoldMessenger.maybeOf(
@@ -216,8 +235,44 @@ class MemoryCard extends StatelessWidget {
 
 String nodeTypeName(AppLocalizations l, String type) => switch (type) {
   'memory' => l.legendMemory,
+  'chat' => l.typeChat,
   'tag' => l.legendTag,
   'persona' => l.legendPersona,
   'entity' => l.legendEntity,
   _ => l.legendFile,
 };
+
+class GraphLegend extends StatelessWidget {
+  const GraphLegend({super.key, required this.hasEntities});
+  final bool hasEntities;
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
+    final p = Palette.from(context);
+    return Wrap(
+      key: const Key('legend'),
+      spacing: Space.s12,
+      children: [
+        for (final type in [
+          'memory',
+          'chat',
+          'tag',
+          'persona',
+          'file',
+          if (hasEntities) 'entity',
+        ])
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(nodeIcon(type), size: IconSizes.chip, color: p.muted),
+              const SizedBox(width: Space.s4),
+              Text(
+                nodeTypeName(l, type),
+                style: TextStyles.label.copyWith(color: p.muted),
+              ),
+            ],
+          ),
+      ],
+    );
+  }
+}

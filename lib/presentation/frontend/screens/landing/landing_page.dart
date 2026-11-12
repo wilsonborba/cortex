@@ -1,3 +1,4 @@
+import '../../theme/app_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -11,6 +12,7 @@ import '../../widgets/common/surfaces.dart';
 import 'code_snippet.dart';
 import 'demo.dart';
 import 'diagrams.dart';
+import 'engineering_page.dart';
 
 const hippocampusRepo = 'https://github.com/wilsonborba/hippocampus';
 const asodyaSite = 'https://asodya.com';
@@ -178,7 +180,7 @@ class LandingPage extends StatelessWidget {
                           section(
                             LandingSection.engineering,
                             l.engTitle,
-                            const _Engineering(),
+                            const EngineeringContent(),
                           ),
                           section(null, l.researchTitle, const _Research()),
                           section(
@@ -250,7 +252,7 @@ class LandingHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
-    final p = Palette.of(Theme.of(context).brightness);
+    final p = Palette.from(context);
     final prefs = PreferencesScope.maybeOf(context);
     // Five links fit only on the expanded width; medium and compact use a menu.
     final compact = size != SizeClass.expanded;
@@ -303,25 +305,27 @@ class LandingHeader extends StatelessWidget {
           ] else
             const SizedBox(width: Space.s8),
           if (size != SizeClass.compact && prefs != null) ...[
-            PopupMenuButton<Locale>(
-              tooltip: l.language,
-              icon: const Icon(Icons.translate),
-              onSelected: (v) => prefs.locale = v,
-              itemBuilder: (_) => [
-                for (final (code, name) in [
-                  ('en', 'English'),
-                  ('pt', 'Português'),
-                  ('th', 'ไทย'),
-                ])
-                  PopupMenuItem(value: Locale(code), child: Text(name)),
-              ],
+            FoundationFocus(
+              child: AppMenu<Locale>(
+                tooltip: l.language,
+                icon: const Icon(AppIcons.language),
+                onSelected: (v) => prefs.locale = v,
+                itemBuilder: (_) => [
+                  for (final (code, name) in [
+                    ('en', 'English'),
+                    ('pt', 'Português'),
+                    ('th', 'ไทย'),
+                  ])
+                    PopupMenuItem(value: Locale(code), child: Text(name)),
+                ],
+              ),
             ),
             IconButton(
               tooltip: l.themeSwitch,
               icon: Icon(
                 Theme.of(context).brightness == Brightness.dark
-                    ? Icons.light_mode_outlined
-                    : Icons.dark_mode_outlined,
+                    ? AppIcons.lightTheme
+                    : AppIcons.darkTheme,
               ),
               onPressed: () =>
                   prefs.theme = Theme.of(context).brightness == Brightness.dark
@@ -330,15 +334,17 @@ class LandingHeader extends StatelessWidget {
             ),
           ],
           if (compact)
-            PopupMenuButton<LandingSection>(
-              key: const Key('section-menu'),
-              tooltip: l.menu,
-              icon: const Icon(Icons.menu),
-              onSelected: onSection,
-              itemBuilder: (_) => [
-                for (final s in LandingSection.values)
-                  PopupMenuItem(value: s, child: Text(s.label(l))),
-              ],
+            FoundationFocus(
+              child: AppMenu<LandingSection>(
+                key: const Key('section-menu'),
+                tooltip: l.menu,
+                icon: const Icon(AppIcons.menu),
+                onSelected: onSection,
+                itemBuilder: (_) => [
+                  for (final s in LandingSection.values)
+                    PopupMenuItem(value: s, child: Text(s.label(l))),
+                ],
+              ),
             ),
           const SizedBox(width: Space.s8),
           if (compact)
@@ -365,7 +371,7 @@ class _Hero extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
-    final p = Palette.of(Theme.of(context).brightness);
+    final p = Palette.from(context);
     final text = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -432,7 +438,7 @@ class _What extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
-    final p = Palette.of(Theme.of(context).brightness);
+    final p = Palette.from(context);
     Widget block(String title, String text, Widget ui) => SizedBox(
       width: size == SizeClass.compact ? double.infinity : 270,
       child: AppCard(
@@ -482,11 +488,11 @@ class _What extends StatelessWidget {
             spacing: Space.s8,
             children: [
               Chip(
-                avatar: Icon(Icons.picture_as_pdf_outlined, size: 16),
+                avatar: Icon(AppIcons.file, size: IconSizes.action),
                 label: Text('report.pdf'),
               ),
               Chip(
-                avatar: Icon(Icons.graphic_eq, size: 16),
+                avatar: Icon(AppIcons.activity, size: IconSizes.action),
                 label: Text('note.ogg'),
               ),
             ],
@@ -524,7 +530,7 @@ class _Memory extends StatelessWidget {
         AppButton(
           key: const Key('hippocampus-link'),
           label: l.memoryRepo,
-          icon: Icons.open_in_new,
+          icon: AppIcons.externalLink,
           onPressed: () => launchUrl(Uri.parse(hippocampusRepo)),
         ),
       ],
@@ -568,7 +574,7 @@ class _Web extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
-    final p = Palette.of(Theme.of(context).brightness);
+    final p = Palette.from(context);
     // Values of cortex_api config.rs (areas 4 and 5).
     final rows = [
       [l.webFast, '1', l.webFastPages, '0', l.seconds(15)],
@@ -624,59 +630,52 @@ class _Web extends StatelessWidget {
   }
 }
 
-class _Engineering extends StatelessWidget {
-  const _Engineering();
-  @override
-  Widget build(BuildContext context) {
-    final l = AppLocalizations.of(context);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _Bullets([l.engMachines, l.engRust, l.engLocal]),
-        const SizedBox(height: Space.s16),
-        const MachinesDiagram(),
-        const SizedBox(height: Space.s24),
-        CodeSnippet(
-          asset: 'lib/presentation/frontend/assets/snippets/gather.rs.txt',
-          path: 'cortex_api/src/domain/services/pipeline.rs',
-          caption: l.codeGather,
-        ),
-      ],
-    );
-  }
-}
-
 class _Research extends StatelessWidget {
   const _Research();
   @override
   Widget build(BuildContext context) {
-    final p = Palette.of(Theme.of(context).brightness);
+    final p = Palette.from(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        for (final (title, who, url) in research)
-          InkWell(
-            onTap: () => launchUrl(Uri.parse(url)),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: Space.s4),
-              child: Text.rich(
-                TextSpan(
-                  children: [
+        for (final group in [
+          (AppLocalizations.of(context).engResearchContext, research.take(7)),
+          (
+            AppLocalizations.of(context).engResearchPrompts,
+            research.skip(7).take(2),
+          ),
+          (AppLocalizations.of(context).engResearchReasoning, research.skip(9)),
+        ]) ...[
+          Padding(
+            padding: const EdgeInsets.only(top: Space.s16, bottom: Space.s8),
+            child: Text(group.$1, style: TextStyles.subsection),
+          ),
+          for (final (title, who, url) in group.$2)
+            FoundationFocus(
+              child: InkWell(
+                onTap: () => launchUrl(Uri.parse(url)),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: Space.s4),
+                  child: Text.rich(
                     TextSpan(
-                      text: title,
-                      style: TextStyles.compact.copyWith(
-                        decoration: TextDecoration.underline,
-                      ),
+                      children: [
+                        TextSpan(
+                          text: title,
+                          style: TextStyles.compact.copyWith(
+                            decoration: TextDecoration.underline,
+                          ),
+                        ),
+                        TextSpan(
+                          text: '  $who',
+                          style: TextStyles.compact.copyWith(color: p.muted),
+                        ),
+                      ],
                     ),
-                    TextSpan(
-                      text: '  $who',
-                      style: TextStyles.compact.copyWith(color: p.muted),
-                    ),
-                  ],
+                  ),
                 ),
               ),
             ),
-          ),
+        ],
       ],
     );
   }
@@ -687,7 +686,7 @@ class _Faq extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
-    final p = Palette.of(Theme.of(context).brightness);
+    final p = Palette.from(context);
     return Column(
       children: [
         for (final (q, a) in [
@@ -720,7 +719,7 @@ class _Bullets extends StatelessWidget {
   final List<String> items;
   @override
   Widget build(BuildContext context) {
-    final p = Palette.of(Theme.of(context).brightness);
+    final p = Palette.from(context);
     return ConstrainedBox(
       constraints: const BoxConstraints(maxWidth: 640),
       child: Column(
@@ -752,7 +751,7 @@ class _Footer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
-    final p = Palette.of(Theme.of(context).brightness);
+    final p = Palette.from(context);
     return Container(
       margin: const EdgeInsets.only(top: Space.section),
       padding: const EdgeInsets.symmetric(vertical: Space.s24),

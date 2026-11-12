@@ -1,3 +1,4 @@
+import '../../theme/app_icons.dart';
 import '../../../../l10n/generated/app_localizations.dart';
 import 'package:flutter/material.dart';
 import '../../theme/tokens.dart';
@@ -10,7 +11,7 @@ class SkeletonBox extends StatelessWidget {
   final double height;
   @override
   Widget build(BuildContext context) {
-    final p = Palette.of(Theme.of(context).brightness);
+    final p = Palette.from(context);
     return Semantics(
       label: AppLocalizations.of(context).loading,
       child: Container(
@@ -18,7 +19,9 @@ class SkeletonBox extends StatelessWidget {
         height: height,
         decoration: BoxDecoration(
           color: p.border,
-          borderRadius: BorderRadius.circular(Radii.control),
+          borderRadius: BorderRadius.circular(
+            FoundationTokens.of(context).controlRadius,
+          ),
         ),
       ),
     );
@@ -30,7 +33,7 @@ class EmptyState extends StatelessWidget {
     super.key,
     required this.title,
     this.message,
-    this.icon = Icons.inbox_outlined,
+    this.icon = AppIcons.empty,
     this.action,
   });
   final String title;
@@ -39,27 +42,30 @@ class EmptyState extends StatelessWidget {
   final Widget? action;
   @override
   Widget build(BuildContext context) {
-    final p = Palette.of(Theme.of(context).brightness);
-    return Center(
+    final p = Palette.from(context);
+    return Align(
+      alignment: AlignmentDirectional.topStart,
       child: SingleChildScrollView(
+        padding: const EdgeInsets.all(Space.s16),
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 420),
           child: Column(
             mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Icon(icon, size: 32, color: p.muted),
               const SizedBox(height: Space.s12),
               Text(
                 title,
                 style: TextStyles.subsection,
-                textAlign: TextAlign.center,
+                textAlign: TextAlign.start,
               ),
               if (message != null) ...[
                 const SizedBox(height: Space.s8),
                 Text(
                   message!,
                   style: TextStyles.body.copyWith(color: p.muted),
-                  textAlign: TextAlign.center,
+                  textAlign: TextAlign.start,
                 ),
               ],
               if (action != null) ...[
@@ -88,11 +94,11 @@ class ErrorState extends StatelessWidget {
   @override
   Widget build(BuildContext context) => EmptyState(
     title: message,
-    icon: Icons.error_outline,
+    icon: AppIcons.error,
     action: AppButton(
       label: retryLabel,
       onPressed: onRetry,
-      icon: Icons.refresh,
+      icon: AppIcons.retry,
     ),
   );
 }
@@ -103,7 +109,7 @@ class OfflineBanner extends StatelessWidget {
   final String message;
   @override
   Widget build(BuildContext context) {
-    final p = Palette.of(Theme.of(context).brightness);
+    final p = Palette.from(context);
     return Semantics(
       liveRegion: true,
       child: Container(
@@ -118,7 +124,7 @@ class OfflineBanner extends StatelessWidget {
         ),
         child: Row(
           children: [
-            Icon(Icons.cloud_off_outlined, size: 18, color: p.text),
+            Icon(AppIcons.offline, size: IconSizes.action, color: p.text),
             const SizedBox(width: Space.s8),
             Expanded(child: Text(message, style: TextStyles.compact)),
           ],
@@ -141,16 +147,16 @@ class NoticeLine extends StatelessWidget {
   final NoticeKind kind;
   @override
   Widget build(BuildContext context) {
-    final p = Palette.of(Theme.of(context).brightness);
+    final p = Palette.from(context);
     final (icon, color) = switch (kind) {
-      NoticeKind.info => (Icons.info_outline, p.muted),
-      NoticeKind.warning => (Icons.warning_amber_outlined, p.text),
-      NoticeKind.error => (Icons.error_outline, p.danger),
+      NoticeKind.info => (AppIcons.info, p.muted),
+      NoticeKind.warning => (AppIcons.warning, p.text),
+      NoticeKind.error => (AppIcons.error, p.danger),
     };
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(icon, size: 16, color: color),
+        Icon(icon, size: IconSizes.action, color: color),
         const SizedBox(width: Space.s8),
         Expanded(
           child: Text(

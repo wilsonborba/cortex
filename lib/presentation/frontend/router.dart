@@ -1,3 +1,4 @@
+import 'shell/account_menu.dart';
 import '../../domain/models/telemetry.dart';
 import '../../domain/services/usage_controller.dart';
 import 'screens/usage/usage_screen.dart';
@@ -21,7 +22,13 @@ import 'shell/details_panel.dart';
 import 'screens/landing/landing_page.dart';
 
 const homeSections = {'how-it-works', 'memory', 'engineering', 'faq'};
-const _protected = ['/v1/chats', '/v1/memory', '/v1/personas', '/v1/usage'];
+const _protected = [
+  '/v1/chats',
+  '/v1/memory',
+  '/v1/personas',
+  '/v1/usage',
+  '/v1/settings',
+];
 final _uuid = RegExp(
   r'^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$',
 );
@@ -37,6 +44,7 @@ GoRouter buildRouter({
   Widget Function(BuildContext, String)? screen,
   String initialLocation = '/v1/home',
   CortexApi? api,
+  Future<String?> Function()? emailLoader,
 }) {
   final panel = details ?? DetailsController();
   final cortex = api ?? CortexApi();
@@ -102,6 +110,7 @@ GoRouter buildRouter({
       ShellRoute(
         builder: (c, s, child) => AppShell(
           location: s.uri.path,
+          emailLoader: emailLoader ?? auth.adapter.currentEmail,
           details: panel,
           onLogOut: auth.signOut,
           // Test screens replace the content, so they get no live list.
@@ -111,6 +120,10 @@ GoRouter buildRouter({
           child: child,
         ),
         routes: [
+          GoRoute(
+            path: '/v1/settings',
+            builder: (_, _) => const SettingsScreen(),
+          ),
           // Flat routes: one chat screen per path, never a stacked new-chat page.
           GoRoute(
             path: '/v1/chats',
@@ -171,23 +184,28 @@ GoRouter buildRouter({
               ),
             ),
           ),
-          // Flat: one memory screen; the node path only opens its card.
           GoRoute(
             path: '/v1/memory',
-            builder: (c, _) => screenPage(
-              c,
-              (l) => l.memory,
-              () => MemoryScreen(controller: memory),
+            pageBuilder: (c, s) => NoTransitionPage(
+              key: const ValueKey('memory-page'),
+              child: screenPage(
+                c,
+                (l) => l.memory,
+                () => MemoryScreen(controller: memory),
+              ),
             ),
           ),
           GoRoute(
             path: '/v1/memory/:node_id',
-            builder: (c, s) => screenPage(
-              c,
-              (l) => l.memory,
-              () => MemoryScreen(
-                controller: memory,
-                nodeId: s.pathParameters['node_id'],
+            pageBuilder: (c, s) => NoTransitionPage(
+              key: const ValueKey('memory-page'),
+              child: screenPage(
+                c,
+                (l) => l.memory,
+                () => MemoryScreen(
+                  controller: memory,
+                  nodeId: s.pathParameters['node_id'],
+                ),
               ),
             ),
           ),

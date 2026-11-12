@@ -1,41 +1,14 @@
 import 'package:cortex/l10n/generated/app_localizations.dart';
-import 'dart:io';
 import 'package:cortex/presentation/frontend/theme/theme.dart';
 import 'package:cortex/presentation/frontend/theme/tokens.dart';
 import 'package:cortex/presentation/frontend/widgets/common/buttons.dart';
 import 'package:cortex/presentation/frontend/widgets/common/states.dart';
 import 'package:cortex/presentation/frontend/widgets/common/surfaces.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-Future<void> loadFonts() async {
-  const dir = 'lib/presentation/frontend/assets/fonts';
-  for (final (family, files) in [
-    ('Ubuntu Sans', ['UbuntuSans-Variable.ttf']),
-    ('Ubuntu Sans Mono', ['UbuntuSansMono-Variable.ttf']),
-    ('IBM Plex Sans Thai', ['IBMPlexSansThai-Regular.ttf']),
-  ]) {
-    final loader = FontLoader(family);
-    for (final f in files) {
-      loader.addFont(
-        Future.value(ByteData.sublistView(File('$dir/$f').readAsBytesSync())),
-      );
-    }
-    await loader.load();
-  }
-  final icons = FontLoader('MaterialIcons')
-    ..addFont(
-      Future.value(
-        ByteData.sublistView(
-          File(
-            '${Platform.environment['FLUTTER_ROOT'] ?? '/opt/flutter'}/bin/cache/artifacts/material_fonts/MaterialIcons-Regular.otf',
-          ).readAsBytesSync(),
-        ),
-      ),
-    );
-  await icons.load();
-}
+import '../flutter_test_config.dart' show loadFonts;
+export '../flutter_test_config.dart' show loadFonts;
 
 void _noop(bool _) {}
 

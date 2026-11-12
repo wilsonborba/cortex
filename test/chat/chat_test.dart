@@ -1,3 +1,4 @@
+import 'package:cortex/presentation/frontend/theme/app_icons.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'package:cortex/core/utils/file_picker.dart';
@@ -54,6 +55,7 @@ class Api {
   List<String> Function(http.BaseRequest) streamFor = (_) => stream();
   bool keepOpen = false;
   int maxTokens = 5120;
+  List<Map<String, dynamic>> personas = [];
   Map<String, dynamic> page = {
     'chat': {'session_id': sid, 'title': 'Saved chat', 'is_pinned': false},
     'inputs': [],
@@ -96,7 +98,7 @@ class Api {
         },
       });
     }
-    if (path == '/personas') return json({'message': '', 'data': []});
+    if (path == '/personas') return json({'message': '', 'data': personas});
     if (path == '/files') {
       return json({
         'message': 'File saved',
@@ -202,13 +204,27 @@ Future<void> send(WidgetTester tester, String text) async {
 }
 
 void main() {
+  testWidgets('graph link is shown only when history provides a chat node', (
+    tester,
+  ) async {
+    final fake = Api();
+    (fake.page['chat'] as Map)['memory_node_id'] = 'resource:synthetic-chat';
+    await pump(tester, session: sid, api: fake);
+    expect(find.byKey(const Key('show-in-memory-graph')), findsOneWidget);
+    expect(find.byTooltip('Show in memory graph'), findsOneWidget);
+    await tester.pumpWidget(const SizedBox());
+    final empty = Api();
+    await pump(tester, session: sid, api: empty);
+    expect(find.byKey(const Key('show-in-memory-graph')), findsNothing);
+  });
+
   testWidgets('composer uses the reading column and fits a narrow viewport', (
     tester,
   ) async {
     final (chat, _) = await pump(tester);
     expect(
       tester.getSize(find.byKey(const Key('composer'))).width,
-      lessThanOrEqualTo(760),
+      lessThanOrEqualTo(768),
     );
     expect(
       tester.getTopLeft(find.byKey(const Key('composer'))).dx,
@@ -284,6 +300,9 @@ void main() {
       final (chat, _) = await pump(tester, api: api);
       await send(tester, 'think');
       expect(find.byKey(const Key('thinking-section')), findsOneWidget);
+      expect(find.textContaining('step one'), findsNothing);
+      await tester.tap(find.byTooltip('Expand thinking'));
+      await tester.pump();
       expect(find.textContaining('step one'), findsOneWidget);
       await tester.tap(find.byKey(const Key('stop-thinking')));
       await tester.pump(const Duration(milliseconds: 50));
@@ -367,7 +386,7 @@ void main() {
       await pump(tester, api: api);
       await send(tester, 'bad');
       expect(find.text('Are you kidding me, clown?'), findsOneWidget);
-      expect(find.byIcon(Icons.gpp_bad_outlined), findsOneWidget);
+      expect(find.byIcon(AppIcons.securityBlock), findsOneWidget);
       expect(find.text('Retry'), findsNothing);
       api.streamFor = (_) => stream(
         done: false,

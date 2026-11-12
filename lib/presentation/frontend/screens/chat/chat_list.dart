@@ -1,3 +1,6 @@
+import 'package:flutter/rendering.dart';
+import 'package:flutter/gestures.dart';
+import '../../theme/app_icons.dart';
 import '../../handlers/api_action.dart';
 import '../../handlers/process_messages.dart';
 import 'package:flutter/material.dart';
@@ -132,7 +135,7 @@ class _ChatListState extends State<ChatList> {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
-    final p = Palette.of(Theme.of(context).brightness);
+    final p = Palette.from(context);
     final now = (widget.now ?? DateTime.now)();
     if (list.error != null && list.chats.isEmpty) {
       return ErrorState(
@@ -144,7 +147,7 @@ class _ChatListState extends State<ChatList> {
     if (list.chats.isEmpty) {
       return list.loading
           ? const Center(child: SkeletonBox(width: 160))
-          : EmptyState(title: l.noChatsYet, icon: Icons.chat_bubble_outline);
+          : EmptyState(title: l.noChatsYet, icon: AppIcons.chats);
     }
     return ListView.builder(
       key: const Key('chat-list'),
@@ -166,66 +169,124 @@ class _ChatListState extends State<ChatList> {
         final chat = list.chats[i];
         final id = '${chat['session_id']}';
         final selected = widget.location.startsWith('/v1/chats/$id');
-        return ListTile(
-          key: Key('chat-$id'),
-          dense: true,
-          selected: selected,
-          selectedTileColor: p.accent.withValues(alpha: 0.12),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(Radii.control),
-          ),
-          leading: chat['is_pinned'] == true
-              ? Icon(Icons.push_pin, size: 14, color: p.muted)
-              : null,
-          title: Text(
-            '${chat['title']}',
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyles.compact.copyWith(color: p.text),
-          ),
-          subtitle: Row(
-            children: [
-              if (list.running.contains(id)) ...[
-                Semantics(
-                  label: l.running,
-                  child: Container(
-                    key: Key('running-$id'),
-                    width: 6,
-                    height: 6,
-                    decoration: BoxDecoration(
-                      color: p.accent,
-                      shape: BoxShape.circle,
+        return _HistoryRow(
+          builder: (showActions) => FoundationFocus(
+            child: ListTile(
+              key: Key('chat-$id'),
+              dense: true,
+              selected: selected,
+              selectedTileColor: p.raised,
+              shape: Border(
+                left: BorderSide(
+                  color: selected ? p.accent : Colors.transparent,
+                  width: Controls.focusRing,
+                ),
+              ),
+              leading: chat['is_pinned'] == true
+                  ? Icon(AppIcons.pin, size: IconSizes.chip, color: p.muted)
+                  : null,
+              title: Text(
+                '${chat['title']}',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyles.compact.copyWith(color: p.text),
+              ),
+              subtitle: Row(
+                children: [
+                  if (list.running.contains(id)) ...[
+                    Semantics(
+                      label: l.running,
+                      child: Container(
+                        key: Key('running-$id'),
+                        width: 6,
+                        height: 6,
+                        decoration: BoxDecoration(
+                          color: p.text,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
                     ),
+                    const SizedBox(width: Space.s4),
+                  ],
+                  Text(
+                    relativeTime(l, chat['updated_at'] as String?, now),
+                    style: TextStyles.label.copyWith(color: p.muted),
+                  ),
+                ],
+              ),
+              onTap: () => GoRouter.maybeOf(context)?.go('/v1/chats/$id'),
+              trailing: Visibility(
+                visible: showActions,
+                maintainSize: true,
+                maintainAnimation: true,
+                maintainState: true,
+                child: FoundationFocus(
+                  child: AppMenu<_Action>(
+                    key: Key('menu-$id'),
+                    tooltip: l.chatActions,
+                    icon: const Icon(AppIcons.more, size: IconSizes.action),
+                    onSelected: (a) => _act(a, chat),
+                    itemBuilder: (_) => [
+                      PopupMenuItem(
+                        value: _Action.pin,
+                        child: Text(
+                          chat['is_pinned'] == true ? l.unpin : l.pin,
+                        ),
+                      ),
+                      PopupMenuItem(
+                        value: _Action.rename,
+                        child: Text(l.rename),
+                      ),
+                      PopupMenuItem(
+                        value: _Action.delete,
+                        child: Text(
+                          l.delete,
+                          style: TextStyle(color: p.danger),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                const SizedBox(width: Space.s4),
-              ],
-              Text(
-                relativeTime(l, chat['updated_at'] as String?, now),
-                style: TextStyles.label.copyWith(color: p.muted),
               ),
-            ],
-          ),
-          onTap: () => GoRouter.maybeOf(context)?.go('/v1/chats/$id'),
-          trailing: PopupMenuButton<_Action>(
-            key: Key('menu-$id'),
-            tooltip: l.chatActions,
-            icon: const Icon(Icons.more_horiz, size: 18),
-            onSelected: (a) => _act(a, chat),
-            itemBuilder: (_) => [
-              PopupMenuItem(
-                value: _Action.pin,
-                child: Text(chat['is_pinned'] == true ? l.unpin : l.pin),
-              ),
-              PopupMenuItem(value: _Action.rename, child: Text(l.rename)),
-              PopupMenuItem(
-                value: _Action.delete,
-                child: Text(l.delete, style: TextStyle(color: p.danger)),
-              ),
-            ],
+            ),
           ),
         );
       },
     );
   }
+}
+
+class _HistoryRow extends StatefulWidget {
+  const _HistoryRow({required this.builder});
+  final Widget Function(bool showActions) builder;
+  @override
+  State<_HistoryRow> createState() => _HistoryRowState();
+}
+
+class _HistoryRowState extends State<_HistoryRow> {
+  bool hovered = false, focused = false, touch = false;
+  @override
+  Widget build(BuildContext context) => MouseRegion(
+    onEnter: (_) => setState(() {
+      hovered = true;
+      touch = false;
+    }),
+    onExit: (_) => setState(() => hovered = false),
+    child: Listener(
+      onPointerDown: (event) {
+        if (event.kind == PointerDeviceKind.touch) setState(() => touch = true);
+      },
+      child: Focus(
+        canRequestFocus: false,
+        skipTraversal: true,
+        onFocusChange: (value) => setState(() => focused = value),
+        child: widget.builder(
+          hovered ||
+              focused ||
+              touch ||
+              !RendererBinding.instance.mouseTracker.mouseIsConnected,
+        ),
+      ),
+    ),
+  );
 }

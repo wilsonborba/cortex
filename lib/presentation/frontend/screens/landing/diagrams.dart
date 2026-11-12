@@ -1,6 +1,9 @@
+import '../../theme/app_icons.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:graphview/GraphView.dart';
+import 'dart:math' as math;
+import '../../../../domain/models/memory_graph.dart';
+import '../memory/graph_canvas.dart';
 import '../../../../l10n/generated/app_localizations.dart';
 import '../../theme/tokens.dart';
 
@@ -47,7 +50,7 @@ class _PipelineDiagramState extends State<PipelineDiagram> {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
-    final p = Palette.of(Theme.of(context).brightness);
+    final p = Palette.from(context);
     final stages = [
       (l.stageAccept, l.stageAcceptText),
       (l.stageGather, l.stageGatherText),
@@ -69,15 +72,17 @@ class _PipelineDiagramState extends State<PipelineDiagram> {
               for (final (i, (name, text)) in stages.indexed)
                 AnimatedContainer(
                   duration: Motion.of(context),
-                  curve: Curves.easeOutCubic,
+                  curve: FoundationTokens.curve,
                   key: Key('stage-$i'),
                   width: 170,
                   padding: const EdgeInsets.all(Space.s12),
                   decoration: BoxDecoration(
                     color: p.surface,
-                    borderRadius: BorderRadius.circular(Radii.card),
+                    borderRadius: BorderRadius.circular(
+                      FoundationTokens.of(context).groupRadius,
+                    ),
                     border: Border.all(
-                      color: !still && i == _active ? p.accent : p.border,
+                      color: !still && i == _active ? p.text : p.border,
                       width: 1,
                     ),
                   ),
@@ -110,54 +115,9 @@ class _PipelineDiagramState extends State<PipelineDiagram> {
                 setState(() => _playing = !_playing);
                 _sync();
               },
-              icon: Icon(_playing ? Icons.pause : Icons.play_arrow),
+              icon: Icon(_playing ? AppIcons.pause : AppIcons.play),
               label: Text(_playing ? l.pause : l.play),
             ),
-        ],
-      ),
-    );
-  }
-}
-
-/// The machines of 24.B.2.g, drawn in code.
-class MachinesDiagram extends StatelessWidget {
-  const MachinesDiagram({super.key});
-  @override
-  Widget build(BuildContext context) {
-    final l = AppLocalizations.of(context);
-    final p = Palette.of(Theme.of(context).brightness);
-    Widget box(String title, String text) => Container(
-      width: 200,
-      padding: const EdgeInsets.all(Space.s12),
-      decoration: BoxDecoration(
-        color: p.surface,
-        borderRadius: BorderRadius.circular(Radii.card),
-        border: Border.all(color: p.border),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(title, style: TextStyles.label),
-          Text(text, style: TextStyles.compact.copyWith(color: p.muted)),
-        ],
-      ),
-    );
-    return Semantics(
-      label: l.machinesDescription,
-      child: Wrap(
-        spacing: Space.s12,
-        runSpacing: Space.s12,
-        crossAxisAlignment: WrapCrossAlignment.center,
-        children: [
-          box('Cortex API', 'Rust, MSI'),
-          Icon(Icons.east, color: p.muted),
-          box('MSI GPU', 'Ollama, local LLM'),
-          Icon(Icons.east, color: p.muted),
-          box('Hippocampus', 'Rust, memory'),
-          Icon(Icons.east, color: p.muted),
-          box('Pong', 'Embeddings'),
-          box('FSM', 'Files'),
-          box('Database server', 'PostgreSQL, CouchDB, Redis'),
         ],
       ),
     );
@@ -170,7 +130,7 @@ class ScopeTree extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
-    final p = Palette.of(Theme.of(context).brightness);
+    final p = Palette.from(context);
     Widget row(int depth, IconData icon, String text) => Padding(
       padding: EdgeInsets.only(left: depth * 24.0, bottom: Space.s4),
       child: Row(
@@ -184,7 +144,7 @@ class ScopeTree extends StatelessWidget {
                 fontFamily: TextStyles.mono,
               ),
             ),
-          Icon(icon, size: 16, color: p.text),
+          Icon(icon, size: IconSizes.action, color: p.text),
           const SizedBox(width: Space.s8),
           Flexible(child: Text(text, style: TextStyles.compact)),
         ],
@@ -196,71 +156,51 @@ class ScopeTree extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          row(0, Icons.folder_outlined, 'workspace: cortex'),
-          row(1, Icons.apps, 'app: cortex'),
-          row(2, Icons.person_outline, 'user: x-uuid'),
-          row(2, Icons.smart_toy_outlined, 'no user: A2A'),
-          row(1, Icons.apps, 'app: certifications'),
+          row(0, AppIcons.folder, 'workspace: cortex'),
+          row(1, AppIcons.apps, 'app: cortex'),
+          row(2, AppIcons.entity, 'user: x-uuid'),
+          row(2, AppIcons.bot, 'no user: A2A'),
+          row(1, AppIcons.apps, 'app: certifications'),
         ],
       ),
     );
   }
 }
 
-/// Example memory graph with graphview (marked Example, no personal data).
+/// The public example uses the same fitted canvas with synthetic localised data.
 class ExampleGraph extends StatelessWidget {
   const ExampleGraph({super.key});
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
-    final p = Palette.of(Theme.of(context).brightness);
-    final graph = Graph();
-    final labels = <String, String>{};
-    Node n(String id, String label) {
-      labels[id] = label;
-      return Node.Id(id);
-    }
-
-    final m1 = n('m1', 'Memory: usage balancer'),
-        m2 = n('m2', 'Memory: web modes');
-    final t1 = n('t1', 'tag: cortex'),
-        e1 = n('e1', 'entity: Ollama'),
-        f1 = n('f1', 'file: plan.pdf');
-    graph
-      ..addEdge(m1, t1)
-      ..addEdge(m2, t1)
-      ..addEdge(m1, e1)
-      ..addEdge(m2, f1);
-    final config = FruchtermanReingoldAlgorithm(
-      FruchtermanReingoldConfiguration(iterations: 300),
+    final data = MemoryGraphData(
+      [
+        GraphNode('example-chat', 'chat', l.exampleChat, const {}),
+        GraphNode('example-one', 'memory', l.exampleMemoryOne, const {}),
+        GraphNode('example-two', 'memory', l.exampleMemoryTwo, const {}),
+        GraphNode('example-tag', 'tag', l.exampleTag, const {}),
+        GraphNode('example-file', 'file', l.exampleFile, const {}),
+        GraphNode('example-project', 'entity', l.exampleEntity, const {}),
+      ],
+      const [
+        GraphEdge('example-one', 'example-chat', 'created_in'),
+        GraphEdge('example-two', 'example-chat', 'created_in'),
+        GraphEdge('example-one', 'example-tag', 'tagged_with'),
+        GraphEdge('example-two', 'example-file', 'references'),
+        GraphEdge('example-one', 'example-project', 'mentions'),
+      ],
+      false,
+      null,
     );
     return Semantics(
       label: l.graphDescription,
-      excludeSemantics: true,
-      child: SizedBox(
-        height: 260,
-        child: InteractiveViewer(
-          constrained: false,
-          child: GraphView(
-            graph: graph,
-            algorithm: config,
-            paint: Paint()
-              ..color = p.muted
-              ..strokeWidth = 1
-              ..style = PaintingStyle.stroke,
-            builder: (node) => Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: Space.s8,
-                vertical: Space.s4,
-              ),
-              decoration: BoxDecoration(
-                color: p.surface,
-                border: Border.all(color: p.border),
-                borderRadius: BorderRadius.circular(Radii.control),
-              ),
-              child: Text(labels[node.key!.value]!, style: TextStyles.label),
-            ),
+      child: LayoutBuilder(
+        builder: (context, box) => SizedBox(
+          height: math.max(
+            GraphTokens.exampleMinHeight,
+            box.maxWidth * GraphTokens.exampleRatio,
           ),
+          child: GraphCanvas(data: data, showControls: false, onSelect: (_) {}),
         ),
       ),
     );

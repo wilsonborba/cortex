@@ -1,6 +1,75 @@
 # Changelog
 
 
+## v2.1.0 - 2026-11-12
+
+
+### Bug Fixes
+
+- Preserve quiet surfaces and selected list markers
+
+
+### Chores
+
+- Merge v2.0.1 back to release/v2.0.1
+
+- Merge v2.0.1 back to development
+
+- Merge v2.0.1 back to feature/main
+
+
+### Features
+
+- Add neutral foundation and strict brand accent roles
+
+- Merge neutral foundation for #49
+
+- Use regular Lucide icons through the app icon map
+
+- Merge Lucide icons for #50
+
+- Unify buttons and accessible Material menus
+
+- Verify control inventory and distinguish empty filter results
+
+- Merge shared control design for #51
+
+- Add account menu settings and persistent preferences
+
+- Merge account settings redesign for #52
+
+- Rebuild transcript with anchored history and clear answer states
+
+- Merge transcript redesign for #53
+
+- Rebuild composer with safe input and compact options
+
+- Merge composer redesign for #54
+
+- Replace graphview with a stable canvas (#55)
+
+- Merge custom graph canvas (#55)
+
+- Redesign list and schema forms (#56)
+
+- Merge list and form redesign (#56)
+
+- Explain the system and its decisions (#57)
+
+- Merge architecture and source decisions (#57)
+
+
+### Tests
+
+- Review grouped graph and list screens (#55)
+
+- Merge grouped screen evidence (#55)
+
+- Verify the full redesign and review fixes (#58)
+
+- Merge final visual verification (#58)
+
+
 ## v2.0.1 - 2026-11-11
 
 
@@ -44,6 +113,10 @@
 - Merge #48 remove-footer-credit-and-decorative-background
 
 - Prepare development for v2.0.1
+
+- Prepare v2.0.1
+
+- Release v2.0.1
 
 
 ## v2.0.0 - 2026-11-11
