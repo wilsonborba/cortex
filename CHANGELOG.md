@@ -1,7 +1,7 @@
 # Changelog
 
 
-## Unreleased
+## v2.1.0 - 2026-11-12
 
 
 ### Bug Fixes
@@ -66,6 +66,8 @@
 - Merge grouped screen evidence (#55)
 
 - Verify the full redesign and review fixes (#58)
+
+- Merge final visual verification (#58)
 
 
 ## v2.0.1 - 2026-11-11
