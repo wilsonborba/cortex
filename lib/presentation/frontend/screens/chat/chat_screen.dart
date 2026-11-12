@@ -572,9 +572,22 @@ class _Empty extends StatelessWidget {
                       l.demoDeepPrompt,
                       l.demoThinkPrompt,
                     ])
-                      ActionChip(
-                        label: Text(prompt, style: TextStyles.label),
+                      OutlinedButton(
+                        style: OutlinedButton.styleFrom(
+                          padding: const EdgeInsets.all(Space.s12),
+                          side: BorderSide(color: Palette.from(context).border),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(
+                              FoundationTokens.of(context).controlRadius,
+                            ),
+                          ),
+                        ),
                         onPressed: () => onPrompt(prompt),
+                        child: Text(
+                          prompt,
+                          style: TextStyles.label,
+                          textAlign: TextAlign.start,
+                        ),
                       ),
                   ],
                 ),

@@ -7,8 +7,8 @@ import 'graph_fixtures.dart';
 void main() {
   setUpAll(loadFonts);
   for (final brightness in Brightness.values) {
-    for (final width in [390.0, 1300.0]) {
-      for (final mode in ['list', 'stack']) {
+    for (final width in [390.0, 768.0, 1024.0, 1300.0, 1440.0]) {
+      for (final mode in ['list', 'stack', 'long']) {
         testWidgets('memory $mode ${brightness.name} $width', (tester) async {
           final data = graphFixture(6, stack: true);
           final api = fixture.Api()
@@ -32,9 +32,22 @@ void main() {
               ],
               'truncated': false,
             };
+          if (mode == 'long') {
+            final node = (api.custom!['nodes'] as List)[1] as Map;
+            node['label'] = List.filled(
+              12,
+              'Synthetic long memory title',
+            ).join(' ');
+            (node['metadata'] as Map)['title'] = node['label'];
+            (node['metadata'] as Map)['summary'] = List.filled(
+              80,
+              'Synthetic summary sentence.',
+            ).join(' ');
+          }
           await fixture.pump(
             tester,
             api,
+            path: mode == 'long' ? '/v1/memory/synthetic-1' : '/v1/memory',
             size: Size(width, 1000),
             brightness: brightness,
           );

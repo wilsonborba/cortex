@@ -85,8 +85,7 @@ void main() {
               isFalse,
             );
             expect(tester.takeException(), isNull);
-            if (locale.languageCode == 'en' &&
-                [390.0, 1300.0].contains(width)) {
+            if (locale.languageCode == 'en') {
               final scroll = tester.state<ScrollableState>(
                 find
                     .byWidgetPredicate(

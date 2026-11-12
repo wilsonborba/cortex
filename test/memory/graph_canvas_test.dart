@@ -63,7 +63,7 @@ void main() {
     expect(expanded.edges.length, 5);
   });
   for (final count in [1, 15, 100, 200]) {
-    for (final width in [390.0, 1300.0]) {
+    for (final width in [390.0, 768.0, 1024.0, 1300.0, 1440.0]) {
       for (final loose in [false, true]) {
         testWidgets('fit includes all labels $count $width loose $loose', (
           tester,
@@ -157,7 +157,7 @@ void main() {
     expect(state.transform.value, matrix);
   });
   for (final brightness in Brightness.values) {
-    for (final width in [390.0, 1300.0]) {
+    for (final width in [390.0, 768.0, 1024.0, 1300.0, 1440.0]) {
       for (final count in [0, 1, 15, 100]) {
         testWidgets('canvas golden $count ${brightness.name} $width', (
           tester,

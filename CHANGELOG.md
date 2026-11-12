@@ -56,12 +56,16 @@
 
 - Explain the system and its decisions (#57)
 
+- Merge architecture and source decisions (#57)
+
 
 ### Tests
 
 - Review grouped graph and list screens (#55)
 
 - Merge grouped screen evidence (#55)
+
+- Verify the full redesign and review fixes (#58)
 
 
 ## v2.0.1 - 2026-11-11

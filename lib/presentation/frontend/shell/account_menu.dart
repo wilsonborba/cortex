@@ -172,7 +172,9 @@ class SettingsScreen extends StatelessWidget {
                           : context.go('/v1/chats'),
                     ),
                     const SizedBox(width: Space.s8),
-                    Text(l.settings, style: TextStyles.section),
+                    Expanded(
+                      child: Text(l.settings, style: TextStyles.section),
+                    ),
                   ],
                 ),
                 const SizedBox(height: Space.s24),

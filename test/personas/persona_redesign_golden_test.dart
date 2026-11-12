@@ -6,7 +6,7 @@ import 'persona_test.dart' as fixture;
 void main() {
   setUpAll(loadFonts);
   for (final brightness in Brightness.values) {
-    for (final width in [390.0, 1300.0]) {
+    for (final width in [390.0, 768.0, 1024.0, 1300.0, 1440.0]) {
       for (final mode in [
         'data',
         'empty',

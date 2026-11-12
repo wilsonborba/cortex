@@ -155,6 +155,7 @@ Future<GoRouter> pump(
   addTearDown(router.dispose);
   await tester.pumpWidget(
     MaterialApp.router(
+      debugShowCheckedModeBanner: false,
       routerConfig: router,
       locale: locale,
       theme: cortexTheme(brightness),

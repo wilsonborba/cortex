@@ -43,26 +43,29 @@ class EmptyState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final p = Palette.from(context);
-    return Center(
+    return Align(
+      alignment: AlignmentDirectional.topStart,
       child: SingleChildScrollView(
+        padding: const EdgeInsets.all(Space.s16),
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 420),
           child: Column(
             mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Icon(icon, size: 32, color: p.muted),
               const SizedBox(height: Space.s12),
               Text(
                 title,
                 style: TextStyles.subsection,
-                textAlign: TextAlign.center,
+                textAlign: TextAlign.start,
               ),
               if (message != null) ...[
                 const SizedBox(height: Space.s8),
                 Text(
                   message!,
                   style: TextStyles.body.copyWith(color: p.muted),
-                  textAlign: TextAlign.center,
+                  textAlign: TextAlign.start,
                 ),
               ],
               if (action != null) ...[

@@ -5,10 +5,11 @@ import 'package:syntax_highlight/syntax_highlight.dart';
 import '../../theme/tokens.dart';
 
 Future<void>? _ready;
+Future<void> prepareCodeSyntax() => _ready ??= Highlighter.initialize(['rust']);
 
 /// A real snippet of the Rust code (24.N.1.a): at most 25 lines, the file path
 /// below, Ubuntu Sans Mono, monochrome highlight.
-class CodeSnippet extends StatelessWidget {
+class CodeSnippet extends StatefulWidget {
   const CodeSnippet({
     super.key,
     required this.asset,
@@ -19,10 +20,41 @@ class CodeSnippet extends StatelessWidget {
   final String path;
   final String caption;
 
+  @override
+  State<CodeSnippet> createState() => _CodeSnippetState();
+}
+
+class _CodeSnippetState extends State<CodeSnippet> {
+  Palette? _palette;
+  Future<TextSpan>? _source;
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final palette = Palette.from(context);
+    if (palette != _palette) {
+      _palette = palette;
+      _source = _load(palette);
+    }
+  }
+
+  @override
+  void didUpdateWidget(CodeSnippet oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.asset != widget.asset) _source = _load(_palette!);
+  }
+
+  TextSpan _neutral(TextSpan span, Palette p) => TextSpan(
+    text: span.text,
+    style: span.style?.copyWith(
+      color: span.style?.color == p.muted ? p.muted : p.text,
+    ),
+    children: span.children
+        ?.map((child) => child is TextSpan ? _neutral(child, p) : child)
+        .toList(),
+  );
   Future<TextSpan> _load(Palette p) async {
-    _ready ??= Highlighter.initialize(['rust']);
-    await _ready;
-    final code = await rootBundle.loadString(asset);
+    await prepareCodeSyntax();
+    final code = await rootBundle.loadString(widget.asset);
     final theme = HighlighterTheme.fromConfiguration(
       jsonEncode({
         'settings': [
@@ -47,7 +79,10 @@ class CodeSnippet extends StatelessWidget {
         color: p.text,
       ),
     );
-    return Highlighter(language: 'rust', theme: theme).highlight(code);
+    return _neutral(
+      Highlighter(language: 'rust', theme: theme).highlight(code),
+      p,
+    );
   }
 
   static String _hex(Color c) =>
@@ -59,7 +94,7 @@ class CodeSnippet extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(caption, style: TextStyles.label),
+        Text(widget.caption, style: TextStyles.label),
         const SizedBox(height: Space.s8),
         Container(
           width: double.infinity,
@@ -74,7 +109,7 @@ class CodeSnippet extends StatelessWidget {
           child: SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: FutureBuilder<TextSpan>(
-              future: _load(p),
+              future: _source,
               builder: (_, s) =>
                   s.hasData ? Text.rich(s.data!) : const SizedBox(height: 120),
             ),
@@ -82,7 +117,7 @@ class CodeSnippet extends StatelessWidget {
         ),
         const SizedBox(height: Space.s4),
         Text(
-          path,
+          widget.path,
           style: TextStyles.label.copyWith(
             color: p.muted,
             fontFamily: TextStyles.mono,

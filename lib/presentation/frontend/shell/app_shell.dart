@@ -123,7 +123,12 @@ class _AppShellState extends State<AppShell> {
             ],
           ),
           const SizedBox(height: Space.s16),
-          AppButton.primary(
+          AppButton(
+            kind:
+                widget.location.startsWith('/v1/chats') ||
+                    widget.location.startsWith('/v1/personas')
+                ? ButtonKind.secondary
+                : ButtonKind.primary,
             label: l.newChat,
             icon: AppIcons.newChat,
             onPressed: () => go('/v1/chats'),
@@ -137,19 +142,23 @@ class _AppShellState extends State<AppShell> {
           ),
           const SizedBox(height: Space.s16),
           for (final d in _destinations.skip(1))
-            ListTile(
-              title: Text(d.label(l)),
-              leading: Icon(d.icon, size: IconSizes.navigation),
-              selected: widget.location.startsWith(d.path),
-              shape: Border(
-                left: BorderSide(
-                  color: widget.location.startsWith(d.path)
-                      ? p.accent
-                      : Colors.transparent,
-                  width: Controls.focusRing,
+            Container(
+              decoration: BoxDecoration(
+                border: Border(
+                  left: BorderSide(
+                    color: widget.location.startsWith(d.path)
+                        ? p.accent
+                        : Colors.transparent,
+                    width: Controls.focusRing,
+                  ),
                 ),
               ),
-              onTap: () => go(d.path),
+              child: ListTile(
+                title: Text(d.label(l)),
+                leading: Icon(d.icon, size: IconSizes.navigation),
+                selected: widget.location.startsWith(d.path),
+                onTap: () => go(d.path),
+              ),
             ),
           const SizedBox(height: Space.s16),
           Text(l.chats, style: TextStyles.label),
