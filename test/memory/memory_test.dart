@@ -1,6 +1,8 @@
 import 'package:cortex/presentation/frontend/widgets/common/surfaces.dart';
 import 'dart:async';
 import 'dart:convert';
+import 'graph_fixtures.dart';
+import 'package:cortex/domain/models/memory_graph.dart';
 import 'package:cortex/dal/remote/auth_api_adapter.dart';
 import 'package:cortex/dal/remote/cortex_api.dart';
 import 'package:cortex/domain/services/auth_service.dart';
@@ -14,7 +16,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
-import 'package:graphview/GraphView.dart' as gv;
+import 'package:cortex/presentation/frontend/screens/memory/graph_canvas.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 
@@ -82,6 +84,7 @@ class Api {
   bool isolated = false;
   bool single = false;
   String? title;
+  Map<String, dynamic>? custom;
   late final client = MockClient((r) async {
     requests.add(r.url);
     final path = r.url.path.replaceFirst('/apps/cortex/v1', '');
@@ -96,7 +99,7 @@ class Api {
       if (empty) {
         return response({'nodes': [], 'edges': [], 'truncated': false});
       }
-      final value = graph(title: title);
+      final value = custom ?? graph(title: title);
       if (isolated || single) value['edges'] = [];
       if (single) value['nodes'] = (value['nodes'] as List).take(1).toList();
       return response(value);
@@ -106,6 +109,14 @@ class Api {
         path.substring('/memory-graph/nodes/'.length),
       );
       if (nodeResponses.containsKey(id)) return nodeResponses[id]!.future;
+      if (custom != null) {
+        final node = (custom!['nodes'] as List)
+            .where((n) => n['id'] == id)
+            .firstOrNull;
+        return node == null
+            ? response({'error_number': 1039}, 404)
+            : response({...custom!, 'node': node});
+      }
       if (!nodeIds.contains(id)) return response({'error_number': 1039}, 404);
       return response(graph(focus: id, title: title));
     }
@@ -161,14 +172,86 @@ Future<GoRouter> pump(
 }
 
 void main() {
-  testWidgets('a single saved memory remains visible without links', (
+  testWidgets('refresh failure keeps the old graph with a retry action', (
+    tester,
+  ) async {
+    final api = Api();
+    await pump(tester, api);
+    api.failGraph = true;
+    final canvas = tester.state<GraphCanvasState>(find.byType(GraphCanvas));
+    final old = Map.of(canvas.positions);
+    await tester.tap(
+      find.descendant(
+        of: find.byKey(const Key('depth')),
+        matching: find.byType(AppSelect<int>),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('2').last);
+    await tester.pumpAndSettle();
+    expect(find.text('Retry'), findsOneWidget);
+    expect(find.byType(GraphCanvas), findsOneWidget);
+    expect(
+      tester.state<GraphCanvasState>(find.byType(GraphCanvas)).positions,
+      old,
+    );
+  });
+  testWidgets('stack expansion and search use the same graph and list nodes', (
+    tester,
+  ) async {
+    final data = graphFixture(6, stack: true);
+    Map<String, dynamic> asJson(MemoryGraphData d) => {
+      'nodes': [
+        for (final n in d.nodes)
+          {
+            'id': n.id,
+            'node_type': n.type,
+            'label': n.label,
+            'metadata': n.metadata,
+          },
+      ],
+      'edges': [
+        for (final e in d.edges)
+          {'source_id': e.source, 'target_id': e.target, 'edge_type': e.type},
+      ],
+      'truncated': false,
+    };
+    final api = Api()..custom = asJson(data);
+    await pump(tester, api);
+    var state = tester.state<GraphCanvasState>(find.byType(GraphCanvas));
+    expect(state.scene.nodes.length, 2);
+    final old = Map.of(state.positions), matrix = state.transform.value.clone();
+    final stack = state.scene.stacks.keys.single;
+    await tester.tapAt(
+      tester.getTopLeft(find.byType(InteractiveViewer)) +
+          MatrixUtils.transformPoint(matrix, state.positions[stack]!),
+    );
+    await tester.pumpAndSettle();
+    state = tester.state<GraphCanvasState>(find.byType(GraphCanvas));
+    expect(state.scene.nodes.length, 6);
+    expect(state.positions, old);
+    expect(state.transform.value, matrix);
+    await tester.tap(find.text('List'));
+    await tester.pumpAndSettle();
+    for (final n in data.nodes) {
+      expect(find.byKey(Key('list-node-${n.id}')), findsOneWidget);
+    }
+    await tester.enterText(
+      find.byKey(const Key('graph-search')),
+      'Example chat',
+    );
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('list-node-synthetic-0')), findsOneWidget);
+    expect(find.byKey(const Key('list-node-synthetic-1')), findsNothing);
+  });
+
+  testWidgets('a single unlinked memory opens the accessible list', (
     tester,
   ) async {
     final api = Api()..single = true;
     await pump(tester, api);
-    final viewport = tester.getRect(find.byType(InteractiveViewer));
-    final node = tester.getRect(find.byKey(const Key('graph-node-$memoryId')));
-    expect(viewport.contains(node.center), isTrue);
+    expect(find.byKey(const Key('list-node-$memoryId')), findsOneWidget);
+    expect(find.text('These memories have no links yet'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 
@@ -188,31 +271,17 @@ void main() {
     );
   });
 
-  testWidgets('isolated nodes are framed and selection keeps the layout', (
-    tester,
-  ) async {
-    final api = Api()..isolated = true;
-    final router = await pump(tester, api, path: '/v1/memory/$memoryId');
-    final before = tester.widget<gv.GraphViewWidget>(
-      find.byType(gv.GraphViewWidget),
-    );
-    final viewport = tester.getRect(find.byType(InteractiveViewer));
-    for (final id in nodeIds) {
-      expect(
-        viewport.contains(
-          tester.getRect(find.byKey(Key('graph-node-$id'))).center,
-        ),
-        isTrue,
-        reason: id,
-      );
-    }
+  testWidgets('selection keeps positions and the view matrix', (tester) async {
+    final router = await pump(tester, Api(), path: '/v1/memory/$memoryId');
+    final before = tester.state<GraphCanvasState>(find.byType(GraphCanvas));
+    final positions = Map.of(before.positions),
+        matrix = before.transform.value.clone();
     router.go('/v1/memory/entity:p1');
     await tester.pumpAndSettle();
-    final after = tester.widget<gv.GraphViewWidget>(
-      find.byType(gv.GraphViewWidget),
-    );
-    expect(identical(before.delegate.graph, after.delegate.graph), isTrue);
-    expect(after.enableAnimation, isFalse);
+    final after = tester.state<GraphCanvasState>(find.byType(GraphCanvas));
+    expect(identical(before, after), isTrue);
+    expect(after.positions, positions);
+    expect(after.transform.value, matrix);
     expect(tester.takeException(), isNull);
   });
 
@@ -222,7 +291,14 @@ void main() {
     final api = Api();
     final router = await pump(tester, api);
     for (final id in nodeIds) {
-      expect(find.byKey(Key('graph-node-$id')), findsOneWidget);
+      expect(
+        tester
+            .state<GraphCanvasState>(find.byType(GraphCanvas))
+            .scene
+            .nodes
+            .map((n) => n.id),
+        contains(id),
+      );
     }
     expect(find.byType(InteractiveViewer), findsOneWidget);
     expect(find.text('Persona'), findsOneWidget);
@@ -361,7 +437,14 @@ void main() {
       expect(requests.last.queryParameters['depth'], '3');
       expect(requests.last.queryParameters['limit'], '200');
       for (final id in nodeIds) {
-        expect(find.byKey(Key('graph-node-$id')), findsOneWidget);
+        expect(
+          tester
+              .state<GraphCanvasState>(find.byType(GraphCanvas))
+              .scene
+              .nodes
+              .map((n) => n.id),
+          contains(id),
+        );
       }
     },
   );

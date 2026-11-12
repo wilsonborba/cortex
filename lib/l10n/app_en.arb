@@ -488,5 +488,20 @@
   "codeLabel": "Code",
   "composerOptions": "Options",
   "composerEmptyReason": "Write a message before sending.",
-  "composerUploadReason": "Wait for the file upload to finish."
+  "composerUploadReason": "Wait for the file upload to finish.",
+  "graphZoomIn": "Zoom in",
+  "graphZoomOut": "Zoom out",
+  "graphFit": "Fit graph",
+  "graphSearch": "Search memories",
+  "graphNoLinks": "These memories have no links yet",
+  "graphMissingNode": "This node is not in the current result.",
+  "openChat": "Open chat",
+  "showInGraph": "Show in memory graph",
+  "exampleChat": "Planning chat",
+  "exampleMemoryOne": "Plan the next steps",
+  "exampleMemoryTwo": "Compare the options",
+  "exampleTag": "Planning",
+  "exampleFile": "Plan document",
+  "exampleEntity": "Project",
+  "graphBack": "Back"
 }

@@ -1202,4 +1202,49 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get composerUploadReason => 'Aguarde o término do envio do arquivo.';
+
+  @override
+  String get graphZoomIn => 'Aproximar';
+
+  @override
+  String get graphZoomOut => 'Afastar';
+
+  @override
+  String get graphFit => 'Enquadrar grafo';
+
+  @override
+  String get graphSearch => 'Buscar memórias';
+
+  @override
+  String get graphNoLinks => 'Estas memórias ainda não têm links';
+
+  @override
+  String get graphMissingNode => 'Este nó não está no resultado atual.';
+
+  @override
+  String get openChat => 'Abrir conversa';
+
+  @override
+  String get showInGraph => 'Mostrar no grafo de memória';
+
+  @override
+  String get exampleChat => 'Conversa de planejamento';
+
+  @override
+  String get exampleMemoryOne => 'Planejar os próximos passos';
+
+  @override
+  String get exampleMemoryTwo => 'Comparar as opções';
+
+  @override
+  String get exampleTag => 'Planejamento';
+
+  @override
+  String get exampleFile => 'Documento do plano';
+
+  @override
+  String get exampleEntity => 'Projeto';
+
+  @override
+  String get graphBack => 'Voltar';
 }

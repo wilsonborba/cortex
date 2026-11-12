@@ -44,6 +44,10 @@
 
 - Rebuild composer with safe input and compact options
 
+- Merge composer redesign for #54
+
+- Replace graphview with a stable canvas (#55)
+
 
 ## v2.0.1 - 2026-11-11
 

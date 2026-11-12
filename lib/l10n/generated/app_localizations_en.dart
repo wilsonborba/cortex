@@ -1186,4 +1186,49 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get composerUploadReason => 'Wait for the file upload to finish.';
+
+  @override
+  String get graphZoomIn => 'Zoom in';
+
+  @override
+  String get graphZoomOut => 'Zoom out';
+
+  @override
+  String get graphFit => 'Fit graph';
+
+  @override
+  String get graphSearch => 'Search memories';
+
+  @override
+  String get graphNoLinks => 'These memories have no links yet';
+
+  @override
+  String get graphMissingNode => 'This node is not in the current result.';
+
+  @override
+  String get openChat => 'Open chat';
+
+  @override
+  String get showInGraph => 'Show in memory graph';
+
+  @override
+  String get exampleChat => 'Planning chat';
+
+  @override
+  String get exampleMemoryOne => 'Plan the next steps';
+
+  @override
+  String get exampleMemoryTwo => 'Compare the options';
+
+  @override
+  String get exampleTag => 'Planning';
+
+  @override
+  String get exampleFile => 'Plan document';
+
+  @override
+  String get exampleEntity => 'Project';
+
+  @override
+  String get graphBack => 'Back';
 }

@@ -184,23 +184,28 @@ GoRouter buildRouter({
               ),
             ),
           ),
-          // Flat: one memory screen; the node path only opens its card.
           GoRoute(
             path: '/v1/memory',
-            builder: (c, _) => screenPage(
-              c,
-              (l) => l.memory,
-              () => MemoryScreen(controller: memory),
+            pageBuilder: (c, s) => NoTransitionPage(
+              key: const ValueKey('memory-page'),
+              child: screenPage(
+                c,
+                (l) => l.memory,
+                () => MemoryScreen(controller: memory),
+              ),
             ),
           ),
           GoRoute(
             path: '/v1/memory/:node_id',
-            builder: (c, s) => screenPage(
-              c,
-              (l) => l.memory,
-              () => MemoryScreen(
-                controller: memory,
-                nodeId: s.pathParameters['node_id'],
+            pageBuilder: (c, s) => NoTransitionPage(
+              key: const ValueKey('memory-page'),
+              child: screenPage(
+                c,
+                (l) => l.memory,
+                () => MemoryScreen(
+                  controller: memory,
+                  nodeId: s.pathParameters['node_id'],
+                ),
               ),
             ),
           ),

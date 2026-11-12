@@ -399,5 +399,20 @@
   "codeLabel": "โค้ด",
   "composerOptions": "ตัวเลือก",
   "composerEmptyReason": "เขียนข้อความก่อนส่ง",
-  "composerUploadReason": "รอให้อัปโหลดไฟล์เสร็จก่อน"
+  "composerUploadReason": "รอให้อัปโหลดไฟล์เสร็จก่อน",
+  "graphZoomIn": "ขยาย",
+  "graphZoomOut": "ย่อ",
+  "graphFit": "ปรับกราฟให้พอดี",
+  "graphSearch": "ค้นหาความทรงจำ",
+  "graphNoLinks": "ความทรงจำเหล่านี้ยังไม่มีลิงก์",
+  "graphMissingNode": "โหนดนี้ไม่อยู่ในผลลัพธ์ปัจจุบัน",
+  "openChat": "เปิดแชต",
+  "showInGraph": "แสดงในกราฟความทรงจำ",
+  "exampleChat": "แชตวางแผน",
+  "exampleMemoryOne": "วางแผนขั้นตอนถัดไป",
+  "exampleMemoryTwo": "เปรียบเทียบตัวเลือก",
+  "exampleTag": "การวางแผน",
+  "exampleFile": "เอกสารแผน",
+  "exampleEntity": "โครงการ",
+  "graphBack": "กลับ"
 }

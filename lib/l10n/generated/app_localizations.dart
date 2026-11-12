@@ -2313,6 +2313,96 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Wait for the file upload to finish.'**
   String get composerUploadReason;
+
+  /// No description provided for @graphZoomIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Zoom in'**
+  String get graphZoomIn;
+
+  /// No description provided for @graphZoomOut.
+  ///
+  /// In en, this message translates to:
+  /// **'Zoom out'**
+  String get graphZoomOut;
+
+  /// No description provided for @graphFit.
+  ///
+  /// In en, this message translates to:
+  /// **'Fit graph'**
+  String get graphFit;
+
+  /// No description provided for @graphSearch.
+  ///
+  /// In en, this message translates to:
+  /// **'Search memories'**
+  String get graphSearch;
+
+  /// No description provided for @graphNoLinks.
+  ///
+  /// In en, this message translates to:
+  /// **'These memories have no links yet'**
+  String get graphNoLinks;
+
+  /// No description provided for @graphMissingNode.
+  ///
+  /// In en, this message translates to:
+  /// **'This node is not in the current result.'**
+  String get graphMissingNode;
+
+  /// No description provided for @openChat.
+  ///
+  /// In en, this message translates to:
+  /// **'Open chat'**
+  String get openChat;
+
+  /// No description provided for @showInGraph.
+  ///
+  /// In en, this message translates to:
+  /// **'Show in memory graph'**
+  String get showInGraph;
+
+  /// No description provided for @exampleChat.
+  ///
+  /// In en, this message translates to:
+  /// **'Planning chat'**
+  String get exampleChat;
+
+  /// No description provided for @exampleMemoryOne.
+  ///
+  /// In en, this message translates to:
+  /// **'Plan the next steps'**
+  String get exampleMemoryOne;
+
+  /// No description provided for @exampleMemoryTwo.
+  ///
+  /// In en, this message translates to:
+  /// **'Compare the options'**
+  String get exampleMemoryTwo;
+
+  /// No description provided for @exampleTag.
+  ///
+  /// In en, this message translates to:
+  /// **'Planning'**
+  String get exampleTag;
+
+  /// No description provided for @exampleFile.
+  ///
+  /// In en, this message translates to:
+  /// **'Plan document'**
+  String get exampleFile;
+
+  /// No description provided for @exampleEntity.
+  ///
+  /// In en, this message translates to:
+  /// **'Project'**
+  String get exampleEntity;
+
+  /// No description provided for @graphBack.
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get graphBack;
 }
 
 class _AppLocalizationsDelegate

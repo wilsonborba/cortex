@@ -1180,4 +1180,49 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get composerUploadReason => 'รอให้อัปโหลดไฟล์เสร็จก่อน';
+
+  @override
+  String get graphZoomIn => 'ขยาย';
+
+  @override
+  String get graphZoomOut => 'ย่อ';
+
+  @override
+  String get graphFit => 'ปรับกราฟให้พอดี';
+
+  @override
+  String get graphSearch => 'ค้นหาความทรงจำ';
+
+  @override
+  String get graphNoLinks => 'ความทรงจำเหล่านี้ยังไม่มีลิงก์';
+
+  @override
+  String get graphMissingNode => 'โหนดนี้ไม่อยู่ในผลลัพธ์ปัจจุบัน';
+
+  @override
+  String get openChat => 'เปิดแชต';
+
+  @override
+  String get showInGraph => 'แสดงในกราฟความทรงจำ';
+
+  @override
+  String get exampleChat => 'แชตวางแผน';
+
+  @override
+  String get exampleMemoryOne => 'วางแผนขั้นตอนถัดไป';
+
+  @override
+  String get exampleMemoryTwo => 'เปรียบเทียบตัวเลือก';
+
+  @override
+  String get exampleTag => 'การวางแผน';
+
+  @override
+  String get exampleFile => 'เอกสารแผน';
+
+  @override
+  String get exampleEntity => 'โครงการ';
+
+  @override
+  String get graphBack => 'กลับ';
 }
