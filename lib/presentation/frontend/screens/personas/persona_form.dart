@@ -1,3 +1,4 @@
+import '../../widgets/common/surfaces.dart';
 import '../../handlers/process_messages.dart';
 import 'dart:convert';
 import 'package:flutter/material.dart';
@@ -23,6 +24,53 @@ class PersonaForm extends StatefulWidget {
 
 class _PersonaFormState extends State<PersonaForm> {
   final name = TextEditingController();
+  final focusNodes = <String, FocusNode>{};
+  FocusNode focusFor(String path) =>
+      focusNodes.putIfAbsent(path, () => FocusNode());
+  void focusError(Map<String, String> errors) {
+    final paths = errors.keys
+        .map(
+          (path) => path == 'canonical_name'
+              ? 'name'
+              : [
+                  'name',
+                  'type',
+                  'aliases',
+                  'is_self',
+                ].any((key) => path == key || path.startsWith('$key['))
+              ? path
+              : 'attributes.${path.replaceFirst('attributes.', '')}',
+        )
+        .toList();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      for (final key in [
+        'name',
+        'type',
+        'aliases',
+        'is_self',
+        ...schema!.fields.map((f) => 'attributes.${f.name}'),
+      ]) {
+        final node = focusNodes[key];
+        if (node?.context != null &&
+            paths.any(
+              (path) =>
+                  path == key ||
+                  path.startsWith('$key[') ||
+                  path.startsWith('$key.'),
+            )) {
+          node!.requestFocus();
+          Scrollable.ensureVisible(
+            node.context!,
+            duration: Motion.panelOf(context),
+            curve: FoundationTokens.curve,
+          );
+          return;
+        }
+      }
+    });
+  }
+
   String type = 'person';
   List<String> aliases = [];
   bool isSelf = false;
@@ -54,6 +102,9 @@ class _PersonaFormState extends State<PersonaForm> {
   @override
   void dispose() {
     name.dispose();
+    for (final node in focusNodes.values) {
+      node.dispose();
+    }
     super.dispose();
   }
 
@@ -169,6 +220,7 @@ class _PersonaFormState extends State<PersonaForm> {
           busy = false;
           error = e;
         });
+        focusError(e.fieldErrors);
       }
     } catch (_) {
       if (mounted) {
@@ -242,9 +294,9 @@ class _PersonaFormState extends State<PersonaForm> {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(Space.s16),
       child: Align(
-        alignment: Alignment.topLeft,
+        alignment: Alignment.topCenter,
         child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 720),
+          constraints: const BoxConstraints(maxWidth: Space.personaFormWidth),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -258,24 +310,46 @@ class _PersonaFormState extends State<PersonaForm> {
                   padding: const EdgeInsets.only(bottom: Space.s16),
                   child: Text(
                     apiFailure(l, error),
-                    style: TextStyle(
-                      color: Palette.of(Theme.of(context).brightness).danger,
-                    ),
+                    style: TextStyle(color: Palette.from(context).danger),
                   ),
                 ),
+              Text(l.personaIdentity, style: TextStyles.subsection),
+              const SizedBox(height: Space.s16),
+              AppInput(
+                key: const Key('persona-name'),
+                controller: name,
+                focusNode: focusFor('name'),
+                enabled: !busy,
+                label: '${l.personaName} *',
+                error: fieldError(
+                  l,
+                  errors['name'] ?? errors['canonical_name'],
+                ),
+              ),
+              const SizedBox(height: Space.s16),
               if (widget.id == null)
-                DropdownButtonFormField<String>(
-                  key: const Key('persona-type'),
-                  initialValue: type,
-                  decoration: InputDecoration(labelText: l.personaType),
-                  items: [
-                    DropdownMenuItem(
-                      value: 'person',
-                      child: Text(l.personType),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text(l.personaType, style: TextStyles.label),
+                    const SizedBox(height: Space.s8),
+                    AppSelectFormField<String>(
+                      key: const Key('persona-type'),
+                      focusNode: focusFor('type'),
+                      initialValue: type,
+                      decoration: InputDecoration(
+                        errorText: fieldError(l, errors['type']),
+                      ),
+                      items: [
+                        DropdownMenuItem(
+                          value: 'person',
+                          child: Text(l.personType),
+                        ),
+                        DropdownMenuItem(value: 'bot', child: Text(l.botType)),
+                      ],
+                      onChanged: busy ? null : (value) => changeType(value!),
                     ),
-                    DropdownMenuItem(value: 'bot', child: Text(l.botType)),
                   ],
-                  onChanged: busy ? null : (value) => changeType(value!),
                 )
               else
                 Text(
@@ -283,22 +357,10 @@ class _PersonaFormState extends State<PersonaForm> {
                   style: TextStyles.label,
                 ),
               const SizedBox(height: Space.s16),
-              TextField(
-                key: const Key('persona-name'),
-                controller: name,
-                enabled: !busy,
-                decoration: InputDecoration(
-                  labelText: '${l.personaName} *',
-                  errorText: fieldError(
-                    l,
-                    errors['name'] ?? errors['canonical_name'],
-                  ),
-                ),
-              ),
-              const SizedBox(height: Space.s16),
               ListField(
                 key: const Key('persona-aliases'),
                 label: l.personaAliases,
+                focusNode: focusFor('aliases'),
                 enabled: !busy,
                 value: aliases,
                 onChanged: (value) =>
@@ -311,44 +373,54 @@ class _PersonaFormState extends State<PersonaForm> {
                       ?.value,
                 ),
               ),
-              SwitchListTile(
-                key: const Key('persona-self'),
-                contentPadding: EdgeInsets.zero,
-                title: Text(l.personaIsSelf),
-                value: isSelf,
-                onChanged: busy
-                    ? null
-                    : (value) => setState(() => isSelf = value),
+              FoundationFocus(
+                child: SwitchListTile(
+                  key: const Key('persona-self'),
+                  focusNode: focusFor('is_self'),
+                  contentPadding: EdgeInsets.zero,
+                  title: Text(l.personaIsSelf),
+                  value: isSelf,
+                  onChanged: busy
+                      ? null
+                      : (value) => setState(() => isSelf = value),
+                ),
               ),
+              const SizedBox(height: Space.s24),
+              Text(l.personaSchemaFields, style: TextStyles.subsection),
+              const SizedBox(height: Space.s8),
               Text(l.personaRequiredLegend, style: TextStyles.label),
               const SizedBox(height: Space.s12),
               SchemaFields(
                 key: ValueKey('$type-${schema!.version}-${widget.id}'),
                 fields: schema!.fields,
+                focusFor: (path) => focusFor('attributes.$path'),
                 enabled: !busy,
                 values: attributes,
                 errors: errors,
                 onChanged: () => setState(() {}),
               ),
+              const SizedBox(height: Space.s24),
               Wrap(
+                alignment: WrapAlignment.end,
                 spacing: Space.s12,
                 runSpacing: Space.s12,
                 children: [
-                  AppButton(
-                    key: const Key('save-persona'),
-                    label: l.save,
-                    busy: busy,
-                    onPressed: save,
-                  ),
                   if (widget.id != null)
                     AppButton.destructive(
                       key: const Key('delete-persona'),
                       label: l.deletePersona,
                       onPressed: busy ? null : remove,
                     ),
-                  TextButton(
+                  AppButton(
+                    kind: ButtonKind.quiet,
+                    label: l.cancel,
                     onPressed: busy ? null : () => context.go('/v1/personas'),
-                    child: Text(l.cancel),
+                  ),
+                  AppButton.primary(
+                    key: const Key('save-persona'),
+                    label: l.save,
+                    busy: busy,
+                    onPressed: save,
                   ),
                 ],
               ),

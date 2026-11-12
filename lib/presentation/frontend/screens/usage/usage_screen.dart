@@ -252,7 +252,7 @@ class _StatsChartState extends State<StatsChart> {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
-    final p = Palette.of(Theme.of(context).brightness);
+    final p = Palette.from(context);
     if (widget.rows.isEmpty) return EmptyState(title: l.usageEmpty);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,

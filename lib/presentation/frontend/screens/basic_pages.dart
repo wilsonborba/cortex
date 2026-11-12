@@ -1,3 +1,4 @@
+import '../theme/app_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/utils/return_path.dart';
@@ -18,7 +19,7 @@ class NotFoundPage extends StatelessWidget {
       body: EmptyState(
         title: l.notFoundTitle,
         message: l.notFoundMessage,
-        icon: Icons.search_off,
+        icon: AppIcons.notFound,
         action: AppButton.primary(
           label: l.goToChats,
           onPressed: () => context.go('/v1/chats'),
@@ -73,7 +74,7 @@ class _LoginRedirectPageState extends State<LoginRedirectPage> {
   Widget build(BuildContext context) => Scaffold(
     body: EmptyState(
       title: AppLocalizations.of(context).signingIn,
-      icon: Icons.login,
+      icon: AppIcons.login,
     ),
   );
 }

@@ -1,18 +1,20 @@
+import '../../theme/app_icons.dart';
 import 'dart:async';
 import '../../handlers/process_messages.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import 'package:markdown/markdown.dart' as md;
 import 'package:url_launcher/url_launcher.dart';
 import '../../../../domain/models/output.dart';
 import '../../../../l10n/generated/app_localizations.dart';
 import '../../theme/tokens.dart';
-import '../../widgets/common/buttons.dart';
 import '../../widgets/common/states.dart';
 import 'step_text.dart';
 
-/// The security block number (area 9.5): shown with a Material icon, no emoji (C1).
+/// The security block number (area 9.5): shown with a shield icon, no emoji (C1).
 const securityBlock = 1014;
 
 /// One output (30.5): status line, stages, thinking, answer, sources, memories,
@@ -24,8 +26,10 @@ class OutputBlock extends StatefulWidget {
     this.onStopThinking,
     this.onRetry,
     this.onMemories,
+    this.now,
   });
   final OutputView output;
+  final DateTime Function()? now;
   final VoidCallback? onStopThinking;
   final VoidCallback? onRetry;
   final ValueChanged<List<(String, String)>>? onMemories;
@@ -34,202 +38,274 @@ class OutputBlock extends StatefulWidget {
 }
 
 class _OutputBlockState extends State<OutputBlock> {
+  DateTime _now() => widget.now?.call() ?? DateTime.now();
   bool _stages = false;
-  bool _thinking = true;
+  bool _thinking = false;
+  Timer? _clock;
+  String? _lastStatus;
+  String _announcement = '';
+  DateTime? _thinkingStarted;
+  int _thoughtSeconds = 0;
+  bool _hovered = false, _focused = false, _touch = false;
+  @override
+  void dispose() {
+    _clock?.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
-    final p = Palette.of(Theme.of(context).brightness);
+    final p = Palette.from(context);
     final o = widget.output;
-    final elapsed = DateTime.now().difference(o.started).inSeconds;
-    final total = o.progress;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        if (o.running)
-          InkWell(
-            key: const Key('status-line'),
-            onTap: () => setState(() => _stages = !_stages),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: Space.s4),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Wrap(
-                    spacing: Space.s8,
-                    runSpacing: Space.s4,
-                    crossAxisAlignment: WrapCrossAlignment.center,
-                    children: [
-                      SizedBox.square(
-                        dimension: 12,
-                        child: MediaQuery.disableAnimationsOf(context)
-                            ? const Icon(Icons.hourglass_empty, size: 12)
-                            : CircularProgressIndicator(
-                                strokeWidth: 1.5,
-                                color: p.muted,
-                              ),
-                      ),
-                      const SizedBox(width: Space.s8),
-                      Text(
-                        o.step == null
-                            ? l.steps_queue_wait
-                            : stepText(l, o.step!, o.stepParams, o.progress),
-                        style: TextStyles.compact.copyWith(color: p.muted),
-                      ),
-                      const SizedBox(width: Space.s8),
-                      Text(
-                        l.elapsed(elapsed),
-                        style: TextStyles.label.copyWith(color: p.muted),
-                      ),
-                      if (o.expectedMs != null) ...[
-                        const SizedBox(width: Space.s8),
-                        Text(
-                          l.usuallyAbout((o.expectedMs! / 1000).round()),
-                          style: TextStyles.label.copyWith(color: p.muted),
+    final elapsed = _now().difference(o.started).inSeconds;
+    if (o.running && _clock == null) {
+      _clock = Timer.periodic(const Duration(seconds: 1), (_) {
+        if (mounted) setState(() {});
+      });
+    } else if (!o.running) {
+      _clock?.cancel();
+      _clock = null;
+    }
+    final state = '${o.status}:${o.errorNumber}';
+    if (_lastStatus != state) {
+      _announcement = o.running
+          ? l.answerStarted
+          : o.status == 'failed'
+          ? processMessage(l, o.errorNumber)
+          : o.status == 'cancelled'
+          ? l.cancelledLine
+          : l.answerComplete;
+      _lastStatus = state;
+    }
+    if (o.thinkingRuns) {
+      _thinkingStarted ??= _now();
+      _thoughtSeconds = _now().difference(_thinkingStarted!).inSeconds;
+    } else {
+      final stage = o.stages
+          .where((stage) => stage.name == 'think')
+          .firstOrNull;
+      if (stage != null) _thoughtSeconds = (stage.timeMs / 1000).round();
+    }
+    final statusText =
+        '${o.step == null ? l.steps_queue_wait : stepText(l, o.step!, o.stepParams, o.progress)} · ${l.elapsed(elapsed)}${o.expectedMs == null ? '' : ' · ${l.usuallyAbout((o.expectedMs! / 1000).round())}'}';
+    return Focus(
+      onFocusChange: (value) => setState(() => _focused = value),
+      child: MouseRegion(
+        onEnter: (_) => setState(() {
+          _hovered = true;
+          _touch = false;
+        }),
+        onExit: (_) => setState(() => _hovered = false),
+        child: Listener(
+          onPointerDown: (event) {
+            if (event.kind == PointerDeviceKind.touch) {
+              setState(() => _touch = true);
+            }
+          },
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Semantics(
+                container: true,
+                liveRegion: true,
+                label: _announcement,
+                child: const SizedBox.shrink(),
+              ),
+              if (o.running)
+                SelectionContainer.disabled(
+                  child: FoundationFocus(
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        key: const Key('status-line'),
+                        onTap: () => setState(() => _stages = !_stages),
+                        child: SizedBox(
+                          height: Space.s24,
+                          child: Tooltip(
+                            message: statusText,
+                            child: Row(
+                              children: [
+                                SizedBox.square(
+                                  dimension: IconSizes.chip,
+                                  child: MediaQuery.disableAnimationsOf(context)
+                                      ? Icon(
+                                          AppIcons.loading,
+                                          size: IconSizes.chip,
+                                          color: p.muted,
+                                        )
+                                      : CircularProgressIndicator(
+                                          strokeWidth: Controls.border,
+                                          color: p.muted,
+                                        ),
+                                ),
+                                const SizedBox(width: Space.s8),
+                                Expanded(
+                                  child: Text(
+                                    statusText,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyles.compact.copyWith(
+                                      color: p.muted,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
-                      ],
-                    ],
-                  ),
-                  if (total != null && total.length == 2 && total[1] > 0)
-                    Padding(
-                      padding: const EdgeInsets.only(top: Space.s4),
-                      child: LinearProgressIndicator(
-                        value: total[0] / total[1],
-                        color: p.text,
-                        backgroundColor: p.border,
-                        minHeight: 2,
                       ),
                     ),
-                ],
-              ),
-            ),
-          ),
-        if (_stages && o.stages.isNotEmpty)
-          Padding(
-            key: const Key('stage-timeline'),
-            padding: const EdgeInsets.only(bottom: Space.s8),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                for (final s in o.stages)
-                  Text(
-                    '${stageText(l, s.name)}  ${stageStatus(l, s.status)}  ${s.timeMs} ms',
+                  ),
+                ),
+              if (_stages && o.stages.isNotEmpty)
+                Padding(
+                  key: const Key('stage-timeline'),
+                  padding: const EdgeInsets.only(bottom: Space.s8),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      for (final s in o.stages)
+                        Text(
+                          '${stageText(l, s.name)}  ${stageStatus(l, s.status)}  ${s.timeMs} ms',
+                          style: TextStyles.label.copyWith(
+                            color: p.muted,
+                            fontFamily: TextStyles.mono,
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+              if (o.thinking.isNotEmpty || o.thinkingRuns)
+                _thinkingSection(l, p, o),
+              if (o.answer.isNotEmpty) _Answer(text: o.answer.toString()),
+              if (o.sources.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.only(top: Space.s12),
+                  child: Wrap(
+                    spacing: Space.s8,
+                    runSpacing: Space.s8,
+                    children: [
+                      for (final (index, (title, url)) in o.sources.indexed)
+                        SelectionContainer.disabled(
+                          child: ActionChip(
+                            avatar: const Icon(
+                              AppIcons.web,
+                              size: IconSizes.action,
+                            ),
+                            label: Text(
+                              '[${index + 1}] $title · ${Uri.tryParse(url)?.host ?? url}',
+                              style: TextStyles.label,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            onPressed: () => launchUrl(
+                              Uri.parse(url),
+                              webOnlyWindowName: '_blank',
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+              if (o.memories.isNotEmpty)
+                SelectionContainer.disabled(
+                  child: TextButton.icon(
+                    key: const Key('used-memories'),
+                    onPressed: () => widget.onMemories?.call(o.memories),
+                    icon: const Icon(AppIcons.memory, size: IconSizes.action),
+                    label: Text(l.usedMemories(o.memories.length)),
+                  ),
+                ),
+              for (final (number, _) in o.notices)
+                Padding(
+                  padding: const EdgeInsets.only(top: Space.s4),
+                  child: NoticeLine(
+                    message: processMessage(l, number),
+                    kind: NoticeKind.warning,
+                  ),
+                ),
+              if (o.errorNumber != null || o.status == 'failed')
+                Padding(
+                  padding: const EdgeInsets.only(top: Space.s12),
+                  child: Row(
+                    children: [
+                      Icon(
+                        o.errorNumber == securityBlock
+                            ? AppIcons.securityBlock
+                            : AppIcons.error,
+                        color: p.danger,
+                        size: IconSizes.action,
+                      ),
+                      const SizedBox(width: Space.s8),
+                      Flexible(
+                        child: Text(
+                          processMessage(l, o.errorNumber),
+                          key: const Key('output-error'),
+                          style: TextStyles.compact,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              if (o.status == 'cancelled') NoticeLine(message: l.cancelledLine),
+              if (!o.running)
+                Visibility(
+                  visible:
+                      _hovered ||
+                      _focused ||
+                      _touch ||
+                      !RendererBinding.instance.mouseTracker.mouseIsConnected,
+                  maintainSize: true,
+                  maintainState: true,
+                  maintainAnimation: true,
+                  child: SelectionContainer.disabled(
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: Space.s12),
+                      child: Row(
+                        children: [
+                          CopyMessageButton(text: o.answer.toString()),
+                          if (widget.onRetry != null &&
+                              o.errorNumber != securityBlock)
+                            TextButton.icon(
+                              onPressed: widget.onRetry,
+                              icon: const Icon(AppIcons.retry),
+                              label: Text(l.retry),
+                            ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              if (!o.running && o.totalMs != null)
+                Padding(
+                  padding: const EdgeInsets.only(top: Space.s4),
+                  child: Text(
+                    l.statsLine(
+                      TimeOfDay.fromDateTime(
+                        o.started.toLocal(),
+                      ).format(context),
+                      (o.totalMs! / 1000).toStringAsFixed(1),
+                      o.inputTokens ?? 0,
+                      o.outputTokens ?? 0,
+                    ),
+                    key: const Key('stats-line'),
                     style: TextStyles.label.copyWith(
                       color: p.muted,
                       fontFamily: TextStyles.mono,
                     ),
                   ),
-              ],
-            ),
-          ),
-        if (o.thinking.isNotEmpty) _thinkingSection(l, p, o),
-        if (o.answer.isNotEmpty) ...[
-          _Answer(text: o.answer.toString()),
-          Align(
-            alignment: Alignment.centerLeft,
-            child: CopyMessageButton(text: o.answer.toString()),
-          ),
-        ],
-        if (o.sources.isNotEmpty)
-          Padding(
-            padding: const EdgeInsets.only(top: Space.s8),
-            child: Wrap(
-              spacing: Space.s8,
-              runSpacing: Space.s8,
-              children: [
-                for (final (title, url) in o.sources)
-                  ActionChip(
-                    avatar: const Icon(Icons.public, size: 16),
-                    label: Text(
-                      '$title · ${Uri.tryParse(url)?.host ?? url}',
-                      style: TextStyles.label,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    onPressed: () =>
-                        launchUrl(Uri.parse(url), webOnlyWindowName: '_blank'),
-                  ),
-              ],
-            ),
-          ),
-        if (o.memories.isNotEmpty)
-          TextButton.icon(
-            key: const Key('used-memories'),
-            onPressed: () => widget.onMemories?.call(o.memories),
-            icon: const Icon(Icons.hub_outlined, size: 16),
-            label: Text(l.usedMemories(o.memories.length)),
-          ),
-        for (final (number, _) in o.notices)
-          Padding(
-            padding: const EdgeInsets.only(top: Space.s4),
-            child: NoticeLine(
-              message: processMessage(l, number),
-              kind: NoticeKind.warning,
-            ),
-          ),
-        if (o.errorNumber != null || o.status == 'failed')
-          Padding(
-            padding: const EdgeInsets.only(top: Space.s8),
-            child: Row(
-              children: [
-                Icon(
-                  o.errorNumber == securityBlock
-                      ? Icons.gpp_bad_outlined
-                      : Icons.error_outline,
-                  color: p.danger,
-                  size: 18,
                 ),
-                const SizedBox(width: Space.s8),
-                Flexible(
-                  child: Text(
-                    processMessage(l, o.errorNumber),
-                    key: const Key('output-error'),
-                    style: TextStyles.compact,
-                  ),
-                ),
-                if (widget.onRetry != null &&
-                    o.errorNumber != securityBlock) ...[
-                  const SizedBox(width: Space.s8),
-                  AppButton(
-                    label: l.retry,
-                    icon: Icons.refresh,
-                    onPressed: widget.onRetry,
-                  ),
-                ],
-              ],
-            ),
+            ],
           ),
-        if (o.status == 'cancelled') NoticeLine(message: l.cancelledLine),
-        if (!o.running && o.totalMs != null)
-          Padding(
-            padding: const EdgeInsets.only(top: Space.s4),
-            child: Text(
-              l.statsLine(
-                TimeOfDay.fromDateTime(o.started).format(context),
-                (o.totalMs! / 1000).toStringAsFixed(1),
-                o.inputTokens ?? 0,
-                o.outputTokens ?? 0,
-              ),
-              key: const Key('stats-line'),
-              style: TextStyles.label.copyWith(
-                color: p.muted,
-                fontFamily: TextStyles.mono,
-              ),
-            ),
-          ),
-      ],
+        ),
+      ),
     );
   }
 
   Widget _thinkingSection(AppLocalizations l, Palette p, OutputView o) {
     return Container(
       key: const Key('thinking-section'),
-      margin: const EdgeInsets.only(bottom: Space.s8),
-      padding: const EdgeInsets.all(Space.s12),
-      decoration: BoxDecoration(
-        border: Border.all(color: p.border),
-        borderRadius: BorderRadius.circular(Radii.card),
-      ),
+      margin: const EdgeInsets.only(bottom: Space.s12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -237,7 +313,14 @@ class _OutputBlockState extends State<OutputBlock> {
             spacing: Space.s8,
             crossAxisAlignment: WrapCrossAlignment.center,
             children: [
-              Text(l.thinkingSection, style: TextStyles.label),
+              Text(
+                o.thinkingRuns
+                    ? '${l.thinkingSection} · ${l.elapsed(_thoughtSeconds)}'
+                    : o.stages.any((stage) => stage.name == 'think')
+                    ? l.thoughtFor(_thoughtSeconds)
+                    : l.thinkingSection,
+                style: TextStyles.label,
+              ),
               if (o.thinkingRuns && widget.onStopThinking != null)
                 TextButton(
                   key: const Key('stop-thinking'),
@@ -247,8 +330,8 @@ class _OutputBlockState extends State<OutputBlock> {
               IconButton(
                 tooltip: _thinking ? l.collapseThinking : l.expandThinking,
                 icon: Icon(
-                  _thinking ? Icons.expand_less : Icons.expand_more,
-                  size: 18,
+                  _thinking ? AppIcons.collapse : AppIcons.expand,
+                  size: IconSizes.action,
                 ),
                 onPressed: () => setState(() => _thinking = !_thinking),
               ),
@@ -274,7 +357,7 @@ class _Answer extends StatelessWidget {
   final String text;
   @override
   Widget build(BuildContext context) {
-    final p = Palette.of(Theme.of(context).brightness);
+    final p = Palette.from(context);
     return MarkdownBody(
       key: const Key('answer'),
       data: text,
@@ -283,6 +366,10 @@ class _Answer extends StatelessWidget {
           ? null
           : launchUrl(Uri.parse(href), webOnlyWindowName: '_blank'),
       styleSheet: MarkdownStyleSheet(
+        a: TextStyles.body.copyWith(
+          color: p.text,
+          decoration: TextDecoration.underline,
+        ),
         p: TextStyles.body.copyWith(color: p.text),
         code: TextStyles.compact.copyWith(
           fontFamily: TextStyles.mono,
@@ -291,8 +378,11 @@ class _Answer extends StatelessWidget {
         codeblockDecoration: BoxDecoration(
           color: p.surface,
           border: Border.all(color: p.border),
-          borderRadius: BorderRadius.circular(Radii.control),
+          borderRadius: BorderRadius.circular(
+            FoundationTokens.of(context).controlRadius,
+          ),
         ),
+        tableColumnWidth: const IntrinsicColumnWidth(),
         h1: TextStyles.section,
         h2: TextStyles.subsection,
         h3: TextStyles.body.copyWith(fontWeight: FontWeight.w600),
@@ -315,46 +405,52 @@ class _CodeBlock extends MarkdownElementBuilder {
     TextStyle? preferredStyle,
     TextStyle? parentStyle,
   ) {
-    final code = element.textContent.trimRight();
+    final code = element.textContent;
     final l = AppLocalizations.of(context);
+    final language =
+        element.children
+            ?.whereType<md.Element>()
+            .firstOrNull
+            ?.attributes['class']
+            ?.replaceFirst('language-', '') ??
+        l.codeLabel;
     return Container(
       width: double.infinity,
-      margin: const EdgeInsets.symmetric(vertical: Space.s8),
+      margin: const EdgeInsets.symmetric(vertical: Space.s12),
       decoration: BoxDecoration(
         color: p.surface,
-        border: Border.all(color: p.border),
-        borderRadius: BorderRadius.circular(Radii.control),
+        borderRadius: BorderRadius.circular(
+          FoundationTokens.of(context).groupRadius,
+        ),
       ),
-      child: Stack(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          SelectionContainer.disabled(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: Space.s12),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      language,
+                      style: TextStyles.label.copyWith(color: p.muted),
+                    ),
+                  ),
+                  CopyMessageButton(text: code),
+                ],
+              ),
+            ),
+          ),
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.fromLTRB(
-              Space.s12,
-              Space.s12,
-              Space.s48,
-              Space.s12,
-            ),
+            padding: const EdgeInsets.all(Space.s12),
             child: Text(
               code,
               style: TextStyles.compact.copyWith(
                 fontFamily: TextStyles.mono,
                 color: p.text,
               ),
-            ),
-          ),
-          Positioned(
-            top: 0,
-            right: 0,
-            child: IconButton(
-              tooltip: l.copy,
-              icon: const Icon(Icons.copy, size: 16),
-              onPressed: () {
-                Clipboard.setData(ClipboardData(text: code));
-                ScaffoldMessenger.maybeOf(
-                  context,
-                )?.showSnackBar(SnackBar(content: Text(l.copied)));
-              },
             ),
           ),
         ],
@@ -383,20 +479,42 @@ class _CopyMessageButtonState extends State<CopyMessageButton> {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
-    return IconButton(
-      tooltip: copied ? l.copied : l.copy,
-      icon: Icon(copied ? Icons.check : Icons.content_copy_outlined, size: 16),
-      onPressed: widget.text.isEmpty
-          ? null
-          : () async {
-              await Clipboard.setData(ClipboardData(text: widget.text));
-              if (!mounted) return;
-              setState(() => copied = true);
-              timer?.cancel();
-              timer = Timer(const Duration(seconds: 2), () {
-                if (mounted) setState(() => copied = false);
-              });
-            },
+    return Semantics(
+      liveRegion: copied,
+      child: IconButton(
+        tooltip: copied ? l.copied : l.copy,
+        icon: Icon(
+          copied ? AppIcons.copied : AppIcons.copy,
+          size: IconSizes.action,
+        ),
+        onPressed: widget.text.isEmpty
+            ? null
+            : () async {
+                try {
+                  await Clipboard.setData(ClipboardData(text: widget.text));
+                } catch (_) {
+                  if (!context.mounted) return;
+                  ScaffoldMessenger.maybeOf(context)?.showSnackBar(
+                    SnackBar(
+                      content: Semantics(
+                        liveRegion: true,
+                        child: NoticeLine(
+                          message: l.copyFailed,
+                          kind: NoticeKind.error,
+                        ),
+                      ),
+                    ),
+                  );
+                  return;
+                }
+                if (!mounted) return;
+                setState(() => copied = true);
+                timer?.cancel();
+                timer = Timer(const Duration(seconds: 2), () {
+                  if (mounted) setState(() => copied = false);
+                });
+              },
+      ),
     );
   }
 }

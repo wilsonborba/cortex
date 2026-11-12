@@ -1,12 +1,13 @@
-import '../../handlers/process_messages.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../domain/services/persona_controller.dart';
 import '../../../../l10n/generated/app_localizations.dart';
+import '../../handlers/process_messages.dart';
+import '../../theme/app_icons.dart';
 import '../../theme/tokens.dart';
 import '../../widgets/common/buttons.dart';
 import '../../widgets/common/states.dart';
-import 'schema_fields.dart';
+import '../memory/memory_card.dart' show initials;
 
 class PersonaList extends StatefulWidget {
   const PersonaList({super.key, required this.controller});
@@ -38,60 +39,112 @@ class _PersonaListState extends State<PersonaList> {
 
   @override
   Widget build(BuildContext context) {
-    final l = AppLocalizations.of(context);
-    final p = Palette.of(Theme.of(context).brightness);
-    final items = personas.items;
+    final l = AppLocalizations.of(context),
+        p = Palette.from(context),
+        items = personas.items;
+    void create() => context.go('/v1/personas/new');
+    final search = TextFormField(
+      key: const Key('persona-search'),
+      initialValue: personas.query,
+      style: TextStyles.body,
+      decoration: InputDecoration(
+        hintText: l.searchPersonas,
+        prefixIcon: const Icon(AppIcons.search, size: IconSizes.action),
+        suffixIcon: IconButton(
+          tooltip: l.searchPersonas,
+          onPressed: personas.load,
+          icon: const Icon(AppIcons.next, size: IconSizes.action),
+        ),
+      ),
+      onChanged: (value) => personas.query = value,
+      onFieldSubmitted: (_) => personas.load(),
+    );
+    final types = SegmentedButton<String>(
+      key: const Key('persona-filter'),
+      showSelectedIcon: false,
+      expandedInsets: EdgeInsets.zero,
+      segments: [
+        for (final (value, label) in [
+          ('all', l.allPersonaTypes),
+          ('person', l.personType),
+          ('bot', l.botType),
+        ])
+          ButtonSegment(
+            value: value,
+            label: Text(
+              label,
+              style: TextStyles.label,
+              textAlign: TextAlign.center,
+            ),
+          ),
+      ],
+      selected: {personas.type ?? 'all'},
+      onSelectionChanged: (value) {
+        personas.type = value.first == 'all' ? null : value.first;
+        personas.load();
+      },
+    );
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Padding(
           padding: const EdgeInsets.all(Space.s16),
-          child: Wrap(
-            spacing: Space.s12,
-            runSpacing: Space.s12,
-            crossAxisAlignment: WrapCrossAlignment.center,
-            children: [
-              SizedBox(
-                width: 260,
-                child: TextFormField(
-                  initialValue: personas.query,
-                  decoration: InputDecoration(
-                    labelText: l.searchPersonas,
-                    suffixIcon: IconButton(
-                      tooltip: l.searchPersonas,
-                      onPressed: personas.load,
-                      icon: const Icon(Icons.search),
-                    ),
+          child: LayoutBuilder(
+            builder: (context, box) {
+              final heading = Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(l.personas, style: TextStyles.section),
+                  const SizedBox(height: Space.s4),
+                  Text(
+                    l.personasPurpose,
+                    style: TextStyles.compact.copyWith(color: p.muted),
                   ),
-                  onChanged: (value) => personas.query = value,
-                  onFieldSubmitted: (_) => personas.load(),
-                ),
-              ),
-              DropdownButton<String>(
-                key: const Key('persona-filter'),
-                value: personas.type ?? 'all',
-                items: [
-                  DropdownMenuItem(
-                    value: 'all',
-                    child: Text(l.allPersonaTypes),
-                  ),
-                  DropdownMenuItem(value: 'person', child: Text(l.personType)),
-                  DropdownMenuItem(value: 'bot', child: Text(l.botType)),
                 ],
-                onChanged: (value) {
-                  personas.type = value == 'all' ? null : value;
-                  personas.load();
-                },
-              ),
-              AppButton(
+              );
+              final action = AppButton.primary(
                 label: l.newPersona,
-                icon: Icons.add,
-                onPressed: () => context.go('/v1/personas/new'),
-              ),
-            ],
+                icon: AppIcons.add,
+                onPressed: create,
+              );
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  if (SizeClass.of(box.maxWidth) == SizeClass.compact) ...[
+                    heading,
+                    const SizedBox(height: Space.s16),
+                    Align(
+                      alignment: AlignmentDirectional.centerStart,
+                      child: action,
+                    ),
+                  ] else
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(child: heading),
+                        const SizedBox(width: Space.s16),
+                        action,
+                      ],
+                    ),
+                  const SizedBox(height: Space.s24),
+                  if (SizeClass.of(box.maxWidth) == SizeClass.compact) ...[
+                    search,
+                    const SizedBox(height: Space.s12),
+                    types,
+                  ] else
+                    Row(
+                      children: [
+                        Expanded(child: search),
+                        const SizedBox(width: Space.s16),
+                        Flexible(child: types),
+                      ],
+                    ),
+                ],
+              );
+            },
           ),
         ),
-        if (personas.loading && items != null) const SkeletonBox(height: 4),
+        if (personas.loading && items != null) const LinearProgressIndicator(),
         if (personas.error != null && items != null)
           Padding(
             padding: const EdgeInsets.all(Space.s12),
@@ -104,85 +157,95 @@ class _PersonaListState extends State<PersonaList> {
         Expanded(
           child: items == null
               ? personas.error == null
-                    ? const Center(child: SkeletonBox(width: 240))
+                    ? const Center(
+                        child: SkeletonBox(width: Space.sidebarWidth),
+                      )
                     : ErrorState(
                         message: apiFailure(l, personas.error),
                         retryLabel: l.retry,
                         onRetry: personas.load,
                       )
               : items.isEmpty
-              ? EmptyState(title: l.noPersonas, icon: Icons.person_outline)
+              ? EmptyState(
+                  title: personas.query.isNotEmpty || personas.type != null
+                      ? l.noPersonaMatches
+                      : l.noPersonas,
+                  icon: AppIcons.personas,
+                  action: personas.query.isEmpty && personas.type == null
+                      ? AppButton(
+                          label: l.newPersona,
+                          icon: AppIcons.add,
+                          onPressed: create,
+                        )
+                      : null,
+                )
               : ListView.separated(
-                  padding: const EdgeInsets.all(Space.s16),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: Space.s16,
+                    vertical: Space.s8,
+                  ),
                   itemCount: items.length,
-                  separatorBuilder: (_, _) => const SizedBox(height: Space.s12),
+                  separatorBuilder: (_, _) =>
+                      Divider(color: p.border, height: Space.s16),
                   itemBuilder: (context, index) {
                     final persona = items[index];
-                    return Card(
-                      margin: EdgeInsets.zero,
-                      color: p.surface,
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(Radii.card),
-                        side: BorderSide(color: p.border),
-                      ),
-                      child: InkWell(
+                    return FoundationFocus(
+                      child: ListTile(
                         key: Key('persona-${persona.id}'),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: Space.s8,
+                          vertical: Space.s8,
+                        ),
+                        leading: CircleAvatar(
+                          backgroundColor: p.surface,
+                          foregroundColor: p.text,
+                          child: Text(
+                            initials(persona.name),
+                            style: TextStyles.label,
+                          ),
+                        ),
+                        title: Text(
+                          persona.name,
+                          style: TextStyles.compact,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Wrap(
+                              spacing: Space.s8,
+                              children: [
+                                Text(
+                                  persona.type == 'bot'
+                                      ? l.botType
+                                      : l.personType,
+                                  style: TextStyles.label.copyWith(
+                                    color: p.muted,
+                                  ),
+                                ),
+                                if (persona.isSelf)
+                                  Text(
+                                    l.you,
+                                    style: TextStyles.label.copyWith(
+                                      color: p.muted,
+                                    ),
+                                  ),
+                              ],
+                            ),
+                            if (persona.aliases.isNotEmpty)
+                              Text(
+                                persona.aliases.join(', '),
+                                style: TextStyles.compact.copyWith(
+                                  color: p.muted,
+                                ),
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                          ],
+                        ),
                         onTap: () => context.go(
                           '/v1/personas/${Uri.encodeComponent(persona.id)}',
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(Space.s16),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Wrap(
-                                spacing: Space.s8,
-                                crossAxisAlignment: WrapCrossAlignment.center,
-                                children: [
-                                  Icon(
-                                    persona.type == 'bot'
-                                        ? Icons.smart_toy_outlined
-                                        : Icons.person_outline,
-                                  ),
-                                  Text(
-                                    persona.name,
-                                    style: TextStyles.subsection,
-                                  ),
-                                  if (persona.isSelf) Chip(label: Text(l.you)),
-                                ],
-                              ),
-                              Text(
-                                persona.type == 'bot'
-                                    ? l.botType
-                                    : l.personType,
-                                style: TextStyles.label,
-                              ),
-                              if (persona.aliases.isNotEmpty)
-                                Wrap(
-                                  spacing: Space.s8,
-                                  children: [
-                                    for (final alias in persona.aliases)
-                                      Chip(label: Text(alias)),
-                                  ],
-                                ),
-                              if (persona.attributes.isNotEmpty)
-                                Padding(
-                                  padding: const EdgeInsets.only(top: Space.s8),
-                                  child: Text(
-                                    persona.attributes.entries
-                                        .map(
-                                          (e) =>
-                                              '${e.key}: ${personaValue(e.value, l)}',
-                                        )
-                                        .join('\n'),
-                                    maxLines: 3,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: TextStyles.compact,
-                                  ),
-                                ),
-                            ],
-                          ),
                         ),
                       ),
                     );
