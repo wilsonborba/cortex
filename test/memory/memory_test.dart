@@ -137,6 +137,7 @@ Future<GoRouter> pump(
   Locale locale = const Locale('en'),
   Size size = const Size(1500, 950),
   double scale = 1,
+  Brightness brightness = Brightness.dark,
 }) async {
   tester.view.physicalSize = size;
   tester.view.devicePixelRatio = 1;
@@ -156,7 +157,7 @@ Future<GoRouter> pump(
     MaterialApp.router(
       routerConfig: router,
       locale: locale,
-      theme: cortexTheme(Brightness.dark),
+      theme: cortexTheme(brightness),
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       builder: (context, child) => MediaQuery(
