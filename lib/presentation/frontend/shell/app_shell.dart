@@ -11,17 +11,40 @@ import 'account_menu.dart';
 import 'details_panel.dart';
 
 class _Destination {
-  const _Destination(this.path, this.icon, this.label);
+  const _Destination(this.path, this.icon, this.selectedIcon, this.label);
   final String path;
-  final IconData icon;
+
+  /// Regular glyph at rest, filled glyph when selected (Fluent rule).
+  final IconData icon, selectedIcon;
+  IconData iconFor(bool selected) => selected ? selectedIcon : icon;
   final String Function(AppLocalizations) label;
 }
 
 final _destinations = [
-  _Destination('/v1/chats', AppIcons.chats, (l) => l.chats),
-  _Destination('/v1/memory', AppIcons.memory, (l) => l.memory),
-  _Destination('/v1/personas', AppIcons.personas, (l) => l.personas),
-  _Destination('/v1/usage', AppIcons.usage, (l) => l.usage),
+  _Destination(
+    '/v1/chats',
+    AppIcons.chats,
+    AppIcons.chatsSelected,
+    (l) => l.chats,
+  ),
+  _Destination(
+    '/v1/memory',
+    AppIcons.memory,
+    AppIcons.memorySelected,
+    (l) => l.memory,
+  ),
+  _Destination(
+    '/v1/personas',
+    AppIcons.personas,
+    AppIcons.personasSelected,
+    (l) => l.personas,
+  ),
+  _Destination(
+    '/v1/usage',
+    AppIcons.usage,
+    AppIcons.usageSelected,
+    (l) => l.usage,
+  ),
 ];
 
 class AppShell extends StatefulWidget {
@@ -155,7 +178,10 @@ class _AppShellState extends State<AppShell> {
               ),
               child: ListTile(
                 title: Text(d.label(l)),
-                leading: Icon(d.icon, size: IconSizes.navigation),
+                leading: Icon(
+                  d.iconFor(widget.location.startsWith(d.path)),
+                  size: IconSizes.navigation,
+                ),
                 selected: widget.location.startsWith(d.path),
                 onTap: () => go(d.path),
               ),
@@ -215,7 +241,10 @@ class _AppShellState extends State<AppShell> {
               ),
               child: IconButton(
                 tooltip: d.label(l),
-                icon: Icon(d.icon, size: IconSizes.navigation),
+                icon: Icon(
+                  d.iconFor(widget.location.startsWith(d.path)),
+                  size: IconSizes.navigation,
+                ),
                 onPressed: () => context.go(d.path),
               ),
             ),

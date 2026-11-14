@@ -7,9 +7,9 @@ No image was downloaded for the landing page (24.N). All visuals are:
 
 Add one line per downloaded image here: source URL, author, licence (CC0, Unsplash License or Pexels License only).
 
-## Lucide icons
+## Fluent UI System Icons
 
-Cortex uses the regular Lucide icons through lucide_icons_flutter 4.0.3.
-Lucide icons are licensed under ISC: https://lucide.dev/license .
-The Flutter package wrapper uses MIT. Package: https://pub.dev/packages/lucide_icons_flutter .
-License notices ship with the package.
+Cortex uses Fluent UI System Icons (Microsoft) through the Flutter package
+fluentui_system_icons 1.1.273: https://pub.dev/packages/fluentui_system_icons .
+License: MIT. The license notice ships with the package and is shown on the
+Flutter license page.

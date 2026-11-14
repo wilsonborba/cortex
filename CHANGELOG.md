@@ -17,6 +17,10 @@
 
 - Fluent 2 foundation tokens (#59)
 
+- Merge Fluent 2 foundation tokens (#59)
+
+- Replace Lucide icons with Fluent UI System Icons (#60)
+
 
 ## v2.1.0 - 2026-11-12
 
