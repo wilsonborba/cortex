@@ -7,7 +7,6 @@ import 'package:cortex/domain/services/session_service.dart';
 import 'package:cortex/l10n/generated/app_localizations.dart';
 import 'package:cortex/presentation/frontend/preferences.dart';
 import 'package:cortex/presentation/frontend/router.dart';
-import 'package:cortex/presentation/frontend/screens/memory/graph_canvas.dart';
 import 'package:cortex/presentation/frontend/theme/app_icons.dart';
 import 'package:cortex/presentation/frontend/theme/theme.dart';
 import 'package:cortex/presentation/frontend/widgets/common/buttons.dart';
@@ -235,10 +234,11 @@ void main() {
         router.routeInformationProvider.value.uri.path,
         '/v1/settings/memory',
       );
-      final canvas = tester.state<GraphCanvasState>(find.byType(GraphCanvas));
-      await seek(tester, find.byType(GraphCanvas), exact: canvas.focus);
-      await tester.sendKeyEvent(LogicalKeyboardKey.tab);
-      await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+      // A memory row opens with the keyboard (#65).
+      await activate(
+        tester,
+        find.byKey(const Key('memory-${memory.memoryId}')),
+      );
       await tester.pumpAndSettle();
       expect(
         router.routeInformationProvider.value.uri.path,

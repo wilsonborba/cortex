@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import '../../core/settings.dart';
 import '../../core/utils/csrf.dart';
-import '../../domain/models/memory_graph.dart';
+import '../../domain/models/memory_overview.dart';
 import '../../domain/models/persona.dart';
 import '../../domain/models/api.dart';
 import 'credentials_client.dart';
@@ -123,27 +123,50 @@ class CortexApi {
   Future<void> deleteChat(String session) =>
       _send('DELETE', '/chats/$session', null);
 
-  /// The scope graph (issue #32); depth and limit go to the API as they are.
-  Future<MemoryGraphData> memoryGraph({int? depth, int? limit}) async =>
-      MemoryGraphData.fromJson(
-        ((await _get('/memory-graph', {
-                  'app_id': appId,
-                  'depth': ?depth?.toString(),
-                  'limit': ?limit?.toString(),
-                }))['data']
-                as Map)
-            .cast(),
-      );
+  /// Memory overview numbers and facets (cortex_api #121).
+  Future<MemoryOverview> memoryOverview() async => MemoryOverview.fromJson(
+    ((await _get('/memory-graph/overview', {'app_id': appId}))['data'] as Map)
+        .cast(),
+  );
 
-  Future<MemoryGraphData> memoryNode(String id, {int? depth}) async =>
-      MemoryGraphData.fromJson(
-        ((await _get('/memory-graph/nodes/${Uri.encodeComponent(id)}', {
-                  'app_id': appId,
-                  'depth': ?depth?.toString(),
-                }))['data']
-                as Map)
-            .cast(),
-      );
+  /// One page of memory items, or the groups of a source (cortex_api #121).
+  Future<MemoryPage> memoryItems({
+    String source = 'all',
+    String? groupId,
+    String period = 'all',
+    String? query,
+    String? cursor,
+    int limit = 50,
+  }) async => MemoryPage.fromJson(
+    ((await _get('/memory-graph/items', {
+              'app_id': appId,
+              'source': source,
+              'group_id': ?groupId,
+              'period': period,
+              'q': ?(query == null || query.isEmpty ? null : query),
+              'cursor': ?cursor,
+              'limit': '$limit',
+            }))['data']
+            as Map)
+        .cast(),
+  );
+
+  /// The readable detail of one memory (cortex_api #121).
+  Future<MemoryDetail> memoryDetail(String id) async => MemoryDetail.fromJson(
+    ((await _get('/memory-graph/nodes/${Uri.encodeComponent(id)}', {
+              'app_id': appId,
+            }))['data']
+            as Map)
+        .cast(),
+  );
+
+  /// Delete one memory of the caller (cortex_api #122).
+  Future<void> deleteMemory(String id) => _send(
+    'DELETE',
+    '/memory-graph/nodes/${Uri.encodeComponent(id)}',
+    null,
+    {'app_id': appId},
+  );
 
   Future<List<Map<String, dynamic>>> botPersonas() async =>
       ((await _get('/personas', {'app_id': appId, 'type': 'bot'}))['data']

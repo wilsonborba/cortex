@@ -79,16 +79,12 @@ http.Client fixtureClient() {
         ],
       });
     }
-    if (path.startsWith('/memory-graph')) {
-      final value = memory.graph(
-        focus: path.contains('/nodes/') ? memory.memoryId : null,
-      );
-      final nodes = value['nodes'] as List;
-      for (final node in nodes) {
-        if (node['node_type'] == 'entity') node['label'] = 'Example reader';
-      }
-      return reply(value);
-    }
+    final memoryData = memory.memoryReply(
+      request.url,
+      method: request.method,
+      long: false,
+    );
+    if (memoryData != null) return reply(memoryData.$2);
     throw StateError('Unexpected synthetic request: $path');
   });
 }

@@ -2,59 +2,48 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import '../design/components_golden_test.dart' show loadFonts;
 import 'memory_test.dart' as fixture;
-import 'graph_fixtures.dart';
 
+/// Memory overview screenshots (cortex #65): summary and list, a group, the
+/// detail with connections and usage, the tiny map, and the empty state.
 void main() {
   setUpAll(loadFonts);
   for (final brightness in Brightness.values) {
-    for (final width in [390.0, 768.0, 1024.0, 1300.0, 1440.0]) {
-      for (final mode in ['list', 'stack', 'long']) {
+    for (final width in [390.0, 900.0, 1300.0]) {
+      for (final mode in ['overview', 'group', 'detail', 'map', 'empty']) {
         testWidgets('memory $mode ${brightness.name} $width', (tester) async {
-          final data = graphFixture(6, stack: true);
-          final api = fixture.Api()
-            ..custom = {
-              'nodes': [
-                for (final n in data.nodes)
-                  {
-                    'id': n.id,
-                    'node_type': n.type,
-                    'label': n.label,
-                    'metadata': n.metadata,
-                  },
-              ],
-              'edges': [
-                for (final e in data.edges)
-                  {
-                    'source_id': e.source,
-                    'target_id': e.target,
-                    'edge_type': e.type,
-                  },
-              ],
-              'truncated': false,
-            };
-          if (mode == 'long') {
-            final node = (api.custom!['nodes'] as List)[1] as Map;
-            node['label'] = List.filled(
-              12,
-              'Synthetic long memory title',
-            ).join(' ');
-            (node['metadata'] as Map)['title'] = node['label'];
-            (node['metadata'] as Map)['summary'] = List.filled(
-              80,
-              'Synthetic summary sentence.',
-            ).join(' ');
-          }
+          final api = fixture.Api()..empty = mode == 'empty';
+          final detail = mode == 'detail' || mode == 'map';
           await fixture.pump(
             tester,
             api,
-            path: mode == 'long'
-                ? '/v1/settings/memory/synthetic-1'
+            path: detail
+                ? '/v1/settings/memory/${fixture.memoryId}'
                 : '/v1/settings/memory',
             size: Size(width, 1000),
             brightness: brightness,
           );
-          if (mode == 'list') {
-            await tester.tap(find.text('List'));
+          if (mode == 'group') {
+            if (width < 600) {
+              await tester.tap(find.byKey(const Key('memory-filters')));
+              await tester.pumpAndSettle();
+            } else if (width < 1000) {
+              await tester.tap(find.byKey(const Key('memory-filters')));
+              await tester.pumpAndSettle();
+            }
+            await tester.tap(find.byKey(const Key('facet-chat')).last);
+            await tester.pumpAndSettle();
+            if (width >= 600 && width < 1000) {
+              await tester.tapAt(const Offset(5, 5));
+              await tester.pumpAndSettle();
+            }
+            await tester.tap(find.byKey(const Key('group-${fixture.chatA}')));
+            await tester.pumpAndSettle();
+          }
+          if (mode == 'map') {
+            await tester.ensureVisible(find.byKey(const Key('memory-picture')));
+            await tester.tap(find.byKey(const Key('memory-picture')));
+            await tester.pumpAndSettle();
+            await tester.ensureVisible(find.byKey(const Key('tiny-map')));
             await tester.pumpAndSettle();
           }
           expect(tester.takeException(), isNull);

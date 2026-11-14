@@ -37,6 +37,10 @@
 
 - Fluent 2 composer (#64)
 
+- Merge Fluent 2 composer (#64)
+
+- Readable memory overview in Settings (#65)
+
 
 ### Tests
 

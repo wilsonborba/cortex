@@ -1479,4 +1479,330 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get aiNote => 'AI-generated content may be incorrect';
+
+  @override
+  String memSummary(
+    int count,
+    String size,
+    String chats,
+    String files,
+    String people,
+  ) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Cortex keeps $count memories',
+      one: 'Cortex keeps 1 memory',
+    );
+    return '$_temp0 ($size) from $chats, $files and $people.';
+  }
+
+  @override
+  String memNewest(String date) {
+    return 'The newest is from $date.';
+  }
+
+  @override
+  String get memCardCount => 'Memories';
+
+  @override
+  String get memCardSize => 'Size';
+
+  @override
+  String get memCardAdded => 'Added in the last 7 days';
+
+  @override
+  String get memCardUsed => 'Used in answers in the last 7 days';
+
+  @override
+  String get memByMonth => 'By month';
+
+  @override
+  String get memFacetSource => 'Source';
+
+  @override
+  String get memFacetPeriod => 'Period';
+
+  @override
+  String get memSourceAll => 'All';
+
+  @override
+  String get memSourceChats => 'Chats';
+
+  @override
+  String get memSourceFiles => 'Files';
+
+  @override
+  String get memSourceNotes => 'Saved notes';
+
+  @override
+  String get memSourcePeople => 'People';
+
+  @override
+  String get memSourceTopics => 'Topics';
+
+  @override
+  String get memPeriodToday => 'Today';
+
+  @override
+  String get memPeriod7 => 'Last 7 days';
+
+  @override
+  String get memPeriod30 => 'Last 30 days';
+
+  @override
+  String get memPeriodAll => 'All';
+
+  @override
+  String get memSearch => 'Search memories';
+
+  @override
+  String get memClearAll => 'Clear all';
+
+  @override
+  String get memFilters => 'Filters';
+
+  @override
+  String get memRemoveFilter => 'Remove filter';
+
+  @override
+  String get memToday => 'Today';
+
+  @override
+  String get memYesterday => 'Yesterday';
+
+  @override
+  String memLineChat(String title, String time) {
+    return 'Chat: $title, $time';
+  }
+
+  @override
+  String memLineFile(String title, String time) {
+    return 'File: $title, $time';
+  }
+
+  @override
+  String memLineNote(String time) {
+    return 'Saved note, $time';
+  }
+
+  @override
+  String memUsedTimes(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Used $count times',
+      one: 'Used 1 time',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String memSimilar(int count) {
+    return '$count similar';
+  }
+
+  @override
+  String get memShowSimilar => 'Show the similar memories';
+
+  @override
+  String memGroupCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count memories',
+      one: '1 memory',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get memBackToGroups => 'All groups';
+
+  @override
+  String get memCreated => 'Created';
+
+  @override
+  String get memUpdated => 'Updated';
+
+  @override
+  String get memSize => 'Size';
+
+  @override
+  String memSizeWords(String size, int words) {
+    return '$size, $words words';
+  }
+
+  @override
+  String get memUsedCount => 'Used in answers';
+
+  @override
+  String get memLastUsed => 'Last used';
+
+  @override
+  String get memNever => 'Never';
+
+  @override
+  String get memKeeps => 'What Cortex keeps';
+
+  @override
+  String get memShowAll => 'Show all';
+
+  @override
+  String get memShowLess => 'Show less';
+
+  @override
+  String get memConnects => 'How it connects';
+
+  @override
+  String get memUsedIn => 'Used in these answers';
+
+  @override
+  String get memNoUse => 'Cortex has not used this memory in an answer yet.';
+
+  @override
+  String get memShowPicture => 'Show connections as a picture';
+
+  @override
+  String get memHidePicture => 'Hide the picture';
+
+  @override
+  String get memOpenChat => 'Open chat';
+
+  @override
+  String get memDelete => 'Delete memory';
+
+  @override
+  String get memDeleteTitle => 'Delete this memory?';
+
+  @override
+  String get memDeleteMessage =>
+      'Cortex will not use this memory again. You cannot undo this.';
+
+  @override
+  String memConnChat(String label) {
+    return 'From the chat $label';
+  }
+
+  @override
+  String memConnFile(String label) {
+    return 'From the file $label';
+  }
+
+  @override
+  String memConnPerson(String label) {
+    return 'Mentions $label';
+  }
+
+  @override
+  String memConnTopic(String label) {
+    return 'Topic: $label';
+  }
+
+  @override
+  String memConnSupersedes(String label) {
+    return 'Replaces $label';
+  }
+
+  @override
+  String memConnCorrects(String label) {
+    return 'Corrects $label';
+  }
+
+  @override
+  String memConnDerived(String label) {
+    return 'Comes from $label';
+  }
+
+  @override
+  String memConnSupports(String label) {
+    return 'Supports $label';
+  }
+
+  @override
+  String memConnContradicts(String label) {
+    return 'Contradicts $label';
+  }
+
+  @override
+  String memConnPartOf(String label) {
+    return 'Part of $label';
+  }
+
+  @override
+  String memConnRelated(String label) {
+    return 'Related to $label';
+  }
+
+  @override
+  String memConnSameTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count other memories have the same title',
+      one: '1 other memory has the same title',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get memEmpty =>
+      'Cortex has no memories yet. Memories are saved when you chat with memory on.';
+
+  @override
+  String get memStartChat => 'Start a chat';
+
+  @override
+  String get memTruncated => 'Showing the newest 2000 memories';
+
+  @override
+  String get memNoResults => 'No memories match these filters.';
+
+  @override
+  String get memLoadMore => 'Show more';
+
+  @override
+  String get memTypeConversation => 'Conversation';
+
+  @override
+  String get memTypeNote => 'Saved note';
+
+  @override
+  String get memTypeFile => 'File';
+
+  @override
+  String get memDetails => 'Memory details';
+
+  @override
+  String memChats(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count chats',
+      one: '1 chat',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String memFiles(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count files',
+      one: '1 file',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String memPeople(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count people',
+      one: '1 person',
+    );
+    return '$_temp0';
+  }
 }
