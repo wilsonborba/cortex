@@ -140,7 +140,7 @@ class ComposerState extends State<Composer> {
     child: TextField(
       key: const Key('memory-topic'),
       controller: _topic,
-      style: TextStyles.compact,
+      style: TextStyles.body1,
       onChanged: (value) => widget.chat.options.topic = value,
       decoration: InputDecoration(hintText: l.topicHint, isDense: true),
     ),

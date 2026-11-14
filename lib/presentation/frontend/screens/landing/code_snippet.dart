@@ -74,8 +74,8 @@ class _CodeSnippetState extends State<CodeSnippet> {
       }),
       TextStyle(
         fontFamily: TextStyles.mono,
-        fontSize: 13,
-        height: 1.5,
+        fontSize: TextStyles.code.fontSize,
+        height: TextStyles.code.height,
         color: p.text,
       ),
     );
@@ -94,14 +94,14 @@ class _CodeSnippetState extends State<CodeSnippet> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(widget.caption, style: TextStyles.label),
+        Text(widget.caption, style: TextStyles.caption1),
         const SizedBox(height: Space.s8),
         Container(
           width: double.infinity,
           padding: const EdgeInsets.all(Space.s16),
           decoration: BoxDecoration(
             color: p.surface,
-            border: Border.all(color: p.border),
+            border: Border.all(color: p.stroke),
             borderRadius: BorderRadius.circular(
               FoundationTokens.of(context).groupRadius,
             ),
@@ -118,7 +118,7 @@ class _CodeSnippetState extends State<CodeSnippet> {
         const SizedBox(height: Space.s4),
         Text(
           widget.path,
-          style: TextStyles.label.copyWith(
+          style: TextStyles.caption1.copyWith(
             color: p.muted,
             fontFamily: TextStyles.mono,
           ),

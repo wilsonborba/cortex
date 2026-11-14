@@ -120,10 +120,7 @@ class LandingPage extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Semantics(
-            header: true,
-            child: Text(title, style: TextStyles.section),
-          ),
+          Semantics(header: true, child: Text(title, style: TextStyles.title3)),
           const SizedBox(height: Space.s24),
           body,
         ],
@@ -241,7 +238,7 @@ class LandingHeader extends StatelessWidget {
       ),
       decoration: BoxDecoration(
         color: p.background,
-        border: Border(bottom: BorderSide(color: p.border)),
+        border: Border(bottom: BorderSide(color: p.divider)),
       ),
       child: Row(
         children: [
@@ -257,7 +254,7 @@ class LandingHeader extends StatelessWidget {
           ),
           if (!compact) ...[
             const SizedBox(width: Space.s8),
-            Text('Cortex', style: TextStyles.subsection),
+            Text('Cortex', style: TextStyles.subtitle1),
             const SizedBox(width: Space.s24),
             Expanded(
               child: SingleChildScrollView(
@@ -269,10 +266,7 @@ class LandingHeader extends StatelessWidget {
                       TextButton(
                         key: Key('link-${section.name}'),
                         onPressed: () => onSection(section),
-                        child: Text(
-                          section.label(l),
-                          style: TextStyles.compact,
-                        ),
+                        child: Text(section.label(l), style: TextStyles.body1),
                       ),
                   ],
                 ),
@@ -723,7 +717,7 @@ class _Memory extends StatelessWidget {
     final right = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(l.example, style: TextStyles.label),
+        Text(l.example, style: TextStyles.caption1),
         const ExampleGraph(),
         const SizedBox(height: Space.s16),
         CodeSnippet(
@@ -768,7 +762,7 @@ class _Web extends StatelessWidget {
     ];
     TableRow row(List<String> cells, {bool head = false}) => TableRow(
       decoration: BoxDecoration(
-        border: Border(bottom: BorderSide(color: p.border)),
+        border: Border(bottom: BorderSide(color: p.divider)),
       ),
       children: [
         for (final c in cells)
@@ -780,8 +774,8 @@ class _Web extends StatelessWidget {
             child: Text(
               c,
               style: head
-                  ? TextStyles.label.copyWith(color: p.muted)
-                  : TextStyles.compact,
+                  ? TextStyles.caption1.copyWith(color: p.muted)
+                  : TextStyles.body1,
             ),
           ),
       ],
@@ -803,7 +797,7 @@ class _Web extends StatelessWidget {
           ],
         ),
         const SizedBox(height: Space.s16),
-        Text(l.webMethod, style: TextStyles.body.copyWith(color: p.muted)),
+        Text(l.webMethod, style: TextStyles.body2.copyWith(color: p.muted)),
         const SizedBox(height: Space.s16),
         CodeSnippet(
           asset: 'lib/presentation/frontend/assets/snippets/rrf.rs.txt',
@@ -833,7 +827,7 @@ class _Research extends StatelessWidget {
         ]) ...[
           Padding(
             padding: const EdgeInsets.only(top: Space.s16, bottom: Space.s8),
-            child: Text(group.$1, style: TextStyles.subsection),
+            child: Text(group.$1, style: TextStyles.subtitle1),
           ),
           for (final (title, who, url) in group.$2)
             FoundationFocus(
@@ -846,13 +840,13 @@ class _Research extends StatelessWidget {
                       children: [
                         TextSpan(
                           text: title,
-                          style: TextStyles.compact.copyWith(
+                          style: TextStyles.body1.copyWith(
                             decoration: TextDecoration.underline,
                           ),
                         ),
                         TextSpan(
                           text: '  $who',
-                          style: TextStyles.compact.copyWith(color: p.muted),
+                          style: TextStyles.body1.copyWith(color: p.muted),
                         ),
                       ],
                     ),
@@ -882,7 +876,7 @@ class _Faq extends StatelessWidget {
           (l.faqLangQ, l.faqLangA),
         ])
           ExpansionTile(
-            title: Text(q, style: TextStyles.body),
+            title: Text(q, style: TextStyles.body2),
             shape: const Border(),
             childrenPadding: const EdgeInsets.only(
               left: Space.s16,
@@ -891,7 +885,7 @@ class _Faq extends StatelessWidget {
             ),
             expandedAlignment: Alignment.centerLeft,
             children: [
-              Text(a, style: TextStyles.compact.copyWith(color: p.muted)),
+              Text(a, style: TextStyles.body1.copyWith(color: p.muted)),
             ],
           ),
       ],
@@ -917,11 +911,22 @@ class _Bullets extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Padding(
-                    padding: const EdgeInsets.only(top: 9),
-                    child: Container(width: 4, height: 4, color: p.text),
+                    // The 4 px dot is centered on the first text line.
+                    padding: EdgeInsets.only(
+                      top:
+                          (TextStyles.body2.fontSize! *
+                                  TextStyles.body2.height! -
+                              Space.s4) /
+                          2,
+                    ),
+                    child: Container(
+                      width: Space.s4,
+                      height: Space.s4,
+                      color: p.text,
+                    ),
                   ),
                   const SizedBox(width: Space.s12),
-                  Expanded(child: Text(i, style: TextStyles.body)),
+                  Expanded(child: Text(i, style: TextStyles.body2)),
                 ],
               ),
             ),
@@ -941,7 +946,7 @@ class _Footer extends StatelessWidget {
       margin: const EdgeInsets.only(top: Space.section),
       padding: const EdgeInsets.symmetric(vertical: Space.s24),
       decoration: BoxDecoration(
-        border: Border(top: BorderSide(color: p.border)),
+        border: Border(top: BorderSide(color: p.divider)),
       ),
       child: Wrap(
         spacing: Space.s24,
@@ -958,7 +963,7 @@ class _Footer extends StatelessWidget {
           ),
           Text(
             l.version(AppSettings.buildVersion),
-            style: TextStyles.label.copyWith(color: p.muted),
+            style: TextStyles.caption1.copyWith(color: p.muted),
           ),
         ],
       ),

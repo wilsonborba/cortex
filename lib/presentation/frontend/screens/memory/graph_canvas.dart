@@ -407,7 +407,7 @@ class GraphCanvasState extends State<GraphCanvas> {
       TextPainter measure(String text, Color color) => TextPainter(
         text: TextSpan(
           text: text,
-          style: TextStyles.label.copyWith(color: color),
+          style: TextStyles.caption1.copyWith(color: color),
         ),
         textDirection: Directionality.of(context),
         textScaler: MediaQuery.textScalerOf(context),
@@ -658,7 +658,7 @@ class _GraphPainter extends CustomPainter {
         positions[edge.source]!,
         positions[edge.target]!,
         Paint()
-          ..color = (active ? palette.text : palette.border).withValues(
+          ..color = (active ? palette.text : palette.stroke).withValues(
             alpha: dim ? GraphTokens.dimOpacity : 1,
           )
           ..strokeWidth = Controls.border,
@@ -738,7 +738,7 @@ class _GraphPainter extends CustomPainter {
         final badge = TextPainter(
           text: TextSpan(
             text: '$count',
-            style: TextStyles.label.copyWith(color: palette.text),
+            style: TextStyles.caption1.copyWith(color: palette.text),
           ),
           textDirection: TextDirection.ltr,
         )..layout();
@@ -846,7 +846,7 @@ class GraphLegend extends StatelessWidget {
               const SizedBox(width: Space.s4),
               Text(
                 nodeTypeName(l, type),
-                style: TextStyles.label.copyWith(color: p.muted),
+                style: TextStyles.caption1.copyWith(color: p.muted),
               ),
             ],
           ),

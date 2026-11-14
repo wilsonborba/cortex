@@ -57,12 +57,16 @@
 
 - Fluent 2 landing and engineering pages with bundled assets (#70)
 
+- Merge Fluent 2 landing and engineering pages (#70)
+
 
 ### Tests
 
 - Add usage screen screenshots to the screen goldens (#60)
 
 - Merge usage screen screenshots (#60)
+
+- Fluent 2 verification and migration clean up (#69)
 
 
 ## v2.1.0 - 2026-11-12

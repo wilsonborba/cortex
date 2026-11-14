@@ -21,9 +21,6 @@ enum ButtonKind {
   /// Danger fill, only inside a delete confirmation dialog.
   destructive;
 
-  /// Old name of [subtle]. Remove in #69.
-  static const quiet = subtle;
-
   ButtonAppearance get appearance => switch (this) {
     primary => ButtonAppearance.primary,
     secondary => ButtonAppearance.secondary,

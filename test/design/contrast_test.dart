@@ -46,6 +46,19 @@ void main() {
         'on-danger on danger solid': (p.onDanger, p.dangerSolid),
         'danger on danger background': (p.dangerForeground, p.dangerBackground),
         'background on text': (p.background, p.text),
+        // Pairs added by #62 to #70.
+        'text on tag background': (p.text, p.tagBackground),
+        'text2 on tag background': (p.text2, p.tagBackground),
+        'text2 on selected': (p.text2, p.selected),
+        'muted on selected': (p.muted, p.selected),
+        'text on subtle hover': (p.text, p.subtleHover),
+        'text2 on raised': (p.text2, p.raised),
+        'text on warning background': (p.text, p.warningBackground),
+        'text on danger background': (p.text, p.dangerBackground),
+        'text on success background': (p.text, p.successBackground),
+        // Dark: 4.16:1, known exception, owner decision in cortex #71.
+        if (name == 'light') 'danger on raised': (p.dangerForeground, p.raised),
+        'danger on surface': (p.dangerForeground, p.surface),
       };
       for (final MapEntry(key: label, value: (fg, bg)) in pairs.entries) {
         expect(contrast(fg, bg), greaterThanOrEqualTo(4.5), reason: label);
@@ -68,6 +81,36 @@ void main() {
       );
       expect(contrast(p.focusOuter, p.background), greaterThanOrEqualTo(3));
       expect(contrast(p.focusOuter, p.focusInner), greaterThanOrEqualTo(3));
+      // Message bar icons, control strokes and the selected indicators.
+      expect(
+        contrast(p.warningForeground, p.warningBackground),
+        greaterThanOrEqualTo(3),
+      );
+      expect(
+        contrast(p.successForeground, p.successBackground),
+        greaterThanOrEqualTo(3),
+      );
+      expect(contrast(p.brandForeground1, p.surface), greaterThanOrEqualTo(3));
+      expect(contrast(p.brandForeground1, p.selected), greaterThanOrEqualTo(3));
+      expect(contrast(p.brandStroke1, p.raised), greaterThanOrEqualTo(3));
+      expect(contrast(p.text2, p.surface), greaterThanOrEqualTo(3));
     });
   }
+  test('known exception cortex #71: dark danger text on raised', () {
+    // Remove this test and the exception above when #71 is decided.
+    expect(
+      contrast(Palette.dark.dangerForeground, Palette.dark.raised),
+      greaterThanOrEqualTo(4),
+    );
+  });
+  test('engineering diagram canvas (#70): dark palette text on #1C1C1E', () {
+    const d = Palette.dark;
+    for (final fg in [d.text, d.text2, d.muted]) {
+      expect(contrast(fg, DiagramPalette.canvas), greaterThanOrEqualTo(4.5));
+    }
+    expect(
+      contrast(d.strokeAccessible, DiagramPalette.canvas),
+      greaterThanOrEqualTo(3),
+    );
+  });
 }

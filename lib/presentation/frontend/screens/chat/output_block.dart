@@ -67,8 +67,10 @@ class _OutputBlockState extends State<OutputBlock> {
     OutputView o,
     int elapsedMs,
   ) {
-    if (elapsedMs < 1000) return const SizedBox.shrink();
-    final seconds = elapsedMs ~/ 1000;
+    if (elapsedMs < WaitTimes.indicator.inMilliseconds) {
+      return const SizedBox.shrink();
+    }
+    final seconds = elapsedMs ~/ Duration.millisecondsPerSecond;
     final label = o.step != null
         ? stepText(l, o.step!, o.stepParams, o.progress)
         : o.thinkingRuns
@@ -79,7 +81,9 @@ class _OutputBlockState extends State<OutputBlock> {
       if (o.expectedMs != null) l.usuallyAbout((o.expectedMs! / 1000).round()),
     ].join(' · ');
     final progress = o.progress;
+    // 1 to 3 s: spinner; longer with a known total: the bar (Fluent rules).
     final known =
+        elapsedMs >= WaitTimes.spinner.inMilliseconds &&
         !o.thinkingRuns &&
         progress != null &&
         progress.length == 2 &&
@@ -154,7 +158,7 @@ class _OutputBlockState extends State<OutputBlock> {
     final elapsedMs = _now().difference(o.started).inMilliseconds;
     if (o.running && _clock == null) {
       // The first tick at 1 s shows the indicator (no indicator before 1 s).
-      _clock = Timer.periodic(const Duration(seconds: 1), (_) {
+      _clock = Timer.periodic(WaitTimes.indicator, (_) {
         if (mounted) setState(() {});
       });
     } else if (!o.running) {
@@ -194,7 +198,11 @@ class _OutputBlockState extends State<OutputBlock> {
         ),
         if (o.running)
           Padding(
-            padding: EdgeInsets.only(bottom: elapsedMs < 1000 ? 0 : Space.s8),
+            padding: EdgeInsets.only(
+              bottom: elapsedMs < WaitTimes.indicator.inMilliseconds
+                  ? 0
+                  : Space.s8,
+            ),
             child: _waitStatus(l, p, o, elapsedMs),
           ),
         if (_stages && o.stages.isNotEmpty)
@@ -503,7 +511,7 @@ class _PulsingDotState extends State<PulsingDot>
     with SingleTickerProviderStateMixin {
   late final controller = AnimationController(
     vsync: this,
-    duration: const Duration(seconds: 1),
+    duration: WaitTimes.pulse,
   );
   @override
   void dispose() {
@@ -692,7 +700,7 @@ class _CopyMessageButtonState extends State<CopyMessageButton> {
                 if (!mounted) return;
                 setState(() => copied = true);
                 timer?.cancel();
-                timer = Timer(const Duration(seconds: 2), () {
+                timer = Timer(WaitTimes.copied, () {
                   if (mounted) setState(() => copied = false);
                 });
               },

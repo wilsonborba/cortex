@@ -645,7 +645,7 @@ class _StatsChartState extends State<StatsChart> {
                 ),
                 duration: MediaQuery.disableAnimationsOf(context)
                     ? Duration.zero
-                    : const Duration(milliseconds: 150),
+                    : MotionDurations.fast,
               ),
             ),
           ),
