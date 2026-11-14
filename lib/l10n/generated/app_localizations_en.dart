@@ -1836,4 +1836,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get personaBack => 'All personas';
+
+  @override
+  String get usageKindColumn => 'Kind of answer';
 }

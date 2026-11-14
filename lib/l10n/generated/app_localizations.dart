@@ -3369,6 +3369,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'All personas'**
   String get personaBack;
+
+  /// No description provided for @usageKindColumn.
+  ///
+  /// In en, this message translates to:
+  /// **'Kind of answer'**
+  String get usageKindColumn;
 }
 
 class _AppLocalizationsDelegate

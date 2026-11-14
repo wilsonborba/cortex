@@ -101,6 +101,8 @@ void main() {
     'public_memory': '/v1/home/memory',
     'usage': '/v1/usage',
     'usage_stats': '/v1/usage/stats',
+    'usage_timing': '/v1/usage/timing',
+    'usage_events': '/v1/usage/events',
 
     'faq': '/v1/home/faq',
   };

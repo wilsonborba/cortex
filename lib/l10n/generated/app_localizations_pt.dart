@@ -1852,4 +1852,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get personaBack => 'Todas as personas';
+
+  @override
+  String get usageKindColumn => 'Tipo de resposta';
 }

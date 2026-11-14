@@ -8,6 +8,7 @@ import 'package:cortex/presentation/frontend/screens/usage/usage_screen.dart';
 import 'package:cortex/presentation/frontend/theme/theme.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:cortex/presentation/frontend/widgets/common/states.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
@@ -162,12 +163,27 @@ void main() {
     final api = Api();
     await pump(tester, api, UsageView.usage);
     expect(find.text('Your usage in the last 24 hours'), findsOneWidget);
-    expect(find.text('Input tokens: 1,234'), findsOneWidget);
-    expect(find.text('Output tokens: 56'), findsOneWidget);
-    expect(find.text('Images: 2'), findsOneWidget);
-    expect(find.text('Audio items: 3'), findsOneWidget);
-    expect(find.text('Weight: 1'), findsOneWidget);
-    expect(find.textContaining('Not available yet'), findsNWidgets(4));
+    // Cards (#67): label and value; no value is an info message bar.
+    Finder card(String label, String value) => find.ancestor(
+      of: find.text(value),
+      matching: find.ancestor(
+        of: find.text(label),
+        matching: find.byType(UsageCard),
+      ),
+    );
+    expect(card('Input tokens', '1,234'), findsOneWidget);
+    expect(card('Output tokens', '56'), findsOneWidget);
+    expect(card('Images', '2'), findsOneWidget);
+    expect(card('Audio items', '3'), findsOneWidget);
+    expect(card('Weight', '1'), findsOneWidget);
+    expect(find.text('Not available yet'), findsNWidgets(4));
+    expect(
+      find.descendant(
+        of: find.byType(UsageCard),
+        matching: find.byType(MessageBar),
+      ),
+      findsNWidgets(4),
+    );
     expect(api.requests.single.path, '/telemetry/usage');
   });
   testWidgets('timing has six API kinds and paths change the selected tab', (
@@ -175,10 +191,12 @@ void main() {
   ) async {
     final api = Api();
     final router = await pump(tester, api, UsageView.timing);
-    expect(find.text('Fast, thinking off: 1.25 s'), findsOneWidget);
-    expect(find.text('Deep, thinking on: Not available yet'), findsOneWidget);
-    expect(find.textContaining('thinking off:'), findsNWidgets(3));
-    await tester.tap(find.widgetWithText(TextButton, 'Events'));
+    expect(find.byKey(const Key('fluent-table')), findsOneWidget);
+    expect(find.text('Fast, thinking off'), findsOneWidget);
+    expect(find.text('1.25 s'), findsWidgets);
+    expect(find.text('Not available yet'), findsWidgets);
+    expect(find.textContaining('thinking off'), findsNWidgets(3));
+    await tester.tap(find.byKey(const Key('usage-tab-Events')));
     await tester.pumpAndSettle();
     expect(router.routeInformationProvider.value.uri.path, '/v1/usage/events');
     expect(api.requests.last.path, '/telemetry/events');
@@ -189,7 +207,12 @@ void main() {
   ) async {
     await pump(tester, Api(), UsageView.stats);
     expect(find.byType(BarChart), findsOneWidget);
-    expect(find.text('1. Deep, thinking off: 4'), findsOneWidget);
+    expect(find.byKey(const Key('stats-card')), findsOneWidget);
+    expect(find.text('Deep, thinking off'), findsOneWidget);
+    expect(
+      tester.widget<Text>(find.byKey(const Key('stats-value-0'))).data,
+      '4',
+    );
     for (final metric in [
       'Average time',
       'Average input tokens',
@@ -202,7 +225,10 @@ void main() {
       await tester.tap(find.text(metric).last);
       await tester.pumpAndSettle();
     }
-    expect(find.text('1. Deep, thinking off: 75%'), findsOneWidget);
+    expect(
+      tester.widget<Text>(find.byKey(const Key('stats-value-0'))).data,
+      '75%',
+    );
     final chart = tester.widget<BarChart>(find.byType(BarChart));
     expect(chart.duration, Duration.zero);
     expect(chart.data.barGroups.first.barRods.single.toY, 75);
@@ -223,7 +249,9 @@ void main() {
       'before': 'output:19',
     });
 
-    final table = tester.widget<DataTable>(find.byType(DataTable));
+    final table = tester.widget<FluentTable>(
+      find.byKey(const Key('events-table')),
+    );
     expect(table.rows.length, 21);
     expect(more, findsNothing);
   });

@@ -45,6 +45,10 @@
 
 - Master and detail personas, Fluent form and fields (#66)
 
+- Merge master and detail personas (#66)
+
+- Fluent 2 usage tabs, cards and tables (#67)
+
 
 ### Tests
 
