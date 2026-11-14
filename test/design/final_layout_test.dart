@@ -60,30 +60,12 @@ http.Client stressClient() {
         ],
       });
     }
-    if (path.startsWith('/memory-graph')) {
-      final data = memory.graph(
-        focus: path.contains('/nodes/') ? memory.memoryId : null,
-      );
-      final nodes = data['nodes'] as List;
-      (nodes.first as Map)['metadata']['title'] = List.filled(
-        15,
-        'Long synthetic memory title',
-      ).join(' ');
-      (nodes.first as Map)['metadata']['summary'] = List.filled(
-        60,
-        'Synthetic summary sentence.',
-      ).join(' ');
-      (nodes[2] as Map)['label'] = 'Synthetic reader';
-      for (var i = nodes.length; i < 200; i++) {
-        nodes.add({
-          'id': 'synthetic-note-$i',
-          'node_type': 'memory',
-          'label': 'Synthetic note $i',
-          'metadata': {'created_at': '2030-01-01T12:00:00Z'},
-        });
-      }
-      return reply(data);
-    }
+    final memoryData = memory.memoryReply(
+      request.url,
+      method: request.method,
+      long: true,
+    );
+    if (memoryData != null) return reply(memoryData.$2);
     final copy = http.Request(request.method, request.url)
       ..headers.addAll(request.headers)
       ..bodyBytes = request.bodyBytes;
@@ -99,11 +81,11 @@ void main() {
     '/v1/chats',
     '/v1/chats/${chat.sid}',
     '/v1/chats/temporary',
-    '/v1/memory',
-    '/v1/memory/${memory.memoryId}',
-    '/v1/personas',
-    '/v1/personas/new',
-    '/v1/personas/p1',
+    '/v1/settings/memory',
+    '/v1/settings/memory/${memory.memoryId}',
+    '/v1/settings/personas',
+    '/v1/settings/personas/new',
+    '/v1/settings/personas/p1',
     '/v1/settings',
     '/v1/usage',
     '/v1/usage/timing',
@@ -118,6 +100,13 @@ void main() {
           tester.view.physicalSize = Size(width, 1000);
           tester.view.devicePixelRatio = 1;
           addTearDown(tester.view.reset);
+          // A running chat spinner repeats in the sidebar; Reduce Motion
+          // makes it static so the layout can settle.
+          tester.platformDispatcher.accessibilityFeaturesTestValue =
+              const FakeAccessibilityFeatures(disableAnimations: true);
+          addTearDown(
+            tester.platformDispatcher.clearAccessibilityFeaturesTestValue,
+          );
           final session = SessionController(
             service: SessionService(cookieReader: () => 'synthetic-session'),
           );
@@ -171,6 +160,11 @@ void main() {
         tester.view.physicalSize = Size(width, 1000);
         tester.view.devicePixelRatio = 1;
         addTearDown(tester.view.reset);
+        tester.platformDispatcher.accessibilityFeaturesTestValue =
+            const FakeAccessibilityFeatures(disableAnimations: true);
+        addTearDown(
+          tester.platformDispatcher.clearAccessibilityFeaturesTestValue,
+        );
         final session = SessionController(
           service: SessionService(cookieReader: () => 'synthetic-session'),
         );
@@ -208,7 +202,7 @@ void main() {
         for (final route in [
           '/v1/chats',
           '/v1/settings',
-          '/v1/memory/${memory.memoryId}',
+          '/v1/settings/memory/${memory.memoryId}',
         ]) {
           router.go(route);
           await tester.pumpAndSettle();

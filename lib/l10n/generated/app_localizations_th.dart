@@ -60,7 +60,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get goToChats => 'ไปที่แชท';
 
   @override
-  String get signingIn => 'กำลังเปิดหน้าเข้าสู่ระบบ';
+  String get signingIn => 'กำลังลงชื่อเข้าใช้ …';
 
   @override
   String get noChatsYet => 'ยังไม่มีแชท';
@@ -410,7 +410,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get chatGreeting => 'คุณอยากรู้อะไร';
 
   @override
-  String get composerHint => 'พิมพ์ข้อความ';
+  String get composerHint => 'ส่งข้อความถึง Cortex';
 
   @override
   String get attach => 'แนบไฟล์';
@@ -588,7 +588,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get steps_thinking_stopped => 'ผู้ใช้หยุดการคิด';
 
   @override
-  String get temporaryBanner => 'ชั่วคราว: ไม่ถูกบันทึก และหายไปเมื่อรีเฟรช';
+  String get temporaryBanner => 'แชทชั่วคราว: ไม่ถูกบันทึก และหายไปเมื่อรีเฟรช';
 
   @override
   String get justNow => 'เมื่อสักครู่';
@@ -704,7 +704,8 @@ class AppLocalizationsTh extends AppLocalizations {
   String get you => 'คุณ';
 
   @override
-  String get noPersonas => 'ยังไม่มีเพอร์โซนา';
+  String get noPersonas =>
+      'ยังไม่มีเพอร์โซนา เพอร์โซนาบอก Cortex เกี่ยวกับบุคคลหรือบอท';
 
   @override
   String get personasLoadFailed => 'โหลดเพอร์โซนาไม่ได้';
@@ -1450,4 +1451,373 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get engTechValkey => 'Valkey';
+
+  @override
+  String get settingsGeneral => 'ทั่วไป';
+
+  @override
+  String get themeDescription => 'ใช้ธีมของระบบ ธีมสว่าง หรือธีมมืด';
+
+  @override
+  String get languageDescription => 'เลือกภาษาของ Cortex';
+
+  @override
+  String get pinnedChats => 'ปักหมุด';
+
+  @override
+  String get recentChats => 'ล่าสุด';
+
+  @override
+  String get aiNote => 'เนื้อหาที่สร้างโดย AI อาจไม่ถูกต้อง';
+
+  @override
+  String memSummary(
+    int count,
+    String size,
+    String chats,
+    String files,
+    String people,
+  ) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Cortex เก็บ $count ความจำ',
+    );
+    return '$_temp0 ($size) จาก $chats $files และ $people';
+  }
+
+  @override
+  String memNewest(String date) {
+    return 'รายการล่าสุดมาจาก $date';
+  }
+
+  @override
+  String get memCardCount => 'ความจำ';
+
+  @override
+  String get memCardSize => 'ขนาด';
+
+  @override
+  String get memCardAdded => 'เพิ่มใน 7 วันที่ผ่านมา';
+
+  @override
+  String get memCardUsed => 'ใช้ในคำตอบใน 7 วันที่ผ่านมา';
+
+  @override
+  String get memByMonth => 'รายเดือน';
+
+  @override
+  String get memFacetSource => 'แหล่งที่มา';
+
+  @override
+  String get memFacetPeriod => 'ช่วงเวลา';
+
+  @override
+  String get memSourceAll => 'ทั้งหมด';
+
+  @override
+  String get memSourceChats => 'แชท';
+
+  @override
+  String get memSourceFiles => 'ไฟล์';
+
+  @override
+  String get memSourceNotes => 'บันทึกที่เก็บไว้';
+
+  @override
+  String get memSourcePeople => 'บุคคล';
+
+  @override
+  String get memSourceTopics => 'หัวข้อ';
+
+  @override
+  String get memPeriodToday => 'วันนี้';
+
+  @override
+  String get memPeriod7 => '7 วันที่ผ่านมา';
+
+  @override
+  String get memPeriod30 => '30 วันที่ผ่านมา';
+
+  @override
+  String get memPeriodAll => 'ทั้งหมด';
+
+  @override
+  String get memSearch => 'ค้นหาความจำ';
+
+  @override
+  String get memClearAll => 'ล้างทั้งหมด';
+
+  @override
+  String get memFilters => 'ตัวกรอง';
+
+  @override
+  String get memRemoveFilter => 'นำตัวกรองออก';
+
+  @override
+  String get memToday => 'วันนี้';
+
+  @override
+  String get memYesterday => 'เมื่อวาน';
+
+  @override
+  String memLineChat(String title, String time) {
+    return 'แชท: $title, $time';
+  }
+
+  @override
+  String memLineFile(String title, String time) {
+    return 'ไฟล์: $title, $time';
+  }
+
+  @override
+  String memLineNote(String time) {
+    return 'บันทึกที่เก็บไว้, $time';
+  }
+
+  @override
+  String memUsedTimes(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'ใช้ $count ครั้ง',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String memSimilar(int count) {
+    return 'คล้ายกัน $count รายการ';
+  }
+
+  @override
+  String get memShowSimilar => 'แสดงความจำที่คล้ายกัน';
+
+  @override
+  String memGroupCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count ความจำ',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get memBackToGroups => 'ทุกกลุ่ม';
+
+  @override
+  String get memCreated => 'สร้างเมื่อ';
+
+  @override
+  String get memUpdated => 'อัปเดตเมื่อ';
+
+  @override
+  String get memSize => 'ขนาด';
+
+  @override
+  String memSizeWords(String size, int words) {
+    return '$size, $words คำ';
+  }
+
+  @override
+  String get memUsedCount => 'ใช้ในคำตอบ';
+
+  @override
+  String get memLastUsed => 'ใช้ล่าสุด';
+
+  @override
+  String get memNever => 'ยังไม่เคย';
+
+  @override
+  String get memKeeps => 'สิ่งที่ Cortex เก็บไว้';
+
+  @override
+  String get memShowAll => 'แสดงทั้งหมด';
+
+  @override
+  String get memShowLess => 'แสดงน้อยลง';
+
+  @override
+  String get memConnects => 'การเชื่อมโยง';
+
+  @override
+  String get memUsedIn => 'ใช้ในคำตอบเหล่านี้';
+
+  @override
+  String get memNoUse => 'Cortex ยังไม่เคยใช้ความจำนี้ในคำตอบ';
+
+  @override
+  String get memShowPicture => 'แสดงการเชื่อมโยงเป็นภาพ';
+
+  @override
+  String get memHidePicture => 'ซ่อนภาพ';
+
+  @override
+  String get memOpenChat => 'เปิดแชท';
+
+  @override
+  String get memDelete => 'ลบความจำ';
+
+  @override
+  String get memDeleteTitle => 'ลบความจำนี้หรือไม่';
+
+  @override
+  String get memDeleteMessage =>
+      'Cortex จะไม่ใช้ความจำนี้อีก และไม่สามารถยกเลิกได้';
+
+  @override
+  String memConnChat(String label) {
+    return 'จากแชท $label';
+  }
+
+  @override
+  String memConnFile(String label) {
+    return 'จากไฟล์ $label';
+  }
+
+  @override
+  String memConnPerson(String label) {
+    return 'กล่าวถึง $label';
+  }
+
+  @override
+  String memConnTopic(String label) {
+    return 'หัวข้อ: $label';
+  }
+
+  @override
+  String memConnSupersedes(String label) {
+    return 'แทนที่ $label';
+  }
+
+  @override
+  String memConnCorrects(String label) {
+    return 'แก้ไข $label';
+  }
+
+  @override
+  String memConnDerived(String label) {
+    return 'มาจาก $label';
+  }
+
+  @override
+  String memConnSupports(String label) {
+    return 'สนับสนุน $label';
+  }
+
+  @override
+  String memConnContradicts(String label) {
+    return 'ขัดแย้งกับ $label';
+  }
+
+  @override
+  String memConnPartOf(String label) {
+    return 'เป็นส่วนหนึ่งของ $label';
+  }
+
+  @override
+  String memConnRelated(String label) {
+    return 'เกี่ยวข้องกับ $label';
+  }
+
+  @override
+  String memConnSameTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'มีความจำอื่น $count รายการที่ชื่อเดียวกัน',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get memEmpty =>
+      'Cortex ยังไม่มีความจำ ความจำจะถูกบันทึกเมื่อคุณแชทโดยเปิดความจำไว้';
+
+  @override
+  String get memStartChat => 'เริ่มแชท';
+
+  @override
+  String get memTruncated => 'แสดงความจำล่าสุด 2000 รายการ';
+
+  @override
+  String get memNoResults => 'ไม่มีความจำที่ตรงกับตัวกรองเหล่านี้';
+
+  @override
+  String get memLoadMore => 'แสดงเพิ่มเติม';
+
+  @override
+  String get memTypeConversation => 'บทสนทนา';
+
+  @override
+  String get memTypeNote => 'บันทึกที่เก็บไว้';
+
+  @override
+  String get memTypeFile => 'ไฟล์';
+
+  @override
+  String get memDetails => 'รายละเอียดความจำ';
+
+  @override
+  String memChats(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count แชท',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String memFiles(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count ไฟล์',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String memPeople(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count บุคคล',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get personaPeople => 'บุคคล';
+
+  @override
+  String get personaBots => 'บอท';
+
+  @override
+  String get personaUsedIn => 'ใช้ใน';
+
+  @override
+  String personaMentions(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'มีความจำ $count รายการที่กล่าวถึงเพอร์โซนานี้',
+      zero: 'ยังไม่มีความจำที่กล่าวถึงเพอร์โซนานี้',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get personaEdit => 'แก้ไข';
+
+  @override
+  String get personaSelect => 'เลือกเพอร์โซนาเพื่อดูรายละเอียด';
+
+  @override
+  String get personaBack => 'เพอร์โซนาทั้งหมด';
+
+  @override
+  String get usageKindColumn => 'ประเภทคำตอบ';
 }

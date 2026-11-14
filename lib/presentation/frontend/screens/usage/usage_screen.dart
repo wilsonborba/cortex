@@ -9,6 +9,7 @@ import '../../../../l10n/generated/app_localizations.dart';
 import '../../theme/tokens.dart';
 import '../../widgets/common/buttons.dart';
 import '../../widgets/common/states.dart';
+import '../../widgets/common/surfaces.dart';
 
 String viewTitle(AppLocalizations l, UsageView view) => switch (view) {
   UsageView.usage => l.usage,
@@ -86,25 +87,28 @@ class _UsageScreenState extends State<UsageScreen> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Padding(
-          padding: const EdgeInsets.all(Space.s12),
-          child: Wrap(
-            spacing: Space.s8,
-            children: [
-              for (final view in UsageView.values)
-                TextButton(
-                  onPressed: view == widget.view
-                      ? null
-                      : () => context.go(
-                          view == UsageView.usage
-                              ? '/v1/usage'
-                              : '/v1/usage/${view.name}',
-                        ),
-                  child: Semantics(
+          padding: const EdgeInsets.fromLTRB(
+            Space.s12,
+            Space.s12,
+            Space.s12,
+            0,
+          ),
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: [
+                for (final view in UsageView.values)
+                  UsageTab(
+                    label: viewTitle(l, view),
                     selected: view == widget.view,
-                    child: Text(viewTitle(l, view)),
+                    onTap: () => context.go(
+                      view == UsageView.usage
+                          ? '/v1/usage'
+                          : '/v1/usage/${view.name}',
+                    ),
                   ),
-                ),
-            ],
+              ],
+            ),
           ),
         ),
         if (error != null)
@@ -146,38 +150,312 @@ class _UsageScreenState extends State<UsageScreen> {
   }
 }
 
+/// Fluent tab (#67): height 44, `body1` (selected `body1Strong`), a 3 px
+/// `brandForeground1` bar under the label with a circular radius, hover
+/// `subtleHover`. The tabs keep their URL paths.
+class UsageTab extends StatelessWidget {
+  const UsageTab({
+    super.key,
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+  @override
+  Widget build(BuildContext context) {
+    final p = Palette.from(context);
+    return Semantics(
+      selected: selected,
+      button: true,
+      child: InkWell(
+        key: Key('usage-tab-$label'),
+        onTap: selected ? null : onTap,
+        hoverColor: p.subtleHover,
+        borderRadius: BorderRadius.circular(Radii.control),
+        child: SizedBox(
+          height: 44,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: Space.s10),
+            child: IntrinsicWidth(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const SizedBox(height: Strokes.thicker),
+                  Expanded(
+                    child: Center(
+                      child: Text(
+                        label,
+                        style: selected
+                            ? TextStyles.body1Strong.copyWith(color: p.text)
+                            : TextStyles.body1.copyWith(color: p.text2),
+                      ),
+                    ),
+                  ),
+                  Container(
+                    height: Strokes.thicker,
+                    decoration: BoxDecoration(
+                      color: selected ? p.brandForeground1 : Colors.transparent,
+                      borderRadius: BorderRadius.circular(Radii.circular),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// A summary card (#67): label `caption1` `muted`, value `title2`, sub text
+/// `caption1`. No value: an info message bar inside the card.
+class UsageCard extends StatelessWidget {
+  const UsageCard({
+    super.key,
+    required this.label,
+    required this.value,
+    this.sub,
+  });
+  final String label;
+  final String? value, sub;
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
+    final p = Palette.from(context);
+    return AppCard(
+      padding: const EdgeInsets.all(Space.s12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(label, style: TextStyles.caption1.copyWith(color: p.muted)),
+          const SizedBox(height: Space.s4),
+          if (value == null)
+            MessageBar(message: l.notAvailableYet)
+          else
+            Text(
+              value!,
+              style: TextStyles.title2.copyWith(
+                color: p.text,
+                fontFeatures: const [FontFeature.tabularFigures()],
+              ),
+            ),
+          if (sub != null) ...[
+            const SizedBox(height: Space.s4),
+            Text(sub!, style: TextStyles.caption1.copyWith(color: p.text2)),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+/// Cards in a grid: 1 column compact, 2 medium, 3 expanded, gap 16.
+class _CardGrid extends StatelessWidget {
+  const _CardGrid({required this.children});
+  final List<Widget> children;
+  @override
+  Widget build(BuildContext context) => LayoutBuilder(
+    builder: (context, box) {
+      final size = SizeClass.of(MediaQuery.sizeOf(context).width);
+      final columns = size == SizeClass.compact
+          ? 1
+          : size == SizeClass.medium
+          ? 2
+          : 3;
+      final width = (box.maxWidth - Space.s16 * (columns - 1)) / columns;
+      return Wrap(
+        spacing: Space.s16,
+        runSpacing: Space.s16,
+        children: [for (final c in children) SizedBox(width: width, child: c)],
+      );
+    },
+  );
+}
+
 class UsageSummary extends StatelessWidget {
   const UsageSummary({super.key, required this.data});
   final UsageData data;
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
+    final p = Palette.from(context);
     final weight = data.weight;
-    Widget row(String title, num? value) => Padding(
-      padding: const EdgeInsets.symmetric(vertical: Space.s8),
-      child: Text(
-        '$title: ${value == null ? l.notAvailableYet : number(l, value)}',
+    String? v(num? value) => value == null ? null : number(l, value);
+    Widget title(String text) => Padding(
+      padding: const EdgeInsets.only(bottom: Space.s12),
+      child: Semantics(
+        header: true,
+        child: Text(text, style: TextStyles.subtitle2.copyWith(color: p.text)),
       ),
     );
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(l.usageWindow(data.windowHours), style: TextStyles.subsection),
-        row(l.usageInputTokens, data.tokens['input']),
-        row(l.usageOutputTokens, data.tokens['output']),
-        row(l.usageTotalTokens, data.tokens['total']),
-        row(l.usageImages, data.items['images']),
-        row(l.usageAudio, data.items['audio']),
+        title(l.usageWindow(data.windowHours)),
+        _CardGrid(
+          children: [
+            UsageCard(
+              label: l.usageInputTokens,
+              value: v(data.tokens['input']),
+            ),
+            UsageCard(
+              label: l.usageOutputTokens,
+              value: v(data.tokens['output']),
+            ),
+            UsageCard(
+              label: l.usageTotalTokens,
+              value: v(data.tokens['total']),
+            ),
+            UsageCard(label: l.usageImages, value: v(data.items['images'])),
+            UsageCard(label: l.usageAudio, value: v(data.items['audio'])),
+          ],
+        ),
         const SizedBox(height: Space.s24),
-        Text(l.usagePriority, style: TextStyles.subsection),
-        Text(l.usagePriorityHelp),
-        row(l.usageWeight, weight['value']),
-        row(l.usageAccountAge, weight['age']),
-        row(l.usageFrequency, weight['frequency']),
-        row(l.usageAccountDays, weight['account_days']),
-        row(l.usageSignInDays, weight['sign_in_days_90']),
-        Text(l.usageWeightFormula),
+        title(l.usagePriority),
+        Padding(
+          padding: const EdgeInsets.only(bottom: Space.s12),
+          child: Text(
+            l.usagePriorityHelp,
+            style: TextStyles.body1.copyWith(color: p.text2),
+          ),
+        ),
+        _CardGrid(
+          children: [
+            UsageCard(
+              label: l.usageWeight,
+              value: v(weight['value']),
+              sub: l.usageWeightFormula,
+            ),
+            UsageCard(label: l.usageAccountAge, value: v(weight['age'])),
+            UsageCard(label: l.usageFrequency, value: v(weight['frequency'])),
+            UsageCard(
+              label: l.usageAccountDays,
+              value: v(weight['account_days']),
+            ),
+            UsageCard(
+              label: l.usageSignInDays,
+              value: v(weight['sign_in_days_90']),
+            ),
+          ],
+        ),
       ],
+    );
+  }
+}
+
+/// One column of a [FluentTable].
+class TableColumnSpec {
+  const TableColumnSpec(this.title, {this.numeric = false, this.width = 160});
+  final String title;
+  final bool numeric;
+  final double width;
+}
+
+/// Fluent table look (#67): header 32 high in `caption1Strong` `muted` with
+/// a 1 px `divider` under it; rows 40 high (44 compact) in `body1` with a
+/// 1 px `divider` between them and `subtleHover` on hover; numbers right
+/// aligned with tabular figures. Scrolls horizontally when it is too wide.
+class FluentTable extends StatelessWidget {
+  const FluentTable({super.key, required this.columns, required this.rows});
+  final List<TableColumnSpec> columns;
+  final List<List<Widget>> rows;
+  @override
+  Widget build(BuildContext context) {
+    final p = Palette.from(context);
+    final compact =
+        SizeClass.of(MediaQuery.sizeOf(context).width) == SizeClass.compact;
+    Widget cell(TableColumnSpec c, Widget child) => SizedBox(
+      width: c.width,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: Space.s8),
+        child: Align(
+          alignment: c.numeric ? Alignment.centerRight : Alignment.centerLeft,
+          child: DefaultTextStyle.merge(
+            style: c.numeric
+                ? const TextStyle(fontFeatures: [FontFeature.tabularFigures()])
+                : null,
+            child: child,
+          ),
+        ),
+      ),
+    );
+    final total = columns.fold<double>(0, (w, c) => w + c.width);
+    return LayoutBuilder(
+      builder: (context, box) {
+        final scale = box.maxWidth > total ? box.maxWidth / total : 1.0;
+        final cols = [
+          for (final c in columns)
+            TableColumnSpec(
+              c.title,
+              numeric: c.numeric,
+              width: c.width * scale,
+            ),
+        ];
+        return SingleChildScrollView(
+          key: const Key('fluent-table'),
+          scrollDirection: Axis.horizontal,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                height: Space.s32,
+                decoration: BoxDecoration(
+                  border: Border(bottom: BorderSide(color: p.divider)),
+                ),
+                child: Row(
+                  children: [
+                    for (final c in cols)
+                      cell(
+                        c,
+                        Text(
+                          c.title,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyles.caption1Strong.copyWith(
+                            color: p.muted,
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+              for (final r in rows)
+                Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    onTap: () {},
+                    hoverColor: p.subtleHover,
+                    splashFactory: NoSplash.splashFactory,
+                    child: Container(
+                      constraints: BoxConstraints(
+                        minHeight: compact ? Controls.minTouch : Space.s40,
+                      ),
+                      decoration: BoxDecoration(
+                        border: Border(bottom: BorderSide(color: p.divider)),
+                      ),
+                      child: Row(
+                        children: [
+                          for (var i = 0; i < cols.length; i++)
+                            cell(
+                              cols[i],
+                              DefaultTextStyle.merge(
+                                style: TextStyles.body1.copyWith(color: p.text),
+                                child: r[i],
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        );
+      },
     );
   }
 }
@@ -188,19 +466,35 @@ class TimingTable extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
+    final p = Palette.from(context);
     if (rows.isEmpty) return EmptyState(title: l.usageEmpty);
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(l.timing, style: TextStyles.subsection),
-        Text(l.usageTimingHelp),
-        for (final row in rows)
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: Space.s12),
-            child: Text(
-              '${kindTitle(l, row.kind)}: ${row.milliseconds == null ? l.notAvailableYet : seconds(l, row.milliseconds! / 1000)}',
-            ),
-          ),
+        Text(l.timing, style: TextStyles.subtitle2.copyWith(color: p.text)),
+        const SizedBox(height: Space.s4),
+        Text(
+          l.usageTimingHelp,
+          style: TextStyles.body1.copyWith(color: p.text2),
+        ),
+        const SizedBox(height: Space.s12),
+        FluentTable(
+          columns: [
+            TableColumnSpec(l.usageKindColumn, width: 260),
+            TableColumnSpec(l.usageAverageTime, numeric: true, width: 140),
+          ],
+          rows: [
+            for (final row in rows)
+              [
+                Text(kindTitle(l, row.kind)),
+                Text(
+                  row.milliseconds == null
+                      ? l.notAvailableYet
+                      : seconds(l, row.milliseconds! / 1000),
+                ),
+              ],
+          ],
+        ),
       ],
     );
   }
@@ -274,65 +568,107 @@ class _StatsChartState extends State<StatsChart> {
           ],
           onChanged: (value) => setState(() => metric = value!),
         ),
-        const SizedBox(height: Space.s24),
-        // One series at a time keeps this chart monochrome. The text rows are
-        // also available to screen readers and at large text sizes.
-        ExcludeSemantics(
-          child: SizedBox(
-            height: 240,
-            child: BarChart(
-              BarChartData(
-                minY: 0,
-                gridData: const FlGridData(show: false),
-                borderData: FlBorderData(show: false),
-                titlesData: FlTitlesData(
-                  leftTitles: const AxisTitles(
-                    sideTitles: SideTitles(showTitles: false),
+        const SizedBox(height: Space.s16),
+        // One series at a time keeps this chart monochrome (Asodya chart
+        // rules). The frame is a Fluent card (#67). The table rows are also
+        // available to screen readers and at large text sizes.
+        AppCard(
+          key: const Key('stats-card'),
+          padding: const EdgeInsets.all(Space.s16),
+          child: ExcludeSemantics(
+            child: SizedBox(
+              height: 240,
+              child: BarChart(
+                BarChartData(
+                  minY: 0,
+                  gridData: FlGridData(
+                    show: true,
+                    drawVerticalLine: false,
+                    getDrawingHorizontalLine: (_) =>
+                        FlLine(color: p.divider, strokeWidth: Strokes.thin),
                   ),
-                  rightTitles: const AxisTitles(
-                    sideTitles: SideTitles(showTitles: false),
-                  ),
-                  topTitles: const AxisTitles(
-                    sideTitles: SideTitles(showTitles: false),
-                  ),
-                  bottomTitles: AxisTitles(
-                    sideTitles: SideTitles(
-                      showTitles: true,
-                      reservedSize: 24,
-                      getTitlesWidget: (value, meta) =>
-                          Text('${value.toInt() + 1}', style: TextStyles.label),
+                  borderData: FlBorderData(show: false),
+                  titlesData: FlTitlesData(
+                    leftTitles: const AxisTitles(
+                      sideTitles: SideTitles(showTitles: false),
                     ),
-                  ),
-                ),
-                barTouchData: BarTouchData(enabled: false),
-                barGroups: [
-                  for (var i = 0; i < widget.rows.length; i++)
-                    BarChartGroupData(
-                      x: i,
-                      barRods: [
-                        BarChartRodData(
-                          toY: metricValue(widget.rows[i], metric).toDouble(),
-                          color: p.text,
-                          width: 24,
-                          borderRadius: BorderRadius.zero,
+                    rightTitles: const AxisTitles(
+                      sideTitles: SideTitles(showTitles: false),
+                    ),
+                    topTitles: const AxisTitles(
+                      sideTitles: SideTitles(showTitles: false),
+                    ),
+                    bottomTitles: AxisTitles(
+                      sideTitles: SideTitles(
+                        showTitles: true,
+                        reservedSize: 24,
+                        getTitlesWidget: (value, meta) => Text(
+                          '${value.toInt() + 1}',
+                          style: TextStyles.caption1.copyWith(color: p.muted),
                         ),
-                      ],
+                      ),
                     ),
-                ],
+                  ),
+                  barTouchData: BarTouchData(
+                    touchTooltipData: BarTouchTooltipData(
+                      getTooltipColor: (_) =>
+                          Theme.of(context).brightness == Brightness.dark
+                          ? p.raised
+                          : p.background,
+                      tooltipBorderRadius: BorderRadius.circular(Radii.control),
+                      tooltipPadding: const EdgeInsets.fromLTRB(
+                        Space.s10 + Strokes.thin,
+                        Space.s4,
+                        Space.s10 + Strokes.thin,
+                        Space.s6,
+                      ),
+                      getTooltipItem: (group, _, rod, _) => BarTooltipItem(
+                        metricText(l, widget.rows[group.x], metric),
+                        TextStyles.caption1.copyWith(color: p.text),
+                      ),
+                    ),
+                  ),
+                  barGroups: [
+                    for (var i = 0; i < widget.rows.length; i++)
+                      BarChartGroupData(
+                        x: i,
+                        barRods: [
+                          BarChartRodData(
+                            toY: metricValue(widget.rows[i], metric).toDouble(),
+                            color: p.text,
+                            width: 24,
+                            borderRadius: BorderRadius.zero,
+                          ),
+                        ],
+                      ),
+                  ],
+                ),
+                duration: MediaQuery.disableAnimationsOf(context)
+                    ? Duration.zero
+                    : MotionDurations.fast,
               ),
-              duration: MediaQuery.disableAnimationsOf(context)
-                  ? Duration.zero
-                  : const Duration(milliseconds: 150),
             ),
           ),
         ),
-        for (var i = 0; i < widget.rows.length; i++)
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: Space.s8),
-            child: Text(
-              '${i + 1}. ${kindTitle(l, widget.rows[i].kind)}: ${metricText(l, widget.rows[i], metric)}',
-            ),
-          ),
+        const SizedBox(height: Space.s16),
+        FluentTable(
+          columns: [
+            const TableColumnSpec('#', numeric: true, width: 48),
+            TableColumnSpec(l.usageKindColumn, width: 260),
+            TableColumnSpec(metricTitle(l, metric), numeric: true, width: 160),
+          ],
+          rows: [
+            for (var i = 0; i < widget.rows.length; i++)
+              [
+                Text('${i + 1}'),
+                Text(kindTitle(l, widget.rows[i].kind)),
+                Text(
+                  metricText(l, widget.rows[i], metric),
+                  key: Key('stats-value-$i'),
+                ),
+              ],
+          ],
+        ),
       ],
     );
   }
@@ -359,70 +695,62 @@ class EventsTable extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: DataTable(
-            dataRowMinHeight: 56,
-            dataRowMaxHeight: double.infinity,
-            columns: [
-              for (final title in [
-                l.usageRequest,
-                l.usageOutput,
-                if (admin) l.usageUser,
-                l.usageModel,
-                l.usageRole,
-                l.usageInputTokens,
-                l.usageOutputTokens,
-                l.usageTotalTokens,
-                l.usageStarted,
-                l.usageFinished,
-              ])
-                DataColumn(label: Text(title)),
-            ],
-            rows: [
-              for (final row in rows)
-                DataRow(
-                  cells: [
-                    DataCell(
-                      SelectableText(
-                        row.cursor,
-                        style: const TextStyle(fontFamily: TextStyles.mono),
-                      ),
-                    ),
-                    DataCell(
-                      SelectableText(
-                        row.output,
-                        style: const TextStyle(fontFamily: TextStyles.mono),
-                      ),
-                    ),
-                    if (admin)
-                      DataCell(
-                        Text(
-                          row.user?.isNotEmpty == true
-                              ? row.user!
-                              : l.usageNoUser,
-                        ),
-                      ),
-                    DataCell(Text(row.model)),
-                    DataCell(Text(row.role)),
-                    DataCell(Text(number(l, row.input))),
-                    DataCell(Text(number(l, row.outputTokens))),
-                    DataCell(Text(number(l, row.total))),
-                    DataCell(Text(time(row.started))),
-                    DataCell(Text(time(row.finished))),
-                  ],
+        FluentTable(
+          key: const Key('events-table'),
+          columns: [
+            TableColumnSpec(l.usageRequest, width: 200),
+            TableColumnSpec(l.usageOutput, width: 200),
+            if (admin) TableColumnSpec(l.usageUser, width: 140),
+            TableColumnSpec(l.usageModel, width: 180),
+            TableColumnSpec(l.usageRole, width: 110),
+            TableColumnSpec(l.usageInputTokens, numeric: true, width: 120),
+            TableColumnSpec(l.usageOutputTokens, numeric: true, width: 120),
+            TableColumnSpec(l.usageTotalTokens, numeric: true, width: 120),
+            TableColumnSpec(l.usageStarted, width: 190),
+            TableColumnSpec(l.usageFinished, width: 190),
+          ],
+          rows: [
+            for (final row in rows)
+              [
+                SelectableText(
+                  row.cursor,
+                  maxLines: 1,
+                  style: TextStyles.code.copyWith(
+                    color: Palette.from(context).text,
+                  ),
                 ),
-            ],
-          ),
+                SelectableText(
+                  row.output,
+                  maxLines: 1,
+                  style: TextStyles.code.copyWith(
+                    color: Palette.from(context).text,
+                  ),
+                ),
+                if (admin)
+                  Text(
+                    row.user?.isNotEmpty == true ? row.user! : l.usageNoUser,
+                  ),
+                Text(row.model, overflow: TextOverflow.ellipsis),
+                Text(row.role),
+                Text(number(l, row.input)),
+                Text(number(l, row.outputTokens)),
+                Text(number(l, row.total)),
+                Text(time(row.started)),
+                Text(time(row.finished)),
+              ],
+          ],
         ),
         if (hasMore)
           Padding(
             padding: const EdgeInsets.only(top: Space.s16),
-            child: AppButton(
-              key: const Key('events-more'),
-              label: l.loadMore,
-              busy: loading,
-              onPressed: more,
+            // "Load more": secondary, centered under the table (#67).
+            child: Center(
+              child: AppButton(
+                key: const Key('events-more'),
+                label: l.loadMore,
+                busy: loading,
+                onPressed: more,
+              ),
             ),
           ),
       ],

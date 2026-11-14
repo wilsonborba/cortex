@@ -44,7 +44,7 @@ class ScreenFrame extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(title, style: TextStyles.section),
+            Text(title, style: TextStyles.title3),
             const SizedBox(height: Space.s24),
             Expanded(child: child),
           ],
@@ -71,12 +71,36 @@ class _LoginRedirectPageState extends State<LoginRedirectPage> {
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-    body: EmptyState(
-      title: AppLocalizations.of(context).signingIn,
-      icon: AppIcons.login,
-    ),
-  );
+  Widget build(BuildContext context) => const SigningInPage();
+}
+
+/// Sign in wait (#62): a 32 px spinner with the label "Signing you in" plus a
+/// non breaking space and an ellipsis, centered. The label is a live region.
+class SigningInPage extends StatelessWidget {
+  const SigningInPage({super.key});
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
+    final p = Palette.from(context);
+    return Scaffold(
+      body: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            AppSpinner(page: true, label: l.signingIn),
+            const SizedBox(height: Space.s8),
+            Semantics(
+              liveRegion: true,
+              child: Text(
+                l.signingIn,
+                style: TextStyles.body1.copyWith(color: p.text2),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }
 
 /// The SSO returns here with auth_exchange_token. After the exchange the token
@@ -112,6 +136,5 @@ class _SyncPageState extends State<SyncPage> {
   }
 
   @override
-  Widget build(BuildContext context) =>
-      const Scaffold(body: Center(child: SkeletonBox(width: 200)));
+  Widget build(BuildContext context) => const SigningInPage();
 }

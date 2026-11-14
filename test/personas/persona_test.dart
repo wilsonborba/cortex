@@ -102,7 +102,13 @@ class Api {
         'fields': fields,
       });
     }
-    if (path == '/personas' && request.method == 'GET') return reply(items);
+    if (path == '/personas' && request.method == 'GET') {
+      // A search with no match returns no rows.
+      if (request.url.queryParameters['q'] == 'Missing example') {
+        return reply([]);
+      }
+      return reply(items);
+    }
     if ((request.method == 'POST' || request.method == 'PATCH') &&
         path.startsWith('/personas')) {
       if (rejects > 0) {
@@ -153,7 +159,7 @@ class Auth extends AuthService {
 Future<GoRouter> pump(
   WidgetTester tester,
   Api api, {
-  String path = '/v1/personas',
+  String path = '/v1/settings/personas',
   Locale locale = const Locale('en'),
   double scale = 1,
   Size size = const Size(1200, 950),
@@ -211,7 +217,7 @@ void main() {
     'invalid save retains typed identity and focuses the first wrong schema field',
     (tester) async {
       final api = Api()..rejects = 1;
-      await pump(tester, api, path: '/v1/personas/new');
+      await pump(tester, api, path: '/v1/settings/personas/new');
       await enter(tester, 'persona-name', 'Synthetic reader');
       await enter(tester, 'attribute-nickname', 'Typed value');
       await save(tester);
@@ -275,13 +281,19 @@ void main() {
       );
       expect(find.text('You'), findsOneWidget);
       expect(find.text('Alias Zeta'), findsOneWidget);
-      await tester.enterText(find.byType(TextFormField).first, 'Zeta');
-      await tester.tap(find.byTooltip('Search personas'));
+      await tester.enterText(
+        find.descendant(
+          of: find.byKey(const Key('persona-search')),
+          matching: find.byType(TextField),
+        ),
+        'Zeta',
+      );
+      await tester.testTextInput.receiveAction(TextInputAction.done);
       await tester.pumpAndSettle();
       await tester.tap(
         find.descendant(
           of: find.byKey(const Key('persona-filter')),
-          matching: find.text('Bot'),
+          matching: find.text('Bots'),
         ),
       );
       await tester.pumpAndSettle();
@@ -296,21 +308,24 @@ void main() {
       ); // No client-side filter.
       await tester.tap(find.byKey(const Key('persona-p1')));
       await tester.pumpAndSettle();
-      expect(router.routeInformationProvider.value.uri.path, '/v1/personas/p1');
+      expect(
+        router.routeInformationProvider.value.uri.path,
+        '/v1/settings/personas/p1',
+      );
     },
   );
   testWidgets('two published schema versions change the form', (tester) async {
     final api = Api();
-    final router = await pump(tester, api, path: '/v1/personas/new');
+    final router = await pump(tester, api, path: '/v1/settings/personas/new');
     expect(find.byKey(const Key('attribute-nickname')), findsOneWidget);
     expect(find.byKey(const Key('attribute-years')), findsOneWidget);
-    router.go('/v1/personas');
+    router.go('/v1/settings/personas');
     await tester.pumpAndSettle();
     api.version = 2;
     api.fields = [
       {'name': 'tone', 'type': 'string', 'required': true, 'in_context': true},
     ];
-    router.go('/v1/personas/new');
+    router.go('/v1/settings/personas/new');
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('attribute-nickname')), findsNothing);
     expect(find.byKey(const Key('attribute-tone')), findsOneWidget);
@@ -319,7 +334,7 @@ void main() {
     'API guardrail maps field errors and creation sends typed values',
     (tester) async {
       final api = Api()..rejects = 1;
-      final router = await pump(tester, api, path: '/v1/personas/new');
+      final router = await pump(tester, api, path: '/v1/settings/personas/new');
       await save(tester);
       expect(
         api.requests.where((r) => r.$1 == 'POST').length,
@@ -342,6 +357,7 @@ void main() {
       await enter(tester, 'attribute-years', '12');
       await enter(tester, 'attribute-score', '1.5');
       await tester.ensureVisible(find.byKey(const Key('attribute-enabled')));
+      await tester.pumpAndSettle();
       await tester.tap(find.byKey(const Key('attribute-enabled')));
       await tester.pump();
       final aliases = find.descendant(
@@ -376,7 +392,7 @@ void main() {
       await save(tester);
       expect(
         router.routeInformationProvider.value.uri.path,
-        '/v1/personas/p-new',
+        '/v1/settings/personas/p-new',
       );
       final body = api.requests.lastWhere((r) => r.$1 == 'POST').$3!;
       expect(body['type'], 'person');
@@ -398,17 +414,32 @@ void main() {
     'edit keeps saved attributes and delete requires confirmation and survives failure',
     (tester) async {
       final api = Api()..deleteFailures = 1;
-      final router = await pump(tester, api, path: '/v1/personas/p1');
+      // The detail opens first; Edit opens the form (#66).
+      final router = await pump(tester, api, path: '/v1/settings/personas/p1');
+      expect(find.byKey(const Key('persona-detail')), findsOneWidget);
+      await tester.tap(find.byKey(const Key('edit-persona')));
+      await tester.pumpAndSettle();
+      expect(
+        router.routeInformationProvider.value.uri.path,
+        '/v1/settings/personas/p1/edit',
+      );
       await enter(tester, 'persona-name', 'Changed');
       await save(tester);
-      await tester.pump(const Duration(seconds: 5));
+      await tester.pump(const Duration(seconds: 8));
       await tester.pumpAndSettle();
       final patch = api.requests.lastWhere((r) => r.$1 == 'PATCH').$3!;
       expect(patch.containsKey('type'), isFalse);
       expect(patch['attributes']['nickname'], 'Saved value');
+      // After Save the detail shows the new name.
+      expect(
+        router.routeInformationProvider.value.uri.path,
+        '/v1/settings/personas/p1',
+      );
       Future<void> remove() async {
-        await tester.ensureVisible(find.byKey(const Key('delete-persona')));
-        await tester.tap(find.byKey(const Key('delete-persona')));
+        await tester.ensureVisible(
+          find.byKey(const Key('delete-persona-detail')),
+        );
+        await tester.tap(find.byKey(const Key('delete-persona-detail')));
         await tester.pumpAndSettle();
         await tester.tap(
           find.descendant(
@@ -420,21 +451,16 @@ void main() {
       }
 
       await remove();
-      expect(router.routeInformationProvider.value.uri.path, '/v1/personas/p1');
       expect(
-        tester
-            .widget<TextField>(
-              find.descendant(
-                of: find.byKey(const Key('persona-name')),
-                matching: find.byType(TextField),
-              ),
-            )
-            .controller!
-            .text,
-        'Changed',
+        router.routeInformationProvider.value.uri.path,
+        '/v1/settings/personas/p1',
       );
+      expect(find.byKey(const Key('persona-detail')), findsOneWidget);
       await remove();
-      expect(router.routeInformationProvider.value.uri.path, '/v1/personas');
+      expect(
+        router.routeInformationProvider.value.uri.path,
+        '/v1/settings/personas',
+      );
       expect(find.byKey(const Key('persona-p1')), findsNothing);
     },
   );
@@ -442,7 +468,7 @@ void main() {
     tester,
   ) async {
     final api = Api();
-    await pump(tester, api, path: '/v1/personas/new');
+    await pump(tester, api, path: '/v1/settings/personas/new');
     final date = find.byTooltip('Choose a date');
     await tester.ensureVisible(date);
     await tester.tap(date);
@@ -496,7 +522,7 @@ void main() {
       await pump(
         tester,
         Api(),
-        path: '/v1/personas/new',
+        path: '/v1/settings/personas/new',
         locale: entry.$1,
         scale: 2,
         size: const Size(390, 844),
