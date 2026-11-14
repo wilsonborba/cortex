@@ -14,7 +14,7 @@ flutter build web \
   --release \
   --no-tree-shake-icons \
   --dart-define=DEVELOPMENT_MODE=false \
-  --dart-define=BUILD_VERSION="2.2.2 / $BKK_TIMESTAMP"
+  --dart-define=BUILD_VERSION="2.2.3 / $BKK_TIMESTAMP"
 
 echo "=== Deploying to Cloudflare Pages (cortex.asodya.com) ==="
 python3 -c "
