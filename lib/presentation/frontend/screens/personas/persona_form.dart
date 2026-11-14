@@ -63,7 +63,7 @@ class _PersonaFormState extends State<PersonaForm> {
           Scrollable.ensureVisible(
             node.context!,
             duration: Motion.panelOf(context),
-            curve: FoundationTokens.curve,
+            curve: FoundationTokens.enterCurve,
           );
           return;
         }
@@ -310,7 +310,9 @@ class _PersonaFormState extends State<PersonaForm> {
                   padding: const EdgeInsets.only(bottom: Space.s16),
                   child: Text(
                     apiFailure(l, error),
-                    style: TextStyle(color: Palette.from(context).danger),
+                    style: TextStyle(
+                      color: Palette.from(context).dangerForeground,
+                    ),
                   ),
                 ),
               Text(l.personaIdentity, style: TextStyles.subsection),

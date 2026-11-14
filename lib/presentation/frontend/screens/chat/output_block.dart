@@ -233,7 +233,7 @@ class _OutputBlockState extends State<OutputBlock> {
                         o.errorNumber == securityBlock
                             ? AppIcons.securityBlock
                             : AppIcons.error,
-                        color: p.danger,
+                        color: p.dangerForeground,
                         size: IconSizes.action,
                       ),
                       const SizedBox(width: Space.s8),

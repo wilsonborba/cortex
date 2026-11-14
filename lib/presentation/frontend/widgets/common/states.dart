@@ -151,7 +151,7 @@ class NoticeLine extends StatelessWidget {
     final (icon, color) = switch (kind) {
       NoticeKind.info => (AppIcons.info, p.muted),
       NoticeKind.warning => (AppIcons.warning, p.text),
-      NoticeKind.error => (AppIcons.error, p.danger),
+      NoticeKind.error => (AppIcons.error, p.dangerForeground),
     };
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,

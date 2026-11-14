@@ -132,7 +132,10 @@ void main() {
         matching: find.byType(FilledButton),
       ),
     );
-    expect(confirm.style!.backgroundColor!.resolve({}), Palette.dark.danger);
+    expect(
+      confirm.style!.backgroundColor!.resolve({}),
+      Palette.dark.dangerSolid,
+    );
     await tester.tap(find.text('Cancel'));
     await tester.pumpAndSettle();
     expect(result, isFalse);

@@ -381,9 +381,9 @@ class _Hero extends StatelessWidget {
           header: true,
           child: Text(
             l.heroTitle,
-            style: size == SizeClass.compact
-                ? TextStyles.pageTitle
-                : TextStyles.display,
+            style: size == SizeClass.expanded
+                ? TextStyles.display
+                : TextStyles.largeTitle,
           ),
         ),
         const SizedBox(height: Space.s16),

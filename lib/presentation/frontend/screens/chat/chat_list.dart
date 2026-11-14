@@ -178,7 +178,7 @@ class _ChatListState extends State<ChatList> {
               selectedTileColor: p.raised,
               shape: Border(
                 left: BorderSide(
-                  color: selected ? p.accent : Colors.transparent,
+                  color: selected ? p.brandForeground1 : Colors.transparent,
                   width: Controls.focusRing,
                 ),
               ),
@@ -241,7 +241,7 @@ class _ChatListState extends State<ChatList> {
                         value: _Action.delete,
                         child: Text(
                           l.delete,
-                          style: TextStyle(color: p.danger),
+                          style: TextStyle(color: p.dangerForeground),
                         ),
                       ),
                     ],

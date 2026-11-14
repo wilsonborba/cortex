@@ -147,7 +147,7 @@ class _AppShellState extends State<AppShell> {
                 border: Border(
                   left: BorderSide(
                     color: widget.location.startsWith(d.path)
-                        ? p.accent
+                        ? p.brandForeground1
                         : Colors.transparent,
                     width: Controls.focusRing,
                   ),
@@ -207,7 +207,7 @@ class _AppShellState extends State<AppShell> {
                 border: Border(
                   left: BorderSide(
                     color: widget.location.startsWith(d.path)
-                        ? p.accent
+                        ? p.brandForeground1
                         : Colors.transparent,
                     width: Controls.focusRing,
                   ),

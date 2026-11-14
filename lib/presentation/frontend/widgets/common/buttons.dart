@@ -44,8 +44,8 @@ class AppButton extends StatelessWidget {
     final p = Palette.from(context);
     final size = SizeClass.of(MediaQuery.sizeOf(context).width);
     final (bg, fg, side) = switch (kind) {
-      ButtonKind.primary => (p.accent, p.onAccent, p.accent),
-      ButtonKind.destructive => (p.danger, p.onDanger, p.danger),
+      ButtonKind.primary => (p.brandBackground, p.onBrand, p.brandBackground),
+      ButtonKind.destructive => (p.dangerSolid, p.onDanger, p.dangerSolid),
       ButtonKind.secondary => (p.surface, p.text, p.text),
       ButtonKind.quiet => (Colors.transparent, p.text, Colors.transparent),
     };
