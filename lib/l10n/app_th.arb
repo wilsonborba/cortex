@@ -574,5 +574,6 @@
   "personaMentions": "{count, plural, =0{ยังไม่มีความจำที่กล่าวถึงเพอร์โซนานี้} other{มีความจำ {count} รายการที่กล่าวถึงเพอร์โซนานี้}}",
   "personaEdit": "แก้ไข",
   "personaSelect": "เลือกเพอร์โซนาเพื่อดูรายละเอียด",
-  "personaBack": "เพอร์โซนาทั้งหมด"
+  "personaBack": "เพอร์โซนาทั้งหมด",
+  "usageKindColumn": "ประเภทคำตอบ"
 }

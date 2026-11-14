@@ -1817,4 +1817,7 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get personaBack => 'เพอร์โซนาทั้งหมด';
+
+  @override
+  String get usageKindColumn => 'ประเภทคำตอบ';
 }

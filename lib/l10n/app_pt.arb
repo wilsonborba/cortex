@@ -574,5 +574,6 @@
   "personaMentions": "{count, plural, =0{Nenhuma memória menciona esta persona ainda.} =1{1 memória menciona esta persona.} other{{count} memórias mencionam esta persona.}}",
   "personaEdit": "Editar",
   "personaSelect": "Selecione uma persona para ver os detalhes.",
-  "personaBack": "Todas as personas"
+  "personaBack": "Todas as personas",
+  "usageKindColumn": "Tipo de resposta"
 }

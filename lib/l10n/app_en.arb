@@ -859,5 +859,6 @@
         "type": "int"
       }
     }
-  }
+  },
+  "usageKindColumn": "Kind of answer"
 }
