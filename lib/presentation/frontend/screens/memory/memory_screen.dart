@@ -679,7 +679,6 @@ class _MemoryScreenState extends State<MemoryScreen> {
           child: AppButton(
             key: const Key('back-to-groups'),
             label: l.memBackToGroups,
-            icon: AppIcons.back,
             kind: ButtonKind.subtle,
             size: ButtonSize.small,
             onPressed: () => c.openGroup(null),
@@ -1028,23 +1027,19 @@ class _MemoryDetailViewState extends State<_MemoryDetailView> {
           padding: const EdgeInsets.fromLTRB(Space.s16, Space.s12, Space.s8, 0),
           child: Row(
             children: [
-              if (widget.page)
-                BackButton(onPressed: widget.onClose)
-              else
-                const SizedBox.shrink(),
               Expanded(
                 child: Text(
                   l.memDetails,
                   style: TextStyles.caption1Strong.copyWith(color: p.muted),
                 ),
               ),
-              if (!widget.page)
-                IconButton(
-                  key: const Key('memory-detail-close'),
-                  tooltip: l.close,
-                  icon: const Icon(AppIcons.close, size: IconSizes.action),
-                  onPressed: widget.onClose,
-                ),
+              // A close button, also on the full page: no app style back arrow.
+              IconButton(
+                key: const Key('memory-detail-close'),
+                tooltip: l.close,
+                icon: const Icon(AppIcons.close, size: IconSizes.action),
+                onPressed: widget.onClose,
+              ),
             ],
           ),
         ),

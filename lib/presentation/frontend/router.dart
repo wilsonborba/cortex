@@ -12,8 +12,7 @@ import 'screens/basic_pages.dart';
 import '../../domain/services/chat_list_controller.dart';
 import '../../domain/services/memory_controller.dart';
 import '../../domain/services/persona_controller.dart';
-import 'screens/personas/persona_list.dart';
-import 'screens/personas/persona_form.dart';
+import 'screens/personas/persona_page.dart';
 import 'screens/chat/chat_list.dart';
 import 'screens/chat/chat_screen.dart';
 import 'screens/memory/memory_screen.dart';
@@ -168,12 +167,13 @@ GoRouter buildRouter({
                       ),
                     ),
                   ),
+                  // Personas: master and detail (#66).
                   GoRoute(
                     path: 'personas',
                     builder: (c, _) => screenPage(
                       c,
                       (l) => l.personas,
-                      () => PersonaList(controller: personas),
+                      () => PersonasPage(controller: personas, api: cortex),
                     ),
                   ),
                   GoRoute(
@@ -181,7 +181,11 @@ GoRouter buildRouter({
                     builder: (c, _) => screenPage(
                       c,
                       (l) => l.newPersona,
-                      () => PersonaForm(api: cortex, onChanged: personas.load),
+                      () => PersonasPage(
+                        controller: personas,
+                        api: cortex,
+                        creating: true,
+                      ),
                     ),
                   ),
                   GoRoute(
@@ -189,10 +193,23 @@ GoRouter buildRouter({
                     builder: (c, state) => screenPage(
                       c,
                       (l) => l.personas,
-                      () => PersonaForm(
+                      () => PersonasPage(
+                        controller: personas,
                         api: cortex,
                         id: state.pathParameters['persona_id'],
-                        onChanged: personas.load,
+                      ),
+                    ),
+                  ),
+                  GoRoute(
+                    path: 'personas/:persona_id/edit',
+                    builder: (c, state) => screenPage(
+                      c,
+                      (l) => l.editPersona,
+                      () => PersonasPage(
+                        controller: personas,
+                        api: cortex,
+                        id: state.pathParameters['persona_id'],
+                        edit: true,
                       ),
                     ),
                   ),

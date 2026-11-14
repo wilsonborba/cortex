@@ -7,6 +7,8 @@ import '../../../../dal/remote/cortex_api.dart';
 import '../../../../domain/models/api.dart';
 import '../../../../domain/models/persona.dart';
 import '../../../../l10n/generated/app_localizations.dart';
+import '../../theme/app_icons.dart';
+import '../../theme/theme.dart';
 import '../../theme/tokens.dart';
 import '../../widgets/common/buttons.dart';
 import '../../widgets/common/states.dart';
@@ -214,9 +216,8 @@ class _PersonaFormState extends State<PersonaForm> {
         message: AppLocalizations.of(context).personaSaved,
         kind: NoticeKind.success,
       );
-      if (widget.id == null) {
-        context.go('/v1/settings/personas/${Uri.encodeComponent(result.id)}');
-      }
+      // After Save the detail of the persona opens (#66).
+      context.go('/v1/settings/personas/${Uri.encodeComponent(result.id)}');
     } on ApiError catch (e) {
       if (mounted) {
         setState(() {
@@ -285,147 +286,223 @@ class _PersonaFormState extends State<PersonaForm> {
       );
     }
     final errors = error?.fieldErrors ?? const <String, String>{};
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(Space.s16),
-      child: Align(
-        alignment: Alignment.topCenter,
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: Space.personaFormWidth),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Text(
-                widget.id == null ? l.newPersona : l.editPersona,
-                style: TextStyles.subsection,
+    final p = Palette.from(context);
+    final compact =
+        SizeClass.of(MediaQuery.sizeOf(context).width) == SizeClass.compact;
+    // A section card with a `subtitle2` header, padding 16 and 16 between
+    // fields (#66).
+    Widget section(String title, List<Widget> children) => Padding(
+      padding: const EdgeInsets.only(bottom: Space.s16),
+      child: AppCard(
+        padding: const EdgeInsets.all(Space.s16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Semantics(
+              header: true,
+              child: Text(
+                title,
+                style: TextStyles.subtitle2.copyWith(color: p.text),
               ),
-              const SizedBox(height: Space.s16),
-              if (error != null)
-                Padding(
-                  padding: const EdgeInsets.only(bottom: Space.s16),
-                  child: Text(
-                    apiFailure(l, error),
-                    style: TextStyle(
-                      color: Palette.from(context).dangerForeground,
-                    ),
-                  ),
+            ),
+            for (final c in children) ...[const SizedBox(height: Space.s16), c],
+          ],
+        ),
+      ),
+    );
+    void cancel() => context.go(
+      widget.id == null
+          ? '/v1/settings/personas'
+          : '/v1/settings/personas/${Uri.encodeComponent(widget.id!)}',
+    );
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Expanded(
+          child: SingleChildScrollView(
+            padding: EdgeInsets.all(compact ? Space.s16 : Space.s24),
+            child: Align(
+              alignment: Alignment.topLeft,
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(
+                  maxWidth: Space.personaFormWidth,
                 ),
-              Text(l.personaIdentity, style: TextStyles.subsection),
-              const SizedBox(height: Space.s16),
-              AppInput(
-                key: const Key('persona-name'),
-                controller: name,
-                focusNode: focusFor('name'),
-                enabled: !busy,
-                label: '${l.personaName} *',
-                error: fieldError(
-                  l,
-                  errors['name'] ?? errors['canonical_name'],
-                ),
-              ),
-              const SizedBox(height: Space.s16),
-              if (widget.id == null)
-                Column(
+                child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Text(l.personaType, style: TextStyles.label),
-                    const SizedBox(height: Space.s8),
-                    AppSelectFormField<String>(
-                      key: const Key('persona-type'),
-                      focusNode: focusFor('type'),
-                      initialValue: type,
-                      decoration: InputDecoration(
-                        errorText: fieldError(l, errors['type']),
+                    Semantics(
+                      header: true,
+                      child: Text(
+                        widget.id == null ? l.newPersona : l.editPersona,
+                        style: TextStyles.subtitle1.copyWith(color: p.text),
                       ),
-                      items: [
-                        DropdownMenuItem(
-                          value: 'person',
-                          child: Text(l.personType),
+                    ),
+                    const SizedBox(height: Space.s16),
+                    if (error != null)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: Space.s16),
+                        child: MessageBar(
+                          key: const Key('persona-error'),
+                          message: apiFailure(l, error),
+                          kind: NoticeKind.error,
                         ),
-                        DropdownMenuItem(value: 'bot', child: Text(l.botType)),
-                      ],
-                      onChanged: busy ? null : (value) => changeType(value!),
-                    ),
+                      ),
+                    section(l.personaIdentity, [
+                      AppInput(
+                        key: const Key('persona-name'),
+                        controller: name,
+                        focusNode: focusFor('name'),
+                        enabled: !busy,
+                        label: l.personaName,
+                        required: true,
+                        error: fieldError(
+                          l,
+                          errors['name'] ?? errors['canonical_name'],
+                        ),
+                      ),
+                      if (widget.id == null)
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            FieldLabel(l.personaType),
+                            const SizedBox(height: Space.s4),
+                            AppSelectFormField<String>(
+                              key: const Key('persona-type'),
+                              focusNode: focusFor('type'),
+                              initialValue: type,
+                              decoration: InputDecoration(
+                                errorText: fieldError(l, errors['type']),
+                              ),
+                              items: [
+                                DropdownMenuItem(
+                                  value: 'person',
+                                  child: Text(l.personType),
+                                ),
+                                DropdownMenuItem(
+                                  value: 'bot',
+                                  child: Text(l.botType),
+                                ),
+                              ],
+                              onChanged: busy
+                                  ? null
+                                  : (value) => changeType(value!),
+                            ),
+                          ],
+                        )
+                      else
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            FieldLabel(l.personaType),
+                            const SizedBox(height: Space.s4),
+                            Text(
+                              type == 'bot' ? l.botType : l.personType,
+                              style: TextStyles.body1.copyWith(color: p.text2),
+                            ),
+                          ],
+                        ),
+                      ListField(
+                        key: const Key('persona-aliases'),
+                        label: l.personaAliases,
+                        focusNode: focusFor('aliases'),
+                        enabled: !busy,
+                        value: aliases,
+                        onChanged: (value) =>
+                            setState(() => aliases = value.cast<String>()),
+                        error: fieldError(
+                          l,
+                          errors.entries
+                              .where((entry) => entry.key.startsWith('aliases'))
+                              .firstOrNull
+                              ?.value,
+                        ),
+                      ),
+                      Focus(
+                        focusNode: focusFor('is_self'),
+                        skipTraversal: true,
+                        child: AppSwitch(
+                          key: const Key('persona-self'),
+                          label: l.personaIsSelf,
+                          value: isSelf,
+                          onChanged: busy
+                              ? null
+                              : (value) => setState(() => isSelf = value),
+                        ),
+                      ),
+                    ]),
+                    section(l.personaSchemaFields, [
+                      Text(
+                        l.personaRequiredLegend,
+                        style: TextStyles.caption1.copyWith(color: p.muted),
+                      ),
+                      SchemaFields(
+                        key: ValueKey('$type-${schema!.version}-${widget.id}'),
+                        fields: schema!.fields,
+                        focusFor: (path) => focusFor('attributes.$path'),
+                        enabled: !busy,
+                        values: attributes,
+                        errors: errors,
+                        onChanged: () => setState(() {}),
+                      ),
+                    ]),
                   ],
-                )
-              else
-                Text(
-                  type == 'bot' ? l.botType : l.personType,
-                  style: TextStyles.label,
-                ),
-              const SizedBox(height: Space.s16),
-              ListField(
-                key: const Key('persona-aliases'),
-                label: l.personaAliases,
-                focusNode: focusFor('aliases'),
-                enabled: !busy,
-                value: aliases,
-                onChanged: (value) =>
-                    setState(() => aliases = value.cast<String>()),
-                error: fieldError(
-                  l,
-                  errors.entries
-                      .where((entry) => entry.key.startsWith('aliases'))
-                      .firstOrNull
-                      ?.value,
                 ),
               ),
-              FoundationFocus(
-                child: SwitchListTile(
-                  key: const Key('persona-self'),
-                  focusNode: focusFor('is_self'),
-                  contentPadding: EdgeInsets.zero,
-                  title: Text(l.personaIsSelf),
-                  value: isSelf,
-                  onChanged: busy
-                      ? null
-                      : (value) => setState(() => isSelf = value),
-                ),
-              ),
-              const SizedBox(height: Space.s24),
-              Text(l.personaSchemaFields, style: TextStyles.subsection),
-              const SizedBox(height: Space.s8),
-              Text(l.personaRequiredLegend, style: TextStyles.label),
-              const SizedBox(height: Space.s12),
-              SchemaFields(
-                key: ValueKey('$type-${schema!.version}-${widget.id}'),
-                fields: schema!.fields,
-                focusFor: (path) => focusFor('attributes.$path'),
-                enabled: !busy,
-                values: attributes,
-                errors: errors,
-                onChanged: () => setState(() {}),
-              ),
-              const SizedBox(height: Space.s24),
-              Wrap(
-                alignment: WrapAlignment.end,
-                spacing: Space.s12,
-                runSpacing: Space.s12,
-                children: [
-                  if (widget.id != null)
-                    AppButton.destructive(
-                      key: const Key('delete-persona'),
-                      label: l.deletePersona,
-                      onPressed: busy ? null : remove,
+            ),
+          ),
+        ),
+        // Sticky footer (#66): `background`, 1 px `divider` on top, padding
+        // 12 x 16. Delete on the left; Save then Cancel on the right.
+        Container(
+          key: const Key('persona-footer'),
+          padding: const EdgeInsets.symmetric(
+            horizontal: Space.s16,
+            vertical: Space.s12,
+          ),
+          decoration: BoxDecoration(
+            color: p.background,
+            border: Border(top: BorderSide(color: p.divider)),
+          ),
+          child: Row(
+            children: [
+              if (widget.id != null)
+                Flexible(
+                  child: TextButton.icon(
+                    key: const Key('delete-persona'),
+                    style:
+                        buttonStyle(
+                          p,
+                          ButtonAppearance.subtle,
+                          size: ButtonSize.of(
+                            SizeClass.of(MediaQuery.sizeOf(context).width),
+                          ),
+                        ).copyWith(
+                          foregroundColor: WidgetStatePropertyAll(
+                            p.dangerForeground,
+                          ),
+                          iconColor: WidgetStatePropertyAll(p.dangerForeground),
+                        ),
+                    onPressed: busy ? null : remove,
+                    icon: const Icon(AppIcons.delete),
+                    label: Text(
+                      l.deletePersona,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                  AppButton(
-                    kind: ButtonKind.quiet,
-                    label: l.cancel,
-                    onPressed: busy
-                        ? null
-                        : () => context.go('/v1/settings/personas'),
                   ),
-                  AppButton.primary(
-                    key: const Key('save-persona'),
-                    label: l.save,
-                    busy: busy,
-                    onPressed: save,
-                  ),
-                ],
+                ),
+              const Spacer(),
+              AppButton.primary(
+                key: const Key('save-persona'),
+                label: l.save,
+                busy: busy,
+                onPressed: save,
               ),
+              const SizedBox(width: Space.s8),
+              AppButton(label: l.cancel, onPressed: busy ? null : cancel),
             ],
           ),
         ),
-      ),
+      ],
     );
   }
 }

@@ -719,7 +719,8 @@ void main() {
     router.go('/v1/settings/memory/$memoryId');
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('memory-summary')), findsNothing);
-    expect(find.byType(BackButton), findsWidgets);
+    expect(find.byType(BackButton), findsNothing);
+    expect(find.byKey(const Key('memory-detail-close')), findsOneWidget);
     expect(find.text('What Cortex keeps'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });

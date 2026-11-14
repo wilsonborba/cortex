@@ -715,7 +715,8 @@ class AppLocalizationsPt extends AppLocalizations {
   String get you => 'Você';
 
   @override
-  String get noPersonas => 'Nenhuma persona ainda';
+  String get noPersonas =>
+      'Ainda não há personas. Uma persona informa o Cortex sobre uma pessoa ou um bot.';
 
   @override
   String get personasLoadFailed => 'Não foi possível carregar as personas.';
@@ -1821,4 +1822,34 @@ class AppLocalizationsPt extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get personaPeople => 'Pessoas';
+
+  @override
+  String get personaBots => 'Bots';
+
+  @override
+  String get personaUsedIn => 'Usada em';
+
+  @override
+  String personaMentions(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count memórias mencionam esta persona.',
+      one: '1 memória menciona esta persona.',
+      zero: 'Nenhuma memória menciona esta persona ainda.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get personaEdit => 'Editar';
+
+  @override
+  String get personaSelect => 'Selecione uma persona para ver os detalhes.';
+
+  @override
+  String get personaBack => 'Todas as personas';
 }

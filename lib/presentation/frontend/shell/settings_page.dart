@@ -74,11 +74,6 @@ class SettingsFrame extends StatelessWidget {
           padding: EdgeInsets.fromLTRB(gutter, gutter, gutter, Space.s16),
           child: Row(
             children: [
-              BackButton(
-                onPressed: () =>
-                    context.canPop() ? context.pop() : context.go('/v1/chats'),
-              ),
-              const SizedBox(width: Space.s8),
               Expanded(
                 child: Semantics(
                   header: true,

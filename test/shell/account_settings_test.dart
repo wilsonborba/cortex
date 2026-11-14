@@ -208,7 +208,9 @@ void main() {
       find.text('These choices are saved in this browser.'),
       findsOneWidget,
     );
-    await tester.tap(find.byType(BackButton));
+    // No app style back arrow; browser Back returns to the chat.
+    expect(find.byType(BackButton), findsNothing);
+    router.pop();
     await tester.pumpAndSettle();
     expect(router.routeInformationProvider.value.uri.path, '/v1/chats');
   });

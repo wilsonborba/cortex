@@ -9,6 +9,7 @@ void main() {
     for (final width in [390.0, 768.0, 1024.0, 1300.0, 1440.0]) {
       for (final mode in [
         'data',
+        'detail',
         'empty',
         'no_match',
         'new',
@@ -25,11 +26,13 @@ void main() {
                 'in_context': true,
               },
             ];
-          if (mode == 'empty' || mode == 'no_match') api.items.clear();
+          if (mode == 'empty') api.items.clear();
           if (mode == 'errors') api.rejects = 1;
           final route = ['new', 'errors'].contains(mode)
               ? '/v1/settings/personas/new'
               : mode == 'edit'
+              ? '/v1/settings/personas/p1/edit'
+              : mode == 'detail'
               ? '/v1/settings/personas/p1'
               : '/v1/settings/personas';
           await fixture.pump(
@@ -41,10 +44,13 @@ void main() {
           );
           if (mode == 'no_match') {
             await tester.enterText(
-              find.byKey(const Key('persona-search')),
+              find.descendant(
+                of: find.byKey(const Key('persona-search')),
+                matching: find.byType(TextField),
+              ),
               'Missing example',
             );
-            await tester.tap(find.byTooltip('Search personas'));
+            await tester.testTextInput.receiveAction(TextInputAction.done);
             await tester.pumpAndSettle();
           }
           if (mode == 'errors') {

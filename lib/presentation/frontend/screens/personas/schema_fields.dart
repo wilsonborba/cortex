@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../../../domain/models/persona.dart';
 import '../../../../l10n/generated/app_localizations.dart';
+import '../../theme/theme.dart';
 import '../../theme/tokens.dart';
 import '../../widgets/common/buttons.dart';
 import '../../widgets/common/surfaces.dart';
@@ -95,11 +96,11 @@ class SchemaFields extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 if (!['boolean', 'object', 'array'].contains(field.type)) ...[
-                  Text(
-                    '${field.name.substring(prefix.length)}${field.required ? ' *' : ''}',
-                    style: TextStyles.label,
+                  FieldLabel(
+                    field.name.substring(prefix.length),
+                    required: field.required,
                   ),
-                  const SizedBox(height: Space.s8),
+                  const SizedBox(height: Space.s4),
                 ],
                 Builder(
                   builder: (context) {
@@ -132,26 +133,21 @@ class SchemaFields extends StatelessWidget {
                     final key = Key('attribute-${field.name}');
                     switch (field.type) {
                       case 'boolean':
+                        // Fluent switch with the label on the right (#66).
                         return Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            FoundationFocus(
-                              child: SwitchListTile(
+                            Focus(
+                              focusNode: focusFor?.call(field.name),
+                              skipTraversal: true,
+                              child: AppSwitch(
                                 key: key,
-                                focusNode: focusFor?.call(field.name),
-                                contentPadding: EdgeInsets.zero,
-                                title: Text(label),
+                                label: label,
                                 value: value == true,
                                 onChanged: enabled ? change : null,
                               ),
                             ),
-                            if (error != null)
-                              Text(
-                                fieldError(l, error)!,
-                                style: TextStyle(
-                                  color: Palette.from(context).dangerForeground,
-                                ),
-                              ),
+                            FieldMessage(error: fieldError(l, error)),
                           ],
                         );
                       case 'array':
@@ -178,8 +174,8 @@ class SchemaFields extends StatelessWidget {
                         return Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            Text(label, style: TextStyles.compact),
-                            if (error != null) Text(fieldError(l, error)!),
+                            FieldLabel(name, required: field.required),
+                            FieldMessage(error: fieldError(l, error)),
                             Padding(
                               padding: const EdgeInsets.only(
                                 left: Space.s12,
@@ -425,8 +421,13 @@ class _ListFieldState extends State<ListField> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(widget.label, style: TextStyles.label),
-        const SizedBox(height: Space.s8),
+        FieldLabel(
+          widget.label.endsWith(' *')
+              ? widget.label.substring(0, widget.label.length - 2)
+              : widget.label,
+          required: widget.label.endsWith(' *'),
+        ),
+        const SizedBox(height: Space.s4),
         InputDecorator(
           decoration: InputDecoration(errorText: widget.error),
           child: Column(
@@ -485,11 +486,16 @@ class _ListFieldState extends State<ListField> {
               else
                 Align(
                   alignment: Alignment.centerLeft,
-                  child: TextButton.icon(
+                  child: Focus(
                     focusNode: widget.focusNode,
-                    onPressed: widget.enabled ? add : null,
-                    icon: const Icon(AppIcons.add),
-                    label: Text(l.addPersonaItem),
+                    skipTraversal: true,
+                    child: AppButton(
+                      label: l.addPersonaItem,
+                      icon: AppIcons.add,
+                      kind: ButtonKind.subtle,
+                      size: ButtonSize.small,
+                      onPressed: widget.enabled ? add : null,
+                    ),
                   ),
                 ),
             ],

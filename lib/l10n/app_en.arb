@@ -305,7 +305,7 @@
   "personType": "Person",
   "botType": "Bot",
   "you": "You",
-  "noPersonas": "No personas yet",
+  "noPersonas": "No personas yet. A persona tells Cortex about a person or a bot.",
   "personasLoadFailed": "Personas could not be loaded.",
   "personaFormFailed": "The persona form could not be loaded.",
   "personaSaveFailed": "The persona could not be saved. Check the marked fields.",
@@ -840,6 +840,20 @@
     }
   },
   "@memPeople": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "personaPeople": "People",
+  "personaBots": "Bots",
+  "personaUsedIn": "Used in",
+  "personaMentions": "{count, plural, =0{No memory mentions this persona yet.} =1{1 memory mentions this persona.} other{{count} memories mention this persona.}}",
+  "personaEdit": "Edit",
+  "personaSelect": "Select a persona to see the details.",
+  "personaBack": "All personas",
+  "@personaMentions": {
     "placeholders": {
       "count": {
         "type": "int"

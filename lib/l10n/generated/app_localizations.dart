@@ -1399,7 +1399,7 @@ abstract class AppLocalizations {
   /// No description provided for @noPersonas.
   ///
   /// In en, this message translates to:
-  /// **'No personas yet'**
+  /// **'No personas yet. A persona tells Cortex about a person or a bot.'**
   String get noPersonas;
 
   /// No description provided for @personasLoadFailed.
@@ -3327,6 +3327,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count, plural, =1{1 person} other{{count} people}}'**
   String memPeople(int count);
+
+  /// No description provided for @personaPeople.
+  ///
+  /// In en, this message translates to:
+  /// **'People'**
+  String get personaPeople;
+
+  /// No description provided for @personaBots.
+  ///
+  /// In en, this message translates to:
+  /// **'Bots'**
+  String get personaBots;
+
+  /// No description provided for @personaUsedIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Used in'**
+  String get personaUsedIn;
+
+  /// No description provided for @personaMentions.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{No memory mentions this persona yet.} =1{1 memory mentions this persona.} other{{count} memories mention this persona.}}'**
+  String personaMentions(int count);
+
+  /// No description provided for @personaEdit.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get personaEdit;
+
+  /// No description provided for @personaSelect.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a persona to see the details.'**
+  String get personaSelect;
+
+  /// No description provided for @personaBack.
+  ///
+  /// In en, this message translates to:
+  /// **'All personas'**
+  String get personaBack;
 }
 
 class _AppLocalizationsDelegate

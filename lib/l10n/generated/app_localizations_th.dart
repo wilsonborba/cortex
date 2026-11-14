@@ -704,7 +704,8 @@ class AppLocalizationsTh extends AppLocalizations {
   String get you => 'คุณ';
 
   @override
-  String get noPersonas => 'ยังไม่มีเพอร์โซนา';
+  String get noPersonas =>
+      'ยังไม่มีเพอร์โซนา เพอร์โซนาบอก Cortex เกี่ยวกับบุคคลหรือบอท';
 
   @override
   String get personasLoadFailed => 'โหลดเพอร์โซนาไม่ได้';
@@ -1787,4 +1788,33 @@ class AppLocalizationsTh extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get personaPeople => 'บุคคล';
+
+  @override
+  String get personaBots => 'บอท';
+
+  @override
+  String get personaUsedIn => 'ใช้ใน';
+
+  @override
+  String personaMentions(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'มีความจำ $count รายการที่กล่าวถึงเพอร์โซนานี้',
+      zero: 'ยังไม่มีความจำที่กล่าวถึงเพอร์โซนานี้',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get personaEdit => 'แก้ไข';
+
+  @override
+  String get personaSelect => 'เลือกเพอร์โซนาเพื่อดูรายละเอียด';
+
+  @override
+  String get personaBack => 'เพอร์โซนาทั้งหมด';
 }
