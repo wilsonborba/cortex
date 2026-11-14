@@ -18,8 +18,11 @@ import 'package:go_router/go_router.dart';
 class FakeAuth extends AuthService {
   FakeAuth() : super(AuthApiAdapter());
   final returns = <String?>[];
+  var signOuts = 0;
   @override
   Future<void> signIn({String? returnPath}) async => returns.add(returnPath);
+  @override
+  Future<void> signOut() async => signOuts++;
 }
 
 Future<(GoRouter, FakeAuth)> pump(
@@ -28,18 +31,23 @@ Future<(GoRouter, FakeAuth)> pump(
   Size size = const Size(1300, 900),
   Locale locale = const Locale('en'),
   double scale = 1,
+  bool signedIn = false,
 }) async {
   tester.view.physicalSize = size;
   tester.view.devicePixelRatio = 1;
   addTearDown(tester.view.reset);
   final session = SessionController(
-    service: SessionService(cookieReader: () => null),
+    service: SessionService(cookieReader: () => signedIn ? 'csrf' : null),
   );
+  await session.refresh();
   final auth = FakeAuth();
   final router = buildRouter(
     session: session,
     auth: auth,
     initialLocation: location,
+    emailLoader: () async => signedIn ? 'ana@example.com' : null,
+    // Signed in tests open the app: a plain screen instead of live data.
+    screen: signedIn ? (_, title) => Text('screen $title') : null,
   );
   await tester.pumpWidget(
     PreferencesScope(
@@ -141,6 +149,98 @@ void main() {
       expect(path(router), '/v1/home/faq');
     },
   );
+
+  group('with a session (#75)', () {
+    testWidgets('expanded header shows the account avatar, not Log in', (
+      tester,
+    ) async {
+      final (router, auth) = await pump(tester, '/v1/home', signedIn: true);
+      final header = find.byKey(const Key('landing-header'));
+      expect(
+        find.descendant(of: header, matching: find.text('Log in')),
+        findsNothing,
+      );
+      expect(find.byKey(const Key('landing-account')), findsOneWidget);
+      // The avatar shows the first letter of the email.
+      expect(
+        find.descendant(
+          of: find.byKey(const Key('landing-account')),
+          matching: find.text('A'),
+        ),
+        findsOneWidget,
+      );
+      // Start a chat opens the chats with no new login.
+      await tester.tap(find.byKey(const Key('start-chat')));
+      await frames(tester);
+      expect(path(router), '/v1/chats');
+      expect(auth.returns, isEmpty);
+    });
+
+    testWidgets('the account menu shows the email and logs out', (
+      tester,
+    ) async {
+      final (_, auth) = await pump(tester, '/v1/home', signedIn: true);
+      await tester.tap(find.byKey(const Key('landing-account')));
+      await tester.pumpAndSettle();
+      expect(find.text('ana@example.com'), findsOneWidget);
+      await tester.tap(find.byKey(const Key('landing-log-out')));
+      await tester.pumpAndSettle();
+      expect(auth.signOuts, 1);
+      expect(auth.returns, isEmpty);
+    });
+
+    testWidgets('compact: avatar instead of Log in on every public page', (
+      tester,
+    ) async {
+      for (final page in [
+        '/v1/home',
+        '/v1/home/how-it-works',
+        '/v1/home/memory',
+        '/v1/home/engineering',
+        '/v1/home/faq',
+      ]) {
+        await tester.pumpWidget(const SizedBox());
+        await pump(tester, page, size: const Size(390, 800), signedIn: true);
+        expect(find.text('Log in'), findsNothing, reason: page);
+        expect(
+          find.byKey(const Key('landing-account')),
+          findsOneWidget,
+          reason: page,
+        );
+        expect(tester.takeException(), isNull, reason: page);
+      }
+    });
+
+    testWidgets('the final card opens the chats', (tester) async {
+      final (router, auth) = await pump(tester, '/v1/home', signedIn: true);
+      final card = find.byKey(const Key('landing-final-action'));
+      final button = find.descendant(
+        of: card,
+        matching: find.text('Start a chat'),
+      );
+      await tester.ensureVisible(button);
+      await frames(tester);
+      await tester.tap(button);
+      await frames(tester);
+      expect(path(router), '/v1/chats');
+      expect(auth.returns, isEmpty);
+    });
+  });
+
+  testWidgets('without a session Log in and Start a chat open the login', (
+    tester,
+  ) async {
+    final (_, auth) = await pump(tester, '/v1/home');
+    expect(find.byKey(const Key('landing-account')), findsNothing);
+    await tester.tap(
+      find.descendant(
+        of: find.byKey(const Key('landing-header')),
+        matching: find.text('Log in'),
+      ),
+    );
+    await tester.tap(find.byKey(const Key('start-chat')));
+    expect(auth.returns, ['/v1/chats', '/v1/chats']);
+  });
 
   testWidgets('each page link changes the path and shows only that subject', (
     tester,
