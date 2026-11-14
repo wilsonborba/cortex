@@ -1,6 +1,27 @@
 # Changelog
 
 
+## v2.2.1 - 2026-11-14
+
+
+### Bug Fixes
+
+- Show the original images beside clean text (#72)
+
+- Merge original images beside clean text (#72)
+
+
+### Chores
+
+- Merge v2.2.0 back to release/v2.2.0
+
+- Merge v2.2.0 back to development
+
+- Merge v2.2.0 back to feature/main
+
+- Prepare development for v2.2.1
+
+
 ## v2.2.0 - 2026-11-14
 
 
@@ -15,6 +36,10 @@
 - Refresh the 11 bundled landing images from the updated archive
 
 - Prepare development for v2.2.0
+
+- Prepare v2.2.0
+
+- Release v2.2.0
 
 
 ### Features

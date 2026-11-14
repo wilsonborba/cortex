@@ -492,12 +492,14 @@ class ShadowedBorder extends OutlinedBorder {
       }
       canvas
         ..save()
+        // Even-odd fill cuts the shape out of the clip. Path.combine is not
+        // reliable on the web renderers and let the shadow cover the
+        // content (#72).
         ..clipPath(
-          Path.combine(
-            PathOperation.difference,
-            Path()..addRect(rect.inflate(reach)),
-            outer,
-          ),
+          Path()
+            ..fillType = PathFillType.evenOdd
+            ..addRect(rect.inflate(reach))
+            ..addPath(outer, Offset.zero),
         );
       for (final s in shadows) {
         canvas.drawPath(outer.shift(s.offset), s.toPaint());
