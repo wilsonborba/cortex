@@ -28,10 +28,10 @@ void main() {
           if (mode == 'empty' || mode == 'no_match') api.items.clear();
           if (mode == 'errors') api.rejects = 1;
           final route = ['new', 'errors'].contains(mode)
-              ? '/v1/personas/new'
+              ? '/v1/settings/personas/new'
               : mode == 'edit'
-              ? '/v1/personas/p1'
-              : '/v1/personas';
+              ? '/v1/settings/personas/p1'
+              : '/v1/settings/personas';
           await fixture.pump(
             tester,
             api,

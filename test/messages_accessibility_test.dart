@@ -172,7 +172,7 @@ void main() {
       await tester.pumpWidget(const SizedBox());
       final (_, _, details) = await shell.pump(
         tester,
-        '/v1/memory',
+        '/v1/settings/memory',
         size: Size(width, 844),
       );
       details.show(const Text('panel content'));

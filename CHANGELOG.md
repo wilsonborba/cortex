@@ -25,6 +25,10 @@
 
 - Fluent 2 component themes and shared widgets (#61)
 
+- Merge Fluent 2 component themes and shared widgets (#61)
+
+- Fluent 2 navigation shell, account menu, settings tabs and basic pages (#62)
+
 
 ### Tests
 

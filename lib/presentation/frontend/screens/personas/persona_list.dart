@@ -42,7 +42,7 @@ class _PersonaListState extends State<PersonaList> {
     final l = AppLocalizations.of(context),
         p = Palette.from(context),
         items = personas.items;
-    void create() => context.go('/v1/personas/new');
+    void create() => context.go('/v1/settings/personas/new');
     final search = TextFormField(
       key: const Key('persona-search'),
       initialValue: personas.query,
@@ -241,7 +241,7 @@ class _PersonaListState extends State<PersonaList> {
                           ],
                         ),
                         onTap: () => context.go(
-                          '/v1/personas/${Uri.encodeComponent(persona.id)}',
+                          '/v1/settings/personas/${Uri.encodeComponent(persona.id)}',
                         ),
                       ),
                     );

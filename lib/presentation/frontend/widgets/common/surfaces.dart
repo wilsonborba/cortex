@@ -712,9 +712,13 @@ class AppMenu<T> extends StatefulWidget {
     required this.icon,
     required this.itemBuilder,
     required this.onSelected,
+    this.buttonSize,
   });
   final String tooltip;
   final Widget icon;
+
+  /// Square size of the icon button (for example 24 for a nav sub item).
+  final double? buttonSize;
   final List<PopupMenuEntry<T>> Function(BuildContext) itemBuilder;
   final ValueChanged<T> onSelected;
   @override
@@ -768,6 +772,14 @@ class _AppMenuState<T> extends State<AppMenu<T>> {
         focusNode: focus,
         tooltip: widget.tooltip,
         icon: widget.icon,
+        style: widget.buttonSize == null
+            ? null
+            : IconButton.styleFrom(
+                padding: EdgeInsets.zero,
+                fixedSize: Size.square(widget.buttonSize!),
+                minimumSize: Size.square(widget.buttonSize!),
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              ),
         onPressed: () =>
             controller.isOpen ? controller.close() : controller.open(),
       ),

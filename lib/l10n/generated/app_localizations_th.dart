@@ -60,7 +60,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get goToChats => 'ไปที่แชท';
 
   @override
-  String get signingIn => 'กำลังเปิดหน้าเข้าสู่ระบบ';
+  String get signingIn => 'กำลังลงชื่อเข้าใช้ …';
 
   @override
   String get noChatsYet => 'ยังไม่มีแชท';
@@ -1450,4 +1450,19 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get engTechValkey => 'Valkey';
+
+  @override
+  String get settingsGeneral => 'ทั่วไป';
+
+  @override
+  String get themeDescription => 'ใช้ธีมของระบบ ธีมสว่าง หรือธีมมืด';
+
+  @override
+  String get languageDescription => 'เลือกภาษาของ Cortex';
+
+  @override
+  String get pinnedChats => 'ปักหมุด';
+
+  @override
+  String get recentChats => 'ล่าสุด';
 }

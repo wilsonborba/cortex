@@ -17,7 +17,7 @@
   "notFoundTitle": "ไม่พบหน้านี้",
   "notFoundMessage": "ไม่มีเส้นทางหรือรายการนี้",
   "goToChats": "ไปที่แชท",
-  "signingIn": "กำลังเปิดหน้าเข้าสู่ระบบ",
+  "signingIn": "กำลังลงชื่อเข้าใช้ …",
   "noChatsYet": "ยังไม่มีแชท",
   "output": "คำตอบ",
   "product": "ผลิตภัณฑ์",
@@ -485,5 +485,10 @@
   "engTechOllama": "Ollama",
   "engTechPostgreSQL": "PostgreSQL",
   "engTechCouchDB": "CouchDB",
-  "engTechValkey": "Valkey"
+  "engTechValkey": "Valkey",
+  "settingsGeneral": "ทั่วไป",
+  "themeDescription": "ใช้ธีมของระบบ ธีมสว่าง หรือธีมมืด",
+  "languageDescription": "เลือกภาษาของ Cortex",
+  "pinnedChats": "ปักหมุด",
+  "recentChats": "ล่าสุด"
 }

@@ -17,7 +17,7 @@
   "notFoundTitle": "Página não encontrada",
   "notFoundMessage": "Este caminho ou item não existe.",
   "goToChats": "Ir para as conversas",
-  "signingIn": "Abrindo o login",
+  "signingIn": "Entrando na sua conta …",
   "noChatsYet": "Nenhuma conversa ainda",
   "output": "Resposta",
   "product": "Produto",
@@ -485,5 +485,10 @@
   "engTechOllama": "Ollama",
   "engTechPostgreSQL": "PostgreSQL",
   "engTechCouchDB": "CouchDB",
-  "engTechValkey": "Valkey"
+  "engTechValkey": "Valkey",
+  "settingsGeneral": "Geral",
+  "themeDescription": "Use o tema do sistema, o tema claro ou o tema escuro.",
+  "languageDescription": "Selecione o idioma do Cortex.",
+  "pinnedChats": "Fixadas",
+  "recentChats": "Recentes"
 }

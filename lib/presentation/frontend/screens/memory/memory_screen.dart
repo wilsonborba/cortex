@@ -67,8 +67,9 @@ class _MemoryScreenState extends State<MemoryScreen> {
     super.dispose();
   }
 
-  void _go(String id) =>
-      GoRouter.maybeOf(context)?.go('/v1/memory/${Uri.encodeComponent(id)}');
+  void _go(String id) => GoRouter.maybeOf(
+    context,
+  )?.go('/v1/settings/memory/${Uri.encodeComponent(id)}');
   void _expand(String id) => setState(() => expanded.add(id));
   @override
   Widget build(BuildContext context) {
@@ -268,8 +269,9 @@ class _MemoryScreenState extends State<MemoryScreen> {
                             Align(
                               alignment: AlignmentDirectional.centerStart,
                               child: TextButton.icon(
-                                onPressed: () =>
-                                    GoRouter.maybeOf(context)?.go('/v1/memory'),
+                                onPressed: () => GoRouter.maybeOf(
+                                  context,
+                                )?.go('/v1/settings/memory'),
                                 icon: const Icon(
                                   AppIcons.back,
                                   size: IconSizes.action,

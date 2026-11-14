@@ -133,7 +133,7 @@ class Auth extends AuthService {
 Future<GoRouter> pump(
   WidgetTester tester,
   Api api, {
-  String path = '/v1/memory',
+  String path = '/v1/settings/memory',
   Locale locale = const Locale('en'),
   Size size = const Size(1500, 950),
   double scale = 1,
@@ -265,7 +265,7 @@ void main() {
         .length;
     router.go('/v1/home/faq');
     await tester.pumpAndSettle();
-    router.go('/v1/memory');
+    router.go('/v1/settings/memory');
     await tester.pumpAndSettle();
     expect(
       api.requests.where((r) => r.path.endsWith('/memory-graph')).length,
@@ -274,11 +274,15 @@ void main() {
   });
 
   testWidgets('selection keeps positions and the view matrix', (tester) async {
-    final router = await pump(tester, Api(), path: '/v1/memory/$memoryId');
+    final router = await pump(
+      tester,
+      Api(),
+      path: '/v1/settings/memory/$memoryId',
+    );
     final before = tester.state<GraphCanvasState>(find.byType(GraphCanvas));
     final positions = Map.of(before.positions),
         matrix = before.transform.value.clone();
-    router.go('/v1/memory/entity:p1');
+    router.go('/v1/settings/memory/entity:p1');
     await tester.pumpAndSettle();
     final after = tester.state<GraphCanvasState>(find.byType(GraphCanvas));
     expect(identical(before, after), isTrue);
@@ -313,7 +317,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(
       router.routeInformationProvider.value.uri.path,
-      '/v1/memory/$memoryId',
+      '/v1/settings/memory/$memoryId',
     );
     expect(find.byKey(const Key('memory-card')), findsOneWidget);
     expect(find.byKey(const Key('memory-list')), findsOneWidget);
@@ -321,7 +325,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(
       Uri.decodeComponent(router.routeInformationProvider.value.uri.path),
-      '/v1/memory/resource:f1',
+      '/v1/settings/memory/resource:f1',
     );
     expect(find.byKey(const Key('card-title')), findsOneWidget);
     expect(
@@ -335,7 +339,7 @@ void main() {
     'card fields, summary fallback, date hover, linked persona, hidden id and copy',
     (tester) async {
       final api = Api()..title = '';
-      await pump(tester, api, path: '/v1/memory/$memoryId');
+      await pump(tester, api, path: '/v1/settings/memory/$memoryId');
       expect(
         tester.widget<Text>(find.byKey(const Key('card-title'))).data,
         'First summary line',
@@ -401,7 +405,7 @@ void main() {
         await pump(
           tester,
           Api(),
-          path: '/v1/memory/$memoryId',
+          path: '/v1/settings/memory/$memoryId',
           locale: entry.$1,
         );
         expect(find.text(entry.$2), findsOneWidget);
@@ -461,7 +465,7 @@ void main() {
         await pump(
           tester,
           Api(),
-          path: '/v1/memory/$memoryId',
+          path: '/v1/settings/memory/$memoryId',
           locale: locale,
           size: const Size(390, 844),
           scale: 2,

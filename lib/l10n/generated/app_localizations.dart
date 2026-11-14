@@ -205,7 +205,7 @@ abstract class AppLocalizations {
   /// No description provided for @signingIn.
   ///
   /// In en, this message translates to:
-  /// **'Opening the login'**
+  /// **'Signing you in …'**
   String get signingIn;
 
   /// No description provided for @noChatsYet.
@@ -2829,6 +2829,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Valkey'**
   String get engTechValkey;
+
+  /// No description provided for @settingsGeneral.
+  ///
+  /// In en, this message translates to:
+  /// **'General'**
+  String get settingsGeneral;
+
+  /// No description provided for @themeDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Use the system theme, the light theme or the dark theme.'**
+  String get themeDescription;
+
+  /// No description provided for @languageDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Select the language of Cortex.'**
+  String get languageDescription;
+
+  /// No description provided for @pinnedChats.
+  ///
+  /// In en, this message translates to:
+  /// **'Pinned'**
+  String get pinnedChats;
+
+  /// No description provided for @recentChats.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent'**
+  String get recentChats;
 }
 
 class _AppLocalizationsDelegate
