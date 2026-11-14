@@ -60,7 +60,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get goToChats => 'Ir para as conversas';
 
   @override
-  String get signingIn => 'Abrindo o login';
+  String get signingIn => 'Entrando na sua conta …';
 
   @override
   String get noChatsYet => 'Nenhuma conversa ainda';
@@ -420,7 +420,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get chatGreeting => 'O que você quer saber?';
 
   @override
-  String get composerHint => 'Escreva uma mensagem';
+  String get composerHint => 'Mensagem para o Cortex';
 
   @override
   String get attach => 'Anexar arquivos';
@@ -599,7 +599,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get temporaryBanner =>
-      'Temporária: não é salva e se perde ao recarregar.';
+      'Conversa temporária: não é salva e se perde ao recarregar.';
 
   @override
   String get justNow => 'Agora';
@@ -715,7 +715,8 @@ class AppLocalizationsPt extends AppLocalizations {
   String get you => 'Você';
 
   @override
-  String get noPersonas => 'Nenhuma persona ainda';
+  String get noPersonas =>
+      'Ainda não há personas. Uma persona informa o Cortex sobre uma pessoa ou um bot.';
 
   @override
   String get personasLoadFailed => 'Não foi possível carregar as personas.';
@@ -1475,4 +1476,383 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get engTechValkey => 'Valkey';
+
+  @override
+  String get settingsGeneral => 'Geral';
+
+  @override
+  String get themeDescription =>
+      'Use o tema do sistema, o tema claro ou o tema escuro.';
+
+  @override
+  String get languageDescription => 'Selecione o idioma do Cortex.';
+
+  @override
+  String get pinnedChats => 'Fixadas';
+
+  @override
+  String get recentChats => 'Recentes';
+
+  @override
+  String get aiNote => 'O conteúdo gerado por IA pode estar incorreto';
+
+  @override
+  String memSummary(
+    int count,
+    String size,
+    String chats,
+    String files,
+    String people,
+  ) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'O Cortex guarda $count memórias',
+      one: 'O Cortex guarda 1 memória',
+    );
+    return '$_temp0 ($size) de $chats, $files e $people.';
+  }
+
+  @override
+  String memNewest(String date) {
+    return 'A mais recente é de $date.';
+  }
+
+  @override
+  String get memCardCount => 'Memórias';
+
+  @override
+  String get memCardSize => 'Tamanho';
+
+  @override
+  String get memCardAdded => 'Adicionadas nos últimos 7 dias';
+
+  @override
+  String get memCardUsed => 'Usadas em respostas nos últimos 7 dias';
+
+  @override
+  String get memByMonth => 'Por mês';
+
+  @override
+  String get memFacetSource => 'Origem';
+
+  @override
+  String get memFacetPeriod => 'Período';
+
+  @override
+  String get memSourceAll => 'Todas';
+
+  @override
+  String get memSourceChats => 'Conversas';
+
+  @override
+  String get memSourceFiles => 'Arquivos';
+
+  @override
+  String get memSourceNotes => 'Notas salvas';
+
+  @override
+  String get memSourcePeople => 'Pessoas';
+
+  @override
+  String get memSourceTopics => 'Assuntos';
+
+  @override
+  String get memPeriodToday => 'Hoje';
+
+  @override
+  String get memPeriod7 => 'Últimos 7 dias';
+
+  @override
+  String get memPeriod30 => 'Últimos 30 dias';
+
+  @override
+  String get memPeriodAll => 'Todo o período';
+
+  @override
+  String get memSearch => 'Pesquisar memórias';
+
+  @override
+  String get memClearAll => 'Limpar tudo';
+
+  @override
+  String get memFilters => 'Filtros';
+
+  @override
+  String get memRemoveFilter => 'Remover filtro';
+
+  @override
+  String get memToday => 'Hoje';
+
+  @override
+  String get memYesterday => 'Ontem';
+
+  @override
+  String memLineChat(String title, String time) {
+    return 'Conversa: $title, $time';
+  }
+
+  @override
+  String memLineFile(String title, String time) {
+    return 'Arquivo: $title, $time';
+  }
+
+  @override
+  String memLineNote(String time) {
+    return 'Nota salva, $time';
+  }
+
+  @override
+  String memUsedTimes(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Usada $count vezes',
+      one: 'Usada 1 vez',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String memSimilar(int count) {
+    return '$count parecidas';
+  }
+
+  @override
+  String get memShowSimilar => 'Mostrar as memórias parecidas';
+
+  @override
+  String memGroupCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count memórias',
+      one: '1 memória',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get memBackToGroups => 'Todos os grupos';
+
+  @override
+  String get memCreated => 'Criada';
+
+  @override
+  String get memUpdated => 'Atualizada';
+
+  @override
+  String get memSize => 'Tamanho';
+
+  @override
+  String memSizeWords(String size, int words) {
+    return '$size, $words palavras';
+  }
+
+  @override
+  String get memUsedCount => 'Usada em respostas';
+
+  @override
+  String get memLastUsed => 'Último uso';
+
+  @override
+  String get memNever => 'Nunca';
+
+  @override
+  String get memKeeps => 'O que o Cortex guarda';
+
+  @override
+  String get memShowAll => 'Mostrar tudo';
+
+  @override
+  String get memShowLess => 'Mostrar menos';
+
+  @override
+  String get memConnects => 'Como se conecta';
+
+  @override
+  String get memUsedIn => 'Usada nestas respostas';
+
+  @override
+  String get memNoUse =>
+      'O Cortex ainda não usou esta memória em uma resposta.';
+
+  @override
+  String get memShowPicture => 'Mostrar as conexões como imagem';
+
+  @override
+  String get memHidePicture => 'Ocultar a imagem';
+
+  @override
+  String get memOpenChat => 'Abrir conversa';
+
+  @override
+  String get memDelete => 'Excluir memória';
+
+  @override
+  String get memDeleteTitle => 'Excluir esta memória?';
+
+  @override
+  String get memDeleteMessage =>
+      'O Cortex não vai usar esta memória de novo. Não é possível desfazer.';
+
+  @override
+  String memConnChat(String label) {
+    return 'Da conversa $label';
+  }
+
+  @override
+  String memConnFile(String label) {
+    return 'Do arquivo $label';
+  }
+
+  @override
+  String memConnPerson(String label) {
+    return 'Menciona $label';
+  }
+
+  @override
+  String memConnTopic(String label) {
+    return 'Assunto: $label';
+  }
+
+  @override
+  String memConnSupersedes(String label) {
+    return 'Substitui $label';
+  }
+
+  @override
+  String memConnCorrects(String label) {
+    return 'Corrige $label';
+  }
+
+  @override
+  String memConnDerived(String label) {
+    return 'Vem de $label';
+  }
+
+  @override
+  String memConnSupports(String label) {
+    return 'Confirma $label';
+  }
+
+  @override
+  String memConnContradicts(String label) {
+    return 'Contradiz $label';
+  }
+
+  @override
+  String memConnPartOf(String label) {
+    return 'Parte de $label';
+  }
+
+  @override
+  String memConnRelated(String label) {
+    return 'Relacionada a $label';
+  }
+
+  @override
+  String memConnSameTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count outras memórias têm o mesmo título',
+      one: '1 outra memória tem o mesmo título',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get memEmpty =>
+      'O Cortex ainda não tem memórias. As memórias são salvas quando você conversa com a memória ligada.';
+
+  @override
+  String get memStartChat => 'Começar uma conversa';
+
+  @override
+  String get memTruncated => 'Mostrando as 2000 memórias mais recentes';
+
+  @override
+  String get memNoResults => 'Nenhuma memória corresponde a estes filtros.';
+
+  @override
+  String get memLoadMore => 'Mostrar mais';
+
+  @override
+  String get memTypeConversation => 'Conversa';
+
+  @override
+  String get memTypeNote => 'Nota salva';
+
+  @override
+  String get memTypeFile => 'Arquivo';
+
+  @override
+  String get memDetails => 'Detalhes da memória';
+
+  @override
+  String memChats(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count conversas',
+      one: '1 conversa',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String memFiles(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count arquivos',
+      one: '1 arquivo',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String memPeople(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count pessoas',
+      one: '1 pessoa',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get personaPeople => 'Pessoas';
+
+  @override
+  String get personaBots => 'Bots';
+
+  @override
+  String get personaUsedIn => 'Usada em';
+
+  @override
+  String personaMentions(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count memórias mencionam esta persona.',
+      one: '1 memória menciona esta persona.',
+      zero: 'Nenhuma memória menciona esta persona ainda.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get personaEdit => 'Editar';
+
+  @override
+  String get personaSelect => 'Selecione uma persona para ver os detalhes.';
+
+  @override
+  String get personaBack => 'Todas as personas';
+
+  @override
+  String get usageKindColumn => 'Tipo de resposta';
 }

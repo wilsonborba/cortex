@@ -22,7 +22,8 @@ void main() {
           home: const Scaffold(body: SkeletonBox()),
         ),
       );
-      await tester.pumpAndSettle();
+      // The skeleton shimmer repeats (#61), so the test pumps one frame.
+      await tester.pump();
       expect(find.bySemanticsLabel(label), findsOneWidget);
       if (locale.languageCode != 'en') {
         expect(find.bySemanticsLabel('Loading'), findsNothing);

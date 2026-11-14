@@ -1,3 +1,4 @@
+import 'package:cortex/presentation/frontend/theme/tokens.dart';
 import 'package:cortex/core/utils/return_path.dart';
 import 'package:cortex/dal/remote/auth_api_adapter.dart';
 import 'package:cortex/domain/services/auth_service.dart';
@@ -39,6 +40,7 @@ Future<(GoRouter, FakeAuth, DetailsController)> pump(
   WidgetTester tester,
   String location, {
   Size size = const Size(1200, 800),
+  bool settle = true,
 }) async {
   tester.view.physicalSize = size;
   tester.view.devicePixelRatio = 1;
@@ -65,7 +67,12 @@ Future<(GoRouter, FakeAuth, DetailsController)> pump(
       supportedLocales: AppLocalizations.supportedLocales,
     ),
   );
-  await tester.pumpAndSettle();
+  // The sign in spinner repeats, so that page is pumped frame by frame.
+  if (settle) {
+    await tester.pumpAndSettle();
+  } else {
+    await tester.pump(const Duration(milliseconds: 500));
+  }
   return (router, auth, details);
 }
 
@@ -80,11 +87,11 @@ void main() {
       '/v1/chats/temporary': 'Temporary chat',
       '/v1/chats/$sid': 'Chats',
       '/v1/chats/$sid/outputs/$oid': 'Output',
-      '/v1/memory': 'Memory',
-      '/v1/memory/tag:t1': 'Memory',
-      '/v1/personas': 'Personas',
-      '/v1/personas/new': 'New persona',
-      '/v1/personas/p-1': 'Personas',
+      '/v1/settings/memory': 'Memory',
+      '/v1/settings/memory/tag:t1': 'Memory',
+      '/v1/settings/personas': 'Personas',
+      '/v1/settings/personas/new': 'New persona',
+      '/v1/settings/personas/p-1': 'Personas',
       '/v1/usage': 'Usage',
       '/v1/usage/timing': 'Timing',
       '/v1/usage/stats': 'Statistics',
@@ -95,6 +102,42 @@ void main() {
       expect(find.text('screen: $title'), findsOneWidget, reason: location);
       expect(path(router), location);
     }
+  });
+
+  testWidgets('old Memory and Personas paths redirect into Settings', (
+    tester,
+  ) async {
+    final cases = {
+      '/v1/memory': '/v1/settings/memory',
+      '/v1/memory/tag:t1?view=list': '/v1/settings/memory/tag:t1?view=list',
+      '/v1/personas': '/v1/settings/personas',
+      '/v1/personas/new': '/v1/settings/personas/new',
+      '/v1/personas/p-1': '/v1/settings/personas/p-1',
+    };
+    for (final MapEntry(key: old, value: moved) in cases.entries) {
+      final (router, _, _) = await pump(tester, old);
+      expect(path(router), moved, reason: old);
+    }
+  });
+
+  testWidgets('settings tabs: General, Memory and Personas have paths', (
+    tester,
+  ) async {
+    final (router, _, _) = await pump(tester, '/v1/settings');
+    expect(find.byKey(const Key('settings-tabs')), findsOneWidget);
+    expect(tester.getSize(find.byKey(const Key('settings-tabs'))).width, 200);
+    await tester.tap(
+      find.byKey(const Key('settings-tab-/v1/settings/personas')),
+    );
+    await tester.pumpAndSettle();
+    expect(path(router), '/v1/settings/personas');
+    expect(find.text('screen: Personas'), findsOneWidget);
+    await tester.tap(find.byKey(const Key('settings-tab-/v1/settings/memory')));
+    await tester.pumpAndSettle();
+    expect(path(router), '/v1/settings/memory');
+    await tester.tap(find.byKey(const Key('settings-tab-/v1/settings')));
+    await tester.pumpAndSettle();
+    expect(path(router), '/v1/settings');
   });
 
   testWidgets('home paths, the root redirect and unknown paths', (
@@ -122,21 +165,28 @@ void main() {
     tester,
   ) async {
     signedIn = false;
-    var (router, auth, _) = await pump(tester, '/v1/memory/tag:t1?view=list');
+    var (router, auth, _) = await pump(
+      tester,
+      '/v1/memory/tag:t1?view=list',
+      settle: false,
+    );
     expect(auth.returns, ['/v1/memory/tag:t1?view=list']);
-    expect(find.text('Opening the login'), findsOneWidget);
+    expect(find.text('Signing you in\u00a0\u2026'), findsOneWidget);
     // The SSO comes back to /sync with the token; the token then leaves the URL.
     (router, auth, _) = await pump(tester, '/sync?auth_exchange_token=good');
-    expect(path(router), '/v1/memory/tag:t1?view=list');
+    expect(path(router), '/v1/settings/memory/tag:t1?view=list');
     expect(path(router), isNot(contains('auth_exchange_token')));
     expect(find.text('screen: Memory'), findsOneWidget);
   });
 
   testWidgets(
-    'expanded: 280 px sidebar, one primary, log out at the bottom, 320 px details',
+    'expanded: 260 px sidebar, one primary, log out at the bottom, 320 px details',
     (tester) async {
       final (_, _, details) = await pump(tester, '/v1/chats');
-      expect(tester.getSize(find.byKey(const Key('sidebar'))).width, 280);
+      expect(
+        tester.getSize(find.byKey(const Key('sidebar'))).width,
+        Space.sidebarWidth,
+      );
       expect(find.text('New chat'), findsOneWidget);
       expect(find.text('Log out'), findsNothing);
       expect(find.byKey(const Key('account-button')), findsOneWidget);
@@ -150,6 +200,14 @@ void main() {
       await tester.tap(find.byTooltip('Close'));
       await tester.pumpAndSettle();
       expect(find.byKey(const Key('details-panel')), findsNothing);
+      // The hamburger collapses the sidebar to the rail and expands it again.
+      await tester.tap(find.byKey(const Key('sidebar-toggle')));
+      await tester.pumpAndSettle();
+      expect(find.byKey(const Key('rail')), findsOneWidget);
+      expect(find.byKey(const Key('sidebar')), findsNothing);
+      await tester.tap(find.byKey(const Key('sidebar-toggle')));
+      await tester.pumpAndSettle();
+      expect(find.byKey(const Key('sidebar')), findsOneWidget);
     },
   );
 
@@ -176,8 +234,8 @@ void main() {
     await tester.tap(find.byKey(const Key('drawer-button')));
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('account-button')), findsOneWidget);
-    await tester.tap(find.text('Personas'));
+    await tester.tap(find.text('Usage'));
     await tester.pumpAndSettle();
-    expect(path(router), '/v1/personas');
+    expect(path(router), '/v1/usage');
   });
 }

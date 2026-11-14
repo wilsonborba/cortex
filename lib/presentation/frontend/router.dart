@@ -1,4 +1,4 @@
-import 'shell/account_menu.dart';
+import 'shell/settings_page.dart';
 import '../../domain/models/telemetry.dart';
 import '../../domain/services/usage_controller.dart';
 import 'screens/usage/usage_screen.dart';
@@ -12,8 +12,7 @@ import 'screens/basic_pages.dart';
 import '../../domain/services/chat_list_controller.dart';
 import '../../domain/services/memory_controller.dart';
 import '../../domain/services/persona_controller.dart';
-import 'screens/personas/persona_list.dart';
-import 'screens/personas/persona_form.dart';
+import 'screens/personas/persona_page.dart';
 import 'screens/chat/chat_list.dart';
 import 'screens/chat/chat_screen.dart';
 import 'screens/memory/memory_screen.dart';
@@ -32,6 +31,11 @@ const _protected = [
 final _uuid = RegExp(
   r'^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$',
 );
+
+/// The new Settings path of an old Memory or Personas path, with its query.
+String _moved(Uri uri, String old) => uri
+    .replace(path: uri.path.replaceFirst('/v1/$old', '/v1/settings/$old'))
+    .toString();
 
 bool isProtected(String path) =>
     _protected.any((p) => path == p || path.startsWith('$p/'));
@@ -80,6 +84,15 @@ GoRouter buildRouter({
     },
     routes: [
       GoRoute(path: '/', redirect: (_, _) => '/v1/home'),
+      // Memory and Personas moved into Settings (#62); old paths redirect.
+      for (final old in ['memory', 'personas'])
+        GoRoute(
+          path: '/v1/$old',
+          redirect: (_, s) => _moved(s.uri, old),
+          routes: [
+            GoRoute(path: ':rest', redirect: (_, s) => _moved(s.uri, old)),
+          ],
+        ),
       GoRoute(
         path: '/sync',
         builder: (_, s) => SyncPage(auth: auth, session: session, uri: s.uri),
@@ -120,9 +133,89 @@ GoRouter buildRouter({
           child: child,
         ),
         routes: [
-          GoRoute(
-            path: '/v1/settings',
-            builder: (_, _) => const SettingsScreen(),
+          // Settings tabs (#62): General, Memory and Personas, each with a path.
+          ShellRoute(
+            builder: (_, s, child) =>
+                SettingsFrame(location: s.uri.path, child: child),
+            routes: [
+              GoRoute(
+                path: '/v1/settings',
+                builder: (_, _) => const SettingsScreen(),
+                routes: [
+                  GoRoute(
+                    path: 'memory',
+                    pageBuilder: (c, s) => NoTransitionPage(
+                      key: const ValueKey('memory-page'),
+                      child: screenPage(
+                        c,
+                        (l) => l.memory,
+                        () => MemoryScreen(controller: memory),
+                      ),
+                    ),
+                  ),
+                  GoRoute(
+                    path: 'memory/:node_id',
+                    pageBuilder: (c, s) => NoTransitionPage(
+                      key: const ValueKey('memory-page'),
+                      child: screenPage(
+                        c,
+                        (l) => l.memory,
+                        () => MemoryScreen(
+                          controller: memory,
+                          nodeId: s.pathParameters['node_id'],
+                        ),
+                      ),
+                    ),
+                  ),
+                  // Personas: master and detail (#66).
+                  GoRoute(
+                    path: 'personas',
+                    builder: (c, _) => screenPage(
+                      c,
+                      (l) => l.personas,
+                      () => PersonasPage(controller: personas, api: cortex),
+                    ),
+                  ),
+                  GoRoute(
+                    path: 'personas/new',
+                    builder: (c, _) => screenPage(
+                      c,
+                      (l) => l.newPersona,
+                      () => PersonasPage(
+                        controller: personas,
+                        api: cortex,
+                        creating: true,
+                      ),
+                    ),
+                  ),
+                  GoRoute(
+                    path: 'personas/:persona_id',
+                    builder: (c, state) => screenPage(
+                      c,
+                      (l) => l.personas,
+                      () => PersonasPage(
+                        controller: personas,
+                        api: cortex,
+                        id: state.pathParameters['persona_id'],
+                      ),
+                    ),
+                  ),
+                  GoRoute(
+                    path: 'personas/:persona_id/edit',
+                    builder: (c, state) => screenPage(
+                      c,
+                      (l) => l.editPersona,
+                      () => PersonasPage(
+                        controller: personas,
+                        api: cortex,
+                        id: state.pathParameters['persona_id'],
+                        edit: true,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
           // Flat routes: one chat screen per path, never a stacked new-chat page.
           GoRoute(
@@ -181,59 +274,6 @@ GoRouter buildRouter({
                   details: panel,
                   sessionId: s.pathParameters['session_id'],
                 ),
-              ),
-            ),
-          ),
-          GoRoute(
-            path: '/v1/memory',
-            pageBuilder: (c, s) => NoTransitionPage(
-              key: const ValueKey('memory-page'),
-              child: screenPage(
-                c,
-                (l) => l.memory,
-                () => MemoryScreen(controller: memory),
-              ),
-            ),
-          ),
-          GoRoute(
-            path: '/v1/memory/:node_id',
-            pageBuilder: (c, s) => NoTransitionPage(
-              key: const ValueKey('memory-page'),
-              child: screenPage(
-                c,
-                (l) => l.memory,
-                () => MemoryScreen(
-                  controller: memory,
-                  nodeId: s.pathParameters['node_id'],
-                ),
-              ),
-            ),
-          ),
-          GoRoute(
-            path: '/v1/personas',
-            builder: (c, _) => screenPage(
-              c,
-              (l) => l.personas,
-              () => PersonaList(controller: personas),
-            ),
-          ),
-          GoRoute(
-            path: '/v1/personas/new',
-            builder: (c, _) => screenPage(
-              c,
-              (l) => l.newPersona,
-              () => PersonaForm(api: cortex, onChanged: personas.load),
-            ),
-          ),
-          GoRoute(
-            path: '/v1/personas/:persona_id',
-            builder: (c, state) => screenPage(
-              c,
-              (l) => l.personas,
-              () => PersonaForm(
-                api: cortex,
-                id: state.pathParameters['persona_id'],
-                onChanged: personas.load,
               ),
             ),
           ),

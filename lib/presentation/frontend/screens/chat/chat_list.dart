@@ -8,8 +8,10 @@ import 'package:go_router/go_router.dart';
 import '../../../../domain/services/chat_list_controller.dart';
 import '../../../../l10n/generated/app_localizations.dart';
 import '../../theme/tokens.dart';
+import '../../widgets/common/buttons.dart';
 import '../../widgets/common/states.dart';
 import '../../widgets/common/surfaces.dart';
+import '../../widgets/common/toast.dart';
 
 String relativeTime(AppLocalizations l, String? iso, DateTime now) {
   final time = iso == null ? null : DateTime.tryParse(iso);
@@ -72,25 +74,24 @@ class _ChatListState extends State<ChatList> {
         await runApiAction(context, () => list.togglePin(chat));
       case _Action.rename:
         final field = TextEditingController(text: '${chat['title']}');
-        final ok = await showDialog<bool>(
-          context: context,
-          builder: (c) => AlertDialog(
-            title: Text(l.rename, style: TextStyles.subsection),
-            content: AppInput(
-              controller: field,
-              onSubmitted: (_) => Navigator.pop(c, true),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(c, false),
-                child: Text(l.cancel),
-              ),
-              TextButton(
-                onPressed: () => Navigator.pop(c, true),
-                child: Text(l.save),
-              ),
-            ],
+        final ok = await showAppDialog<bool>(
+          context,
+          title: l.rename,
+          content: (c) => AppInput(
+            controller: field,
+            autofocus: true,
+            onSubmitted: (_) => Navigator.pop(c, true),
           ),
+          actions: (c) => [
+            AppButton.primary(
+              label: l.save,
+              onPressed: () => Navigator.pop(c, true),
+            ),
+            AppButton(
+              label: l.cancel,
+              onPressed: () => Navigator.pop(c, false),
+            ),
+          ],
         );
         if (ok == true && field.text.trim().isNotEmpty) {
           if (mounted) {
@@ -121,11 +122,12 @@ class _ChatListState extends State<ChatList> {
     final error = await list.delete(id);
     if (!mounted) return;
     if (error != null) {
-      ScaffoldMessenger.maybeOf(context)?.showSnackBar(
-        SnackBar(
-          content: Text(apiFailure(l, error)),
-          action: SnackBarAction(label: l.retry, onPressed: () => _delete(id)),
-        ),
+      showToast(
+        context,
+        message: apiFailure(l, error),
+        kind: NoticeKind.error,
+        actionLabel: l.retry,
+        onAction: () => _delete(id),
       );
     } else if (widget.location.startsWith('/v1/chats/$id')) {
       GoRouter.maybeOf(context)?.go('/v1/chats');
@@ -149,99 +151,179 @@ class _ChatListState extends State<ChatList> {
           ? const Center(child: SkeletonBox(width: 160))
           : EmptyState(title: l.noChatsYet, icon: AppIcons.chats);
     }
+    // Pinned chats first under "Pinned", the others under "Recent" (#62).
+    final pinned = [
+      for (final c in list.chats)
+        if (c['is_pinned'] == true) c,
+    ];
+    final recent = [
+      for (final c in list.chats)
+        if (c['is_pinned'] != true) c,
+    ];
+    Widget header(String text) => Padding(
+      padding: const EdgeInsets.fromLTRB(
+        Space.s8,
+        Space.s12,
+        Space.s8,
+        Space.s4,
+      ),
+      child: Semantics(
+        header: true,
+        child: Text(
+          text,
+          style: TextStyles.caption1Strong.copyWith(color: p.muted),
+        ),
+      ),
+    );
+    final entries = <Widget Function()>[
+      if (list.error != null)
+        () => Padding(
+          padding: const EdgeInsets.all(Space.s12),
+          child: ErrorState(
+            message: apiFailure(l, list.error),
+            retryLabel: l.retry,
+            onRetry: list.refresh,
+          ),
+        ),
+      if (pinned.isNotEmpty) () => header(l.pinnedChats),
+      for (final c in pinned) () => _row(context, c, now),
+      if (recent.isNotEmpty) () => header(l.recentChats),
+      for (final c in recent) () => _row(context, c, now),
+    ];
     return ListView.builder(
       key: const Key('chat-list'),
-      itemCount: list.chats.length + (list.error == null ? 0 : 1),
-      itemBuilder: (_, i) {
-        if (list.error != null) {
-          if (i == 0) {
-            return Padding(
-              padding: const EdgeInsets.all(Space.s12),
-              child: ErrorState(
-                message: apiFailure(l, list.error),
-                retryLabel: l.retry,
-                onRetry: list.refresh,
-              ),
-            );
-          }
-          i--;
-        }
-        final chat = list.chats[i];
-        final id = '${chat['session_id']}';
-        final selected = widget.location.startsWith('/v1/chats/$id');
-        return _HistoryRow(
-          builder: (showActions) => FoundationFocus(
-            child: ListTile(
+      itemCount: entries.length,
+      itemBuilder: (_, i) => entries[i](),
+    );
+  }
+
+  /// A nav sub item (#62): height 32, `body1`, one line with ellipsis. The
+  /// time (or a 16 px spinner while the chat runs) is at the end; the "more"
+  /// button (subtle 24) takes its place on hover or focus.
+  Widget _row(BuildContext context, Map<String, dynamic> chat, DateTime now) {
+    final l = AppLocalizations.of(context);
+    final p = Palette.from(context);
+    final id = '${chat['session_id']}';
+    final selected = widget.location.startsWith('/v1/chats/$id');
+    final running = list.running.contains(id);
+    return Padding(
+      padding: const EdgeInsets.only(bottom: Space.s2),
+      child: _HistoryRow(
+        builder: (showActions) => FoundationFocus(
+          child: Material(
+            color: selected ? p.selected : Colors.transparent,
+            borderRadius: BorderRadius.circular(Radii.control),
+            child: InkWell(
               key: Key('chat-$id'),
-              dense: true,
-              selected: selected,
-              selectedTileColor: p.raised,
-              shape: Border(
-                left: BorderSide(
-                  color: selected ? p.accent : Colors.transparent,
-                  width: Controls.focusRing,
-                ),
-              ),
-              leading: chat['is_pinned'] == true
-                  ? Icon(AppIcons.pin, size: IconSizes.chip, color: p.muted)
-                  : null,
-              title: Text(
-                '${chat['title']}',
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyles.compact.copyWith(color: p.text),
-              ),
-              subtitle: Row(
-                children: [
-                  if (list.running.contains(id)) ...[
-                    Semantics(
-                      label: l.running,
-                      child: Container(
-                        key: Key('running-$id'),
-                        width: 6,
-                        height: 6,
-                        decoration: BoxDecoration(
-                          color: p.text,
-                          shape: BoxShape.circle,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: Space.s4),
-                  ],
-                  Text(
-                    relativeTime(l, chat['updated_at'] as String?, now),
-                    style: TextStyles.label.copyWith(color: p.muted),
-                  ),
-                ],
-              ),
+              borderRadius: BorderRadius.circular(Radii.control),
+              hoverColor: p.subtleHover,
               onTap: () => GoRouter.maybeOf(context)?.go('/v1/chats/$id'),
-              trailing: Visibility(
-                visible: showActions,
-                maintainSize: true,
-                maintainAnimation: true,
-                maintainState: true,
-                child: FoundationFocus(
-                  child: AppMenu<_Action>(
-                    key: Key('menu-$id'),
-                    tooltip: l.chatActions,
-                    icon: const Icon(AppIcons.more, size: IconSizes.action),
-                    onSelected: (a) => _act(a, chat),
-                    itemBuilder: (_) => [
-                      PopupMenuItem(
-                        value: _Action.pin,
-                        child: Text(
-                          chat['is_pinned'] == true ? l.unpin : l.pin,
+              child: Semantics(
+                selected: selected,
+                child: SizedBox(
+                  height: Space.s32,
+                  child: Stack(
+                    alignment: Alignment.centerLeft,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(
+                          left: Space.s10,
+                          right: Space.s4,
+                        ),
+                        child: Row(
+                          children: [
+                            if (chat['is_pinned'] == true) ...[
+                              Icon(
+                                AppIcons.pinSelected,
+                                size: IconSizes.chip,
+                                color: p.muted,
+                              ),
+                              const SizedBox(width: Space.s4),
+                            ],
+                            Expanded(
+                              child: Text(
+                                '${chat['title']}',
+                                key: Key('chat-title-$id'),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style:
+                                    (selected
+                                            ? TextStyles.body1Strong
+                                            : TextStyles.body1)
+                                        .copyWith(
+                                          color: selected ? p.text : p.text2,
+                                        ),
+                              ),
+                            ),
+                            const SizedBox(width: Space.s4),
+                            if (running)
+                              AppSpinner(
+                                key: Key('running-$id'),
+                                label: l.running,
+                              )
+                            else
+                              Text(
+                                relativeTime(
+                                  l,
+                                  chat['updated_at'] as String?,
+                                  now,
+                                ),
+                                style: TextStyles.caption1.copyWith(
+                                  color: p.muted,
+                                ),
+                              ),
+                            if (showActions) ...[
+                              const SizedBox(width: Space.s4),
+                              SizedBox.square(
+                                dimension: Space.s24,
+                                child: FoundationFocus(
+                                  child: AppMenu<_Action>(
+                                    key: Key('menu-$id'),
+                                    tooltip: l.chatActions,
+                                    buttonSize: Space.s24,
+                                    icon: const Icon(
+                                      AppIcons.more,
+                                      size: IconSizes.small,
+                                    ),
+                                    onSelected: (a) => _act(a, chat),
+                                    itemBuilder: (_) => [
+                                      PopupMenuItem(
+                                        value: _Action.pin,
+                                        child: Text(
+                                          chat['is_pinned'] == true
+                                              ? l.unpin
+                                              : l.pin,
+                                        ),
+                                      ),
+                                      PopupMenuItem(
+                                        value: _Action.rename,
+                                        child: Text(l.rename),
+                                      ),
+                                      PopupMenuItem(
+                                        value: _Action.delete,
+                                        child: Text(
+                                          l.delete,
+                                          style: TextStyle(
+                                            color: p.dangerForeground,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ],
                         ),
                       ),
-                      PopupMenuItem(
-                        value: _Action.rename,
-                        child: Text(l.rename),
-                      ),
-                      PopupMenuItem(
-                        value: _Action.delete,
-                        child: Text(
-                          l.delete,
-                          style: TextStyle(color: p.danger),
+                      Container(
+                        width: Strokes.navIndicator,
+                        height: Space.s20,
+                        decoration: BoxDecoration(
+                          color: selected
+                              ? p.brandForeground1
+                              : Colors.transparent,
+                          borderRadius: BorderRadius.circular(Radii.circular),
                         ),
                       ),
                     ],
@@ -250,8 +332,8 @@ class _ChatListState extends State<ChatList> {
               ),
             ),
           ),
-        );
-      },
+        ),
+      ),
     );
   }
 }

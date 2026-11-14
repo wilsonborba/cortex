@@ -205,7 +205,7 @@ abstract class AppLocalizations {
   /// No description provided for @signingIn.
   ///
   /// In en, this message translates to:
-  /// **'Opening the login'**
+  /// **'Signing you in …'**
   String get signingIn;
 
   /// No description provided for @noChatsYet.
@@ -853,7 +853,7 @@ abstract class AppLocalizations {
   /// No description provided for @composerHint.
   ///
   /// In en, this message translates to:
-  /// **'Write a message'**
+  /// **'Message Cortex'**
   String get composerHint;
 
   /// No description provided for @attach.
@@ -1183,7 +1183,7 @@ abstract class AppLocalizations {
   /// No description provided for @temporaryBanner.
   ///
   /// In en, this message translates to:
-  /// **'Temporary: not saved, lost when you refresh.'**
+  /// **'Temporary chat: not saved, lost when you refresh.'**
   String get temporaryBanner;
 
   /// No description provided for @justNow.
@@ -1399,7 +1399,7 @@ abstract class AppLocalizations {
   /// No description provided for @noPersonas.
   ///
   /// In en, this message translates to:
-  /// **'No personas yet'**
+  /// **'No personas yet. A persona tells Cortex about a person or a bot.'**
   String get noPersonas;
 
   /// No description provided for @personasLoadFailed.
@@ -2829,6 +2829,552 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Valkey'**
   String get engTechValkey;
+
+  /// No description provided for @settingsGeneral.
+  ///
+  /// In en, this message translates to:
+  /// **'General'**
+  String get settingsGeneral;
+
+  /// No description provided for @themeDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Use the system theme, the light theme or the dark theme.'**
+  String get themeDescription;
+
+  /// No description provided for @languageDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Select the language of Cortex.'**
+  String get languageDescription;
+
+  /// No description provided for @pinnedChats.
+  ///
+  /// In en, this message translates to:
+  /// **'Pinned'**
+  String get pinnedChats;
+
+  /// No description provided for @recentChats.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent'**
+  String get recentChats;
+
+  /// No description provided for @aiNote.
+  ///
+  /// In en, this message translates to:
+  /// **'AI-generated content may be incorrect'**
+  String get aiNote;
+
+  /// No description provided for @memSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Cortex keeps 1 memory} other{Cortex keeps {count} memories}} ({size}) from {chats}, {files} and {people}.'**
+  String memSummary(
+    int count,
+    String size,
+    String chats,
+    String files,
+    String people,
+  );
+
+  /// No description provided for @memNewest.
+  ///
+  /// In en, this message translates to:
+  /// **'The newest is from {date}.'**
+  String memNewest(String date);
+
+  /// No description provided for @memCardCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Memories'**
+  String get memCardCount;
+
+  /// No description provided for @memCardSize.
+  ///
+  /// In en, this message translates to:
+  /// **'Size'**
+  String get memCardSize;
+
+  /// No description provided for @memCardAdded.
+  ///
+  /// In en, this message translates to:
+  /// **'Added in the last 7 days'**
+  String get memCardAdded;
+
+  /// No description provided for @memCardUsed.
+  ///
+  /// In en, this message translates to:
+  /// **'Used in answers in the last 7 days'**
+  String get memCardUsed;
+
+  /// No description provided for @memByMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'By month'**
+  String get memByMonth;
+
+  /// No description provided for @memFacetSource.
+  ///
+  /// In en, this message translates to:
+  /// **'Source'**
+  String get memFacetSource;
+
+  /// No description provided for @memFacetPeriod.
+  ///
+  /// In en, this message translates to:
+  /// **'Period'**
+  String get memFacetPeriod;
+
+  /// No description provided for @memSourceAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get memSourceAll;
+
+  /// No description provided for @memSourceChats.
+  ///
+  /// In en, this message translates to:
+  /// **'Chats'**
+  String get memSourceChats;
+
+  /// No description provided for @memSourceFiles.
+  ///
+  /// In en, this message translates to:
+  /// **'Files'**
+  String get memSourceFiles;
+
+  /// No description provided for @memSourceNotes.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved notes'**
+  String get memSourceNotes;
+
+  /// No description provided for @memSourcePeople.
+  ///
+  /// In en, this message translates to:
+  /// **'People'**
+  String get memSourcePeople;
+
+  /// No description provided for @memSourceTopics.
+  ///
+  /// In en, this message translates to:
+  /// **'Topics'**
+  String get memSourceTopics;
+
+  /// No description provided for @memPeriodToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get memPeriodToday;
+
+  /// No description provided for @memPeriod7.
+  ///
+  /// In en, this message translates to:
+  /// **'Last 7 days'**
+  String get memPeriod7;
+
+  /// No description provided for @memPeriod30.
+  ///
+  /// In en, this message translates to:
+  /// **'Last 30 days'**
+  String get memPeriod30;
+
+  /// No description provided for @memPeriodAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get memPeriodAll;
+
+  /// No description provided for @memSearch.
+  ///
+  /// In en, this message translates to:
+  /// **'Search memories'**
+  String get memSearch;
+
+  /// No description provided for @memClearAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear all'**
+  String get memClearAll;
+
+  /// No description provided for @memFilters.
+  ///
+  /// In en, this message translates to:
+  /// **'Filters'**
+  String get memFilters;
+
+  /// No description provided for @memRemoveFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove filter'**
+  String get memRemoveFilter;
+
+  /// No description provided for @memToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get memToday;
+
+  /// No description provided for @memYesterday.
+  ///
+  /// In en, this message translates to:
+  /// **'Yesterday'**
+  String get memYesterday;
+
+  /// No description provided for @memLineChat.
+  ///
+  /// In en, this message translates to:
+  /// **'Chat: {title}, {time}'**
+  String memLineChat(String title, String time);
+
+  /// No description provided for @memLineFile.
+  ///
+  /// In en, this message translates to:
+  /// **'File: {title}, {time}'**
+  String memLineFile(String title, String time);
+
+  /// No description provided for @memLineNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved note, {time}'**
+  String memLineNote(String time);
+
+  /// No description provided for @memUsedTimes.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Used 1 time} other{Used {count} times}}'**
+  String memUsedTimes(int count);
+
+  /// No description provided for @memSimilar.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} similar'**
+  String memSimilar(int count);
+
+  /// No description provided for @memShowSimilar.
+  ///
+  /// In en, this message translates to:
+  /// **'Show the similar memories'**
+  String get memShowSimilar;
+
+  /// No description provided for @memGroupCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 memory} other{{count} memories}}'**
+  String memGroupCount(int count);
+
+  /// No description provided for @memBackToGroups.
+  ///
+  /// In en, this message translates to:
+  /// **'All groups'**
+  String get memBackToGroups;
+
+  /// No description provided for @memCreated.
+  ///
+  /// In en, this message translates to:
+  /// **'Created'**
+  String get memCreated;
+
+  /// No description provided for @memUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Updated'**
+  String get memUpdated;
+
+  /// No description provided for @memSize.
+  ///
+  /// In en, this message translates to:
+  /// **'Size'**
+  String get memSize;
+
+  /// No description provided for @memSizeWords.
+  ///
+  /// In en, this message translates to:
+  /// **'{size}, {words} words'**
+  String memSizeWords(String size, int words);
+
+  /// No description provided for @memUsedCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Used in answers'**
+  String get memUsedCount;
+
+  /// No description provided for @memLastUsed.
+  ///
+  /// In en, this message translates to:
+  /// **'Last used'**
+  String get memLastUsed;
+
+  /// No description provided for @memNever.
+  ///
+  /// In en, this message translates to:
+  /// **'Never'**
+  String get memNever;
+
+  /// No description provided for @memKeeps.
+  ///
+  /// In en, this message translates to:
+  /// **'What Cortex keeps'**
+  String get memKeeps;
+
+  /// No description provided for @memShowAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Show all'**
+  String get memShowAll;
+
+  /// No description provided for @memShowLess.
+  ///
+  /// In en, this message translates to:
+  /// **'Show less'**
+  String get memShowLess;
+
+  /// No description provided for @memConnects.
+  ///
+  /// In en, this message translates to:
+  /// **'How it connects'**
+  String get memConnects;
+
+  /// No description provided for @memUsedIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Used in these answers'**
+  String get memUsedIn;
+
+  /// No description provided for @memNoUse.
+  ///
+  /// In en, this message translates to:
+  /// **'Cortex has not used this memory in an answer yet.'**
+  String get memNoUse;
+
+  /// No description provided for @memShowPicture.
+  ///
+  /// In en, this message translates to:
+  /// **'Show connections as a picture'**
+  String get memShowPicture;
+
+  /// No description provided for @memHidePicture.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide the picture'**
+  String get memHidePicture;
+
+  /// No description provided for @memOpenChat.
+  ///
+  /// In en, this message translates to:
+  /// **'Open chat'**
+  String get memOpenChat;
+
+  /// No description provided for @memDelete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete memory'**
+  String get memDelete;
+
+  /// No description provided for @memDeleteTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete this memory?'**
+  String get memDeleteTitle;
+
+  /// No description provided for @memDeleteMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Cortex will not use this memory again. You cannot undo this.'**
+  String get memDeleteMessage;
+
+  /// No description provided for @memConnChat.
+  ///
+  /// In en, this message translates to:
+  /// **'From the chat {label}'**
+  String memConnChat(String label);
+
+  /// No description provided for @memConnFile.
+  ///
+  /// In en, this message translates to:
+  /// **'From the file {label}'**
+  String memConnFile(String label);
+
+  /// No description provided for @memConnPerson.
+  ///
+  /// In en, this message translates to:
+  /// **'Mentions {label}'**
+  String memConnPerson(String label);
+
+  /// No description provided for @memConnTopic.
+  ///
+  /// In en, this message translates to:
+  /// **'Topic: {label}'**
+  String memConnTopic(String label);
+
+  /// No description provided for @memConnSupersedes.
+  ///
+  /// In en, this message translates to:
+  /// **'Replaces {label}'**
+  String memConnSupersedes(String label);
+
+  /// No description provided for @memConnCorrects.
+  ///
+  /// In en, this message translates to:
+  /// **'Corrects {label}'**
+  String memConnCorrects(String label);
+
+  /// No description provided for @memConnDerived.
+  ///
+  /// In en, this message translates to:
+  /// **'Comes from {label}'**
+  String memConnDerived(String label);
+
+  /// No description provided for @memConnSupports.
+  ///
+  /// In en, this message translates to:
+  /// **'Supports {label}'**
+  String memConnSupports(String label);
+
+  /// No description provided for @memConnContradicts.
+  ///
+  /// In en, this message translates to:
+  /// **'Contradicts {label}'**
+  String memConnContradicts(String label);
+
+  /// No description provided for @memConnPartOf.
+  ///
+  /// In en, this message translates to:
+  /// **'Part of {label}'**
+  String memConnPartOf(String label);
+
+  /// No description provided for @memConnRelated.
+  ///
+  /// In en, this message translates to:
+  /// **'Related to {label}'**
+  String memConnRelated(String label);
+
+  /// No description provided for @memConnSameTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 other memory has the same title} other{{count} other memories have the same title}}'**
+  String memConnSameTitle(int count);
+
+  /// No description provided for @memEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Cortex has no memories yet. Memories are saved when you chat with memory on.'**
+  String get memEmpty;
+
+  /// No description provided for @memStartChat.
+  ///
+  /// In en, this message translates to:
+  /// **'Start a chat'**
+  String get memStartChat;
+
+  /// No description provided for @memTruncated.
+  ///
+  /// In en, this message translates to:
+  /// **'Showing the newest 2000 memories'**
+  String get memTruncated;
+
+  /// No description provided for @memNoResults.
+  ///
+  /// In en, this message translates to:
+  /// **'No memories match these filters.'**
+  String get memNoResults;
+
+  /// No description provided for @memLoadMore.
+  ///
+  /// In en, this message translates to:
+  /// **'Show more'**
+  String get memLoadMore;
+
+  /// No description provided for @memTypeConversation.
+  ///
+  /// In en, this message translates to:
+  /// **'Conversation'**
+  String get memTypeConversation;
+
+  /// No description provided for @memTypeNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved note'**
+  String get memTypeNote;
+
+  /// No description provided for @memTypeFile.
+  ///
+  /// In en, this message translates to:
+  /// **'File'**
+  String get memTypeFile;
+
+  /// No description provided for @memDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Memory details'**
+  String get memDetails;
+
+  /// No description provided for @memChats.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 chat} other{{count} chats}}'**
+  String memChats(int count);
+
+  /// No description provided for @memFiles.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 file} other{{count} files}}'**
+  String memFiles(int count);
+
+  /// No description provided for @memPeople.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 person} other{{count} people}}'**
+  String memPeople(int count);
+
+  /// No description provided for @personaPeople.
+  ///
+  /// In en, this message translates to:
+  /// **'People'**
+  String get personaPeople;
+
+  /// No description provided for @personaBots.
+  ///
+  /// In en, this message translates to:
+  /// **'Bots'**
+  String get personaBots;
+
+  /// No description provided for @personaUsedIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Used in'**
+  String get personaUsedIn;
+
+  /// No description provided for @personaMentions.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{No memory mentions this persona yet.} =1{1 memory mentions this persona.} other{{count} memories mention this persona.}}'**
+  String personaMentions(int count);
+
+  /// No description provided for @personaEdit.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get personaEdit;
+
+  /// No description provided for @personaSelect.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a persona to see the details.'**
+  String get personaSelect;
+
+  /// No description provided for @personaBack.
+  ///
+  /// In en, this message translates to:
+  /// **'All personas'**
+  String get personaBack;
+
+  /// No description provided for @usageKindColumn.
+  ///
+  /// In en, this message translates to:
+  /// **'Kind of answer'**
+  String get usageKindColumn;
 }
 
 class _AppLocalizationsDelegate

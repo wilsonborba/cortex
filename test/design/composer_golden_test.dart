@@ -26,6 +26,7 @@ void main() {
           'files',
           'running',
           'over_limit',
+          'web_menu',
         ]) {
           if (locale.languageCode != 'en' &&
               !['empty', 'files'].contains(scenario)) {
@@ -52,14 +53,20 @@ void main() {
               );
               final controller = ChatController(api: api);
               if (scenario == 'files') {
+                // Two attachments (#64): one uploading, one with an error.
                 controller.files.addAll([
-                  for (var i = 0; i < 3; i++)
-                    AttachedFile(
-                      'example-$i.pdf',
-                      1024,
-                      'application/pdf',
-                      List.filled(1024, 0),
-                    )..fileId = 'synthetic-$i',
+                  AttachedFile(
+                    'example-report-with-a-long-name.pdf',
+                    1024,
+                    'application/pdf',
+                    List.filled(1024, 0),
+                  )..uploading = true,
+                  AttachedFile(
+                    'example-notes.txt',
+                    2048,
+                    'text/plain',
+                    List.filled(2048, 0),
+                  )..errorMessage = 'synthetic upload failure',
                 ]);
                 controller.options
                   ..memory = true
@@ -107,10 +114,22 @@ void main() {
                 await tester.pump();
                 await tester.pump(const Duration(milliseconds: 200));
               }
+              if (scenario == 'web_menu') {
+                await tester.tap(
+                  find.byKey(
+                    Key(width < 600 ? 'composer-options' : 'web-choice'),
+                  ),
+                );
+                await tester.pump();
+                await tester.pump(const Duration(milliseconds: 300));
+              }
               expect(find.byType(Composer), findsOneWidget);
               expect(tester.takeException(), isNull);
               await expectLater(
-                find.byType(Scaffold).first,
+                // The open menu is in the overlay, outside the Scaffold.
+                scenario == 'web_menu'
+                    ? find.byType(MaterialApp)
+                    : find.byType(Scaffold).first,
                 matchesGoldenFile(
                   'goldens/composer_${scenario}_${mode.name}_${width.toInt()}${locale.languageCode == 'en' ? '' : '_${locale.languageCode}'}.png',
                 ),

@@ -4,6 +4,7 @@ import '../../../../l10n/generated/app_localizations.dart';
 import '../../theme/app_icons.dart';
 import '../../theme/tokens.dart';
 import '../../widgets/common/surfaces.dart';
+import 'diagrams.dart' show DiagramCanvas;
 import 'engineering_sources.dart';
 
 typedef _Box = ({String name, String tech, String role});
@@ -20,7 +21,7 @@ class EngineeringContent extends StatelessWidget {
     final memory = _box(l.engMemoryService, l.engTechRust, l.engMemoryRole);
     Widget heading(String key, String title) => Padding(
       padding: const EdgeInsets.only(top: Space.s40, bottom: Space.s16),
-      child: Text(title, key: Key(key), style: TextStyles.subsection),
+      child: Text(title, key: Key(key), style: TextStyles.subtitle1),
     );
     final decisions = [
       (l.engRustTitle, l.engRustContext, l.engRustDecision, l.engRustResult),
@@ -49,108 +50,116 @@ class EngineeringContent extends StatelessWidget {
         Text(
           l.engIntro,
           key: const Key('engineering-intro'),
-          style: TextStyles.body,
+          style: TextStyles.body2,
         ),
         heading('engineering-context', l.engContextTitle),
-        Semantics(
-          label: l.engContextAlt,
-          excludeSemantics: true,
-          child: Column(
-            children: [
-              _Chain(
-                nodes: [_box(l.engUser), _box(l.engGateway), _box(l.engCortex)],
-                verbs: [l.engSends, l.engForwards],
-              ),
-              const SizedBox(height: Space.s24),
-              _Branches(
-                branches: [
-                  (
-                    source: l.engCortex,
-                    verb: l.engRecalls,
-                    target: _box(l.engMemoryService),
-                    child: (
-                      source: l.engMemoryService,
-                      verb: l.engStoresFiles,
-                      target: _box(l.engFileStorage),
+        DiagramCanvas(
+          child: Semantics(
+            label: l.engContextAlt,
+            excludeSemantics: true,
+            child: Column(
+              children: [
+                _Chain(
+                  nodes: [
+                    _box(l.engUser),
+                    _box(l.engGateway),
+                    _box(l.engCortex),
+                  ],
+                  verbs: [l.engSends, l.engForwards],
+                ),
+                const SizedBox(height: Space.s24),
+                _Branches(
+                  branches: [
+                    (
+                      source: l.engCortex,
+                      verb: l.engRecalls,
+                      target: _box(l.engMemoryService),
+                      child: (
+                        source: l.engMemoryService,
+                        verb: l.engStoresFiles,
+                        target: _box(l.engFileStorage),
+                      ),
                     ),
-                  ),
-                  (
-                    source: l.engCortex,
-                    verb: l.engGenerates,
-                    target: _box(l.engModelRuntime),
-                    child: null,
-                  ),
-                  (
-                    source: l.engApps,
-                    verb: l.engPersists,
-                    target: _box(l.engDatabases),
-                    child: null,
-                  ),
-                ],
-              ),
-            ],
+                    (
+                      source: l.engCortex,
+                      verb: l.engGenerates,
+                      target: _box(l.engModelRuntime),
+                      child: null,
+                    ),
+                    (
+                      source: l.engApps,
+                      verb: l.engPersists,
+                      target: _box(l.engDatabases),
+                      child: null,
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
         heading('engineering-containers', l.engContainersTitle),
-        Semantics(
-          label: l.engContainersAlt,
-          excludeSemantics: true,
-          child: Column(
-            children: [
-              _Chain(
-                nodes: [
-                  _box(l.engFrontend, l.engTechFlutter, l.engFrontendRole),
-                  _box(l.engGateway, l.engTechHTTP, l.engGatewayRole),
-                  api,
-                ],
-                verbs: [l.engSends, l.engForwards],
-              ),
-              const SizedBox(height: Space.s24),
-              _Branches(
-                branches: [
-                  (
-                    source: l.engApi,
-                    verb: l.engRecalls,
-                    target: memory,
-                    child: (
-                      source: l.engMemoryService,
-                      verb: l.engStoresDocs,
-                      target: _box(
-                        l.engDocumentStore,
-                        l.engTechCouchDB,
-                        l.engDocumentRole,
+        DiagramCanvas(
+          child: Semantics(
+            label: l.engContainersAlt,
+            excludeSemantics: true,
+            child: Column(
+              children: [
+                _Chain(
+                  nodes: [
+                    _box(l.engFrontend, l.engTechFlutter, l.engFrontendRole),
+                    _box(l.engGateway, l.engTechHTTP, l.engGatewayRole),
+                    api,
+                  ],
+                  verbs: [l.engSends, l.engForwards],
+                ),
+                const SizedBox(height: Space.s24),
+                _Branches(
+                  branches: [
+                    (
+                      source: l.engApi,
+                      verb: l.engRecalls,
+                      target: memory,
+                      child: (
+                        source: l.engMemoryService,
+                        verb: l.engStoresDocs,
+                        target: _box(
+                          l.engDocumentStore,
+                          l.engTechCouchDB,
+                          l.engDocumentRole,
+                        ),
                       ),
                     ),
-                  ),
-                  (
-                    source: l.engApi,
-                    verb: l.engGenerates,
-                    target: _box(
-                      l.engModelRuntime,
-                      l.engTechOllama,
-                      l.engModelRole,
+                    (
+                      source: l.engApi,
+                      verb: l.engGenerates,
+                      target: _box(
+                        l.engModelRuntime,
+                        l.engTechOllama,
+                        l.engModelRole,
+                      ),
+                      child: null,
                     ),
-                    child: null,
-                  ),
-                  (
-                    source: l.engApps,
-                    verb: l.engPersists,
-                    target: _box(
-                      l.engPostgres,
-                      l.engTechPostgreSQL,
-                      l.engPostgresRole,
+                    (
+                      source: l.engApps,
+                      verb: l.engPersists,
+                      target: _box(
+                        l.engPostgres,
+                        l.engTechPostgreSQL,
+                        l.engPostgresRole,
+                      ),
+                      child: null,
                     ),
-                    child: null,
-                  ),
-                  (
-                    source: l.engApi,
-                    verb: l.engCaches,
-                    target: _box(l.engCache, l.engTechValkey, l.engCacheRole),
-                    child: null,
-                  ),
-                ],
-              ),
-            ],
+                    (
+                      source: l.engApi,
+                      verb: l.engCaches,
+                      target: _box(l.engCache, l.engTechValkey, l.engCacheRole),
+                      child: null,
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
         heading('engineering-pipeline', l.engPipelineTitle),
@@ -171,7 +180,7 @@ class EngineeringContent extends StatelessWidget {
                   width: Space.s40,
                   child: Text(
                     '${i + 1}',
-                    style: TextStyles.subsection.copyWith(
+                    style: TextStyles.subtitle1.copyWith(
                       color: Palette.from(context).muted,
                     ),
                   ),
@@ -182,11 +191,11 @@ class EngineeringContent extends StatelessWidget {
                     children: [
                       Text(
                         stage.$1,
-                        style: TextStyles.compact.copyWith(
+                        style: TextStyles.body1.copyWith(
                           fontWeight: FontWeight.w600,
                         ),
                       ),
-                      Text(stage.$2, style: TextStyles.body),
+                      Text(stage.$2, style: TextStyles.body2),
                     ],
                   ),
                 ),
@@ -232,7 +241,7 @@ class _NodeBox extends StatelessWidget {
       padding: const EdgeInsets.all(Space.s16),
       decoration: BoxDecoration(
         color: p.surface,
-        border: Border.all(color: p.border),
+        border: Border.all(color: p.stroke),
         borderRadius: BorderRadius.circular(
           FoundationTokens.of(context).groupRadius,
         ),
@@ -242,15 +251,18 @@ class _NodeBox extends StatelessWidget {
         children: [
           Text(
             node.name,
-            style: TextStyles.compact.copyWith(fontWeight: FontWeight.w600),
+            style: TextStyles.body1.copyWith(fontWeight: FontWeight.w600),
           ),
           if (node.tech.isNotEmpty) ...[
             const SizedBox(height: Space.s4),
-            Text(node.tech, style: TextStyles.label.copyWith(color: p.muted)),
+            Text(
+              node.tech,
+              style: TextStyles.caption1.copyWith(color: p.muted),
+            ),
           ],
           if (node.role.isNotEmpty) ...[
             const SizedBox(height: Space.s8),
-            Text(node.role, style: TextStyles.compact),
+            Text(node.role, style: TextStyles.body1),
           ],
         ],
       ),
@@ -276,7 +288,9 @@ class _Arrow extends StatelessWidget {
         const SizedBox(height: Space.s4),
         Text(
           label,
-          style: TextStyles.label.copyWith(color: Palette.from(context).muted),
+          style: TextStyles.caption1.copyWith(
+            color: Palette.from(context).muted,
+          ),
           textAlign: TextAlign.center,
         ),
       ],
@@ -373,29 +387,29 @@ class _Decision extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(title, style: TextStyles.subsection),
+          Text(title, style: TextStyles.subtitle1),
           for (final part in [
             (l.engContextWord, contextText),
             (l.engDecisionWord, decision),
             (l.engResultWord, result),
           ]) ...[
             const SizedBox(height: Space.s12),
-            Text(part.$1, style: TextStyles.label.copyWith(color: p.muted)),
+            Text(part.$1, style: TextStyles.caption1.copyWith(color: p.muted)),
             const SizedBox(height: Space.s4),
-            Text(part.$2, style: TextStyles.compact),
+            Text(part.$2, style: TextStyles.body1),
           ],
           const SizedBox(height: Space.s16),
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: SelectableText(
               source.code,
-              style: TextStyles.label.copyWith(fontFamily: TextStyles.mono),
+              style: TextStyles.caption1.copyWith(fontFamily: TextStyles.mono),
             ),
           ),
           const SizedBox(height: Space.s8),
           Text(
             source.path,
-            style: TextStyles.label.copyWith(
+            style: TextStyles.caption1.copyWith(
               fontFamily: TextStyles.mono,
               color: p.muted,
             ),

@@ -70,10 +70,7 @@ _Script _script(AppLocalizations l, DemoKind kind) => switch (kind) {
 
 /// Scripted chat demo marked Example (24.B.2.a). No model call and no text box.
 class ChatDemo extends StatefulWidget {
-  const ChatDemo({
-    super.key,
-    this.stepDelay = const Duration(milliseconds: 450),
-  });
+  const ChatDemo({super.key, this.stepDelay = WaitTimes.demoStep});
   final Duration stepDelay;
   @override
   State<ChatDemo> createState() => _ChatDemoState();
@@ -132,14 +129,14 @@ class _ChatDemoState extends State<ChatDemo> {
                   vertical: 2,
                 ),
                 decoration: BoxDecoration(
-                  border: Border.all(color: p.border),
+                  border: Border.all(color: p.stroke),
                   borderRadius: BorderRadius.circular(
                     FoundationTokens.of(context).controlRadius,
                   ),
                 ),
                 child: Text(
                   l.example,
-                  style: TextStyles.label.copyWith(color: p.muted),
+                  style: TextStyles.caption1.copyWith(color: p.muted),
                 ),
               ),
             ],
@@ -200,7 +197,7 @@ class _DemoTranscript extends StatelessWidget {
       child: AnimatedOpacity(
         opacity: visible ? 1 : 0,
         duration: Motion.of(context),
-        curve: FoundationTokens.curve,
+        curve: FoundationTokens.hoverCurve,
         child: child,
       ),
     );
@@ -216,12 +213,12 @@ class _DemoTranscript extends StatelessWidget {
               padding: const EdgeInsets.all(Space.s12),
               decoration: BoxDecoration(
                 color: p.background,
-                border: Border.all(color: p.border),
+                border: Border.all(color: p.stroke),
                 borderRadius: BorderRadius.circular(
                   FoundationTokens.of(context).groupRadius,
                 ),
               ),
-              child: Text(s.prompt, style: TextStyles.body),
+              child: Text(s.prompt, style: TextStyles.body2),
             ),
           ),
           const SizedBox(height: Space.s12),
@@ -243,7 +240,7 @@ class _DemoTranscript extends StatelessWidget {
                     Flexible(
                       child: Text(
                         step,
-                        style: TextStyles.compact.copyWith(color: p.muted),
+                        style: TextStyles.body1.copyWith(color: p.muted),
                       ),
                     ),
                   ],
@@ -260,25 +257,28 @@ class _DemoTranscript extends StatelessWidget {
                     spacing: Space.s8,
                     children: [
                       for (final m in s.memories)
-                        Chip(label: Text(m, style: TextStyles.label)),
+                        Chip(
+                          visualDensity: Controls.tagDensity,
+                          label: Text(m),
+                        ),
                     ],
                   ),
                 const SizedBox(height: Space.s8),
                 Text(
                   s.answer,
                   key: active && done ? const Key('demo-answer') : null,
-                  style: TextStyles.body,
+                  style: TextStyles.body2,
                 ),
                 if (s.sources.isNotEmpty) ...[
                   const SizedBox(height: Space.s8),
                   Text(
                     l.sources,
-                    style: TextStyles.label.copyWith(color: p.muted),
+                    style: TextStyles.caption1.copyWith(color: p.muted),
                   ),
                   for (final (i, src) in s.sources.indexed)
                     Text(
                       '${i + 1}. $src',
-                      style: TextStyles.compact.copyWith(color: p.muted),
+                      style: TextStyles.body1.copyWith(color: p.muted),
                     ),
                 ],
               ],

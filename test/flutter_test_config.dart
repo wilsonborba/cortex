@@ -47,11 +47,17 @@ Future<void> loadFonts() async {
       ),
     );
   await material.load();
-  final lucide = FontLoader('packages/lucide_icons_flutter/Lucide')
-    ..addFont(
-      rootBundle.load('packages/lucide_icons_flutter/assets/lucide.ttf'),
-    );
-  await lucide.load();
+  for (final style in ['Regular', 'Filled']) {
+    final fluent =
+        FontLoader(
+          'packages/fluentui_system_icons/FluentSystemIcons-$style',
+        )..addFont(
+          rootBundle.load(
+            'packages/fluentui_system_icons/fonts/FluentSystemIcons-$style.ttf',
+          ),
+        );
+    await fluent.load();
+  }
   // Resolve grammar and bundled sources before widget-test fake time starts.
   await prepareCodeSyntax();
   for (final name in ['gather', 'rrf', 'scoped_names']) {

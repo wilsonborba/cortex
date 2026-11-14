@@ -8,7 +8,6 @@ import '../../../../domain/models/memory_graph.dart';
 import '../../../../l10n/generated/app_localizations.dart';
 import '../../theme/app_icons.dart';
 import '../../theme/tokens.dart';
-import 'memory_card.dart';
 
 /// Values approved in #55. Visual spacing uses the shared foundation scale.
 abstract final class GraphTokens {
@@ -408,7 +407,7 @@ class GraphCanvasState extends State<GraphCanvas> {
       TextPainter measure(String text, Color color) => TextPainter(
         text: TextSpan(
           text: text,
-          style: TextStyles.label.copyWith(color: color),
+          style: TextStyles.caption1.copyWith(color: color),
         ),
         textDirection: Directionality.of(context),
         textScaler: MediaQuery.textScalerOf(context),
@@ -659,7 +658,7 @@ class _GraphPainter extends CustomPainter {
         positions[edge.source]!,
         positions[edge.target]!,
         Paint()
-          ..color = (active ? palette.text : palette.border).withValues(
+          ..color = (active ? palette.text : palette.stroke).withValues(
             alpha: dim ? GraphTokens.dimOpacity : 1,
           )
           ..strokeWidth = Controls.border,
@@ -713,7 +712,7 @@ class _GraphPainter extends CustomPainter {
         pos,
         r,
         Paint()
-          ..color = (n.id == selected ? palette.accent : palette.muted)
+          ..color = (n.id == selected ? palette.brandStroke1 : palette.muted)
               .withValues(alpha: opacity)
           ..style = PaintingStyle.stroke
           ..strokeWidth = n.id == selected
@@ -739,7 +738,7 @@ class _GraphPainter extends CustomPainter {
         final badge = TextPainter(
           text: TextSpan(
             text: '$count',
-            style: TextStyles.label.copyWith(color: palette.text),
+            style: TextStyles.caption1.copyWith(color: palette.text),
           ),
           textDirection: TextDirection.ltr,
         )..layout();
@@ -766,7 +765,8 @@ class _GraphPainter extends CustomPainter {
             pos.dx + label.width,
             pos.dy + r + Space.s4 + label.height + (date?.height ?? 0),
           ),
-          Paint()..color = Colors.white.withValues(alpha: opacity),
+          // A layer paint uses only the alpha of the color.
+          Paint()..color = palette.text.withValues(alpha: opacity),
         );
         label.paint(canvas, pos + Offset(-label.width / 2, r + Space.s4));
         date?.paint(
@@ -800,4 +800,57 @@ class _GraphPainter extends CustomPainter {
   bool shouldRepaint(covariant _GraphPainter old) => true;
   @override
   bool shouldRebuildSemantics(covariant _GraphPainter old) => true;
+}
+
+IconData nodeIcon(String type) => switch (type) {
+  'memory' => AppIcons.document,
+  'chat' => AppIcons.chats,
+  'tag' => AppIcons.tag,
+  'persona' => AppIcons.entity,
+  'entity' => AppIcons.category,
+  _ => AppIcons.file,
+};
+
+String nodeTypeName(AppLocalizations l, String type) => switch (type) {
+  'memory' => l.legendMemory,
+  'chat' => l.typeChat,
+  'tag' => l.legendTag,
+  'persona' => l.legendPersona,
+  'entity' => l.legendEntity,
+  _ => l.legendFile,
+};
+
+class GraphLegend extends StatelessWidget {
+  const GraphLegend({super.key, required this.hasEntities});
+  final bool hasEntities;
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
+    final p = Palette.from(context);
+    return Wrap(
+      key: const Key('legend'),
+      spacing: Space.s12,
+      children: [
+        for (final type in [
+          'memory',
+          'chat',
+          'tag',
+          'persona',
+          'file',
+          if (hasEntities) 'entity',
+        ])
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(nodeIcon(type), size: IconSizes.chip, color: p.muted),
+              const SizedBox(width: Space.s4),
+              Text(
+                nodeTypeName(l, type),
+                style: TextStyles.caption1.copyWith(color: p.muted),
+              ),
+            ],
+          ),
+      ],
+    );
+  }
 }

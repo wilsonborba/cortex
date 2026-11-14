@@ -1,11 +1,38 @@
-import '../../theme/app_icons.dart';
 import 'package:flutter/material.dart';
+import '../../theme/app_icons.dart';
+import '../../theme/theme.dart';
 import '../../theme/tokens.dart';
+import 'progress.dart';
 
-enum ButtonKind { primary, secondary, quiet, destructive }
+/// Fluent button appearances for [AppButton] (#61).
+enum ButtonKind {
+  /// The one primary action of a view: brand fill.
+  primary,
 
-/// One primary button per view (24, decision C2): the only accent besides the
-/// selected item. Sentence case labels, no brackets, no all caps.
+  /// Default: background fill and 1 px stroke.
+  secondary,
+
+  /// No fill and no border; hover shows the subtle fill.
+  subtle,
+
+  /// No fill; hover changes only the text color.
+  transparent,
+
+  /// Danger fill, only inside a delete confirmation dialog.
+  destructive;
+
+  ButtonAppearance get appearance => switch (this) {
+    primary => ButtonAppearance.primary,
+    secondary => ButtonAppearance.secondary,
+    subtle => ButtonAppearance.subtle,
+    transparent => ButtonAppearance.transparent,
+    destructive => ButtonAppearance.destructive,
+  };
+}
+
+/// Fluent button. One primary button per view; when several actions have the
+/// same weight, all are secondary or subtle. Sentence case labels. The size
+/// is large at compact width and medium at other widths unless [size] is set.
 class AppButton extends StatelessWidget {
   const AppButton({
     super.key,
@@ -14,6 +41,7 @@ class AppButton extends StatelessWidget {
     this.kind = ButtonKind.secondary,
     this.icon,
     this.busy = false,
+    this.size,
     this.statesController,
   });
   const AppButton.primary({
@@ -22,6 +50,7 @@ class AppButton extends StatelessWidget {
     required this.onPressed,
     this.icon,
     this.busy = false,
+    this.size,
     this.statesController,
   }) : kind = ButtonKind.primary;
   const AppButton.destructive({
@@ -30,6 +59,7 @@ class AppButton extends StatelessWidget {
     required this.onPressed,
     this.icon,
     this.busy = false,
+    this.size,
     this.statesController,
   }) : kind = ButtonKind.destructive;
   final String label;
@@ -37,59 +67,27 @@ class AppButton extends StatelessWidget {
   final ButtonKind kind;
   final IconData? icon;
   final bool busy;
+  final ButtonSize? size;
   final WidgetStatesController? statesController;
 
   @override
   Widget build(BuildContext context) {
     final p = Palette.from(context);
-    final size = SizeClass.of(MediaQuery.sizeOf(context).width);
-    final (bg, fg, side) = switch (kind) {
-      ButtonKind.primary => (p.accent, p.onAccent, p.accent),
-      ButtonKind.destructive => (p.danger, p.onDanger, p.danger),
-      ButtonKind.secondary => (p.surface, p.text, p.text),
-      ButtonKind.quiet => (Colors.transparent, p.text, Colors.transparent),
-    };
+    final s =
+        size ?? ButtonSize.of(SizeClass.of(MediaQuery.sizeOf(context).width));
     final enabled = onPressed != null && !busy;
-    final style = ButtonStyle(
-      minimumSize: WidgetStatePropertyAll(
-        Size(Controls.minTouch, Controls.height(size)),
-      ),
-      padding: const WidgetStatePropertyAll(
-        EdgeInsets.symmetric(horizontal: Space.s16),
-      ),
-      elevation: const WidgetStatePropertyAll(0),
-      shadowColor: const WidgetStatePropertyAll(Colors.transparent),
-      backgroundColor: WidgetStatePropertyAll(
-        kind == ButtonKind.quiet
-            ? Colors.transparent
-            : enabled
-            ? bg
-            : bg.withValues(alpha: 0.4),
-      ),
-      foregroundColor: WidgetStatePropertyAll(enabled ? fg : p.muted),
-      overlayColor: WidgetStatePropertyAll(fg.withValues(alpha: 0.08)),
-      animationDuration: Motion.of(context),
-      shape: WidgetStateProperty.resolveWith(
-        (states) => RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(
-            FoundationTokens.of(context).controlRadius,
-          ),
-          side: BorderSide(
-            color: states.contains(WidgetState.focused) ? p.text : side,
-            width: states.contains(WidgetState.focused)
-                ? Controls.focusRing
-                : Controls.border,
-          ),
-        ),
-      ),
-      textStyle: WidgetStatePropertyAll(TextStyles.label),
-    );
+    final style = buttonStyle(p, kind.appearance, size: s);
+    final glyph = icon == null
+        ? null
+        : s == ButtonSize.large
+        ? AppIcons.large(icon!)
+        : icon!;
     final labelRow = Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        if (icon != null) ...[
-          Icon(icon, size: IconSizes.action),
-          const SizedBox(width: Space.s8),
+        if (glyph != null) ...[
+          Icon(glyph, size: s.icon),
+          SizedBox(width: s.gap),
         ],
         Flexible(child: Text(label, overflow: TextOverflow.ellipsis)),
       ],
@@ -98,16 +96,7 @@ class AppButton extends StatelessWidget {
       alignment: Alignment.center,
       children: [
         Opacity(opacity: busy ? 0 : 1, child: labelRow),
-        if (busy)
-          SizedBox.square(
-            dimension: IconSizes.action,
-            child: MediaQuery.disableAnimationsOf(context)
-                ? Icon(AppIcons.loading, size: IconSizes.action, color: p.muted)
-                : CircularProgressIndicator(
-                    strokeWidth: Controls.focusRing,
-                    color: p.muted,
-                  ),
-          ),
+        if (busy) const AppSpinner(),
       ],
     );
     return Semantics(

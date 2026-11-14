@@ -1,6 +1,78 @@
 # Changelog
 
 
+## v2.2.0 - 2026-11-14
+
+
+### Chores
+
+- Merge v2.1.0 back to release/v2.1.0
+
+- Merge v2.1.0 back to development
+
+- Merge v2.1.0 back to feature/main
+
+- Refresh the 11 bundled landing images from the updated archive
+
+- Prepare development for v2.2.0
+
+
+### Features
+
+- Fluent 2 foundation tokens (#59)
+
+- Merge Fluent 2 foundation tokens (#59)
+
+- Replace Lucide icons with Fluent UI System Icons (#60)
+
+- Merge Fluent UI System Icons (#60)
+
+- Fluent 2 component themes and shared widgets (#61)
+
+- Merge Fluent 2 component themes and shared widgets (#61)
+
+- Fluent 2 navigation shell, account menu, settings tabs and basic pages (#62)
+
+- Merge Fluent 2 navigation shell and settings tabs (#62)
+
+- Fluent 2 chat transcript, answer blocks and wait states (#63)
+
+- Merge Fluent 2 chat transcript and wait states (#63)
+
+- Fluent 2 composer (#64)
+
+- Merge Fluent 2 composer (#64)
+
+- Readable memory overview in Settings (#65)
+
+- Merge readable memory overview (#65)
+
+- Master and detail personas, Fluent form and fields (#66)
+
+- Merge master and detail personas (#66)
+
+- Fluent 2 usage tabs, cards and tables (#67)
+
+- Merge Fluent 2 usage tabs, cards and tables (#67)
+
+- Bundle the 11 landing images from the local asset archive
+
+- Fluent 2 landing and engineering pages with bundled assets (#70)
+
+- Merge Fluent 2 landing and engineering pages (#70)
+
+
+### Tests
+
+- Add usage screen screenshots to the screen goldens (#60)
+
+- Merge usage screen screenshots (#60)
+
+- Fluent 2 verification and migration clean up (#69)
+
+- Merge Fluent 2 verification and clean up (#69)
+
+
 ## v2.1.0 - 2026-11-12
 
 
@@ -16,6 +88,14 @@
 - Merge v2.0.1 back to development
 
 - Merge v2.0.1 back to feature/main
+
+- Prepare v2.1.0
+
+- Merge v2.1.0 preparation
+
+- Prepare development for v2.1.0
+
+- Release v2.1.0
 
 
 ### Features

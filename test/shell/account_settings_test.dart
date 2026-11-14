@@ -80,7 +80,12 @@ Future<(GoRouter, Preferences)> show(
       ),
     ),
   );
-  await tester.pumpAndSettle();
+  // The sign in page spinner repeats: pump frames there instead of settling.
+  if (signedIn) {
+    await tester.pumpAndSettle();
+  } else {
+    await tester.pump(const Duration(milliseconds: 500));
+  }
   addTearDown(router.dispose);
   addTearDown(session.dispose);
   addTearDown(preferences.dispose);
@@ -150,13 +155,25 @@ void main() {
         await tester.pumpAndSettle();
       }
       expect(find.byKey(const Key('account-button')), findsOneWidget);
+      // The sidebar row shows the email; the rail shows it in the menu.
+      final rail = width >= 600 && width <= 1000;
+      expect(
+        find.byKey(const Key('account-email')),
+        rail ? findsNothing : findsOneWidget,
+      );
       await tester.tap(find.byKey(const Key('account-button')));
       await tester.pumpAndSettle();
       expect(find.byKey(const Key('account-email')), findsOneWidget);
+      expect(find.byKey(const Key('theme-switch')), findsOneWidget);
+      expect(find.byKey(const Key('language-switch')), findsOneWidget);
       expect(tester.takeException(), isNull);
       await tester.sendKeyEvent(LogicalKeyboardKey.escape);
       await tester.pumpAndSettle();
-      expect(find.byKey(const Key('account-email')), findsNothing);
+      expect(find.byKey(const Key('theme-switch')), findsNothing);
+      expect(
+        find.byKey(const Key('account-email')),
+        rail ? findsNothing : findsOneWidget,
+      );
     });
   }
   testWidgets('account fallback, live preferences, settings and browser Back', (
@@ -171,10 +188,17 @@ void main() {
     await tester.pump();
     await tester.sendKeyEvent(LogicalKeyboardKey.enter);
     await tester.pumpAndSettle();
-    await tester.tap(find.widgetWithText(MenuItemButton, 'Light'));
+    await tester.tap(find.byTooltip('Light'));
     await tester.pumpAndSettle();
     expect(preferences.theme, ThemeMode.light);
-    expect(find.byKey(const Key('account-email')), findsOneWidget);
+    // The switches keep the menu open; the language switch sets the locale.
+    expect(find.byKey(const Key('theme-switch')), findsOneWidget);
+    await tester.tap(find.text('PT'));
+    await tester.pumpAndSettle();
+    expect(preferences.locale, const Locale('pt', 'BR'));
+    await tester.tap(find.text('EN'));
+    await tester.pumpAndSettle();
+    expect(preferences.locale, const Locale('en'));
     await tester.sendKeyEvent(LogicalKeyboardKey.escape);
     await tester.pumpAndSettle();
     expect(trigger.focusNode!.hasFocus, isTrue);
@@ -184,14 +208,16 @@ void main() {
       find.text('These choices are saved in this browser.'),
       findsOneWidget,
     );
-    await tester.tap(find.byType(BackButton));
+    // No app style back arrow; browser Back returns to the chat.
+    expect(find.byType(BackButton), findsNothing);
+    router.pop();
     await tester.pumpAndSettle();
     expect(router.routeInformationProvider.value.uri.path, '/v1/chats');
   });
   testWidgets('settings requires an authenticated session', (tester) async {
     final (router, _) = await show(tester, 1300, signedIn: false);
     router.go('/v1/settings');
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(milliseconds: 500));
     expect(router.routeInformationProvider.value.uri.path, '/v1/login');
   });
 }

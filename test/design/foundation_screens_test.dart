@@ -13,11 +13,13 @@ import 'package:http/testing.dart';
 import '../chat/chat_test.dart' as chat;
 import '../memory/memory_test.dart' as memory;
 import '../personas/persona_test.dart' as personas;
+import '../usage/usage_test.dart' as usage;
 import 'components_golden_test.dart' show loadFonts;
 
 // All content comes from local synthetic doubles. No live API is used.
 http.Client fixtureClient() {
   final person = personas.Api();
+  final telemetry = usage.Api();
   return MockClient((request) async {
     final path = request.url.path.replaceFirst('/apps/cortex/v1', '');
     http.Response reply(Object data) => http.Response(
@@ -30,6 +32,12 @@ http.Client fixtureClient() {
         ..headers.addAll(request.headers)
         ..bodyBytes = request.bodyBytes;
       return person.client.send(copy).then(http.Response.fromStream);
+    }
+    if (path.startsWith('/telemetry/')) {
+      final copy = http.Request(request.method, request.url)
+        ..headers.addAll(request.headers)
+        ..bodyBytes = request.bodyBytes;
+      return telemetry.client.send(copy).then(http.Response.fromStream);
     }
     if (path == '/chats') {
       return reply([
@@ -71,16 +79,12 @@ http.Client fixtureClient() {
         ],
       });
     }
-    if (path.startsWith('/memory-graph')) {
-      final value = memory.graph(
-        focus: path.contains('/nodes/') ? memory.memoryId : null,
-      );
-      final nodes = value['nodes'] as List;
-      for (final node in nodes) {
-        if (node['node_type'] == 'entity') node['label'] = 'Example reader';
-      }
-      return reply(value);
-    }
+    final memoryData = memory.memoryReply(
+      request.url,
+      method: request.method,
+      long: false,
+    );
+    if (memoryData != null) return reply(memoryData.$2);
     throw StateError('Unexpected synthetic request: $path');
   });
 }
@@ -89,17 +93,23 @@ void main() {
   setUpAll(loadFonts);
   const screens = {
     'chat': '/v1/chats/${chat.sid}',
-    'memory': '/v1/memory/memory-one',
-    'personas': '/v1/personas',
-    'persona_form': '/v1/personas/p1',
+    'memory': '/v1/settings/memory',
+    'memory_detail': '/v1/settings/memory/${memory.memoryId}',
+    'personas': '/v1/settings/personas',
+    'persona_detail': '/v1/settings/personas/p1',
+    'persona_form': '/v1/settings/personas/p1/edit',
     'product': '/v1/home',
     'process': '/v1/home/how-it-works',
     'public_memory': '/v1/home/memory',
+    'usage': '/v1/usage',
+    'usage_stats': '/v1/usage/stats',
+    'usage_timing': '/v1/usage/timing',
+    'usage_events': '/v1/usage/events',
 
     'faq': '/v1/home/faq',
   };
   for (final brightness in Brightness.values) {
-    for (final width in [390.0, 768.0, 1024.0, 1300.0, 1440.0]) {
+    for (final width in [390.0, 768.0, 900.0, 1024.0, 1300.0, 1440.0]) {
       for (final entry in screens.entries) {
         testWidgets('${entry.key} ${brightness.name} ${width.toInt()}', (
           tester,

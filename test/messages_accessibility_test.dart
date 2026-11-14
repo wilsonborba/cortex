@@ -73,7 +73,8 @@ void main() {
         final output = OutputView()
           ..step = 'thinking.step'
           ..stepParams = {'role': 'plan', 'model': 'fixture-model'}
-          ..expectedMs = 40000;
+          ..expectedMs = 40000
+          ..started = DateTime.now().subtract(const Duration(seconds: 3));
         output.stages.add(StageState('think', 'started', 100));
         output.thinking.add(ThinkingPart('plan', 1, 'model output data'));
         output.notices.add((1026, 'RAW BACKEND NOTICE'));
@@ -172,7 +173,7 @@ void main() {
       await tester.pumpWidget(const SizedBox());
       final (_, _, details) = await shell.pump(
         tester,
-        '/v1/memory',
+        '/v1/settings/memory',
         size: Size(width, 844),
       );
       details.show(const Text('panel content'));
