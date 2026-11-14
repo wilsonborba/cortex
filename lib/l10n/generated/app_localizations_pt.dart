@@ -60,7 +60,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get goToChats => 'Ir para as conversas';
 
   @override
-  String get signingIn => 'Abrindo o login';
+  String get signingIn => 'Entrando na sua conta …';
 
   @override
   String get noChatsYet => 'Nenhuma conversa ainda';
@@ -1475,4 +1475,20 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get engTechValkey => 'Valkey';
+
+  @override
+  String get settingsGeneral => 'Geral';
+
+  @override
+  String get themeDescription =>
+      'Use o tema do sistema, o tema claro ou o tema escuro.';
+
+  @override
+  String get languageDescription => 'Selecione o idioma do Cortex.';
+
+  @override
+  String get pinnedChats => 'Fixadas';
+
+  @override
+  String get recentChats => 'Recentes';
 }

@@ -4,19 +4,105 @@ import '../../../l10n/generated/app_localizations.dart';
 import '../preferences.dart';
 import '../theme/app_icons.dart';
 import '../theme/tokens.dart';
+import '../widgets/common/segmented_switch.dart';
+import '../widgets/common/surfaces.dart';
 
-List<(ThemeMode, String)> themes(AppLocalizations l) => [
-  (ThemeMode.system, l.systemChoice),
-  (ThemeMode.light, l.lightChoice),
-  (ThemeMode.dark, l.darkChoice),
-];
-List<(Locale?, String)> languages(AppLocalizations l) => [
-  (null, l.systemChoice),
-  (const Locale('en'), l.languageEnglish),
-  (const Locale('pt', 'BR'), l.languagePortugueseBrazil),
-  (const Locale('th'), l.languageThai),
+/// The three languages of the switch, as short codes (#62).
+const _languages = [
+  ('en', Locale('en'), 'EN'),
+  ('pt', Locale('pt', 'BR'), 'PT'),
+  ('th', Locale('th'), 'TH'),
 ];
 
+/// Language switch "EN | PT | TH" (#62). With no saved choice it shows the
+/// language in use: the browser language when it is one of the three, else
+/// English.
+class LanguageSwitch extends StatelessWidget {
+  const LanguageSwitch({super.key, required this.preferences});
+  final Preferences preferences;
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
+    final code = Localizations.localeOf(context).languageCode;
+    final names = {
+      'en': l.languageEnglish,
+      'pt': l.languagePortugueseBrazil,
+      'th': l.languageThai,
+    };
+    return SegmentedSwitch<String>(
+      key: const Key('language-switch'),
+      label: l.language,
+      selected: _languages.any((e) => e.$1 == code) ? code : 'en',
+      onChanged: (v) =>
+          preferences.locale = _languages.firstWhere((e) => e.$1 == v).$2,
+      options: [
+        for (final (code, _, text) in _languages)
+          SegmentOption(value: code, text: text, tooltip: names[code]!),
+      ],
+    );
+  }
+}
+
+/// Theme switch with 3 icon options: System, Light, Dark (#62).
+class ThemeSwitch extends StatelessWidget {
+  const ThemeSwitch({super.key, required this.preferences});
+  final Preferences preferences;
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
+    return SegmentedSwitch<ThemeMode>(
+      key: const Key('theme-switch'),
+      label: l.themeSwitch,
+      selected: preferences.theme,
+      onChanged: (v) => preferences.theme = v,
+      options: [
+        SegmentOption(
+          value: ThemeMode.system,
+          icon: AppIcons.systemTheme,
+          tooltip: l.systemChoice,
+        ),
+        SegmentOption(
+          value: ThemeMode.light,
+          icon: AppIcons.lightTheme,
+          tooltip: l.lightChoice,
+        ),
+        SegmentOption(
+          value: ThemeMode.dark,
+          icon: AppIcons.darkTheme,
+          tooltip: l.darkChoice,
+        ),
+      ],
+    );
+  }
+}
+
+/// 32 px circular avatar: the first letter of the email in `caption1Strong`
+/// on `tagBackground`, or the account icon when there is no email.
+class AccountAvatar extends StatelessWidget {
+  const AccountAvatar({super.key, this.email});
+  final String? email;
+  @override
+  Widget build(BuildContext context) {
+    final p = Palette.from(context);
+    final letter = (email ?? '').trim();
+    return Container(
+      width: Space.s32,
+      height: Space.s32,
+      alignment: Alignment.center,
+      decoration: BoxDecoration(color: p.tagBackground, shape: BoxShape.circle),
+      child: letter.isEmpty
+          ? Icon(AppIcons.account, size: IconSizes.small, color: p.text2)
+          : Text(
+              letter.characters.first.toUpperCase(),
+              style: TextStyles.caption1Strong.copyWith(color: p.text),
+            ),
+    );
+  }
+}
+
+/// Account menu at the bottom of the sidebar (#62): avatar, "Account" and the
+/// email. The menu has Settings, the theme and language switches (one row
+/// each, no submenu), a divider and Log out.
 class AccountMenu extends StatefulWidget {
   const AccountMenu({
     super.key,
@@ -37,74 +123,105 @@ class AccountMenu extends StatefulWidget {
 
 class _AccountMenuState extends State<AccountMenu> {
   final focus = FocusNode();
+  final first = FocusNode(debugLabel: 'account-settings');
   @override
   void dispose() {
     focus.dispose();
+    first.dispose();
     super.dispose();
   }
+
+  /// A menu opened with the keyboard puts focus on its first item (Fluent).
+  void _focusFirst() {
+    if (FocusManager.instance.highlightMode != FocusHighlightMode.traditional) {
+      return;
+    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted && first.context != null) first.requestFocus();
+    });
+  }
+
+  /// One menu row with a label and a switch. Arrow keys move in tab order
+  /// here: the default directional search would also see the pages under a
+  /// pushed page.
+  Widget _switchRow(String label, Widget control) => Actions(
+    actions: {
+      DirectionalFocusIntent: CallbackAction<DirectionalFocusIntent>(
+        onInvoke: (intent) {
+          final node = FocusManager.instance.primaryFocus;
+          switch (intent.direction) {
+            case TraversalDirection.down || TraversalDirection.right:
+              node?.nextFocus();
+            case TraversalDirection.up || TraversalDirection.left:
+              node?.previousFocus();
+          }
+          return null;
+        },
+      ),
+    },
+    child: Padding(
+      padding: const EdgeInsets.symmetric(
+        horizontal: Space.s8,
+        vertical: Space.s6,
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(
+              label,
+              style: TextStyles.body1.copyWith(
+                color: Palette.from(context).text,
+              ),
+            ),
+          ),
+          const SizedBox(width: Space.s12),
+          control,
+        ],
+      ),
+    ),
+  );
 
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
+    final p = Palette.from(context);
     final prefs = widget.preferences;
+    final style = Theme.of(context).menuTheme.style ?? const MenuStyle();
     return ListenableBuilder(
       listenable: prefs,
       builder: (context, _) => MenuAnchor(
         clipBehavior: Clip.none,
         childFocusNode: focus,
-        style: const MenuStyle(alignment: Alignment.topLeft),
+        onOpen: _focusFirst,
+        style: style.copyWith(
+          alignment: Alignment.topLeft,
+          minimumSize: const WidgetStatePropertyAll(Size(200, 0)),
+        ),
         menuChildren: [
-          Padding(
-            padding: const EdgeInsets.all(Space.s12),
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: Space.sidebarWidth),
-              child: Text(
-                widget.email ?? l.account,
-                key: const Key('account-email'),
-                softWrap: true,
+          if (widget.iconOnly) ...[
+            Padding(
+              padding: const EdgeInsets.all(Space.s8),
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: Space.sidebarWidth),
+                child: Text(
+                  widget.email ?? l.account,
+                  key: const Key('account-email'),
+                  style: TextStyles.caption1.copyWith(color: p.muted),
+                  softWrap: true,
+                ),
               ),
             ),
-          ),
-          const Divider(),
-          Padding(
-            padding: const EdgeInsets.all(Space.s8),
-            child: Text(l.appearance, style: TextStyles.label),
-          ),
-          for (final (mode, label) in themes(l))
-            MenuItemButton(
-              closeOnActivate: false,
-              leadingIcon: Icon(
-                prefs.theme == mode
-                    ? AppIcons.copied
-                    : mode == ThemeMode.dark
-                    ? AppIcons.darkTheme
-                    : mode == ThemeMode.light
-                    ? AppIcons.lightTheme
-                    : AppIcons.systemTheme,
-              ),
-              onPressed: () => prefs.theme = mode,
-              child: Text(label),
-            ),
-          const Divider(),
-          Padding(
-            padding: const EdgeInsets.all(Space.s8),
-            child: Text(l.language, style: TextStyles.label),
-          ),
-          for (final (locale, label) in languages(l))
-            MenuItemButton(
-              closeOnActivate: false,
-              leadingIcon: Icon(
-                prefs.locale == locale ? AppIcons.copied : AppIcons.language,
-              ),
-              onPressed: () => prefs.locale = locale,
-              child: Text(label),
-            ),
-          const Divider(),
+            const MenuGroupDivider(),
+          ],
           MenuItemButton(
+            focusNode: first,
             leadingIcon: const Icon(AppIcons.settings),
             onPressed: widget.onSettings ?? () => context.push('/v1/settings'),
             child: Text(l.settings),
           ),
+          _switchRow(l.themeSwitch, ThemeSwitch(preferences: prefs)),
+          _switchRow(l.language, LanguageSwitch(preferences: prefs)),
+          const MenuGroupDivider(),
           MenuItemButton(
             leadingIcon: const Icon(AppIcons.logOut),
             onPressed: widget.onLogOut,
@@ -120,94 +237,49 @@ class _AccountMenuState extends State<AccountMenu> {
               focusNode: focus,
               tooltip: l.account,
               onPressed: toggle,
-              icon: const Icon(AppIcons.account, size: IconSizes.navigation),
+              icon: AccountAvatar(email: widget.email),
             );
           }
           return TextButton(
             key: const Key('account-button'),
             focusNode: focus,
             onPressed: toggle,
+            style: TextButton.styleFrom(
+              padding: const EdgeInsets.all(Space.s8),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(Radii.control),
+              ),
+            ),
             child: Row(
               children: [
-                const Icon(AppIcons.account, size: IconSizes.navigation),
+                AccountAvatar(email: widget.email),
                 const SizedBox(width: Space.s8),
                 Expanded(
-                  child: Text(
-                    widget.email ?? l.account,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        l.account,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyles.body1.copyWith(color: p.text),
+                      ),
+                      if (widget.email != null)
+                        Text(
+                          widget.email!,
+                          key: const Key('account-email'),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyles.caption1.copyWith(color: p.muted),
+                        ),
+                    ],
                   ),
                 ),
-                const Icon(AppIcons.expand, size: IconSizes.action),
               ],
             ),
           );
         },
-      ),
-    );
-  }
-}
-
-class SettingsScreen extends StatelessWidget {
-  const SettingsScreen({super.key});
-  @override
-  Widget build(BuildContext context) {
-    final l = AppLocalizations.of(context);
-    final prefs = PreferencesScope.of(context);
-    return ListenableBuilder(
-      listenable: prefs,
-      builder: (context, _) => SingleChildScrollView(
-        padding: const EdgeInsets.all(Space.s24),
-        child: Align(
-          alignment: Alignment.topLeft,
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: Space.contentMaxWidth),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    BackButton(
-                      onPressed: () => context.canPop()
-                          ? context.pop()
-                          : context.go('/v1/chats'),
-                    ),
-                    const SizedBox(width: Space.s8),
-                    Expanded(
-                      child: Text(l.settings, style: TextStyles.section),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: Space.s24),
-                Text(l.appearance, style: TextStyles.subsection),
-                for (final (mode, label) in themes(l))
-                  ListTile(
-                    title: Text(label),
-                    leading: Icon(
-                      prefs.theme == mode
-                          ? AppIcons.copied
-                          : AppIcons.systemTheme,
-                    ),
-                    onTap: () => prefs.theme = mode,
-                  ),
-                const SizedBox(height: Space.s24),
-                Text(l.language, style: TextStyles.subsection),
-                for (final (locale, label) in languages(l))
-                  ListTile(
-                    title: Text(label),
-                    leading: Icon(
-                      prefs.locale == locale
-                          ? AppIcons.copied
-                          : AppIcons.language,
-                    ),
-                    onTap: () => prefs.locale = locale,
-                  ),
-                const SizedBox(height: Space.s24),
-                Text(l.browserPreferenceNote, style: TextStyles.compact),
-              ],
-            ),
-          ),
-        ),
       ),
     );
   }

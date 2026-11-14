@@ -12,7 +12,7 @@ void main() {
       const Locale('pt', 'BR'),
       const Locale('th'),
     ]) {
-      for (final width in [390.0, 768.0, 800.0, 1024.0, 1300.0, 1440.0]) {
+      for (final width in [390.0, 768.0, 800.0, 900.0, 1024.0, 1300.0, 1440.0]) {
         testWidgets(
           'account ${locale.toLanguageTag()} ${mode.name} ${width.toInt()}',
           (tester) async {

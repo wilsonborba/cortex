@@ -108,6 +108,13 @@ void main() {
             chat.sse(4, 'token', {'text': 'Partial synthetic answer.'}),
           ],
         );
+      // The running chat shows a repeating spinner in the sidebar; Reduce
+      // Motion makes it static so the keyboard flow can settle.
+      tester.platformDispatcher.accessibilityFeaturesTestValue =
+          const FakeAccessibilityFeatures(disableAnimations: true);
+      addTearDown(
+        tester.platformDispatcher.clearAccessibilityFeaturesTestValue,
+      );
       final prefs = Preferences(store: Store());
       final router = buildRouter(
         session: session,
@@ -121,7 +128,7 @@ void main() {
           client: _Client(fake.client, memory.Api().client),
         ),
         emailLoader: () async => 'keyboard.reader@example.test',
-        initialLocation: '/v1/memory',
+        initialLocation: '/v1/settings/memory',
       );
       tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
         SystemChannels.platform,
@@ -207,8 +214,27 @@ void main() {
         find.widgetWithIcon(IconButton, AppIcons.copy).last,
       );
       expect(copied, 'Partial synthetic answer.');
-      await activate(tester, find.widgetWithText(ListTile, 'Memory'));
+      // Memory and theme are in Settings (#62): open it from the account menu.
+      await activate(tester, find.byKey(const Key('account-button')));
+      await activate(
+        tester,
+        find.widgetWithText(MenuItemButton, 'Settings'),
+        direction: LogicalKeyboardKey.arrowDown,
+      );
       await tester.pumpAndSettle();
+      await activate(tester, find.byTooltip('Light'));
+      await tester.pumpAndSettle();
+      expect(prefs.theme, ThemeMode.light);
+      await activate(
+        tester,
+        find.byKey(const Key('settings-tab-/v1/settings/memory')),
+        direction: LogicalKeyboardKey.tab,
+      );
+      await tester.pumpAndSettle();
+      expect(
+        router.routeInformationProvider.value.uri.path,
+        '/v1/settings/memory',
+      );
       final canvas = tester.state<GraphCanvasState>(find.byType(GraphCanvas));
       await seek(tester, find.byType(GraphCanvas), exact: canvas.focus);
       await tester.sendKeyEvent(LogicalKeyboardKey.tab);
@@ -216,25 +242,9 @@ void main() {
       await tester.pumpAndSettle();
       expect(
         router.routeInformationProvider.value.uri.path,
-        '/v1/memory/${memory.memoryId}',
+        '/v1/settings/memory/${memory.memoryId}',
       );
       await activate(tester, find.byKey(const Key('account-button')));
-      await tester.sendKeyEvent(LogicalKeyboardKey.tab);
-      await tester.pump();
-      await activate(
-        tester,
-        find.widgetWithText(MenuItemButton, 'Settings'),
-        direction: LogicalKeyboardKey.arrowDown,
-      );
-      await tester.pumpAndSettle();
-      final light = Focus.of(tester.element(find.text('Light')));
-      await seek(tester, find.text('Light'), exact: light);
-      await tester.sendKeyEvent(LogicalKeyboardKey.enter);
-      await tester.pumpAndSettle();
-      expect(prefs.theme, ThemeMode.light);
-      await activate(tester, find.byKey(const Key('account-button')));
-      await tester.sendKeyEvent(LogicalKeyboardKey.tab);
-      await tester.pump();
       await activate(
         tester,
         find.widgetWithText(MenuItemButton, 'Log out'),

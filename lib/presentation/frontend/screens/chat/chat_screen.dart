@@ -140,7 +140,8 @@ class _ChatScreenState extends State<ChatScreen> {
             Padding(
               padding: const EdgeInsets.only(bottom: Space.s8),
               child: AppCard(
-                onTap: () => GoRouter.maybeOf(context)?.go('/v1/memory/$id'),
+                onTap: () =>
+                    GoRouter.maybeOf(context)?.go('/v1/settings/memory/$id'),
                 child: Text(title, style: TextStyles.compact),
               ),
             ),
@@ -345,7 +346,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   tooltip: l.showInGraph,
                   onPressed: () => GoRouter.maybeOf(
                     context,
-                  )?.go('/v1/memory/${Uri.encodeComponent(nodeId)}'),
+                  )?.go('/v1/settings/memory/${Uri.encodeComponent(nodeId)}'),
                   icon: const Icon(AppIcons.memory, size: IconSizes.action),
                 ),
               if (!chat.isNew && !chat.temporary) ...[

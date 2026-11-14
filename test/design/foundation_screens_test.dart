@@ -97,9 +97,9 @@ void main() {
   setUpAll(loadFonts);
   const screens = {
     'chat': '/v1/chats/${chat.sid}',
-    'memory': '/v1/memory/memory-one',
-    'personas': '/v1/personas',
-    'persona_form': '/v1/personas/p1',
+    'memory': '/v1/settings/memory/memory-one',
+    'personas': '/v1/settings/personas',
+    'persona_form': '/v1/settings/personas/p1',
     'product': '/v1/home',
     'process': '/v1/home/how-it-works',
     'public_memory': '/v1/home/memory',

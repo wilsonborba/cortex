@@ -26,8 +26,9 @@ for path in sorted(root.rglob('*.dart')):
             # selected card); screens may use brand only for selected markers.
             allowed=(name.endswith('/theme/theme.dart') or '/widgets/common/' in name
                 or name.endswith('/screens/memory/graph_canvas.dart') and 'n.id == selected' in context
-                or name.endswith('/screens/chat/chat_list.dart') and 'selected ?' in context
-                or name.endswith('/shell/app_shell.dart') and 'widget.location.startsWith(d.path)' in context)
+                or name.endswith('/screens/chat/chat_list.dart') and re.search(r'selected\s*\?', context)
+                or name.endswith('/shell/app_shell.dart') and re.search(r'selected\s*\?', context)
+                or name.endswith('/shell/settings_page.dart') and re.search(r'selected\s*\?', context))
             if not allowed:fail('Brand is reserved for the Fluent brand places (issue #59, section 2)')
 if errors:
     print('\n'.join(errors));sys.exit(1)

@@ -99,11 +99,11 @@ void main() {
     '/v1/chats',
     '/v1/chats/${chat.sid}',
     '/v1/chats/temporary',
-    '/v1/memory',
-    '/v1/memory/${memory.memoryId}',
-    '/v1/personas',
-    '/v1/personas/new',
-    '/v1/personas/p1',
+    '/v1/settings/memory',
+    '/v1/settings/memory/${memory.memoryId}',
+    '/v1/settings/personas',
+    '/v1/settings/personas/new',
+    '/v1/settings/personas/p1',
     '/v1/settings',
     '/v1/usage',
     '/v1/usage/timing',
@@ -118,6 +118,13 @@ void main() {
           tester.view.physicalSize = Size(width, 1000);
           tester.view.devicePixelRatio = 1;
           addTearDown(tester.view.reset);
+          // A running chat spinner repeats in the sidebar; Reduce Motion
+          // makes it static so the layout can settle.
+          tester.platformDispatcher.accessibilityFeaturesTestValue =
+              const FakeAccessibilityFeatures(disableAnimations: true);
+          addTearDown(
+            tester.platformDispatcher.clearAccessibilityFeaturesTestValue,
+          );
           final session = SessionController(
             service: SessionService(cookieReader: () => 'synthetic-session'),
           );
@@ -171,6 +178,11 @@ void main() {
         tester.view.physicalSize = Size(width, 1000);
         tester.view.devicePixelRatio = 1;
         addTearDown(tester.view.reset);
+        tester.platformDispatcher.accessibilityFeaturesTestValue =
+            const FakeAccessibilityFeatures(disableAnimations: true);
+        addTearDown(
+          tester.platformDispatcher.clearAccessibilityFeaturesTestValue,
+        );
         final session = SessionController(
           service: SessionService(cookieReader: () => 'synthetic-session'),
         );
@@ -208,7 +220,7 @@ void main() {
         for (final route in [
           '/v1/chats',
           '/v1/settings',
-          '/v1/memory/${memory.memoryId}',
+          '/v1/settings/memory/${memory.memoryId}',
         ]) {
           router.go(route);
           await tester.pumpAndSettle();

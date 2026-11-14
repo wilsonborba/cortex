@@ -17,7 +17,7 @@
   "notFoundTitle": "Page not found",
   "notFoundMessage": "This path or item does not exist.",
   "goToChats": "Go to chats",
-  "signingIn": "Opening the login",
+  "signingIn": "Signing you in …",
   "noChatsYet": "No chats yet",
   "output": "Output",
   "product": "Product",
@@ -574,5 +574,10 @@
   "engTechOllama": "Ollama",
   "engTechPostgreSQL": "PostgreSQL",
   "engTechCouchDB": "CouchDB",
-  "engTechValkey": "Valkey"
+  "engTechValkey": "Valkey",
+  "settingsGeneral": "General",
+  "themeDescription": "Use the system theme, the light theme or the dark theme.",
+  "languageDescription": "Select the language of Cortex.",
+  "pinnedChats": "Pinned",
+  "recentChats": "Recent"
 }

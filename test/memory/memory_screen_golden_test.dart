@@ -47,7 +47,9 @@ void main() {
           await fixture.pump(
             tester,
             api,
-            path: mode == 'long' ? '/v1/memory/synthetic-1' : '/v1/memory',
+            path: mode == 'long'
+                ? '/v1/settings/memory/synthetic-1'
+                : '/v1/settings/memory',
             size: Size(width, 1000),
             brightness: brightness,
           );

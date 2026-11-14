@@ -125,20 +125,35 @@ Future<Api> pumpList(WidgetTester tester, [Api? double]) async {
       ),
     ),
   );
-  await tester.pumpAndSettle();
+  await settle(tester);
   return api;
 }
 
+/// A running chat shows a repeating spinner, so the list never settles:
+/// pump one second of frames instead.
+Future<void> settle(WidgetTester tester) async {
+  for (var i = 0; i < 10; i++) {
+    await tester.pump(const Duration(milliseconds: 100));
+  }
+}
+
 List<String> titles(WidgetTester tester) => [
-  for (final t in tester.widgetList<ListTile>(find.byType(ListTile)))
-    (t.title as Text).data!,
+  for (final t in tester.widgetList<Text>(
+    find.byWidgetPredicate(
+      (w) =>
+          w is Text &&
+          w.key is ValueKey<String> &&
+          (w.key! as ValueKey<String>).value.startsWith('chat-title-'),
+    ),
+  ))
+    t.data!,
 ];
 
 Future<void> menu(WidgetTester tester, String id, String item) async {
   await tester.tap(find.byKey(Key('menu-$id')));
-  await tester.pumpAndSettle();
+  await settle(tester);
   await tester.tap(find.text(item).last);
-  await tester.pumpAndSettle();
+  await settle(tester);
 }
 
 void main() {
@@ -149,7 +164,10 @@ void main() {
       // Not sorted by title or time in the UI (31.1).
       expect(titles(tester), ['Zeta pinned', 'Beta recent', 'Alpha old']);
       expect(find.text('2 d ago'), findsOneWidget);
-      expect(find.text('2 min ago'), findsOneWidget);
+      // A running chat shows a 16 px spinner instead of its time (#62, #63).
+      expect(find.text('2 min ago'), findsNothing);
+      expect(find.text('Pinned'), findsOneWidget);
+      expect(find.text('Recent'), findsOneWidget);
       expect(find.text('3 h ago'), findsOneWidget);
       expect(find.byKey(const Key('running-$b')), findsOneWidget);
       expect(find.byKey(const Key('running-$a')), findsNothing);
@@ -169,7 +187,7 @@ void main() {
     await menu(tester, c, 'Rename');
     await tester.enterText(find.byType(TextField), 'Renamed');
     await tester.tap(find.text('Save'));
-    await tester.pumpAndSettle();
+    await settle(tester);
     expect(
       api.requests,
       contains(('PATCH', '/chats/$c', '{"title":"Renamed"}')),
@@ -194,14 +212,14 @@ void main() {
       await menu(tester, c, 'Delete');
       expect(find.text('Delete this chat?'), findsOneWidget);
       await tester.tap(find.widgetWithText(FilledButton, 'Delete').last);
-      await tester.pumpAndSettle();
+      await settle(tester);
       expect(
         find.textContaining('Something went wrong (1501).'),
         findsOneWidget,
       );
       expect(titles(tester), contains('Alpha old'));
       await tester.tap(find.text('Retry'));
-      await tester.pumpAndSettle();
+      await settle(tester);
       expect(api.requests.where((r) => r.$1 == 'DELETE').length, 2);
       expect(titles(tester), isNot(contains('Alpha old')));
     },
@@ -220,7 +238,7 @@ void main() {
       ),
     );
     await tester.pumpWidget(screen());
-    await tester.pumpAndSettle();
+    await settle(tester);
     expect(find.byKey(const Key('temporary-banner')), findsOneWidget);
     expect(
       find.text('Temporary: not saved, lost when you refresh.'),
@@ -228,7 +246,7 @@ void main() {
     );
     expect(find.byKey(const Key('rename')), findsNothing);
     await tester.pumpWidget(screen());
-    await tester.pumpAndSettle();
+    await settle(tester);
     expect(find.byKey(const Key('messages')), findsNothing);
     expect(find.byKey(const Key('temporary-banner')), findsOneWidget);
     // A temporary chat never asks for a saved page.

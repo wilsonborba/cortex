@@ -215,7 +215,7 @@ class _PersonaFormState extends State<PersonaForm> {
         kind: NoticeKind.success,
       );
       if (widget.id == null) {
-        context.go('/v1/personas/${Uri.encodeComponent(result.id)}');
+        context.go('/v1/settings/personas/${Uri.encodeComponent(result.id)}');
       }
     } on ApiError catch (e) {
       if (mounted) {
@@ -254,7 +254,7 @@ class _PersonaFormState extends State<PersonaForm> {
       await widget.api.deletePersona(widget.id!);
       if (!mounted) return;
       widget.onChanged?.call();
-      context.go('/v1/personas');
+      context.go('/v1/settings/personas');
     } on ApiError catch (e) {
       if (mounted) {
         setState(() {
@@ -410,7 +410,9 @@ class _PersonaFormState extends State<PersonaForm> {
                   AppButton(
                     kind: ButtonKind.quiet,
                     label: l.cancel,
-                    onPressed: busy ? null : () => context.go('/v1/personas'),
+                    onPressed: busy
+                        ? null
+                        : () => context.go('/v1/settings/personas'),
                   ),
                   AppButton.primary(
                     key: const Key('save-persona'),
