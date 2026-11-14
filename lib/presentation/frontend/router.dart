@@ -68,6 +68,21 @@ GoRouter buildRouter({
   ) => keys.every((k) => _uuid.hasMatch(s.pathParameters[k] ?? ''))
       ? build()
       : const NotFoundPage();
+  // Public pages follow the session (#75): with a session the header shows
+  // the account menu and "Start a chat" opens the chats with no new login.
+  Widget landing(BuildContext c, {Key? key, String? section}) =>
+      ListenableBuilder(
+        key: key,
+        listenable: session,
+        builder: (c, _) => LandingPage(
+          section: section,
+          signedIn: session.signedIn,
+          onSignIn: () => auth.signIn(returnPath: '/v1/chats'),
+          onOpenApp: () => GoRouter.of(c).go('/v1/chats'),
+          onLogOut: auth.signOut,
+          emailLoader: emailLoader ?? auth.adapter.currentEmail,
+        ),
+      );
   return GoRouter(
     initialLocation: initialLocation,
     refreshListenable: session,
@@ -104,18 +119,14 @@ GoRouter buildRouter({
           from: s.uri.queryParameters['from'] ?? '/v1/chats',
         ),
       ),
-      GoRoute(
-        path: '/v1/home',
-        builder: (_, _) =>
-            LandingPage(onSignIn: () => auth.signIn(returnPath: '/v1/chats')),
-      ),
+      GoRoute(path: '/v1/home', builder: (c, _) => landing(c)),
       // Flat public paths: each page contains only its own subject.
       GoRoute(
         path: '/v1/home/:section',
-        builder: (_, s) => homeSections.contains(s.pathParameters['section'])
-            ? LandingPage(
+        builder: (c, s) => homeSections.contains(s.pathParameters['section'])
+            ? landing(
+                c,
                 key: ValueKey(s.pathParameters['section']),
-                onSignIn: () => auth.signIn(returnPath: '/v1/chats'),
                 section: s.pathParameters['section'],
               )
             : const NotFoundPage(),

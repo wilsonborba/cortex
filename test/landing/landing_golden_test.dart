@@ -68,4 +68,49 @@ void main() {
       });
     }
   }
+  // With a session (#75): the account avatar replaces Log in; menu open.
+  for (final brightness in Brightness.values) {
+    for (final width in [390.0, 1300.0]) {
+      testWidgets('landing signed in ${brightness.name} $width', (
+        tester,
+      ) async {
+        tester.view.physicalSize = Size(width, 420);
+        tester.view.devicePixelRatio = 1;
+        addTearDown(tester.view.reset);
+        final prefs = Preferences();
+        addTearDown(prefs.dispose);
+        await tester.pumpWidget(
+          PreferencesScope(
+            preferences: prefs,
+            child: MaterialApp(
+              debugShowCheckedModeBanner: false,
+              theme: cortexTheme(brightness),
+              localizationsDelegates: AppLocalizations.localizationsDelegates,
+              supportedLocales: AppLocalizations.supportedLocales,
+              home: LandingPage(
+                onSignIn: () {},
+                signedIn: true,
+                onOpenApp: () {},
+                onLogOut: () {},
+                emailLoader: () async => 'ana@example.com',
+              ),
+            ),
+          ),
+        );
+        await tester.runAsync(
+          () => Future<void>.delayed(const Duration(milliseconds: 300)),
+        );
+        await tester.pumpAndSettle();
+        await tester.tap(find.byKey(const Key('landing-account')));
+        await tester.pumpAndSettle();
+        expect(tester.takeException(), isNull);
+        await expectLater(
+          find.byType(MaterialApp),
+          matchesGoldenFile(
+            '../design/goldens/landing_signed_in_${brightness.name}_${width.toInt()}.png',
+          ),
+        );
+      });
+    }
+  }
 }

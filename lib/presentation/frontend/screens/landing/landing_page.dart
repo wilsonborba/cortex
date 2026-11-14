@@ -103,10 +103,36 @@ extension _LandingSectionX on LandingSection {
 }
 
 /// Public subject pages with shared navigation and localized content.
+///
+/// With a session ([signedIn], #75) the header shows the account avatar
+/// instead of "Log in", and "Start a chat" opens the app ([onOpenApp]) with no
+/// new login.
 class LandingPage extends StatelessWidget {
-  const LandingPage({super.key, required this.onSignIn, this.section});
+  const LandingPage({
+    super.key,
+    required this.onSignIn,
+    this.section,
+    this.signedIn = false,
+    this.onOpenApp,
+    this.onLogOut,
+    this.emailLoader,
+  });
+
+  /// Starts the SSO login (no session).
   final VoidCallback onSignIn;
   final String? section;
+
+  /// The browser has a session.
+  final bool signedIn;
+
+  /// Opens the chats (session).
+  final VoidCallback? onOpenApp;
+
+  /// Ends the session (session).
+  final VoidCallback? onLogOut;
+
+  /// Email for the account menu (session).
+  final Future<String?> Function()? emailLoader;
 
   @override
   Widget build(BuildContext context) {
@@ -115,6 +141,8 @@ class LandingPage extends StatelessWidget {
     final current =
         _LandingSectionX.fromSlug(this.section) ?? LandingSection.product;
     void go(LandingSection subject) => context.go(subject.path);
+    // "Start a chat": the app with a session, else the login.
+    final start = signedIn ? (onOpenApp ?? onSignIn) : onSignIn;
     Widget section(LandingSection? key, String title, Widget body) => Padding(
       key: key == null ? null : ValueKey(key),
       padding: const EdgeInsets.only(top: Space.section),
@@ -130,7 +158,17 @@ class LandingPage extends StatelessWidget {
     return Scaffold(
       body: Column(
         children: [
-          LandingHeader(size: size, onSignIn: onSignIn, onSection: go),
+          LandingHeader(
+            size: size,
+            onSignIn: onSignIn,
+            onSection: go,
+            account: signedIn
+                ? LandingAccountMenu(
+                    onLogOut: onLogOut ?? () {},
+                    emailLoader: emailLoader,
+                  )
+                : null,
+          ),
           Expanded(
             child: SingleChildScrollView(
               child: Center(
@@ -146,7 +184,7 @@ class LandingPage extends StatelessWidget {
                         if (current == LandingSection.product) ...[
                           _Hero(
                             size: size,
-                            onSignIn: onSignIn,
+                            onSignIn: start,
                             onHow: () => go(LandingSection.howItWorks),
                           ),
                           section(null, l.whatTitle, _What(size: size)),
@@ -198,7 +236,7 @@ class LandingPage extends StatelessWidget {
                         if (current == LandingSection.product)
                           Padding(
                             padding: const EdgeInsets.only(top: Space.section),
-                            child: _FinalAction(size: size, onSignIn: onSignIn),
+                            child: _FinalAction(size: size, onSignIn: start),
                           ),
                         const _Footer(),
                       ],
@@ -220,10 +258,14 @@ class LandingHeader extends StatelessWidget {
     required this.size,
     required this.onSignIn,
     required this.onSection,
+    this.account,
   });
   final SizeClass size;
   final VoidCallback onSignIn;
   final ValueChanged<LandingSection> onSection;
+
+  /// The account menu that replaces "Log in" when there is a session.
+  final Widget? account;
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
@@ -290,13 +332,82 @@ class LandingHeader extends StatelessWidget {
             ThemeSwitch(preferences: prefs),
             const SizedBox(width: Space.s16),
           ],
-          if (size == SizeClass.compact)
+          if (account != null) ...[
+            if (size == SizeClass.compact) const Spacer(),
+            account!,
+          ] else if (size == SizeClass.compact)
             Expanded(
               child: AppButton(label: l.logIn, onPressed: onSignIn),
             )
           else
             AppButton(label: l.logIn, onPressed: onSignIn),
         ],
+      ),
+    );
+  }
+}
+
+/// Account menu of the landing header with a session (#75): the 32 px
+/// avatar opens a menu with the email and "Log out".
+class LandingAccountMenu extends StatefulWidget {
+  const LandingAccountMenu({
+    super.key,
+    required this.onLogOut,
+    this.emailLoader,
+  });
+  final VoidCallback onLogOut;
+  final Future<String?> Function()? emailLoader;
+  @override
+  State<LandingAccountMenu> createState() => _LandingAccountMenuState();
+}
+
+class _LandingAccountMenuState extends State<LandingAccountMenu> {
+  String? email;
+
+  @override
+  void initState() {
+    super.initState();
+    widget.emailLoader?.call().then((value) {
+      if (mounted && value != null) setState(() => email = value);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
+    final p = Palette.from(context);
+    return MenuAnchor(
+      clipBehavior: Clip.none,
+      style: (Theme.of(context).menuTheme.style ?? const MenuStyle()).copyWith(
+        minimumSize: const WidgetStatePropertyAll(Size(200, 0)),
+      ),
+      menuChildren: [
+        Padding(
+          padding: const EdgeInsets.all(Space.s8),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: Space.menuMaxWidth),
+            child: Text(
+              email ?? l.account,
+              key: const Key('landing-account-email'),
+              style: TextStyles.caption1.copyWith(color: p.muted),
+              softWrap: true,
+            ),
+          ),
+        ),
+        const MenuGroupDivider(),
+        MenuItemButton(
+          key: const Key('landing-log-out'),
+          leadingIcon: const Icon(AppIcons.logOut),
+          onPressed: widget.onLogOut,
+          child: Text(l.logOut),
+        ),
+      ],
+      builder: (context, controller, _) => IconButton(
+        key: const Key('landing-account'),
+        tooltip: l.account,
+        onPressed: () =>
+            controller.isOpen ? controller.close() : controller.open(),
+        icon: AccountAvatar(email: email),
       ),
     );
   }
