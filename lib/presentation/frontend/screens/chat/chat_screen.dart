@@ -385,8 +385,15 @@ class _ChatScreenState extends State<ChatScreen> {
                 return height;
               }
 
-              final footerHeight =
-                  textHeight(l.chatDisclaimer, TextStyles.label) + Space.s8;
+              // AI note under the composer (#64): one line; hidden at compact
+              // width after the first message.
+              final compactWidth =
+                  SizeClass.of(MediaQuery.sizeOf(context).width) ==
+                  SizeClass.compact;
+              final showNote = !(compactWidth && chat.exchanges.isNotEmpty);
+              final footerHeight = showNote
+                  ? textHeight(l.aiNote, TextStyles.caption1) + Space.s8
+                  : 0.0;
               final readingLine = textHeight(' ', TextStyles.body);
               final composerMaxHeight =
                   (limits.maxHeight - footerHeight - readingLine)
@@ -508,20 +515,22 @@ class _ChatScreenState extends State<ChatScreen> {
                       picker: widget.picker ?? pickFiles,
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(
-                      left: Space.s16,
-                      right: Space.s16,
-                      bottom: Space.s8,
+                  if (showNote)
+                    Padding(
+                      padding: const EdgeInsets.only(
+                        left: Space.s16,
+                        right: Space.s16,
+                        bottom: Space.s8,
+                      ),
+                      child: Text(
+                        l.aiNote,
+                        key: const Key('composer-ai-note'),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyles.caption1.copyWith(color: p.muted),
+                        textAlign: TextAlign.center,
+                      ),
                     ),
-                    child: Text(
-                      l.chatDisclaimer,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyles.label.copyWith(color: p.muted),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
                 ],
               );
             },

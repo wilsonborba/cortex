@@ -125,7 +125,7 @@
   "version": "เวอร์ชัน {v}",
   "logoDescription": "โลโก้ Cortex",
   "chatGreeting": "คุณอยากรู้อะไร",
-  "composerHint": "พิมพ์ข้อความ",
+  "composerHint": "ส่งข้อความถึง Cortex",
   "attach": "แนบไฟล์",
   "webLabel": "เว็บ",
   "webOff": "ปิด",

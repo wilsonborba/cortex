@@ -33,6 +33,10 @@
 
 - Fluent 2 chat transcript, answer blocks and wait states (#63)
 
+- Merge Fluent 2 chat transcript and wait states (#63)
+
+- Fluent 2 composer (#64)
+
 
 ### Tests
 

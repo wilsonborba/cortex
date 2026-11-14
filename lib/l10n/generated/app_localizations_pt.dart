@@ -420,7 +420,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get chatGreeting => 'O que você quer saber?';
 
   @override
-  String get composerHint => 'Escreva uma mensagem';
+  String get composerHint => 'Mensagem para o Cortex';
 
   @override
   String get attach => 'Anexar arquivos';

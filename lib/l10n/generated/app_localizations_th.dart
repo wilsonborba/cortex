@@ -410,7 +410,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get chatGreeting => 'คุณอยากรู้อะไร';
 
   @override
-  String get composerHint => 'พิมพ์ข้อความ';
+  String get composerHint => 'ส่งข้อความถึง Cortex';
 
   @override
   String get attach => 'แนบไฟล์';

@@ -139,7 +139,7 @@
     }
   },
   "chatGreeting": "What do you want to know?",
-  "composerHint": "Write a message",
+  "composerHint": "Message Cortex",
   "attach": "Attach files",
   "webLabel": "Web",
   "webOff": "Off",

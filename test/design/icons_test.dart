@@ -341,11 +341,26 @@ final _map = <String, (IconData, IconData, IconData)>{
     FluentIcons.play_20_filled,
     FluentIcons.play_24_filled,
   ),
+  'sendSelected': (
+    AppIcons.sendSelected,
+    FluentIcons.send_20_filled,
+    FluentIcons.send_24_filled,
+  ),
+  'stopSelected': (
+    AppIcons.stopSelected,
+    FluentIcons.stop_20_filled,
+    FluentIcons.stop_24_filled,
+  ),
+  'noteSelected': (
+    AppIcons.noteSelected,
+    FluentIcons.lightbulb_20_filled,
+    FluentIcons.lightbulb_24_filled,
+  ),
 };
 
 void main() {
   test('every AppIcons glyph is the Fluent glyph of the issue 60 table', () {
-    expect(_map, hasLength(70)); // 63 regular and 7 selected
+    expect(_map, hasLength(73)); // 63 regular and 10 selected
     expect(AppIcons.all, unorderedEquals(_map.values.map((e) => e.$1)));
     for (final MapEntry(key: name, value: (icon, glyph, large))
         in _map.entries) {
