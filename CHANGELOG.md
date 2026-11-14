@@ -1,7 +1,7 @@
 # Changelog
 
 
-## Unreleased
+## v2.2.0 - 2026-11-14
 
 
 ### Chores
@@ -13,6 +13,8 @@
 - Merge v2.1.0 back to feature/main
 
 - Refresh the 11 bundled landing images from the updated archive
+
+- Prepare development for v2.2.0
 
 
 ### Features
@@ -67,6 +69,8 @@
 - Merge usage screen screenshots (#60)
 
 - Fluent 2 verification and migration clean up (#69)
+
+- Merge Fluent 2 verification and clean up (#69)
 
 
 ## v2.1.0 - 2026-11-12
