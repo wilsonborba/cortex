@@ -1,5 +1,7 @@
 import '../../theme/app_icons.dart';
 import 'package:flutter/material.dart';
+import '../../theme/theme.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../../core/settings.dart';
@@ -198,32 +200,7 @@ class LandingPage extends StatelessWidget {
                         if (current == LandingSection.product)
                           Padding(
                             padding: const EdgeInsets.only(top: Space.section),
-                            child: Flex(
-                              key: const Key('landing-final-action'),
-                              direction: size == SizeClass.compact
-                                  ? Axis.vertical
-                                  : Axis.horizontal,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                if (size == SizeClass.compact)
-                                  Text(l.finalLine, style: TextStyles.section)
-                                else
-                                  Expanded(
-                                    child: Text(
-                                      l.finalLine,
-                                      style: TextStyles.section,
-                                    ),
-                                  ),
-                                const SizedBox(
-                                  width: Space.s16,
-                                  height: Space.s16,
-                                ),
-                                AppButton.primary(
-                                  label: l.startChat,
-                                  onPressed: onSignIn,
-                                ),
-                              ],
-                            ),
+                            child: _FinalAction(size: size, onSignIn: onSignIn),
                           ),
                         const _Footer(),
                       ],
@@ -359,6 +336,95 @@ class LandingHeader extends StatelessWidget {
   }
 }
 
+/// The 11 landing images, bundled in `assets/images/` (#70). Placement
+/// follows the owner order of 2026-11-14.
+abstract final class LandingImages {
+  static const _dir = 'assets/images';
+  static const backdrop = '$_dir/aurora_backdrop_gradient_unsplash.webp';
+  static const badge = '$_dir/hero_branding_badge_unsplash.webp';
+  static const previewFrame = '$_dir/browser_frame_wireframe_pixabay.svg';
+  static const cardSurface = '$_dir/glassmorphic_card_surface_pexels.webp';
+  static const mobile = '$_dir/mobile_app_mockup_viewport_unsplash.webp';
+  static const play = '$_dir/media_cta_button_freepik.svg';
+  static const ctaTexture = '$_dir/mesh_ambient_wallpaper_pexels.webp';
+  static const workflows = '$_dir/abstract_creativity_vector_undraw.svg';
+  static const ideation = '$_dir/lightbulb_ideation_graphic_undraw.svg';
+  static const multimodal = '$_dir/vision_concept_art_undraw.svg';
+  static const performance = '$_dir/workflow_speed_glyph_freepik.svg';
+}
+
+/// Final call to action (#70): the mesh texture card with the mobile
+/// companion preview, the last line and the primary button.
+class _FinalAction extends StatelessWidget {
+  const _FinalAction({required this.size, required this.onSignIn});
+  final SizeClass size;
+  final VoidCallback onSignIn;
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
+    final p = Palette.from(context);
+    final compact = size == SizeClass.compact;
+    final mobile = ClipRRect(
+      borderRadius: BorderRadius.circular(Radii.dialog),
+      child: Image.asset(
+        LandingImages.mobile,
+        key: const Key('mobile-preview'),
+        width: 96,
+        height: 96,
+        fit: BoxFit.cover,
+        excludeFromSemantics: true,
+      ),
+    );
+    final line = Text(
+      l.finalLine,
+      style: TextStyles.title3.copyWith(color: p.text),
+    );
+    final button = AppButton.primary(label: l.startChat, onPressed: onSignIn);
+    return ClipRRect(
+      key: const Key('landing-final-action'),
+      borderRadius: BorderRadius.circular(Radii.dialog),
+      child: Stack(
+        children: [
+          Positioned.fill(child: ColoredBox(color: p.surface)),
+          Positioned.fill(
+            child: Opacity(
+              opacity: 0.35,
+              child: Image.asset(
+                LandingImages.ctaTexture,
+                fit: BoxFit.cover,
+                excludeFromSemantics: true,
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(Space.s24),
+            child: compact
+                ? Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      mobile,
+                      const SizedBox(height: Space.s16),
+                      line,
+                      const SizedBox(height: Space.s16),
+                      button,
+                    ],
+                  )
+                : Row(
+                    children: [
+                      mobile,
+                      const SizedBox(width: Space.s24),
+                      Expanded(child: line),
+                      const SizedBox(width: Space.s16),
+                      button,
+                    ],
+                  ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _Hero extends StatelessWidget {
   const _Hero({
     required this.size,
@@ -375,7 +441,19 @@ class _Hero extends StatelessWidget {
     final text = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(l.heroLabel, style: TextStyles.label.copyWith(color: p.muted)),
+        // Hero brand badge (#70, owner placement).
+        ClipRRect(
+          borderRadius: BorderRadius.circular(Radii.dialog),
+          child: Image.asset(
+            LandingImages.badge,
+            key: const Key('hero-badge'),
+            height: Space.s56,
+            fit: BoxFit.cover,
+            excludeFromSemantics: true,
+          ),
+        ),
+        const SizedBox(height: Space.s16),
+        Text(l.heroLabel, style: TextStyles.caption1.copyWith(color: p.muted)),
         const SizedBox(height: Space.s12),
         Semantics(
           header: true,
@@ -391,7 +469,7 @@ class _Hero extends StatelessWidget {
           constraints: const BoxConstraints(maxWidth: 560),
           child: Text(
             l.heroLead,
-            style: TextStyles.body.copyWith(color: p.muted),
+            style: TextStyles.body1.copyWith(color: p.text2),
           ),
         ),
         const SizedBox(height: Space.s24),
@@ -404,10 +482,57 @@ class _Hero extends StatelessWidget {
               label: l.startChat,
               onPressed: onSignIn,
             ),
-            AppButton(label: l.seeHow, onPressed: onHow),
+            // Secondary button with the demo play icon (#70).
+            TextButton.icon(
+              key: const Key('see-how'),
+              style: buttonStyle(
+                p,
+                ButtonAppearance.secondary,
+                size: ButtonSize.of(size),
+              ),
+              onPressed: onHow,
+              icon: SvgPicture.asset(
+                LandingImages.play,
+                width: IconSizes.action,
+                height: IconSizes.action,
+                excludeFromSemantics: true,
+                // The glyph is white; it takes the button text color.
+                colorFilter: ColorFilter.mode(p.text, BlendMode.srcIn),
+              ),
+              label: Text(l.seeHow),
+            ),
           ],
         ),
       ],
+    );
+    // The demo on the ambient backdrop, with the preview frame controls.
+    final demo = ClipRRect(
+      key: const Key('hero-visual'),
+      borderRadius: BorderRadius.circular(Radii.dialog),
+      child: DecoratedBox(
+        decoration: const BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage(LandingImages.backdrop),
+            fit: BoxFit.cover,
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(Space.s20),
+          child: Column(
+            children: [
+              const ChatDemo(),
+              const SizedBox(height: Space.s12),
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 360),
+                child: SvgPicture.asset(
+                  LandingImages.previewFrame,
+                  excludeFromSemantics: true,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
     return Padding(
       padding: const EdgeInsets.only(top: Space.s48),
@@ -417,7 +542,7 @@ class _Hero extends StatelessWidget {
               children: [
                 Expanded(child: text),
                 const SizedBox(width: Space.s32),
-                const Expanded(child: ChatDemo()),
+                Expanded(child: demo),
               ],
             )
           : Column(
@@ -425,7 +550,7 @@ class _Hero extends StatelessWidget {
               children: [
                 text,
                 const SizedBox(height: Space.s32),
-                const ChatDemo(),
+                demo,
               ],
             ),
     );
@@ -439,18 +564,65 @@ class _What extends StatelessWidget {
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
     final p = Palette.from(context);
-    Widget block(String title, String text, Widget ui) => SizedBox(
+    // Feature cards (#70): Fluent card, radius 8, an illustration on top;
+    // the first card has the glass surface texture.
+    Widget block(
+      String title,
+      String text,
+      Widget ui,
+      String art, {
+      bool primary = false,
+    }) => SizedBox(
       width: size == SizeClass.compact ? double.infinity : 270,
       child: AppCard(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(title, style: TextStyles.subsection),
-            const SizedBox(height: Space.s8),
-            Text(text, style: TextStyles.compact.copyWith(color: p.muted)),
-            const SizedBox(height: Space.s12),
-            ui,
-          ],
+        radius: Radii.dialog,
+        padding: EdgeInsets.zero,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(Radii.dialog),
+          child: Stack(
+            children: [
+              if (primary)
+                Positioned.fill(
+                  child: Opacity(
+                    opacity: 0.18,
+                    child: Image.asset(
+                      LandingImages.cardSurface,
+                      fit: BoxFit.cover,
+                      excludeFromSemantics: true,
+                    ),
+                  ),
+                ),
+              Padding(
+                padding: const EdgeInsets.all(Space.s16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(
+                      height: Space.s56,
+                      child: SvgPicture.asset(
+                        art,
+                        fit: BoxFit.contain,
+                        alignment: Alignment.centerLeft,
+                        excludeFromSemantics: true,
+                      ),
+                    ),
+                    const SizedBox(height: Space.s12),
+                    Text(
+                      title,
+                      style: TextStyles.subtitle2.copyWith(color: p.text),
+                    ),
+                    const SizedBox(height: Space.s8),
+                    Text(
+                      text,
+                      style: TextStyles.body1.copyWith(color: p.text2),
+                    ),
+                    const SizedBox(height: Space.s12),
+                    ui,
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -474,6 +646,8 @@ class _What extends StatelessWidget {
               ),
             ],
           ),
+          LandingImages.workflows,
+          primary: true,
         ),
         block(
           l.whatWeb,
@@ -486,6 +660,7 @@ class _What extends StatelessWidget {
               AppChip(label: l.webDeep, onSelected: (_) {}),
             ],
           ),
+          LandingImages.performance,
         ),
         block(
           l.whatFiles,
@@ -505,6 +680,7 @@ class _What extends StatelessWidget {
               ),
             ],
           ),
+          LandingImages.multimodal,
         ),
         block(
           l.whatThinking,
@@ -516,6 +692,7 @@ class _What extends StatelessWidget {
                 NoticeLine(message: '${l.stepThinking}: $r'),
             ],
           ),
+          LandingImages.ideation,
         ),
       ],
     );

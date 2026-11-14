@@ -1,6 +1,7 @@
 import '../../theme/app_icons.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
+import '../../theme/theme.dart';
 import 'dart:math' as math;
 import '../../../../domain/models/memory_graph.dart';
 import '../memory/graph_canvas.dart';
@@ -205,4 +206,35 @@ class ExampleGraph extends StatelessWidget {
       ),
     );
   }
+}
+
+/// Engineering diagram frame (#70): the neutral dark canvas `#1C1C1E`,
+/// radius 8, a subtle 1 px border, and the Fluent dark palette inside for
+/// high contrast text in both themes.
+class DiagramCanvas extends StatelessWidget {
+  const DiagramCanvas({super.key, required this.child});
+  final Widget child;
+  @override
+  Widget build(BuildContext context) => Theme(
+    data: cortexTheme(Brightness.dark),
+    child: Builder(
+      builder: (context) => Container(
+        key: const Key('diagram-canvas'),
+        width: double.infinity,
+        padding: const EdgeInsets.all(Space.s24),
+        decoration: BoxDecoration(
+          color: DiagramPalette.canvas,
+          borderRadius: BorderRadius.circular(Radii.dialog),
+          border: Border.all(color: Palette.from(context).divider),
+        ),
+        child: DefaultTextStyle.merge(
+          style: TextStyle(color: Palette.from(context).text),
+          child: IconTheme.merge(
+            data: IconThemeData(color: Palette.from(context).text),
+            child: child,
+          ),
+        ),
+      ),
+    ),
+  );
 }

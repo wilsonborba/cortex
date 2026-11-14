@@ -12,6 +12,8 @@
 
 - Merge v2.1.0 back to feature/main
 
+- Refresh the 11 bundled landing images from the updated archive
+
 
 ### Features
 
@@ -48,6 +50,12 @@
 - Merge master and detail personas (#66)
 
 - Fluent 2 usage tabs, cards and tables (#67)
+
+- Merge Fluent 2 usage tabs, cards and tables (#67)
+
+- Bundle the 11 landing images from the local asset archive
+
+- Fluent 2 landing and engineering pages with bundled assets (#70)
 
 
 ### Tests
