@@ -347,7 +347,7 @@ class _PersonasPageState extends State<PersonasPage> {
 
 /// The persona detail (#66): 64 px avatar, name `title3`, type and aliases,
 /// the attributes as a 2 column grid of facts, "Used in" from the memory
-/// overview, and the actions Edit and Delete.
+/// items search, and the actions Edit and Delete.
 class PersonaDetail extends StatefulWidget {
   const PersonaDetail({
     super.key,
@@ -391,19 +391,10 @@ class _PersonaDetailState extends State<PersonaDetail> {
       if (mounted) setState(() => error = const ApiError(0, null, ''));
       return;
     }
-    // "Used in": the people facet of the memory overview (cortex_api #121).
+    // "Used in": the items search of the memory screen (cortex #73).
     try {
-      final overview = await widget.api.memoryOverview();
-      final name = persona!.name.trim().toLowerCase();
-      final aliases = persona!.aliases.map((a) => a.trim().toLowerCase());
-      final hit = overview.peopleFacet
-          .where(
-            (f) =>
-                f.label.trim().toLowerCase() == name ||
-                aliases.contains(f.label.trim().toLowerCase()),
-          )
-          .firstOrNull;
-      if (mounted) setState(() => mentions = hit?.count ?? 0);
+      final count = await usedInCount(widget.api, persona!);
+      if (mounted) setState(() => mentions = count);
     } catch (_) {}
   }
 
@@ -597,6 +588,36 @@ class _PersonaDetailState extends State<PersonaDetail> {
       ),
     );
   }
+}
+
+/// The most search terms for "Used in": the name and the first aliases.
+const usedInTerms = 3;
+
+/// The number of memories that mention [persona] (cortex #73). One
+/// `GET /memory-graph/items` call with `q` for the name and for each alias,
+/// up to [usedInTerms] terms. A memory found by two terms counts once. When
+/// a term has more matches than one page, its `total` is the lower limit.
+Future<int> usedInCount(CortexApi api, Persona persona) async {
+  final terms = <String>[];
+  for (final t in [persona.name, ...persona.aliases]) {
+    final term = t.trim();
+    if (term.isEmpty) continue;
+    if (terms.any((x) => x.toLowerCase() == term.toLowerCase())) continue;
+    terms.add(term);
+    if (terms.length == usedInTerms) break;
+  }
+  final pages = await Future.wait([
+    for (final t in terms) api.memoryItems(query: t),
+  ]);
+  final ids = {
+    for (final page in pages)
+      for (final item in page.items) item.id,
+  };
+  var count = ids.length;
+  for (final page in pages) {
+    if (page.total > count) count = page.total;
+  }
+  return count;
 }
 
 /// Up to two initials of a name, for the avatar.

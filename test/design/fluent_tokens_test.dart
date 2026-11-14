@@ -118,7 +118,7 @@ void main() {
         l.dangerForeground,
         c(0xB10E1C),
         d.dangerForeground,
-        c(0xDC626D),
+        c(0xE37D80),
       ),
       'dangerBorder': (
         l.dangerBorder,

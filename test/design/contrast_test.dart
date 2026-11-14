@@ -56,8 +56,8 @@ void main() {
         'text on warning background': (p.text, p.warningBackground),
         'text on danger background': (p.text, p.dangerBackground),
         'text on success background': (p.text, p.successBackground),
-        // Dark: 4.16:1, known exception, owner decision in cortex #71.
-        if (name == 'light') 'danger on raised': (p.dangerForeground, p.raised),
+        // Dark value #E37D80 is the owner decision in cortex #71.
+        'danger on raised': (p.dangerForeground, p.raised),
         'danger on surface': (p.dangerForeground, p.surface),
       };
       for (final MapEntry(key: label, value: (fg, bg)) in pairs.entries) {
@@ -96,13 +96,6 @@ void main() {
       expect(contrast(p.text2, p.surface), greaterThanOrEqualTo(3));
     });
   }
-  test('known exception cortex #71: dark danger text on raised', () {
-    // Remove this test and the exception above when #71 is decided.
-    expect(
-      contrast(Palette.dark.dangerForeground, Palette.dark.raised),
-      greaterThanOrEqualTo(4),
-    );
-  });
   test('engineering diagram canvas (#70): dark palette text on #1C1C1E', () {
     const d = Palette.dark;
     for (final fg in [d.text, d.text2, d.muted]) {

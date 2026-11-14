@@ -1,6 +1,27 @@
 # Changelog
 
 
+## v2.2.2 - 2026-11-14
+
+
+### Bug Fixes
+
+- Make dark danger text pass 4.5:1 on raised surfaces
+
+- Find Used in memories with the items search
+
+
+### Chores
+
+- Merge v2.2.1 back to release/v2.2.1
+
+- Merge v2.2.1 back to development
+
+- Merge v2.2.1 back to feature/main
+
+- Prepare development for v2.2.2
+
+
 ## v2.2.1 - 2026-11-14
 
 
@@ -20,6 +41,10 @@
 - Merge v2.2.0 back to feature/main
 
 - Prepare development for v2.2.1
+
+- Prepare v2.2.1
+
+- Release v2.2.1
 
 
 ## v2.2.0 - 2026-11-14
