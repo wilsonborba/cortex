@@ -30,7 +30,7 @@ This is representative review, not a claim that every PNG was inspected.
 | No card around every content block | PASS |
 | One primary action in a work view | PASS |
 | Accent only on the primary action and selected markers | PASS |
-| Consistent Lucide icons, no emoji icons | PASS |
+| Consistent Fluent UI System Icons (#60), no emoji icons | PASS |
 | Synthetic screenshots, no real account or chat data | PASS |
 | Work text aligns to the start | PASS |
 | Busy buttons keep their label footprint | PASS, automated |

@@ -153,7 +153,7 @@ void main() {
       expect(find.text('3 h ago'), findsOneWidget);
       expect(find.byKey(const Key('running-$b')), findsOneWidget);
       expect(find.byKey(const Key('running-$a')), findsNothing);
-      expect(find.byIcon(AppIcons.pin), findsOneWidget);
+      expect(find.byIcon(AppIcons.pinSelected), findsOneWidget);
     },
   );
 

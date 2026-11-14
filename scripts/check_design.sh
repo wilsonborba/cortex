@@ -11,7 +11,7 @@ for path in sorted(root.rglob('*.dart')):
     name=path.as_posix();text=path.read_text();lines=text.splitlines()
     for i,line in enumerate(lines):
         def fail(reason):errors.append(f'{name}:{i+1}: {reason}')
-        if re.search(r'\b(?:Icons|LucideIcons)\.',line) and not name.endswith('/theme/app_icons.dart'):
+        if re.search(r'\b(?:Icons|FluentIcons)\.',line) and not name.endswith('/theme/app_icons.dart'):
             fail('Use the central icon map')
         if re.search(r'Color\s*\(\s*0x|Color\.from(?:RGBO|ARGB)\s*\(|Colors\.(?!transparent\b)[a-z]',line) and not name.endswith('/theme/tokens.dart'):
             fail('Use a color token')

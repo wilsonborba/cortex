@@ -183,7 +183,11 @@ class _ChatListState extends State<ChatList> {
                 ),
               ),
               leading: chat['is_pinned'] == true
-                  ? Icon(AppIcons.pin, size: IconSizes.chip, color: p.muted)
+                  ? Icon(
+                      AppIcons.pinSelected,
+                      size: IconSizes.chip,
+                      color: p.muted,
+                    )
                   : null,
               title: Text(
                 '${chat['title']}',
