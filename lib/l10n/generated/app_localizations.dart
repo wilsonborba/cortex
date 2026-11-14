@@ -853,7 +853,7 @@ abstract class AppLocalizations {
   /// No description provided for @composerHint.
   ///
   /// In en, this message translates to:
-  /// **'Write a message'**
+  /// **'Message Cortex'**
   String get composerHint;
 
   /// No description provided for @attach.

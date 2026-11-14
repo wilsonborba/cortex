@@ -416,7 +416,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get chatGreeting => 'What do you want to know?';
 
   @override
-  String get composerHint => 'Write a message';
+  String get composerHint => 'Message Cortex';
 
   @override
   String get attach => 'Attach files';

@@ -512,6 +512,27 @@ abstract final class AppIcons {
     fontPackage: _package,
   );
 
+  /// `FluentIcons.send_20_filled` (selected state)
+  static const sendSelected = IconData(
+    0xF6A2,
+    fontFamily: _filled,
+    fontPackage: _package,
+  );
+
+  /// `FluentIcons.stop_20_filled` (selected state)
+  static const stopSelected = IconData(
+    0xF742,
+    fontFamily: _filled,
+    fontPackage: _package,
+  );
+
+  /// `FluentIcons.lightbulb_20_filled` (selected state)
+  static const noteSelected = IconData(
+    0xF4E0,
+    fontFamily: _filled,
+    fontPackage: _package,
+  );
+
   /// Every 20 px icon above with its 24 px glyph of the same name.
   static final Map<IconData, IconData> _large = {
     success: const IconData(
@@ -624,6 +645,21 @@ abstract final class AppIcons {
     play: const IconData(0xF606, fontFamily: _regular, fontPackage: _package),
     playSelected: const IconData(
       0xF610,
+      fontFamily: _filled,
+      fontPackage: _package,
+    ),
+    sendSelected: const IconData(
+      0xF6A3,
+      fontFamily: _filled,
+      fontPackage: _package,
+    ),
+    stopSelected: const IconData(
+      0xF743,
+      fontFamily: _filled,
+      fontPackage: _package,
+    ),
+    noteSelected: const IconData(
+      0xF4E1,
       fontFamily: _filled,
       fontPackage: _package,
     ),
