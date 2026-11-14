@@ -71,11 +71,7 @@ class _PersonaListState extends State<PersonaList> {
         ])
           ButtonSegment(
             value: value,
-            label: Text(
-              label,
-              style: TextStyles.label,
-              textAlign: TextAlign.center,
-            ),
+            label: Text(label, textAlign: TextAlign.center),
           ),
       ],
       selected: {personas.type ?? 'all'},
@@ -144,7 +140,7 @@ class _PersonaListState extends State<PersonaList> {
             },
           ),
         ),
-        if (personas.loading && items != null) const LinearProgressIndicator(),
+        if (personas.loading && items != null) const AppProgressBar(),
         if (personas.error != null && items != null)
           Padding(
             padding: const EdgeInsets.all(Space.s12),

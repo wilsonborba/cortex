@@ -17,23 +17,34 @@ void main() {
         p.text.withValues(alpha: .25),
       );
       expect(theme.textSelectionTheme.selectionHandleColor, p.text);
+      // Fluent brand places and component roles (#61).
       const selected = {WidgetState.selected};
-      expect(theme.switchTheme.trackColor!.resolve(selected), p.text);
-      expect(theme.switchTheme.thumbColor!.resolve(selected), p.background);
+      expect(
+        theme.switchTheme.trackColor!.resolve(selected),
+        p.brandBackground,
+      );
+      expect(theme.switchTheme.thumbColor!.resolve(selected), p.onBrand);
+      expect(
+        theme.checkboxTheme.fillColor!.resolve(selected),
+        p.brandBackground,
+      );
+      expect(theme.progressIndicatorTheme.color, p.brandBackground);
       expect(
         theme.segmentedButtonTheme.style!.backgroundColor!.resolve(selected),
-        p.text,
+        p.selected,
       );
       expect(
         theme.segmentedButtonTheme.style!.foregroundColor!.resolve(selected),
-        p.background,
+        p.text,
       );
-      expect(theme.chipTheme.selectedColor, p.text);
-      expect(theme.chipTheme.secondaryLabelStyle!.color, p.background);
+      expect(theme.chipTheme.selectedColor, p.selected);
+      expect(theme.chipTheme.backgroundColor, p.tagBackground);
       final border =
-          theme.inputDecorationTheme.focusedBorder! as OutlineInputBorder;
-      expect(border.borderSide.color, p.text);
-      expect(border.borderSide.width, 2);
+          theme.inputDecorationTheme.focusedBorder! as FluentInputBorder;
+      expect(border.focus, p.brandStroke1);
+      expect(border.focused, isTrue);
+      expect(border.side.color, p.stroke);
+      expect(border.bottom.color, p.strokeAccessible);
     });
   }
 

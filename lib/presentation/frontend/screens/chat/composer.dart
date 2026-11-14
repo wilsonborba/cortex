@@ -7,9 +7,11 @@ import '../../../../l10n/generated/app_localizations.dart';
 import '../../handlers/api_action.dart';
 import '../../handlers/process_messages.dart';
 import '../../theme/app_icons.dart';
+import '../../theme/theme.dart';
 import '../../theme/tokens.dart';
 import '../../widgets/common/buttons.dart';
 import '../../widgets/common/surfaces.dart';
+import '../../widgets/common/progress.dart';
 
 class Composer extends StatefulWidget {
   const Composer({super.key, required this.chat, this.picker = pickFiles});
@@ -147,6 +149,7 @@ class ComposerState extends State<Composer> {
   Widget _options(AppLocalizations l) {
     final chat = widget.chat, o = widget.chat.options;
     return MenuAnchor(
+      clipBehavior: Clip.none,
       childFocusNode: _optionsFocus,
       menuChildren: [
         for (final (mode, label) in _webChoices(l))
@@ -213,10 +216,20 @@ class ComposerState extends State<Composer> {
     );
   }
 
+  /// Width of the Send and Stop slot: the wider label, the icon, the gap and
+  /// the padding of the Fluent button size in use (#61).
   double _actionWidth(BuildContext context, AppLocalizations l) {
+    final button = ButtonSize.of(
+      SizeClass.of(MediaQuery.sizeOf(context).width),
+    );
     double width(String label) {
       final painter = TextPainter(
-        text: TextSpan(text: label, style: TextStyles.label),
+        text: TextSpan(
+          text: label,
+          style: button == ButtonSize.small
+              ? TextStyles.caption1Strong
+              : TextStyles.body1Strong,
+        ),
         textDirection: Directionality.of(context),
         textScaler: MediaQuery.textScalerOf(context),
       )..layout();
@@ -227,9 +240,10 @@ class ComposerState extends State<Composer> {
 
     final send = width(l.send), stop = width(l.stop);
     return (send > stop ? send : stop) +
-        IconSizes.action +
-        Space.s8 +
-        Space.s32;
+        button.icon +
+        button.gap +
+        button.padding.horizontal +
+        2 * Controls.border;
   }
 
   double _menuWidth(BuildContext context, String label, double maximum) {
@@ -319,24 +333,10 @@ class ComposerState extends State<Composer> {
                                     maxWidth: box.maxWidth - Space.s24,
                                   ),
                                   child: InputChip(
+                                    visualDensity: Controls.tagDensity,
                                     key: Key('file-${file.name}'),
                                     avatar: file.uploading
-                                        ? SizedBox.square(
-                                            dimension: IconSizes.chip,
-                                            child:
-                                                MediaQuery.disableAnimationsOf(
-                                                  context,
-                                                )
-                                                ? const Icon(
-                                                    AppIcons.loading,
-                                                    size: IconSizes.chip,
-                                                  )
-                                                : CircularProgressIndicator(
-                                                    strokeWidth:
-                                                        Controls.border,
-                                                    color: p.muted,
-                                                  ),
-                                          )
+                                        ? const AppSpinner()
                                         : Icon(
                                             file.errorNumber == null
                                                 ? AppIcons.file
@@ -509,7 +509,7 @@ class ComposerState extends State<Composer> {
                                 ),
                         ),
                         const SizedBox(width: Space.s8),
-                        Tooltip(
+                        AppTooltip(
                           message: reason ?? (running ? l.stop : l.send),
                           child: SizedBox(
                             key: const Key('composer-action-slot'),

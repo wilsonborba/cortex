@@ -6,6 +6,8 @@ import '../../../../domain/models/memory_graph.dart';
 import '../../../../l10n/generated/app_localizations.dart';
 import '../../theme/tokens.dart';
 import '../chat/chat_list.dart';
+import '../../widgets/common/toast.dart';
+import '../../widgets/common/states.dart' show NoticeKind;
 
 IconData nodeIcon(String type) => switch (type) {
   'memory' => AppIcons.document,
@@ -148,6 +150,7 @@ class MemoryCard extends StatelessWidget {
         section(l.linkedPersonas, [
           for (final persona in personas)
             ActionChip(
+              visualDensity: Controls.tagDensity,
               avatar: ExcludeSemantics(
                 child: CircleAvatar(
                   radius: 12,
@@ -162,7 +165,6 @@ class MemoryCard extends StatelessWidget {
                 persona.label,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: TextStyles.compact.copyWith(color: p.text),
               ),
               onPressed: () => onOpen?.call(persona.id),
             ),
@@ -170,20 +172,18 @@ class MemoryCard extends StatelessWidget {
         section(l.linkedFiles, [
           for (final f in files)
             ActionChip(
-              avatar: const Icon(AppIcons.file, size: IconSizes.action),
-              label: Text(f.label, style: TextStyles.label),
+              visualDensity: Controls.tagDensity,
+              avatar: const Icon(AppIcons.file),
+              label: Text(f.label),
               onPressed: () => onOpen?.call(f.id),
             ),
         ]),
         section(l.linkedMemories, [
           for (final n in memories)
             ActionChip(
-              avatar: const Icon(AppIcons.note, size: IconSizes.action),
-              label: Text(
-                n.label,
-                style: TextStyles.label,
-                overflow: TextOverflow.ellipsis,
-              ),
+              visualDensity: Controls.tagDensity,
+              avatar: const Icon(AppIcons.note),
+              label: Text(n.label, overflow: TextOverflow.ellipsis),
               onPressed: () => onOpen?.call(n.id),
             ),
         ]),
@@ -219,9 +219,11 @@ class MemoryCard extends StatelessWidget {
                   icon: const Icon(AppIcons.copy, size: IconSizes.action),
                   onPressed: () {
                     Clipboard.setData(ClipboardData(text: node.id));
-                    ScaffoldMessenger.maybeOf(
+                    showToast(
                       context,
-                    )?.showSnackBar(SnackBar(content: Text(l.copied)));
+                      message: l.copied,
+                      kind: NoticeKind.success,
+                    );
                   },
                 ),
               ],

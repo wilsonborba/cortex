@@ -260,7 +260,10 @@ class _DemoTranscript extends StatelessWidget {
                     spacing: Space.s8,
                     children: [
                       for (final m in s.memories)
-                        Chip(label: Text(m, style: TextStyles.label)),
+                        Chip(
+                          visualDensity: Controls.tagDensity,
+                          label: Text(m),
+                        ),
                     ],
                   ),
                 const SizedBox(height: Space.s8),

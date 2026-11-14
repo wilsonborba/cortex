@@ -13,6 +13,7 @@ import '../../../../l10n/generated/app_localizations.dart';
 import '../../theme/tokens.dart';
 import '../../widgets/common/states.dart';
 import 'step_text.dart';
+import '../../widgets/common/toast.dart';
 
 /// The security block number (area 9.5): shown with a shield icon, no emoji (C1).
 const securityBlock = 1014;
@@ -126,19 +127,7 @@ class _OutputBlockState extends State<OutputBlock> {
                             message: statusText,
                             child: Row(
                               children: [
-                                SizedBox.square(
-                                  dimension: IconSizes.chip,
-                                  child: MediaQuery.disableAnimationsOf(context)
-                                      ? Icon(
-                                          AppIcons.loading,
-                                          size: IconSizes.chip,
-                                          color: p.muted,
-                                        )
-                                      : CircularProgressIndicator(
-                                          strokeWidth: Controls.border,
-                                          color: p.muted,
-                                        ),
-                                ),
+                                const AppSpinner(),
                                 const SizedBox(width: Space.s8),
                                 Expanded(
                                   child: Text(
@@ -189,13 +178,10 @@ class _OutputBlockState extends State<OutputBlock> {
                       for (final (index, (title, url)) in o.sources.indexed)
                         SelectionContainer.disabled(
                           child: ActionChip(
-                            avatar: const Icon(
-                              AppIcons.web,
-                              size: IconSizes.action,
-                            ),
+                            visualDensity: Controls.tagDensity,
+                            avatar: const Icon(AppIcons.web),
                             label: Text(
                               '[${index + 1}] $title · ${Uri.tryParse(url)?.host ?? url}',
-                              style: TextStyles.label,
                               overflow: TextOverflow.ellipsis,
                             ),
                             onPressed: () => launchUrl(
@@ -494,16 +480,10 @@ class _CopyMessageButtonState extends State<CopyMessageButton> {
                   await Clipboard.setData(ClipboardData(text: widget.text));
                 } catch (_) {
                   if (!context.mounted) return;
-                  ScaffoldMessenger.maybeOf(context)?.showSnackBar(
-                    SnackBar(
-                      content: Semantics(
-                        liveRegion: true,
-                        child: NoticeLine(
-                          message: l.copyFailed,
-                          kind: NoticeKind.error,
-                        ),
-                      ),
-                    ),
+                  showToast(
+                    context,
+                    message: l.copyFailed,
+                    kind: NoticeKind.error,
                   );
                   return;
                 }

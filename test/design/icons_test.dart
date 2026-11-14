@@ -7,6 +7,11 @@ const _families = {'FluentSystemIcons-Regular', 'FluentSystemIcons-Filled'};
 
 /// The icon map of issue #60: AppIcons name, Fluent 20 px glyph, 24 px glyph.
 final _map = <String, (IconData, IconData, IconData)>{
+  'success': (
+    AppIcons.success,
+    FluentIcons.checkmark_circle_20_regular,
+    FluentIcons.checkmark_circle_24_regular,
+  ),
   'chats': (
     AppIcons.chats,
     FluentIcons.chat_multiple_20_regular,
@@ -340,7 +345,7 @@ final _map = <String, (IconData, IconData, IconData)>{
 
 void main() {
   test('every AppIcons glyph is the Fluent glyph of the issue 60 table', () {
-    expect(_map, hasLength(69)); // 62 regular and 7 selected
+    expect(_map, hasLength(70)); // 63 regular and 7 selected
     expect(AppIcons.all, unorderedEquals(_map.values.map((e) => e.$1)));
     for (final MapEntry(key: name, value: (icon, glyph, large))
         in _map.entries) {
@@ -349,6 +354,10 @@ void main() {
       expect(_families, contains(icon.fontFamily), reason: name);
       expect(icon.fontPackage, 'fluentui_system_icons');
     }
+  });
+
+  test('checkbox mark is the 12 px filled checkmark', () {
+    expect(AppIcons.checkboxMark, FluentIcons.checkmark_12_filled);
   });
 
   test('regular by default, filled for the selected state', () {

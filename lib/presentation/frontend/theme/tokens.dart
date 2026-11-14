@@ -448,6 +448,13 @@ abstract final class Controls {
   /// Tap area at compact width, not the visual size.
   static const minTouch = 44.0;
   static const border = Strokes.thin;
+
+  /// Fluent small tags are 24 px high. Flutter chips have a 32 px minimum
+  /// that the chip theme cannot change. The chip applies half of the
+  /// density size change, so -4 (16 px) removes 8 px.
+  static const tagDensity = VisualDensity(
+    vertical: VisualDensity.minimumDensity,
+  );
   static const focusRing = Strokes.thick;
 }
 

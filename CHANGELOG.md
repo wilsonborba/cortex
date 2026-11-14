@@ -23,10 +23,14 @@
 
 - Merge Fluent UI System Icons (#60)
 
+- Fluent 2 component themes and shared widgets (#61)
+
 
 ### Tests
 
 - Add usage screen screenshots to the screen goldens (#60)
+
+- Merge usage screen screenshots (#60)
 
 
 ## v2.1.0 - 2026-11-12
