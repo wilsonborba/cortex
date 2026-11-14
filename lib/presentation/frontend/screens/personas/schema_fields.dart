@@ -5,6 +5,8 @@ import 'package:intl/intl.dart';
 import '../../../../domain/models/persona.dart';
 import '../../../../l10n/generated/app_localizations.dart';
 import '../../theme/tokens.dart';
+import '../../widgets/common/buttons.dart';
+import '../../widgets/common/surfaces.dart';
 
 String personaValue(Object? value, AppLocalizations l) {
   if (value == null) return '';
@@ -363,8 +365,8 @@ class _ListFieldState extends State<ListField> {
         builder: (context) {
           final l = AppLocalizations.of(context);
           return StatefulBuilder(
-            builder: (context, refresh) => AlertDialog(
-              title: Text(widget.label),
+            builder: (context, refresh) => AppDialog(
+              title: widget.label,
               content: SizedBox(
                 width: 480,
                 child: SingleChildScrollView(
@@ -392,13 +394,13 @@ class _ListFieldState extends State<ListField> {
                 ),
               ),
               actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: Text(l.cancel),
-                ),
-                TextButton(
+                AppButton.primary(
+                  label: l.addPersonaItem,
                   onPressed: () => Navigator.pop(context, fields),
-                  child: Text(l.addPersonaItem),
+                ),
+                AppButton(
+                  label: l.cancel,
+                  onPressed: () => Navigator.pop(context),
                 ),
               ],
             ),
@@ -435,6 +437,7 @@ class _ListFieldState extends State<ListField> {
                 children: [
                   for (var i = 0; i < widget.value.length; i++)
                     InputChip(
+                      visualDensity: Controls.tagDensity,
                       label: Text(
                         personaValue(widget.value[i], l),
                         overflow: TextOverflow.ellipsis,

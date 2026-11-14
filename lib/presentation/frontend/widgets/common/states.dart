@@ -1,33 +1,14 @@
-import '../../theme/app_icons.dart';
-import '../../../../l10n/generated/app_localizations.dart';
 import 'package:flutter/material.dart';
+import '../../theme/app_icons.dart';
+import '../../theme/theme.dart';
 import '../../theme/tokens.dart';
 import 'buttons.dart';
 
-/// Skeleton loader: a still block in the border color (no shimmer, 24 motion rule).
-class SkeletonBox extends StatelessWidget {
-  const SkeletonBox({super.key, this.width, this.height = 16});
-  final double? width;
-  final double height;
-  @override
-  Widget build(BuildContext context) {
-    final p = Palette.from(context);
-    return Semantics(
-      label: AppLocalizations.of(context).loading,
-      child: Container(
-        width: width,
-        height: height,
-        decoration: BoxDecoration(
-          color: p.border,
-          borderRadius: BorderRadius.circular(
-            FoundationTokens.of(context).controlRadius,
-          ),
-        ),
-      ),
-    );
-  }
-}
+export 'progress.dart' show SkeletonBox, AppSpinner, AppProgressBar;
 
+/// Empty state (#61): the 24 px glyph in a 48 px `tagBackground` circle,
+/// title `subtitle1`, text `body1` `muted` (at most 2 lines), one secondary
+/// action. Centered in the area.
 class EmptyState extends StatelessWidget {
   const EmptyState({
     super.key,
@@ -43,29 +24,41 @@ class EmptyState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final p = Palette.from(context);
-    return Align(
-      alignment: AlignmentDirectional.topStart,
+    return Center(
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(Space.s16),
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 420),
           child: Column(
             mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Icon(icon, size: 32, color: p.muted),
+              Container(
+                width: Space.s48,
+                height: Space.s48,
+                decoration: BoxDecoration(
+                  color: p.tagBackground,
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  AppIcons.large(icon),
+                  size: IconSizes.large,
+                  color: p.text2,
+                ),
+              ),
               const SizedBox(height: Space.s12),
               Text(
                 title,
-                style: TextStyles.subsection,
-                textAlign: TextAlign.start,
+                style: TextStyles.subtitle1.copyWith(color: p.text),
+                textAlign: TextAlign.center,
               ),
               if (message != null) ...[
                 const SizedBox(height: Space.s8),
                 Text(
                   message!,
-                  style: TextStyles.body.copyWith(color: p.muted),
-                  textAlign: TextAlign.start,
+                  style: TextStyles.body1.copyWith(color: p.muted),
+                  textAlign: TextAlign.center,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ],
               if (action != null) ...[
@@ -80,7 +73,7 @@ class EmptyState extends StatelessWidget {
   }
 }
 
-/// Error with Retry.
+/// Error with Retry, as an empty state with the error icon.
 class ErrorState extends StatelessWidget {
   const ErrorState({
     super.key,
@@ -103,30 +96,86 @@ class ErrorState extends StatelessWidget {
   );
 }
 
-/// Offline banner at the top of the content.
-class OfflineBanner extends StatelessWidget {
-  const OfflineBanner({super.key, required this.message});
+/// Message bar intents (#61).
+enum NoticeKind { info, warning, error, success }
+
+/// Fluent MessageBar (#61): min height 36, radius 4, padding 8 x 12, 1 px
+/// border and background from the status colors, 16 px icon in the status
+/// foreground color, `body1` text, optional subtle small action on the right.
+class MessageBar extends StatelessWidget {
+  const MessageBar({
+    super.key,
+    required this.message,
+    this.kind = NoticeKind.info,
+    this.icon,
+    this.actionLabel,
+    this.onAction,
+  });
   final String message;
+  final NoticeKind kind;
+
+  /// Defaults to the icon of [kind].
+  final IconData? icon;
+  final String? actionLabel;
+  final VoidCallback? onAction;
+
   @override
   Widget build(BuildContext context) {
     final p = Palette.from(context);
+    final (background, border, foreground, glyph) = switch (kind) {
+      NoticeKind.info => (p.tagBackground, p.stroke, p.muted, AppIcons.info),
+      NoticeKind.warning => (
+        p.warningBackground,
+        p.warningBorder,
+        p.warningForeground,
+        AppIcons.warning,
+      ),
+      NoticeKind.error => (
+        p.dangerBackground,
+        p.dangerBorder,
+        p.dangerForeground,
+        AppIcons.error,
+      ),
+      NoticeKind.success => (
+        p.successBackground,
+        p.successBorder,
+        p.successForeground,
+        AppIcons.copied,
+      ),
+    };
     return Semantics(
       liveRegion: true,
       child: Container(
-        width: double.infinity,
+        constraints: const BoxConstraints(minHeight: 36),
         padding: const EdgeInsets.symmetric(
-          horizontal: Space.s16,
+          horizontal: Space.s12,
           vertical: Space.s8,
         ),
         decoration: BoxDecoration(
-          color: p.surface,
-          border: Border(bottom: BorderSide(color: p.border)),
+          color: background,
+          border: Border.all(color: border),
+          borderRadius: BorderRadius.circular(Radii.control),
         ),
         child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Icon(AppIcons.offline, size: IconSizes.action, color: p.text),
+            Icon(icon ?? glyph, size: IconSizes.small, color: foreground),
             const SizedBox(width: Space.s8),
-            Expanded(child: Text(message, style: TextStyles.compact)),
+            Expanded(
+              child: Text(
+                message,
+                style: TextStyles.body1.copyWith(color: p.text),
+              ),
+            ),
+            if (actionLabel != null) ...[
+              const SizedBox(width: Space.s8),
+              AppButton(
+                label: actionLabel!,
+                onPressed: onAction,
+                kind: ButtonKind.subtle,
+                size: ButtonSize.small,
+              ),
+            ],
           ],
         ),
       ),
@@ -134,9 +183,22 @@ class OfflineBanner extends StatelessWidget {
   }
 }
 
-enum NoticeKind { info, warning, error }
+/// Offline message bar at the top of the content.
+class OfflineBanner extends StatelessWidget {
+  const OfflineBanner({super.key, required this.message});
+  final String message;
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.all(Space.s8),
+    child: MessageBar(
+      message: message,
+      kind: NoticeKind.warning,
+      icon: AppIcons.offline,
+    ),
+  );
+}
 
-/// One notice line with an icon (process number notices, 24).
+/// One notice as a message bar (process number notices).
 class NoticeLine extends StatelessWidget {
   const NoticeLine({
     super.key,
@@ -146,25 +208,6 @@ class NoticeLine extends StatelessWidget {
   final String message;
   final NoticeKind kind;
   @override
-  Widget build(BuildContext context) {
-    final p = Palette.from(context);
-    final (icon, color) = switch (kind) {
-      NoticeKind.info => (AppIcons.info, p.muted),
-      NoticeKind.warning => (AppIcons.warning, p.text),
-      NoticeKind.error => (AppIcons.error, p.dangerForeground),
-    };
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Icon(icon, size: IconSizes.action, color: color),
-        const SizedBox(width: Space.s8),
-        Expanded(
-          child: Text(
-            message,
-            style: TextStyles.compact.copyWith(color: p.muted),
-          ),
-        ),
-      ],
-    );
-  }
+  Widget build(BuildContext context) =>
+      MessageBar(message: message, kind: kind);
 }

@@ -449,6 +449,20 @@ abstract final class AppIcons {
     fontPackage: _package,
   );
 
+  /// `FluentIcons.checkmark_circle_20_regular` (success status)
+  static const success = IconData(
+    0xF298,
+    fontFamily: _regular,
+    fontPackage: _package,
+  );
+
+  /// `FluentIcons.checkmark_12_filled` (checkbox mark, 12 px only)
+  static const checkboxMark = IconData(
+    0xF293,
+    fontFamily: _filled,
+    fontPackage: _package,
+  );
+
   /// `FluentIcons.chat_multiple_20_filled` (selected state)
   static const chatsSelected = IconData(
     0xF8E0,
@@ -500,6 +514,11 @@ abstract final class AppIcons {
 
   /// Every 20 px icon above with its 24 px glyph of the same name.
   static final Map<IconData, IconData> _large = {
+    success: const IconData(
+      0xF299,
+      fontFamily: _regular,
+      fontPackage: _package,
+    ),
     chats: const IconData(0xF8D3, fontFamily: _regular, fontPackage: _package),
     chatsSelected: const IconData(
       0xF8EB,

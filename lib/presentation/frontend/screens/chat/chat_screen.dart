@@ -9,6 +9,7 @@ import '../../../../domain/services/chat_controller.dart';
 import '../../../../l10n/generated/app_localizations.dart';
 import '../../shell/details_panel.dart';
 import '../../theme/tokens.dart';
+import '../../widgets/common/buttons.dart';
 import '../../widgets/common/states.dart';
 import '../../widgets/common/surfaces.dart';
 import 'composer.dart';
@@ -153,25 +154,21 @@ class _ChatScreenState extends State<ChatScreen> {
       text: '${chat.chat?['title'] ?? ''}',
     );
     final l = AppLocalizations.of(context);
-    final ok = await showDialog<bool>(
-      context: context,
-      builder: (c) => AlertDialog(
-        title: Text(l.rename, style: TextStyles.subsection),
-        content: AppInput(
-          controller: controller,
-          onSubmitted: (_) => Navigator.pop(c, true),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(c, false),
-            child: Text(l.cancel),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(c, true),
-            child: Text(l.save),
-          ),
-        ],
+    final ok = await showAppDialog<bool>(
+      context,
+      title: l.rename,
+      content: (c) => AppInput(
+        controller: controller,
+        autofocus: true,
+        onSubmitted: (_) => Navigator.pop(c, true),
       ),
+      actions: (c) => [
+        AppButton.primary(
+          label: l.save,
+          onPressed: () => Navigator.pop(c, true),
+        ),
+        AppButton(label: l.cancel, onPressed: () => Navigator.pop(c, false)),
+      ],
     );
     if (mounted && ok == true && controller.text.trim().isNotEmpty) {
       await runApiAction(context, () => chat.rename(controller.text.trim()));
@@ -493,10 +490,7 @@ class _ChatScreenState extends State<ChatScreen> {
                             child: Center(
                               child: ActionChip(
                                 key: const Key('jump-latest'),
-                                avatar: const Icon(
-                                  AppIcons.jumpToLatest,
-                                  size: IconSizes.action,
-                                ),
+                                avatar: const Icon(AppIcons.jumpToLatest),
                                 label: Text(l.jumpToLatest),
                                 onPressed: () {
                                   _jump();
@@ -573,21 +567,13 @@ class _Empty extends StatelessWidget {
                       l.demoThinkPrompt,
                     ])
                       OutlinedButton(
-                        style: OutlinedButton.styleFrom(
-                          padding: const EdgeInsets.all(Space.s12),
-                          side: BorderSide(color: Palette.from(context).border),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(
-                              FoundationTokens.of(context).controlRadius,
-                            ),
+                        style: const ButtonStyle(
+                          padding: WidgetStatePropertyAll(
+                            EdgeInsets.all(Space.s12),
                           ),
                         ),
                         onPressed: () => onPrompt(prompt),
-                        child: Text(
-                          prompt,
-                          style: TextStyles.label,
-                          textAlign: TextAlign.start,
-                        ),
+                        child: Text(prompt, textAlign: TextAlign.start),
                       ),
                   ],
                 ),

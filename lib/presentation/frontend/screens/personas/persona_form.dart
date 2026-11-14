@@ -12,6 +12,7 @@ import '../../widgets/common/buttons.dart';
 import '../../widgets/common/states.dart';
 import '../basic_pages.dart';
 import 'schema_fields.dart';
+import '../../widgets/common/toast.dart';
 
 class PersonaForm extends StatefulWidget {
   const PersonaForm({super.key, required this.api, this.id, this.onChanged});
@@ -208,8 +209,10 @@ class _PersonaFormState extends State<PersonaForm> {
         isSelf = result.isSelf;
         attributes = result.attributes;
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context).personaSaved)),
+      showToast(
+        context,
+        message: AppLocalizations.of(context).personaSaved,
+        kind: NoticeKind.success,
       );
       if (widget.id == null) {
         context.go('/v1/personas/${Uri.encodeComponent(result.id)}');
@@ -234,22 +237,13 @@ class _PersonaFormState extends State<PersonaForm> {
 
   Future<void> remove() async {
     final l = AppLocalizations.of(context);
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(l.deletePersona),
-        content: Text(l.deletePersonaConfirm),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: Text(l.cancel),
-          ),
-          AppButton.destructive(
-            label: l.delete,
-            onPressed: () => Navigator.pop(context, true),
-          ),
-        ],
-      ),
+    final confirmed = await showConfirmDialog(
+      context,
+      title: l.deletePersona,
+      message: l.deletePersonaConfirm,
+      confirm: l.delete,
+      cancel: l.cancel,
+      destructive: true,
     );
     if (confirmed != true || !mounted) return;
     setState(() {

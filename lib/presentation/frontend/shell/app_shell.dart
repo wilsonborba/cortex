@@ -317,9 +317,13 @@ class _AppShellState extends State<AppShell> {
               drawer: compact
                   ? Drawer(
                       width: Space.sidebarWidth,
-                      child: Builder(
-                        builder: (context) => SafeArea(
-                          child: _sidebar(context, prefs, drawer: true),
+                      // List rows are 44 high at compact width (#61).
+                      child: ListTileTheme.merge(
+                        minTileHeight: Controls.minTouch,
+                        child: Builder(
+                          builder: (context) => SafeArea(
+                            child: _sidebar(context, prefs, drawer: true),
+                          ),
                         ),
                       ),
                     )

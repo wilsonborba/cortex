@@ -50,6 +50,7 @@ class _AccountMenuState extends State<AccountMenu> {
     return ListenableBuilder(
       listenable: prefs,
       builder: (context, _) => MenuAnchor(
+        clipBehavior: Clip.none,
         childFocusNode: focus,
         style: const MenuStyle(alignment: Alignment.topLeft),
         menuChildren: [

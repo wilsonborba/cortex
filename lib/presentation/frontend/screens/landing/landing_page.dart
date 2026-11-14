@@ -464,8 +464,14 @@ class _What extends StatelessWidget {
           Wrap(
             spacing: Space.s8,
             children: [
-              Chip(label: Text('tag: cortex')),
-              Chip(label: Text(l.usedMemories(2))),
+              Chip(
+                visualDensity: Controls.tagDensity,
+                label: Text('tag: cortex'),
+              ),
+              Chip(
+                visualDensity: Controls.tagDensity,
+                label: Text(l.usedMemories(2)),
+              ),
             ],
           ),
         ),
@@ -488,11 +494,13 @@ class _What extends StatelessWidget {
             spacing: Space.s8,
             children: [
               Chip(
-                avatar: Icon(AppIcons.file, size: IconSizes.action),
+                visualDensity: Controls.tagDensity,
+                avatar: Icon(AppIcons.file),
                 label: Text('report.pdf'),
               ),
               Chip(
-                avatar: Icon(AppIcons.activity, size: IconSizes.action),
+                visualDensity: Controls.tagDensity,
+                avatar: Icon(AppIcons.activity),
                 label: Text('note.ogg'),
               ),
             ],

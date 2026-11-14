@@ -165,12 +165,12 @@ class _MemoryScreenState extends State<MemoryScreen> {
                   ButtonSegment(
                     value: MemoryView.graph,
                     label: Text(l.graphView),
-                    icon: const Icon(AppIcons.memory, size: IconSizes.action),
+                    icon: const Icon(AppIcons.memory),
                   ),
                   ButtonSegment(
                     value: MemoryView.list,
                     label: Text(l.listView),
-                    icon: const Icon(AppIcons.list, size: IconSizes.action),
+                    icon: const Icon(AppIcons.list),
                   ),
                 ],
                 selected: {memory.view},

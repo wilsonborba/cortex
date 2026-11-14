@@ -8,8 +8,10 @@ import 'package:go_router/go_router.dart';
 import '../../../../domain/services/chat_list_controller.dart';
 import '../../../../l10n/generated/app_localizations.dart';
 import '../../theme/tokens.dart';
+import '../../widgets/common/buttons.dart';
 import '../../widgets/common/states.dart';
 import '../../widgets/common/surfaces.dart';
+import '../../widgets/common/toast.dart';
 
 String relativeTime(AppLocalizations l, String? iso, DateTime now) {
   final time = iso == null ? null : DateTime.tryParse(iso);
@@ -72,25 +74,24 @@ class _ChatListState extends State<ChatList> {
         await runApiAction(context, () => list.togglePin(chat));
       case _Action.rename:
         final field = TextEditingController(text: '${chat['title']}');
-        final ok = await showDialog<bool>(
-          context: context,
-          builder: (c) => AlertDialog(
-            title: Text(l.rename, style: TextStyles.subsection),
-            content: AppInput(
-              controller: field,
-              onSubmitted: (_) => Navigator.pop(c, true),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(c, false),
-                child: Text(l.cancel),
-              ),
-              TextButton(
-                onPressed: () => Navigator.pop(c, true),
-                child: Text(l.save),
-              ),
-            ],
+        final ok = await showAppDialog<bool>(
+          context,
+          title: l.rename,
+          content: (c) => AppInput(
+            controller: field,
+            autofocus: true,
+            onSubmitted: (_) => Navigator.pop(c, true),
           ),
+          actions: (c) => [
+            AppButton.primary(
+              label: l.save,
+              onPressed: () => Navigator.pop(c, true),
+            ),
+            AppButton(
+              label: l.cancel,
+              onPressed: () => Navigator.pop(c, false),
+            ),
+          ],
         );
         if (ok == true && field.text.trim().isNotEmpty) {
           if (mounted) {
@@ -121,11 +122,12 @@ class _ChatListState extends State<ChatList> {
     final error = await list.delete(id);
     if (!mounted) return;
     if (error != null) {
-      ScaffoldMessenger.maybeOf(context)?.showSnackBar(
-        SnackBar(
-          content: Text(apiFailure(l, error)),
-          action: SnackBarAction(label: l.retry, onPressed: () => _delete(id)),
-        ),
+      showToast(
+        context,
+        message: apiFailure(l, error),
+        kind: NoticeKind.error,
+        actionLabel: l.retry,
+        onAction: () => _delete(id),
       );
     } else if (widget.location.startsWith('/v1/chats/$id')) {
       GoRouter.maybeOf(context)?.go('/v1/chats');

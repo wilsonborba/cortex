@@ -21,7 +21,10 @@ for path in sorted(root.rglob('*.dart')):
             fail('Use the shared select control in redesigned screens')
         if re.search(r'\.(?:brand\w*|onBrand)\b',line) and not name.endswith('/theme/tokens.dart'):
             context='\n'.join(lines[max(0,i-3):i+2])
-            allowed=(name.endswith('/widgets/common/buttons.dart') and 'ButtonKind.primary' in context
+            # The theme and the shared widgets implement the Fluent brand places
+            # (primary button, switch on, checkbox, progress, input focus,
+            # selected card); screens may use brand only for selected markers.
+            allowed=(name.endswith('/theme/theme.dart') or '/widgets/common/' in name
                 or name.endswith('/screens/memory/graph_canvas.dart') and 'n.id == selected' in context
                 or name.endswith('/screens/chat/chat_list.dart') and 'selected ?' in context
                 or name.endswith('/shell/app_shell.dart') and 'widget.location.startsWith(d.path)' in context)
