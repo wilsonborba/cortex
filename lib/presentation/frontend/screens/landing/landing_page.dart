@@ -11,6 +11,7 @@ import '../../theme/tokens.dart';
 import '../../widgets/common/buttons.dart';
 import '../../widgets/common/states.dart';
 import '../../widgets/common/surfaces.dart';
+import '../../shell/account_menu.dart';
 import 'code_snippet.dart';
 import 'demo.dart';
 import 'diagrams.dart';
@@ -273,52 +274,23 @@ class LandingHeader extends StatelessWidget {
               ),
             ),
             const SizedBox(width: Space.s16),
-          ] else
+          ] else ...[
             const SizedBox(width: Space.s8),
-          if (size != SizeClass.compact && prefs != null) ...[
-            FoundationFocus(
-              child: AppMenu<Locale>(
-                tooltip: l.language,
-                icon: const Icon(AppIcons.language),
-                onSelected: (v) => prefs.locale = v,
-                itemBuilder: (_) => [
-                  for (final (code, name) in [
-                    ('en', 'English'),
-                    ('pt', 'Português'),
-                    ('th', 'ไทย'),
-                  ])
-                    PopupMenuItem(value: Locale(code), child: Text(name)),
-                ],
-              ),
+            _LandingMenu(
+              prefs: size == SizeClass.compact ? prefs : null,
+              onSection: onSection,
             ),
-            IconButton(
-              tooltip: l.themeSwitch,
-              icon: Icon(
-                Theme.of(context).brightness == Brightness.dark
-                    ? AppIcons.lightTheme
-                    : AppIcons.darkTheme,
-              ),
-              onPressed: () =>
-                  prefs.theme = Theme.of(context).brightness == Brightness.dark
-                  ? ThemeMode.light
-                  : ThemeMode.dark,
-            ),
+            const SizedBox(width: Space.s8),
+            if (size != SizeClass.compact) const Spacer(),
           ],
-          if (compact)
-            FoundationFocus(
-              child: AppMenu<LandingSection>(
-                key: const Key('section-menu'),
-                tooltip: l.menu,
-                icon: const Icon(AppIcons.menu),
-                onSelected: onSection,
-                itemBuilder: (_) => [
-                  for (final s in LandingSection.values)
-                    PopupMenuItem(value: s, child: Text(s.label(l))),
-                ],
-              ),
-            ),
-          const SizedBox(width: Space.s8),
-          if (compact)
+          // Language and theme: the same switches as the signed-in app.
+          if (size != SizeClass.compact && prefs != null) ...[
+            LanguageSwitch(preferences: prefs),
+            const SizedBox(width: Space.s8),
+            ThemeSwitch(preferences: prefs),
+            const SizedBox(width: Space.s16),
+          ],
+          if (size == SizeClass.compact)
             Expanded(
               child: AppButton(label: l.logIn, onPressed: onSignIn),
             )
@@ -330,25 +302,164 @@ class LandingHeader extends StatelessWidget {
   }
 }
 
-/// The 11 landing images, bundled in `assets/images/` (#70). Placement
-/// follows the owner order of 2026-11-14.
+/// Menu of the landing header at medium and compact width: the pages and,
+/// at compact width, the language and theme switches.
+class _LandingMenu extends StatelessWidget {
+  const _LandingMenu({required this.prefs, required this.onSection});
+  final Preferences? prefs;
+  final ValueChanged<LandingSection> onSection;
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
+    final p = Palette.from(context);
+    final prefs = this.prefs;
+    Widget row(String label, Widget control) => Padding(
+      padding: const EdgeInsets.symmetric(
+        horizontal: Space.s8,
+        vertical: Space.s6,
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(
+              label,
+              style: TextStyles.caption1.copyWith(color: p.muted),
+            ),
+          ),
+          const SizedBox(width: Space.s16),
+          control,
+        ],
+      ),
+    );
+    return MenuAnchor(
+      clipBehavior: Clip.none,
+      menuChildren: [
+        for (final s in LandingSection.values)
+          MenuEnter(
+            child: MenuItemButton(
+              key: Key('menu-${s.name}'),
+              onPressed: () => onSection(s),
+              child: Text(s.label(l)),
+            ),
+          ),
+        if (prefs != null) ...[
+          const MenuEnter(child: MenuGroupDivider()),
+          MenuEnter(
+            child: ListenableBuilder(
+              listenable: prefs,
+              builder: (context, _) => Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  row(l.language, LanguageSwitch(preferences: prefs)),
+                  row(l.themeSwitch, ThemeSwitch(preferences: prefs)),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ],
+      builder: (context, controller, _) => IconButton(
+        key: const Key('section-menu'),
+        tooltip: l.menu,
+        icon: const Icon(AppIcons.menu),
+        onPressed: () =>
+            controller.isOpen ? controller.close() : controller.open(),
+      ),
+    );
+  }
+}
+
+/// The landing images, bundled in `assets/images/`. Each photo shows whole,
+/// beside its text, with no crop, overlay or opacity (#72).
 abstract final class LandingImages {
   static const _dir = 'assets/images';
-  static const backdrop = '$_dir/aurora_backdrop_gradient_unsplash.webp';
-  static const badge = '$_dir/hero_branding_badge_unsplash.webp';
-  static const previewFrame = '$_dir/browser_frame_wireframe_pixabay.svg';
-  static const cardSurface = '$_dir/glassmorphic_card_surface_pexels.webp';
-  static const mobile = '$_dir/mobile_app_mockup_viewport_unsplash.webp';
+  static const hero = '$_dir/hero_branding_badge_unsplash.webp';
+  static const memory = '$_dir/glassmorphic_card_surface_pexels.webp';
+  static const web = '$_dir/mesh_ambient_wallpaper_pexels.webp';
+  static const files = '$_dir/aurora_backdrop_gradient_unsplash.webp';
   static const play = '$_dir/media_cta_button_freepik.svg';
-  static const ctaTexture = '$_dir/mesh_ambient_wallpaper_pexels.webp';
   static const workflows = '$_dir/abstract_creativity_vector_undraw.svg';
   static const ideation = '$_dir/lightbulb_ideation_graphic_undraw.svg';
   static const multimodal = '$_dir/vision_concept_art_undraw.svg';
   static const performance = '$_dir/workflow_speed_glyph_freepik.svg';
+
+  /// Width / height of each photo, so the layout does not jump on load.
+  static const ratios = {
+    hero: 1200 / 630,
+    memory: 408 / 480,
+    web: 408 / 480,
+    files: 816 / 959,
+  };
+
+  static const all = [
+    hero,
+    memory,
+    web,
+    files,
+    play,
+    workflows,
+    ideation,
+    multimodal,
+    performance,
+  ];
 }
 
-/// Final call to action (#70): the mesh texture card with the mobile
-/// companion preview, the last line and the primary button.
+/// One original photo: whole, radius 8, no overlay.
+class LandingPhoto extends StatelessWidget {
+  const LandingPhoto(this.asset, {super.key});
+  final String asset;
+  @override
+  Widget build(BuildContext context) => ClipRRect(
+    borderRadius: BorderRadius.circular(Radii.dialog),
+    child: AspectRatio(
+      aspectRatio: LandingImages.ratios[asset]!,
+      child: Image.asset(
+        asset,
+        fit: BoxFit.contain,
+        excludeFromSemantics: true,
+      ),
+    ),
+  );
+}
+
+/// Text and visual side by side (medium and expanded) or stacked, text
+/// first (compact). [flip] puts the visual on the left.
+class _SideBySide extends StatelessWidget {
+  const _SideBySide({
+    required this.size,
+    required this.text,
+    required this.visual,
+    this.flip = false,
+  });
+  final SizeClass size;
+  final Widget text, visual;
+  final bool flip;
+  @override
+  Widget build(BuildContext context) {
+    if (size == SizeClass.compact) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          text,
+          const SizedBox(height: Space.s24),
+          visual,
+        ],
+      );
+    }
+    final gap = size == SizeClass.expanded ? Space.s56 : Space.s32;
+    final children = [
+      Expanded(child: text),
+      SizedBox(width: gap),
+      Expanded(child: visual),
+    ];
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: flip ? children.reversed.toList() : children,
+    );
+  }
+}
+
+/// Final call to action: a plain card with the last line and the button.
 class _FinalAction extends StatelessWidget {
   const _FinalAction({required this.size, required this.onSignIn});
   final SizeClass size;
@@ -357,64 +468,31 @@ class _FinalAction extends StatelessWidget {
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
     final p = Palette.from(context);
-    final compact = size == SizeClass.compact;
-    final mobile = ClipRRect(
-      borderRadius: BorderRadius.circular(Radii.dialog),
-      child: Image.asset(
-        LandingImages.mobile,
-        key: const Key('mobile-preview'),
-        width: 96,
-        height: 96,
-        fit: BoxFit.cover,
-        excludeFromSemantics: true,
-      ),
-    );
     final line = Text(
       l.finalLine,
       style: TextStyles.title3.copyWith(color: p.text),
     );
     final button = AppButton.primary(label: l.startChat, onPressed: onSignIn);
-    return ClipRRect(
+    return AppCard(
       key: const Key('landing-final-action'),
-      borderRadius: BorderRadius.circular(Radii.dialog),
-      child: Stack(
-        children: [
-          Positioned.fill(child: ColoredBox(color: p.surface)),
-          Positioned.fill(
-            child: Opacity(
-              opacity: 0.35,
-              child: Image.asset(
-                LandingImages.ctaTexture,
-                fit: BoxFit.cover,
-                excludeFromSemantics: true,
-              ),
+      radius: Radii.dialog,
+      padding: const EdgeInsets.all(Space.s32),
+      child: size == SizeClass.compact
+          ? Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                line,
+                const SizedBox(height: Space.s16),
+                button,
+              ],
+            )
+          : Row(
+              children: [
+                Expanded(child: line),
+                const SizedBox(width: Space.s16),
+                button,
+              ],
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(Space.s24),
-            child: compact
-                ? Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      mobile,
-                      const SizedBox(height: Space.s16),
-                      line,
-                      const SizedBox(height: Space.s16),
-                      button,
-                    ],
-                  )
-                : Row(
-                    children: [
-                      mobile,
-                      const SizedBox(width: Space.s24),
-                      Expanded(child: line),
-                      const SizedBox(width: Space.s16),
-                      button,
-                    ],
-                  ),
-          ),
-        ],
-      ),
     );
   }
 }
@@ -435,18 +513,6 @@ class _Hero extends StatelessWidget {
     final text = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Hero brand badge (#70, owner placement).
-        ClipRRect(
-          borderRadius: BorderRadius.circular(Radii.dialog),
-          child: Image.asset(
-            LandingImages.badge,
-            key: const Key('hero-badge'),
-            height: Space.s56,
-            fit: BoxFit.cover,
-            excludeFromSemantics: true,
-          ),
-        ),
-        const SizedBox(height: Space.s16),
         Text(l.heroLabel, style: TextStyles.caption1.copyWith(color: p.muted)),
         const SizedBox(height: Space.s12),
         Semantics(
@@ -454,16 +520,16 @@ class _Hero extends StatelessWidget {
           child: Text(
             l.heroTitle,
             style: size == SizeClass.expanded
-                ? TextStyles.display
-                : TextStyles.largeTitle,
+                ? TextStyles.largeTitle
+                : TextStyles.title1,
           ),
         ),
         const SizedBox(height: Space.s16),
         ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 560),
+          constraints: const BoxConstraints(maxWidth: 520),
           child: Text(
             l.heroLead,
-            style: TextStyles.body1.copyWith(color: p.text2),
+            style: TextStyles.body2.copyWith(color: p.text2),
           ),
         ),
         const SizedBox(height: Space.s24),
@@ -476,7 +542,6 @@ class _Hero extends StatelessWidget {
               label: l.startChat,
               onPressed: onSignIn,
             ),
-            // Secondary button with the demo play icon (#70).
             TextButton.icon(
               key: const Key('see-how'),
               style: buttonStyle(
@@ -499,58 +564,19 @@ class _Hero extends StatelessWidget {
         ),
       ],
     );
-    // The demo on the ambient backdrop, with the preview frame controls.
-    final demo = ClipRRect(
-      key: const Key('hero-visual'),
-      borderRadius: BorderRadius.circular(Radii.dialog),
-      child: DecoratedBox(
-        decoration: const BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage(LandingImages.backdrop),
-            fit: BoxFit.cover,
-          ),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(Space.s20),
-          child: Column(
-            children: [
-              const ChatDemo(),
-              const SizedBox(height: Space.s12),
-              ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 360),
-                child: SvgPicture.asset(
-                  LandingImages.previewFrame,
-                  excludeFromSemantics: true,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
     return Padding(
       padding: const EdgeInsets.only(top: Space.s48),
-      child: size == SizeClass.expanded
-          ? Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(child: text),
-                const SizedBox(width: Space.s32),
-                Expanded(child: demo),
-              ],
-            )
-          : Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                text,
-                const SizedBox(height: Space.s32),
-                demo,
-              ],
-            ),
+      child: _SideBySide(
+        size: size,
+        text: text,
+        visual: const LandingPhoto(LandingImages.hero, key: Key('hero-image')),
+      ),
     );
   }
 }
 
+/// What it does (#72): one row per feature, its text and its visual side by
+/// side. The sides alternate on wide screens.
 class _What extends StatelessWidget {
   const _What({required this.size});
   final SizeClass size;
@@ -558,79 +584,49 @@ class _What extends StatelessWidget {
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
     final p = Palette.from(context);
-    // Feature cards (#70): Fluent card, radius 8, an illustration on top;
-    // the first card has the glass surface texture.
-    Widget block(
-      String title,
-      String text,
-      Widget ui,
-      String art, {
-      bool primary = false,
-    }) => SizedBox(
-      width: size == SizeClass.compact ? double.infinity : 270,
-      child: AppCard(
-        radius: Radii.dialog,
-        padding: EdgeInsets.zero,
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(Radii.dialog),
-          child: Stack(
-            children: [
-              if (primary)
-                Positioned.fill(
-                  child: Opacity(
-                    opacity: 0.18,
-                    child: Image.asset(
-                      LandingImages.cardSurface,
-                      fit: BoxFit.cover,
-                      excludeFromSemantics: true,
-                    ),
-                  ),
-                ),
-              Padding(
-                padding: const EdgeInsets.all(Space.s16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox(
-                      height: Space.s56,
-                      child: SvgPicture.asset(
-                        art,
-                        fit: BoxFit.contain,
-                        alignment: Alignment.centerLeft,
-                        excludeFromSemantics: true,
-                      ),
-                    ),
-                    const SizedBox(height: Space.s12),
-                    Text(
-                      title,
-                      style: TextStyles.subtitle2.copyWith(color: p.text),
-                    ),
-                    const SizedBox(height: Space.s8),
-                    Text(
-                      text,
-                      style: TextStyles.body1.copyWith(color: p.text2),
-                    ),
-                    const SizedBox(height: Space.s12),
-                    ui,
-                  ],
-                ),
-              ),
-            ],
+    Widget text(String word, String title, String body, Widget ui) => Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(
+          height: Space.s32,
+          child: SvgPicture.asset(
+            word,
+            fit: BoxFit.contain,
+            alignment: Alignment.centerLeft,
+            excludeFromSemantics: true,
           ),
         ),
+        const SizedBox(height: Space.s16),
+        Text(title, style: TextStyles.title3.copyWith(color: p.text)),
+        const SizedBox(height: Space.s8),
+        ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 480),
+          child: Text(body, style: TextStyles.body2.copyWith(color: p.text2)),
+        ),
+        const SizedBox(height: Space.s16),
+        ui,
+      ],
+    );
+    // Portrait photos keep a modest width beside the text.
+    Widget photo(String asset) => Align(
+      alignment: Alignment.center,
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 280),
+        child: LandingPhoto(asset),
       ),
     );
-    return Wrap(
-      spacing: Space.s16,
-      runSpacing: Space.s16,
-      children: [
-        block(
+    final rows = [
+      _SideBySide(
+        size: size,
+        text: text(
+          LandingImages.workflows,
           l.whatMemory,
           l.whatMemoryText,
           Wrap(
             spacing: Space.s8,
+            runSpacing: Space.s8,
             children: [
-              Chip(
+              const Chip(
                 visualDensity: Controls.tagDensity,
                 label: Text('tag: cortex'),
               ),
@@ -640,27 +636,37 @@ class _What extends StatelessWidget {
               ),
             ],
           ),
-          LandingImages.workflows,
-          primary: true,
         ),
-        block(
+        visual: photo(LandingImages.memory),
+      ),
+      _SideBySide(
+        size: size,
+        flip: true,
+        text: text(
+          LandingImages.performance,
           l.whatWeb,
           l.whatWebText,
           Wrap(
             spacing: Space.s8,
+            runSpacing: Space.s8,
             children: [
               AppChip(label: l.webFast, selected: true, onSelected: (_) {}),
               AppChip(label: l.webMedium, onSelected: (_) {}),
               AppChip(label: l.webDeep, onSelected: (_) {}),
             ],
           ),
-          LandingImages.performance,
         ),
-        block(
+        visual: photo(LandingImages.web),
+      ),
+      _SideBySide(
+        size: size,
+        text: text(
+          LandingImages.multimodal,
           l.whatFiles,
           l.whatFilesText,
           const Wrap(
             spacing: Space.s8,
+            runSpacing: Space.s8,
             children: [
               Chip(
                 visualDensity: Controls.tagDensity,
@@ -674,9 +680,15 @@ class _What extends StatelessWidget {
               ),
             ],
           ),
-          LandingImages.multimodal,
         ),
-        block(
+        visual: photo(LandingImages.files),
+      ),
+      // The live demo shows the thinking steps; it is the visual here.
+      _SideBySide(
+        size: size,
+        flip: true,
+        text: text(
+          LandingImages.ideation,
           l.whatThinking,
           l.whatThinkingText,
           Column(
@@ -686,8 +698,22 @@ class _What extends StatelessWidget {
                 NoticeLine(message: '${l.stepThinking}: $r'),
             ],
           ),
-          LandingImages.ideation,
         ),
+        visual: const AppCard(
+          key: Key('landing-demo'),
+          radius: Radii.dialog,
+          padding: EdgeInsets.all(Space.s16),
+          child: ChatDemo(),
+        ),
+      ),
+    ];
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        for (final (i, r) in rows.indexed) ...[
+          if (i > 0) const SizedBox(height: Space.section),
+          r,
+        ],
       ],
     );
   }

@@ -11,19 +11,7 @@ import '../design/components_golden_test.dart' show loadFonts;
 void main() {
   setUpAll(loadFonts);
   test('every landing image is a bundled asset path, no network URL', () {
-    for (final path in [
-      LandingImages.backdrop,
-      LandingImages.badge,
-      LandingImages.previewFrame,
-      LandingImages.cardSurface,
-      LandingImages.mobile,
-      LandingImages.play,
-      LandingImages.ctaTexture,
-      LandingImages.workflows,
-      LandingImages.ideation,
-      LandingImages.multimodal,
-      LandingImages.performance,
-    ]) {
+    for (final path in LandingImages.all) {
       expect(path, startsWith('assets/images/'));
     }
   });
@@ -52,8 +40,8 @@ void main() {
           () => Future<void>.delayed(const Duration(milliseconds: 300)),
         );
         await tester.pumpAndSettle();
-        expect(find.byKey(const Key('hero-badge')), findsOneWidget);
-        expect(find.byKey(const Key('hero-visual')), findsOneWidget);
+        expect(find.byKey(const Key('hero-image')), findsOneWidget);
+        expect(find.byKey(const Key('landing-demo')), findsOneWidget);
         expect(find.byKey(const Key('landing-final-action')), findsOneWidget);
         final scroll = tester.state<ScrollableState>(
           find
