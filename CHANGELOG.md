@@ -1,12 +1,14 @@
 # Changelog
 
 
-## Unreleased
+## v2.2.3 - 2026-11-14
 
 
 ### Bug Fixes
 
 - Show the signed-in state on the public pages (#75)
+
+- Merge signed-in state on the public pages (#75)
 
 
 ### Chores
@@ -16,6 +18,8 @@
 - Merge v2.2.2 back to development
 
 - Merge v2.2.2 back to feature/main
+
+- Prepare development for v2.2.3
 
 
 ## v2.2.2 - 2026-11-14
