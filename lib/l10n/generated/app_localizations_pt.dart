@@ -599,7 +599,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get temporaryBanner =>
-      'Temporária: não é salva e se perde ao recarregar.';
+      'Conversa temporária: não é salva e se perde ao recarregar.';
 
   @override
   String get justNow => 'Agora';
@@ -1491,4 +1491,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get recentChats => 'Recentes';
+
+  @override
+  String get aiNote => 'O conteúdo gerado por IA pode estar incorreto';
 }

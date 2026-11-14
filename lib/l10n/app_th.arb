@@ -180,7 +180,7 @@
   "steps_chunks_selected": "เลือกส่วนข้อความแล้ว",
   "steps_thinking_step": "ขั้นตอนการคิด",
   "steps_thinking_stopped": "ผู้ใช้หยุดการคิด",
-  "temporaryBanner": "ชั่วคราว: ไม่ถูกบันทึก และหายไปเมื่อรีเฟรช",
+  "temporaryBanner": "แชทชั่วคราว: ไม่ถูกบันทึก และหายไปเมื่อรีเฟรช",
   "justNow": "เมื่อสักครู่",
   "minutesAgo": "{n} นาทีที่แล้ว",
   "hoursAgo": "{n} ชั่วโมงที่แล้ว",
@@ -490,5 +490,6 @@
   "themeDescription": "ใช้ธีมของระบบ ธีมสว่าง หรือธีมมืด",
   "languageDescription": "เลือกภาษาของ Cortex",
   "pinnedChats": "ปักหมุด",
-  "recentChats": "ล่าสุด"
+  "recentChats": "ล่าสุด",
+  "aiNote": "เนื้อหาที่สร้างโดย AI อาจไม่ถูกต้อง"
 }
