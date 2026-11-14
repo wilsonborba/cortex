@@ -44,7 +44,7 @@ class ScreenFrame extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(title, style: TextStyles.section),
+            Text(title, style: TextStyles.title3),
             const SizedBox(height: Space.s24),
             Expanded(child: child),
           ],

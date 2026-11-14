@@ -19,7 +19,7 @@ Widget gallery() => Scaffold(
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Section title', style: TextStyles.section),
+        Text('Section title', style: TextStyles.title3),
         const SizedBox(height: Space.s16),
         Wrap(
           spacing: Space.s8,

@@ -93,9 +93,11 @@ void main() {
   setUpAll(loadFonts);
   const screens = {
     'chat': '/v1/chats/${chat.sid}',
-    'memory': '/v1/settings/memory/memory-one',
+    'memory': '/v1/settings/memory',
+    'memory_detail': '/v1/settings/memory/${memory.memoryId}',
     'personas': '/v1/settings/personas',
-    'persona_form': '/v1/settings/personas/p1',
+    'persona_detail': '/v1/settings/personas/p1',
+    'persona_form': '/v1/settings/personas/p1/edit',
     'product': '/v1/home',
     'process': '/v1/home/how-it-works',
     'public_memory': '/v1/home/memory',
@@ -107,7 +109,7 @@ void main() {
     'faq': '/v1/home/faq',
   };
   for (final brightness in Brightness.values) {
-    for (final width in [390.0, 768.0, 1024.0, 1300.0, 1440.0]) {
+    for (final width in [390.0, 768.0, 900.0, 1024.0, 1300.0, 1440.0]) {
       for (final entry in screens.entries) {
         testWidgets('${entry.key} ${brightness.name} ${width.toInt()}', (
           tester,

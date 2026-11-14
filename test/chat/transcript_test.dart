@@ -170,10 +170,15 @@ void main() {
     expect(find.byType(AppSpinner), findsOneWidget);
     expect(find.textContaining('\u00a0\u2026'), findsOneWidget);
     expect(find.byType(AppProgressBar), findsNothing);
-    // A known total: the 2 px bar, no spinner (one indicator only).
+    // A known total under 3 s: still the spinner.
     output
       ..step = 'web.page.read'
       ..progress = [3, 10];
+    await tester.pumpWidget(app());
+    expect(find.byType(AppSpinner), findsOneWidget);
+    expect(find.byType(AppProgressBar), findsNothing);
+    // Longer, with a known total: the 2 px bar, no spinner.
+    now = start.add(const Duration(milliseconds: 3500));
     await tester.pumpWidget(app());
     expect(find.byType(AppProgressBar), findsOneWidget);
     expect(find.byType(AppSpinner), findsNothing);

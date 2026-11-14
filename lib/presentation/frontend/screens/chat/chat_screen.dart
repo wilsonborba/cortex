@@ -147,7 +147,7 @@ class _ChatScreenState extends State<ChatScreen> {
               child: AppCard(
                 onTap: () =>
                     GoRouter.maybeOf(context)?.go('/v1/settings/memory/$id'),
-                child: Text(title, style: TextStyles.compact),
+                child: Text(title, style: TextStyles.body1),
               ),
             ),
         ],
@@ -254,7 +254,7 @@ class _ChatScreenState extends State<ChatScreen> {
           height: 56,
           padding: const EdgeInsets.symmetric(horizontal: Space.s16),
           decoration: BoxDecoration(
-            border: Border(bottom: BorderSide(color: p.border)),
+            border: Border(bottom: BorderSide(color: p.divider)),
           ),
           child: Row(
             children: [
@@ -394,7 +394,7 @@ class _ChatScreenState extends State<ChatScreen> {
               final footerHeight = showNote
                   ? textHeight(l.aiNote, TextStyles.caption1) + Space.s8
                   : 0.0;
-              final readingLine = textHeight(' ', TextStyles.body);
+              final readingLine = textHeight(' ', TextStyles.body2);
               final composerMaxHeight =
                   (limits.maxHeight - footerHeight - readingLine)
                       .clamp(0, double.infinity)
@@ -558,7 +558,7 @@ class _Empty extends StatelessWidget {
               children: [
                 Text(
                   l.chatGreeting,
-                  style: TextStyles.section,
+                  style: TextStyles.title3,
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: Space.s24),

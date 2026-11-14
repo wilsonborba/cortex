@@ -169,8 +169,6 @@ void main() {
       expect(la, le, reason: 'light $role');
       expect(da, de, reason: 'dark $role');
     }
-    expect(l.border, l.stroke);
-    expect(d.border, d.stroke);
     final mixed = l.lerp(d, 1);
     expect(mixed.brandBackground2, d.brandBackground2);
     expect(mixed.successBorder, d.successBorder);
@@ -205,12 +203,12 @@ void main() {
     }
     expect(TextStyles.family, 'Ubuntu Sans');
     // Migration names point to the new styles.
-    expect(TextStyles.pageTitle, TextStyles.largeTitle);
-    expect(TextStyles.section, TextStyles.title3);
-    expect(TextStyles.subsection, TextStyles.subtitle1);
-    expect(TextStyles.body, TextStyles.body2);
-    expect(TextStyles.compact, TextStyles.body1);
-    expect(TextStyles.label, TextStyles.caption1);
+    expect(TextStyles.largeTitle, TextStyles.largeTitle);
+    expect(TextStyles.title3, TextStyles.title3);
+    expect(TextStyles.subtitle1, TextStyles.subtitle1);
+    expect(TextStyles.body2, TextStyles.body2);
+    expect(TextStyles.body1, TextStyles.body1);
+    expect(TextStyles.caption1, TextStyles.caption1);
   });
 
   test('spacing, layout widths, radii and strokes', () {

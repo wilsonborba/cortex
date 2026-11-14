@@ -12,10 +12,7 @@ import '../../theme/tokens.dart';
 /// [interval]; the loop is longer than 5 s, so it has Pause/Play (WCAG 2.2.2).
 /// With Reduce Motion it is static with numbered stages.
 class PipelineDiagram extends StatefulWidget {
-  const PipelineDiagram({
-    super.key,
-    this.interval = const Duration(milliseconds: 1200),
-  });
+  const PipelineDiagram({super.key, this.interval = WaitTimes.demoStage});
   final Duration interval;
   @override
   State<PipelineDiagram> createState() => _PipelineDiagramState();
@@ -83,25 +80,25 @@ class _PipelineDiagramState extends State<PipelineDiagram> {
                       FoundationTokens.of(context).groupRadius,
                     ),
                     border: Border.all(
-                      color: !still && i == _active ? p.text : p.border,
+                      color: !still && i == _active ? p.text : p.stroke,
                       width: 1,
                     ),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('${i + 1}. $name', style: TextStyles.subsection),
+                      Text('${i + 1}. $name', style: TextStyles.subtitle1),
                       const SizedBox(height: Space.s4),
                       Text(
                         text,
-                        style: TextStyles.compact.copyWith(color: p.muted),
+                        style: TextStyles.body1.copyWith(color: p.muted),
                       ),
                       if (i == 1) ...[
                         const SizedBox(height: Space.s8),
                         for (final part in [l.whatFiles, l.memory, l.webTitle])
                           Text(
                             '| $part',
-                            style: TextStyles.label.copyWith(color: p.muted),
+                            style: TextStyles.caption1.copyWith(color: p.muted),
                           ),
                       ],
                     ],
@@ -140,14 +137,14 @@ class ScopeTree extends StatelessWidget {
           if (depth > 0)
             Text(
               '|- ',
-              style: TextStyles.compact.copyWith(
+              style: TextStyles.body1.copyWith(
                 color: p.muted,
                 fontFamily: TextStyles.mono,
               ),
             ),
           Icon(icon, size: IconSizes.action, color: p.text),
           const SizedBox(width: Space.s8),
-          Flexible(child: Text(text, style: TextStyles.compact)),
+          Flexible(child: Text(text, style: TextStyles.body1)),
         ],
       ),
     );

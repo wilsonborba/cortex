@@ -52,6 +52,8 @@ void main() {
                   ..step = 'memory.search'
                   ..expectedMs = 30000;
             if (scenario == 'progress') {
+              // The bar shows after 3 s with a known total.
+              output.started = fixed.subtract(const Duration(seconds: 12));
               output.step = 'web.page.read';
               output.progress = [3, 10];
               output.answer.write('Synthetic partial answer.');

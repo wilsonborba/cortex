@@ -90,9 +90,6 @@ class Palette extends ThemeExtension<Palette> {
   final Color successForeground;
   final Color successBorder;
 
-  /// Old name of [stroke]. Remove in #69 when every screen uses [stroke].
-  Color get border => stroke;
-
   static const light = Palette(
     background: Color(0xFFFFFFFF),
     surface: Color(0xFFFAFAFA),
@@ -477,6 +474,27 @@ abstract final class MotionDurations {
 }
 
 /// Fluent curves.
+/// Named times outside the Fluent motion ramp (#69): the wait thresholds
+/// of the Fluent wait rules (#63), the thinking pulse, the copy feedback and
+/// the pace of the landing demos.
+abstract final class WaitTimes {
+  /// No wait indicator before this time.
+  static const indicator = Duration(seconds: 1);
+
+  /// A spinner is for short waits; longer waits with a total get a bar.
+  static const spinner = Duration(seconds: 3);
+
+  /// One loop of the thinking pulse.
+  static const pulse = Duration(seconds: 1);
+
+  /// How long "Copied" stays before the copy icon comes back.
+  static const copied = Duration(seconds: 2);
+
+  /// Landing demos: one pipeline stage and one demo step.
+  static const demoStage = Duration(milliseconds: 1200);
+  static const demoStep = Duration(milliseconds: 450);
+}
+
 abstract final class MotionCurves {
   /// Elements that enter (menus, dialogs, toasts, panels open).
   static const decelerateMid = Cubic(0, 0, 0, 1);
@@ -655,14 +673,6 @@ abstract final class TextStyles {
     20,
     _regular,
   ).copyWith(fontFamily: mono, fontFamilyFallback: const []);
-
-  // Old names during the migration. Remove in #69.
-  static final pageTitle = largeTitle;
-  static final section = title3;
-  static final subsection = subtitle1;
-  static final body = body2;
-  static final compact = body1;
-  static final label = caption1;
 }
 
 /// A layout-neutral keyboard focus ring for controls without a border theme:
