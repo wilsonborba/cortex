@@ -103,8 +103,8 @@ void main() {
       ]) {
         expect(find.byKey(Key('link-$name')), findsOneWidget);
       }
-      expect(find.byTooltip('Language'), findsOneWidget);
-      expect(find.byTooltip('Theme'), findsOneWidget);
+      expect(find.byKey(const Key('language-switch')), findsOneWidget);
+      expect(find.byKey(const Key('theme-switch')), findsOneWidget);
       expect(
         find.descendant(of: header, matching: find.text('Log in')),
         findsOneWidget,
@@ -121,7 +121,7 @@ void main() {
       await pump(tester, '/v1/home', size: const Size(800, 900));
       expect(find.byKey(const Key('link-faq')), findsNothing);
       expect(find.byKey(const Key('section-menu')), findsOneWidget);
-      expect(find.byTooltip('Theme'), findsOneWidget);
+      expect(find.byKey(const Key('theme-switch')), findsOneWidget);
       expect(tester.takeException(), isNull);
       final (router, _) = await pump(
         tester,
@@ -130,8 +130,12 @@ void main() {
       );
       expect(find.byKey(const Key('link-faq')), findsNothing);
       expect(find.text('Log in'), findsWidgets);
+      // Compact: language and theme live in the menu (#72).
+      expect(find.byKey(const Key('theme-switch')), findsNothing);
       await tester.tap(find.byKey(const Key('section-menu')));
       await tester.pumpAndSettle();
+      expect(find.byKey(const Key('language-switch')), findsOneWidget);
+      expect(find.byKey(const Key('theme-switch')), findsOneWidget);
       await tester.tap(find.text('FAQ').last);
       await tester.pumpAndSettle();
       expect(path(router), '/v1/home/faq');
