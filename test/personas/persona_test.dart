@@ -102,7 +102,13 @@ class Api {
         'fields': fields,
       });
     }
-    if (path == '/personas' && request.method == 'GET') return reply(items);
+    if (path == '/personas' && request.method == 'GET') {
+      // A search with no match returns no rows.
+      if (request.url.queryParameters['q'] == 'Missing example') {
+        return reply([]);
+      }
+      return reply(items);
+    }
     if ((request.method == 'POST' || request.method == 'PATCH') &&
         path.startsWith('/personas')) {
       if (rejects > 0) {
@@ -275,13 +281,19 @@ void main() {
       );
       expect(find.text('You'), findsOneWidget);
       expect(find.text('Alias Zeta'), findsOneWidget);
-      await tester.enterText(find.byType(TextFormField).first, 'Zeta');
-      await tester.tap(find.byTooltip('Search personas'));
+      await tester.enterText(
+        find.descendant(
+          of: find.byKey(const Key('persona-search')),
+          matching: find.byType(TextField),
+        ),
+        'Zeta',
+      );
+      await tester.testTextInput.receiveAction(TextInputAction.done);
       await tester.pumpAndSettle();
       await tester.tap(
         find.descendant(
           of: find.byKey(const Key('persona-filter')),
-          matching: find.text('Bot'),
+          matching: find.text('Bots'),
         ),
       );
       await tester.pumpAndSettle();
@@ -345,6 +357,7 @@ void main() {
       await enter(tester, 'attribute-years', '12');
       await enter(tester, 'attribute-score', '1.5');
       await tester.ensureVisible(find.byKey(const Key('attribute-enabled')));
+      await tester.pumpAndSettle();
       await tester.tap(find.byKey(const Key('attribute-enabled')));
       await tester.pump();
       final aliases = find.descendant(
@@ -401,22 +414,32 @@ void main() {
     'edit keeps saved attributes and delete requires confirmation and survives failure',
     (tester) async {
       final api = Api()..deleteFailures = 1;
+      // The detail opens first; Edit opens the form (#66).
       final router = await pump(tester, api, path: '/v1/settings/personas/p1');
+      expect(find.byKey(const Key('persona-detail')), findsOneWidget);
+      await tester.tap(find.byKey(const Key('edit-persona')));
+      await tester.pumpAndSettle();
+      expect(
+        router.routeInformationProvider.value.uri.path,
+        '/v1/settings/personas/p1/edit',
+      );
       await enter(tester, 'persona-name', 'Changed');
       await save(tester);
-      await tester.pump(const Duration(seconds: 5));
+      await tester.pump(const Duration(seconds: 8));
       await tester.pumpAndSettle();
       final patch = api.requests.lastWhere((r) => r.$1 == 'PATCH').$3!;
       expect(patch.containsKey('type'), isFalse);
       expect(patch['attributes']['nickname'], 'Saved value');
+      // After Save the detail shows the new name.
+      expect(
+        router.routeInformationProvider.value.uri.path,
+        '/v1/settings/personas/p1',
+      );
       Future<void> remove() async {
-        // The "Saved" toast sits at the bottom end; close it first.
-        ScaffoldMessenger.of(
-          tester.element(find.byKey(const Key('delete-persona'))),
-        ).hideCurrentSnackBar();
-        await tester.pumpAndSettle();
-        await tester.ensureVisible(find.byKey(const Key('delete-persona')));
-        await tester.tap(find.byKey(const Key('delete-persona')));
+        await tester.ensureVisible(
+          find.byKey(const Key('delete-persona-detail')),
+        );
+        await tester.tap(find.byKey(const Key('delete-persona-detail')));
         await tester.pumpAndSettle();
         await tester.tap(
           find.descendant(
@@ -432,18 +455,7 @@ void main() {
         router.routeInformationProvider.value.uri.path,
         '/v1/settings/personas/p1',
       );
-      expect(
-        tester
-            .widget<TextField>(
-              find.descendant(
-                of: find.byKey(const Key('persona-name')),
-                matching: find.byType(TextField),
-              ),
-            )
-            .controller!
-            .text,
-        'Changed',
-      );
+      expect(find.byKey(const Key('persona-detail')), findsOneWidget);
       await remove();
       expect(
         router.routeInformationProvider.value.uri.path,

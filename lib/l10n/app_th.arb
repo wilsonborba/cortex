@@ -216,7 +216,7 @@
   "personType": "บุคคล",
   "botType": "บอต",
   "you": "คุณ",
-  "noPersonas": "ยังไม่มีเพอร์โซนา",
+  "noPersonas": "ยังไม่มีเพอร์โซนา เพอร์โซนาบอก Cortex เกี่ยวกับบุคคลหรือบอท",
   "personasLoadFailed": "โหลดเพอร์โซนาไม่ได้",
   "personaFormFailed": "โหลดแบบฟอร์มเพอร์โซนาไม่ได้",
   "personaSaveFailed": "บันทึกเพอร์โซนาไม่ได้ โปรดตรวจช่องที่ทำเครื่องหมายไว้",
@@ -567,5 +567,12 @@
   "memDetails": "รายละเอียดความจำ",
   "memChats": "{count, plural, other{{count} แชท}}",
   "memFiles": "{count, plural, other{{count} ไฟล์}}",
-  "memPeople": "{count, plural, other{{count} บุคคล}}"
+  "memPeople": "{count, plural, other{{count} บุคคล}}",
+  "personaPeople": "บุคคล",
+  "personaBots": "บอท",
+  "personaUsedIn": "ใช้ใน",
+  "personaMentions": "{count, plural, =0{ยังไม่มีความจำที่กล่าวถึงเพอร์โซนานี้} other{มีความจำ {count} รายการที่กล่าวถึงเพอร์โซนานี้}}",
+  "personaEdit": "แก้ไข",
+  "personaSelect": "เลือกเพอร์โซนาเพื่อดูรายละเอียด",
+  "personaBack": "เพอร์โซนาทั้งหมด"
 }

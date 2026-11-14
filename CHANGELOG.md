@@ -41,6 +41,10 @@
 
 - Readable memory overview in Settings (#65)
 
+- Merge readable memory overview (#65)
+
+- Master and detail personas, Fluent form and fields (#66)
+
 
 ### Tests
 

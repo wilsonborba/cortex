@@ -124,6 +124,7 @@ class AppInput extends StatefulWidget {
     this.onChanged,
     this.enabled = true,
     this.autofocus = false,
+    this.required = false,
   });
   final TextEditingController? controller;
   final FocusNode? focusNode;
@@ -131,6 +132,9 @@ class AppInput extends StatefulWidget {
   final int? maxLines;
   final ValueChanged<String>? onSubmitted, onChanged;
   final bool enabled, autofocus;
+
+  /// Shows the required mark " *" in `dangerForeground` after the label.
+  final bool required;
 
   @override
   State<AppInput> createState() => _AppInputState();
@@ -178,7 +182,7 @@ class _AppInputState extends State<AppInput>
       mainAxisSize: MainAxisSize.min,
       children: [
         if (widget.label != null) ...[
-          Text(widget.label!, style: TextStyles.body1.copyWith(color: p.text)),
+          FieldLabel(widget.label!, required: widget.required),
           const SizedBox(height: Space.s4),
         ],
         AnimatedBuilder(
@@ -219,6 +223,31 @@ class _AppInputState extends State<AppInput>
         ),
         FieldMessage(error: widget.error, helper: widget.helper),
       ],
+    );
+  }
+}
+
+/// Fluent Field label (#61, #66): `body1`, and the required mark " *" in
+/// `dangerForeground`.
+class FieldLabel extends StatelessWidget {
+  const FieldLabel(this.text, {super.key, this.required = false});
+  final String text;
+  final bool required;
+  @override
+  Widget build(BuildContext context) {
+    final p = Palette.from(context);
+    return Text.rich(
+      TextSpan(
+        text: text,
+        style: TextStyles.body1.copyWith(color: p.text),
+        children: [
+          if (required)
+            TextSpan(
+              text: ' *',
+              style: TextStyles.body1.copyWith(color: p.dangerForeground),
+            ),
+        ],
+      ),
     );
   }
 }

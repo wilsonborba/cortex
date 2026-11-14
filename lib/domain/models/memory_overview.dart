@@ -43,6 +43,7 @@ class MemoryOverview {
     required this.sources,
     required this.months,
     required this.truncated,
+    this.peopleFacet = const [],
   });
   factory MemoryOverview.fromJson(Map<String, dynamic> j) {
     final s = _map(j['summary']), f = _map(j['facets']);
@@ -65,6 +66,10 @@ class MemoryOverview {
           FacetCount('${e['month']}', '${e['month']}', _int(e['count'])),
       ],
       truncated: j['truncated'] == true,
+      peopleFacet: [
+        for (final e in _list(f['people']))
+          FacetCount('${e['id']}', '${e['label'] ?? ''}', _int(e['count'])),
+      ],
     );
   }
   final int memories, sizeBytes, chats, files, people, topics, notes;
@@ -77,6 +82,9 @@ class MemoryOverview {
   /// The last 12 months, oldest first ("2026-11").
   final List<FacetCount> months;
   final bool truncated;
+
+  /// Top people by memory count, with plain labels.
+  final List<FacetCount> peopleFacet;
 }
 
 /// Several memories with the same title and source, shown as one row.
