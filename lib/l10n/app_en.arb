@@ -580,5 +580,270 @@
   "languageDescription": "Select the language of Cortex.",
   "pinnedChats": "Pinned",
   "recentChats": "Recent",
-  "aiNote": "AI-generated content may be incorrect"
+  "aiNote": "AI-generated content may be incorrect",
+  "memSummary": "{count, plural, =1{Cortex keeps 1 memory} other{Cortex keeps {count} memories}} ({size}) from {chats}, {files} and {people}.",
+  "memNewest": "The newest is from {date}.",
+  "memCardCount": "Memories",
+  "memCardSize": "Size",
+  "memCardAdded": "Added in the last 7 days",
+  "memCardUsed": "Used in answers in the last 7 days",
+  "memByMonth": "By month",
+  "memFacetSource": "Source",
+  "memFacetPeriod": "Period",
+  "memSourceAll": "All",
+  "memSourceChats": "Chats",
+  "memSourceFiles": "Files",
+  "memSourceNotes": "Saved notes",
+  "memSourcePeople": "People",
+  "memSourceTopics": "Topics",
+  "memPeriodToday": "Today",
+  "memPeriod7": "Last 7 days",
+  "memPeriod30": "Last 30 days",
+  "memPeriodAll": "All",
+  "memSearch": "Search memories",
+  "memClearAll": "Clear all",
+  "memFilters": "Filters",
+  "memRemoveFilter": "Remove filter",
+  "memToday": "Today",
+  "memYesterday": "Yesterday",
+  "memLineChat": "Chat: {title}, {time}",
+  "memLineFile": "File: {title}, {time}",
+  "memLineNote": "Saved note, {time}",
+  "memUsedTimes": "{count, plural, =1{Used 1 time} other{Used {count} times}}",
+  "memSimilar": "{count} similar",
+  "memShowSimilar": "Show the similar memories",
+  "memGroupCount": "{count, plural, =1{1 memory} other{{count} memories}}",
+  "memBackToGroups": "All groups",
+  "memCreated": "Created",
+  "memUpdated": "Updated",
+  "memSize": "Size",
+  "memSizeWords": "{size}, {words} words",
+  "memUsedCount": "Used in answers",
+  "memLastUsed": "Last used",
+  "memNever": "Never",
+  "memKeeps": "What Cortex keeps",
+  "memShowAll": "Show all",
+  "memShowLess": "Show less",
+  "memConnects": "How it connects",
+  "memUsedIn": "Used in these answers",
+  "memNoUse": "Cortex has not used this memory in an answer yet.",
+  "memShowPicture": "Show connections as a picture",
+  "memHidePicture": "Hide the picture",
+  "memOpenChat": "Open chat",
+  "memDelete": "Delete memory",
+  "memDeleteTitle": "Delete this memory?",
+  "memDeleteMessage": "Cortex will not use this memory again. You cannot undo this.",
+  "memConnChat": "From the chat {label}",
+  "memConnFile": "From the file {label}",
+  "memConnPerson": "Mentions {label}",
+  "memConnTopic": "Topic: {label}",
+  "memConnSupersedes": "Replaces {label}",
+  "memConnCorrects": "Corrects {label}",
+  "memConnDerived": "Comes from {label}",
+  "memConnSupports": "Supports {label}",
+  "memConnContradicts": "Contradicts {label}",
+  "memConnPartOf": "Part of {label}",
+  "memConnRelated": "Related to {label}",
+  "memConnSameTitle": "{count, plural, =1{1 other memory has the same title} other{{count} other memories have the same title}}",
+  "memEmpty": "Cortex has no memories yet. Memories are saved when you chat with memory on.",
+  "memStartChat": "Start a chat",
+  "memTruncated": "Showing the newest 2000 memories",
+  "memNoResults": "No memories match these filters.",
+  "memLoadMore": "Show more",
+  "memTypeConversation": "Conversation",
+  "memTypeNote": "Saved note",
+  "memTypeFile": "File",
+  "memDetails": "Memory details",
+  "@memSummary": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "size": {
+        "type": "String"
+      },
+      "chats": {
+        "type": "String"
+      },
+      "files": {
+        "type": "String"
+      },
+      "people": {
+        "type": "String"
+      }
+    }
+  },
+  "@memNewest": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "@memLineChat": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "@memLineFile": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "@memLineNote": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "@memUsedTimes": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@memSimilar": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@memGroupCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@memSizeWords": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      },
+      "words": {
+        "type": "int"
+      }
+    }
+  },
+  "@memConnSameTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@memConnChat": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "@memConnFile": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "@memConnPerson": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "@memConnTopic": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "@memConnSupersedes": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "@memConnCorrects": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "@memConnDerived": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "@memConnSupports": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "@memConnContradicts": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "@memConnPartOf": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "@memConnRelated": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "memChats": "{count, plural, =1{1 chat} other{{count} chats}}",
+  "memFiles": "{count, plural, =1{1 file} other{{count} files}}",
+  "memPeople": "{count, plural, =1{1 person} other{{count} people}}",
+  "@memChats": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@memFiles": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@memPeople": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

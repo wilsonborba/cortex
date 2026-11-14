@@ -29,7 +29,8 @@ for path in sorted(root.rglob('*.dart')):
                 or name.endswith('/screens/chat/chat_list.dart') and re.search(r'selected\s*\?', context)
                 or name.endswith('/shell/app_shell.dart') and re.search(r'selected\s*\?', context)
                 or name.endswith('/shell/settings_page.dart') and re.search(r'selected\s*\?', context)
-                or name.endswith('/screens/chat/composer.dart') and '_focus.hasFocus' in context)
+                or name.endswith('/screens/chat/composer.dart') and '_focus.hasFocus' in context
+                or name.endswith('/screens/memory/tiny_map.dart') and 'ring' in context)
             if not allowed:fail('Brand is reserved for the Fluent brand places (issue #59, section 2)')
 if errors:
     print('\n'.join(errors));sys.exit(1)

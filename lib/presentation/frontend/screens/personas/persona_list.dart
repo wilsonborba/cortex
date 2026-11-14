@@ -7,7 +7,6 @@ import '../../theme/app_icons.dart';
 import '../../theme/tokens.dart';
 import '../../widgets/common/buttons.dart';
 import '../../widgets/common/states.dart';
-import '../memory/memory_card.dart' show initials;
 
 class PersonaList extends StatefulWidget {
   const PersonaList({super.key, required this.controller});
@@ -251,4 +250,10 @@ class _PersonaListState extends State<PersonaList> {
       ],
     );
   }
+}
+
+/// Up to two initials of a name, for the avatar.
+String initials(String name) {
+  final parts = name.trim().split(RegExp(r'\s+')).where((w) => w.isNotEmpty);
+  return parts.take(2).map((w) => w.characters.first.toUpperCase()).join();
 }

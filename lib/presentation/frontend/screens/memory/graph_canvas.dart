@@ -8,7 +8,6 @@ import '../../../../domain/models/memory_graph.dart';
 import '../../../../l10n/generated/app_localizations.dart';
 import '../../theme/app_icons.dart';
 import '../../theme/tokens.dart';
-import 'memory_card.dart';
 
 /// Values approved in #55. Visual spacing uses the shared foundation scale.
 abstract final class GraphTokens {
@@ -801,4 +800,57 @@ class _GraphPainter extends CustomPainter {
   bool shouldRepaint(covariant _GraphPainter old) => true;
   @override
   bool shouldRebuildSemantics(covariant _GraphPainter old) => true;
+}
+
+IconData nodeIcon(String type) => switch (type) {
+  'memory' => AppIcons.document,
+  'chat' => AppIcons.chats,
+  'tag' => AppIcons.tag,
+  'persona' => AppIcons.entity,
+  'entity' => AppIcons.category,
+  _ => AppIcons.file,
+};
+
+String nodeTypeName(AppLocalizations l, String type) => switch (type) {
+  'memory' => l.legendMemory,
+  'chat' => l.typeChat,
+  'tag' => l.legendTag,
+  'persona' => l.legendPersona,
+  'entity' => l.legendEntity,
+  _ => l.legendFile,
+};
+
+class GraphLegend extends StatelessWidget {
+  const GraphLegend({super.key, required this.hasEntities});
+  final bool hasEntities;
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
+    final p = Palette.from(context);
+    return Wrap(
+      key: const Key('legend'),
+      spacing: Space.s12,
+      children: [
+        for (final type in [
+          'memory',
+          'chat',
+          'tag',
+          'persona',
+          'file',
+          if (hasEntities) 'entity',
+        ])
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(nodeIcon(type), size: IconSizes.chip, color: p.muted),
+              const SizedBox(width: Space.s4),
+              Text(
+                nodeTypeName(l, type),
+                style: TextStyles.label.copyWith(color: p.muted),
+              ),
+            ],
+          ),
+      ],
+    );
+  }
 }
