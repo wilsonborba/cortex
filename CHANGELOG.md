@@ -1,12 +1,14 @@
 # Changelog
 
 
-## Unreleased
+## v2.2.1 - 2026-11-14
 
 
 ### Bug Fixes
 
 - Show the original images beside clean text (#72)
+
+- Merge original images beside clean text (#72)
 
 
 ### Chores
@@ -16,6 +18,8 @@
 - Merge v2.2.0 back to development
 
 - Merge v2.2.0 back to feature/main
+
+- Prepare development for v2.2.1
 
 
 ## v2.2.0 - 2026-11-14
