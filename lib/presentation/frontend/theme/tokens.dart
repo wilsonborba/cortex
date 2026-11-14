@@ -346,6 +346,12 @@ abstract final class Space {
 
 /// Fluent corner radius. No radius at a screen edge: full-width bars and the
 /// sidebar have 0.
+/// Engineering diagram canvas (#70): a neutral dark canvas in both themes;
+/// the diagrams on it use the Fluent dark palette.
+abstract final class DiagramPalette {
+  static const canvas = Color(0xFF1C1C1E);
+}
+
 abstract final class Radii {
   /// Checkbox, small badges.
   static const small = 2.0;

@@ -326,10 +326,14 @@ class AppCard extends StatefulWidget {
     this.onTap,
     this.padding,
     this.selected = false,
+    this.radius = Radii.control,
   });
   final Widget child;
   final VoidCallback? onTap;
   final EdgeInsetsGeometry? padding;
+
+  /// Corner radius: 4 by default; landing feature cards use 8 (#70).
+  final double radius;
   final bool selected;
 
   @override
@@ -348,7 +352,7 @@ class _AppCardState extends State<AppCard> {
       // No clip: the Fluent shadow is painted outside the shape.
       clipBehavior: Clip.none,
       shape: ShadowedBorder(
-        borderRadius: BorderRadius.circular(Radii.control),
+        borderRadius: BorderRadius.circular(widget.radius),
         side: widget.selected
             ? BorderSide(color: p.brandStroke1)
             : BorderSide.none,

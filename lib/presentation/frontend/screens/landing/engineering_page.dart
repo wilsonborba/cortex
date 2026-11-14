@@ -4,6 +4,7 @@ import '../../../../l10n/generated/app_localizations.dart';
 import '../../theme/app_icons.dart';
 import '../../theme/tokens.dart';
 import '../../widgets/common/surfaces.dart';
+import 'diagrams.dart' show DiagramCanvas;
 import 'engineering_sources.dart';
 
 typedef _Box = ({String name, String tech, String role});
@@ -52,105 +53,113 @@ class EngineeringContent extends StatelessWidget {
           style: TextStyles.body,
         ),
         heading('engineering-context', l.engContextTitle),
-        Semantics(
-          label: l.engContextAlt,
-          excludeSemantics: true,
-          child: Column(
-            children: [
-              _Chain(
-                nodes: [_box(l.engUser), _box(l.engGateway), _box(l.engCortex)],
-                verbs: [l.engSends, l.engForwards],
-              ),
-              const SizedBox(height: Space.s24),
-              _Branches(
-                branches: [
-                  (
-                    source: l.engCortex,
-                    verb: l.engRecalls,
-                    target: _box(l.engMemoryService),
-                    child: (
-                      source: l.engMemoryService,
-                      verb: l.engStoresFiles,
-                      target: _box(l.engFileStorage),
+        DiagramCanvas(
+          child: Semantics(
+            label: l.engContextAlt,
+            excludeSemantics: true,
+            child: Column(
+              children: [
+                _Chain(
+                  nodes: [
+                    _box(l.engUser),
+                    _box(l.engGateway),
+                    _box(l.engCortex),
+                  ],
+                  verbs: [l.engSends, l.engForwards],
+                ),
+                const SizedBox(height: Space.s24),
+                _Branches(
+                  branches: [
+                    (
+                      source: l.engCortex,
+                      verb: l.engRecalls,
+                      target: _box(l.engMemoryService),
+                      child: (
+                        source: l.engMemoryService,
+                        verb: l.engStoresFiles,
+                        target: _box(l.engFileStorage),
+                      ),
                     ),
-                  ),
-                  (
-                    source: l.engCortex,
-                    verb: l.engGenerates,
-                    target: _box(l.engModelRuntime),
-                    child: null,
-                  ),
-                  (
-                    source: l.engApps,
-                    verb: l.engPersists,
-                    target: _box(l.engDatabases),
-                    child: null,
-                  ),
-                ],
-              ),
-            ],
+                    (
+                      source: l.engCortex,
+                      verb: l.engGenerates,
+                      target: _box(l.engModelRuntime),
+                      child: null,
+                    ),
+                    (
+                      source: l.engApps,
+                      verb: l.engPersists,
+                      target: _box(l.engDatabases),
+                      child: null,
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
         heading('engineering-containers', l.engContainersTitle),
-        Semantics(
-          label: l.engContainersAlt,
-          excludeSemantics: true,
-          child: Column(
-            children: [
-              _Chain(
-                nodes: [
-                  _box(l.engFrontend, l.engTechFlutter, l.engFrontendRole),
-                  _box(l.engGateway, l.engTechHTTP, l.engGatewayRole),
-                  api,
-                ],
-                verbs: [l.engSends, l.engForwards],
-              ),
-              const SizedBox(height: Space.s24),
-              _Branches(
-                branches: [
-                  (
-                    source: l.engApi,
-                    verb: l.engRecalls,
-                    target: memory,
-                    child: (
-                      source: l.engMemoryService,
-                      verb: l.engStoresDocs,
-                      target: _box(
-                        l.engDocumentStore,
-                        l.engTechCouchDB,
-                        l.engDocumentRole,
+        DiagramCanvas(
+          child: Semantics(
+            label: l.engContainersAlt,
+            excludeSemantics: true,
+            child: Column(
+              children: [
+                _Chain(
+                  nodes: [
+                    _box(l.engFrontend, l.engTechFlutter, l.engFrontendRole),
+                    _box(l.engGateway, l.engTechHTTP, l.engGatewayRole),
+                    api,
+                  ],
+                  verbs: [l.engSends, l.engForwards],
+                ),
+                const SizedBox(height: Space.s24),
+                _Branches(
+                  branches: [
+                    (
+                      source: l.engApi,
+                      verb: l.engRecalls,
+                      target: memory,
+                      child: (
+                        source: l.engMemoryService,
+                        verb: l.engStoresDocs,
+                        target: _box(
+                          l.engDocumentStore,
+                          l.engTechCouchDB,
+                          l.engDocumentRole,
+                        ),
                       ),
                     ),
-                  ),
-                  (
-                    source: l.engApi,
-                    verb: l.engGenerates,
-                    target: _box(
-                      l.engModelRuntime,
-                      l.engTechOllama,
-                      l.engModelRole,
+                    (
+                      source: l.engApi,
+                      verb: l.engGenerates,
+                      target: _box(
+                        l.engModelRuntime,
+                        l.engTechOllama,
+                        l.engModelRole,
+                      ),
+                      child: null,
                     ),
-                    child: null,
-                  ),
-                  (
-                    source: l.engApps,
-                    verb: l.engPersists,
-                    target: _box(
-                      l.engPostgres,
-                      l.engTechPostgreSQL,
-                      l.engPostgresRole,
+                    (
+                      source: l.engApps,
+                      verb: l.engPersists,
+                      target: _box(
+                        l.engPostgres,
+                        l.engTechPostgreSQL,
+                        l.engPostgresRole,
+                      ),
+                      child: null,
                     ),
-                    child: null,
-                  ),
-                  (
-                    source: l.engApi,
-                    verb: l.engCaches,
-                    target: _box(l.engCache, l.engTechValkey, l.engCacheRole),
-                    child: null,
-                  ),
-                ],
-              ),
-            ],
+                    (
+                      source: l.engApi,
+                      verb: l.engCaches,
+                      target: _box(l.engCache, l.engTechValkey, l.engCacheRole),
+                      child: null,
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
         heading('engineering-pipeline', l.engPipelineTitle),
