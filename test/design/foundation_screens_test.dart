@@ -13,11 +13,13 @@ import 'package:http/testing.dart';
 import '../chat/chat_test.dart' as chat;
 import '../memory/memory_test.dart' as memory;
 import '../personas/persona_test.dart' as personas;
+import '../usage/usage_test.dart' as usage;
 import 'components_golden_test.dart' show loadFonts;
 
 // All content comes from local synthetic doubles. No live API is used.
 http.Client fixtureClient() {
   final person = personas.Api();
+  final telemetry = usage.Api();
   return MockClient((request) async {
     final path = request.url.path.replaceFirst('/apps/cortex/v1', '');
     http.Response reply(Object data) => http.Response(
@@ -30,6 +32,12 @@ http.Client fixtureClient() {
         ..headers.addAll(request.headers)
         ..bodyBytes = request.bodyBytes;
       return person.client.send(copy).then(http.Response.fromStream);
+    }
+    if (path.startsWith('/telemetry/')) {
+      final copy = http.Request(request.method, request.url)
+        ..headers.addAll(request.headers)
+        ..bodyBytes = request.bodyBytes;
+      return telemetry.client.send(copy).then(http.Response.fromStream);
     }
     if (path == '/chats') {
       return reply([
@@ -95,6 +103,8 @@ void main() {
     'product': '/v1/home',
     'process': '/v1/home/how-it-works',
     'public_memory': '/v1/home/memory',
+    'usage': '/v1/usage',
+    'usage_stats': '/v1/usage/stats',
 
     'faq': '/v1/home/faq',
   };

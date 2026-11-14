@@ -21,6 +21,13 @@
 
 - Replace Lucide icons with Fluent UI System Icons (#60)
 
+- Merge Fluent UI System Icons (#60)
+
+
+### Tests
+
+- Add usage screen screenshots to the screen goldens (#60)
+
 
 ## v2.1.0 - 2026-11-12
 
