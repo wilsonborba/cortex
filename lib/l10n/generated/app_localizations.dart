@@ -1183,7 +1183,7 @@ abstract class AppLocalizations {
   /// No description provided for @temporaryBanner.
   ///
   /// In en, this message translates to:
-  /// **'Temporary: not saved, lost when you refresh.'**
+  /// **'Temporary chat: not saved, lost when you refresh.'**
   String get temporaryBanner;
 
   /// No description provided for @justNow.
@@ -2859,6 +2859,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Recent'**
   String get recentChats;
+
+  /// No description provided for @aiNote.
+  ///
+  /// In en, this message translates to:
+  /// **'AI-generated content may be incorrect'**
+  String get aiNote;
 }
 
 class _AppLocalizationsDelegate

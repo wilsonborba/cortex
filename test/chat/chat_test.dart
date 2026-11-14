@@ -273,7 +273,7 @@ void main() {
       expect(body, containsPair('thinking', false));
       expect(find.textContaining('Hello'), findsOneWidget);
       expect(
-        find.textContaining('Rust blog · blog.rust-lang.org'),
+        find.textContaining('Rust blog  blog.rust-lang.org'),
         findsOneWidget,
       );
       expect(find.text('Used 1 memories'), findsOneWidget);

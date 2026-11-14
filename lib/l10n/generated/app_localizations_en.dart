@@ -594,7 +594,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get steps_thinking_stopped => 'Thinking stopped by the user';
 
   @override
-  String get temporaryBanner => 'Temporary: not saved, lost when you refresh.';
+  String get temporaryBanner =>
+      'Temporary chat: not saved, lost when you refresh.';
 
   @override
   String get justNow => 'Just now';
@@ -1475,4 +1476,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get recentChats => 'Recent';
+
+  @override
+  String get aiNote => 'AI-generated content may be incorrect';
 }

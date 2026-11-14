@@ -22,6 +22,8 @@ void main() {
         'long',
         'failed',
         'thinking',
+        'progress',
+        'all_blocks',
       ]) {
         testWidgets('$scenario transcript ${mode.name} ${width.toInt()}', (
           tester,
@@ -39,16 +41,45 @@ void main() {
           if (scenario != 'empty') {
             final output =
                 OutputView(
-                    status: ['running', 'thinking'].contains(scenario)
+                    status:
+                        ['running', 'thinking', 'progress'].contains(scenario)
                         ? 'running'
-                        : scenario == 'failed'
+                        : scenario == 'failed' || scenario == 'all_blocks'
                         ? 'failed'
                         : 'done',
                   )
                   ..started = fixed.subtract(const Duration(seconds: 2))
                   ..step = 'memory.search'
                   ..expectedMs = 30000;
-            if (scenario == 'finished' || scenario == 'long') {
+            if (scenario == 'progress') {
+              output.step = 'web.page.read';
+              output.progress = [3, 10];
+              output.answer.write('Synthetic partial answer.');
+            } else if (scenario == 'all_blocks') {
+              // Every block type of #63: steps, thinking, answer with code,
+              // sources, memories, a notice and an error.
+              output.stages
+                ..add(StageState('memory', 'done', 120))
+                ..add(StageState('think', 'done', 3000));
+              output.thinking.add(
+                ThinkingPart('plan', 1, 'Synthetic thinking text.'),
+              );
+              output.answer.write(
+                '## Synthetic answer\n\n- First point\n- Second point\n\n```dart\nfinal value = 42;\n```',
+              );
+              output.sources
+                ..add((
+                  'A synthetic reference with a long title for the tag',
+                  'https://example.com/a',
+                ))
+                ..add(('Second reference', 'https://example.org/b'));
+              output.memories.add(('synthetic-memory', 'Example note'));
+              output.notices.add((1026, 'synthetic notice'));
+              output.errorNumber = 1012;
+              output.totalMs = 4200;
+              output.inputTokens = 120;
+              output.outputTokens = 80;
+            } else if (scenario == 'finished' || scenario == 'long') {
               output.answer.write(
                 '## A clear example\n\nThis synthetic response includes a code sample and one reference.\n\n```rust\nlet example = "readable";\nprintln!("{example}");\n```\n\nCheck important facts before using the result.',
               );

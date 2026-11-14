@@ -588,7 +588,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get steps_thinking_stopped => 'ผู้ใช้หยุดการคิด';
 
   @override
-  String get temporaryBanner => 'ชั่วคราว: ไม่ถูกบันทึก และหายไปเมื่อรีเฟรช';
+  String get temporaryBanner => 'แชทชั่วคราว: ไม่ถูกบันทึก และหายไปเมื่อรีเฟรช';
 
   @override
   String get justNow => 'เมื่อสักครู่';
@@ -1465,4 +1465,7 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get recentChats => 'ล่าสุด';
+
+  @override
+  String get aiNote => 'เนื้อหาที่สร้างโดย AI อาจไม่ถูกต้อง';
 }

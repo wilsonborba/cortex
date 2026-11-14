@@ -29,6 +29,10 @@
 
 - Fluent 2 navigation shell, account menu, settings tabs and basic pages (#62)
 
+- Merge Fluent 2 navigation shell and settings tabs (#62)
+
+- Fluent 2 chat transcript, answer blocks and wait states (#63)
+
 
 ### Tests
 

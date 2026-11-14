@@ -241,7 +241,7 @@ void main() {
     await settle(tester);
     expect(find.byKey(const Key('temporary-banner')), findsOneWidget);
     expect(
-      find.text('Temporary: not saved, lost when you refresh.'),
+      find.text('Temporary chat: not saved, lost when you refresh.'),
       findsOneWidget,
     );
     expect(find.byKey(const Key('rename')), findsNothing);

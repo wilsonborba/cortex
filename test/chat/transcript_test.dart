@@ -4,6 +4,7 @@ import 'package:cortex/l10n/generated/app_localizations.dart';
 import 'package:cortex/presentation/frontend/screens/chat/output_block.dart';
 import 'package:cortex/presentation/frontend/theme/app_icons.dart';
 import 'package:cortex/presentation/frontend/theme/theme.dart';
+import 'package:cortex/presentation/frontend/widgets/common/states.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -140,6 +141,53 @@ void main() {
     );
     expect(find.byTooltip('Copied'), findsNothing);
   });
+  testWidgets('wait states follow the Fluent thresholds (#63)', (tester) async {
+    final start = DateTime(2030, 1, 1, 12);
+    var now = start;
+    final output = OutputView()
+      ..started = start
+      ..step = 'web.search';
+    Widget app() => MaterialApp(
+      theme: cortexTheme(Brightness.light),
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      home: Scaffold(
+        body: SingleChildScrollView(
+          child: OutputBlock(output: output, now: () => now),
+        ),
+      ),
+    );
+    // Under 1 second: no indicator.
+    await tester.pumpWidget(app());
+    expect(find.byKey(const Key('status-line')), findsNothing);
+    expect(find.byType(AppSpinner), findsNothing);
+    now = start.add(const Duration(milliseconds: 900));
+    await tester.pump(const Duration(milliseconds: 900));
+    expect(find.byKey(const Key('status-line')), findsNothing);
+    // From 1 second with no total: a 16 px spinner and the "-ing" label.
+    now = start.add(const Duration(milliseconds: 1500));
+    await tester.pump(const Duration(milliseconds: 600));
+    expect(find.byType(AppSpinner), findsOneWidget);
+    expect(find.textContaining('\u00a0\u2026'), findsOneWidget);
+    expect(find.byType(AppProgressBar), findsNothing);
+    // A known total: the 2 px bar, no spinner (one indicator only).
+    output
+      ..step = 'web.page.read'
+      ..progress = [3, 10];
+    await tester.pumpWidget(app());
+    expect(find.byType(AppProgressBar), findsOneWidget);
+    expect(find.byType(AppSpinner), findsNothing);
+    // Thinking: the pulsing dot, no spinner and no bar.
+    output
+      ..progress = null
+      ..step = null
+      ..stages.add(StageState('think', 'started', 0));
+    await tester.pumpWidget(app());
+    expect(find.byKey(const Key('thinking-dot')), findsOneWidget);
+    expect(find.byType(AppSpinner), findsNothing);
+    expect(find.byType(AppProgressBar), findsNothing);
+    await tester.pumpWidget(const SizedBox());
+  });
   testWidgets('status text length does not change the 24 pixel row', (
     tester,
   ) async {
@@ -147,7 +195,9 @@ void main() {
       final output = OutputView()
         ..step = 'thinking.step'
         ..stepParams = {'role': 'plan', 'model': model}
-        ..expectedMs = 30000;
+        ..expectedMs = 30000
+        // No indicator in the first second (#63).
+        ..started = DateTime.now().subtract(const Duration(seconds: 2));
       await tester.pumpWidget(outputApp(output));
       await tester.pump();
       expect(tester.getSize(find.byKey(const Key('status-line'))).height, 24);
@@ -166,10 +216,12 @@ void main() {
       await tester.pumpWidget(outputApp(output));
       await tester.pumpAndSettle();
       expect(find.textContaining('Synthetic partial answer'), findsOneWidget);
+      // The action row has a Retry icon button with a tooltip (#63).
       expect(
-        find.text('Retry'),
+        find.byTooltip('Retry'),
         state == 'blocked' ? findsNothing : findsOneWidget,
       );
+      expect(find.byKey(const Key('ai-note')), findsOneWidget);
       if (state == 'blocked') {
         expect(find.byIcon(AppIcons.securityBlock), findsOneWidget);
       }

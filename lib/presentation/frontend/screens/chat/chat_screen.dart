@@ -2,6 +2,9 @@ import '../../theme/app_icons.dart';
 import '../../handlers/api_action.dart';
 import '../../handlers/process_messages.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter/gestures.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/utils/file_picker.dart';
 import '../../../../dal/remote/cortex_api.dart';
@@ -9,7 +12,6 @@ import '../../../../domain/services/chat_controller.dart';
 import '../../../../l10n/generated/app_localizations.dart';
 import '../../shell/details_panel.dart';
 import '../../theme/tokens.dart';
-import '../../widgets/common/buttons.dart';
 import '../../widgets/common/states.dart';
 import '../../widgets/common/surfaces.dart';
 import 'composer.dart';
@@ -51,6 +53,8 @@ class _ChatScreenState extends State<ChatScreen> {
         temporary: widget.temporary,
       );
   final _scroll = ScrollController();
+  final _title = TextEditingController();
+  bool _editing = false;
   final _composer = GlobalKey<ComposerState>();
   bool _atBottom = true;
   bool _loadingOlder = false;
@@ -73,6 +77,7 @@ class _ChatScreenState extends State<ChatScreen> {
     chat.removeListener(_changed);
     if (widget.controller == null) chat.dispose();
     _scroll.dispose();
+    _title.dispose();
     super.dispose();
   }
 
@@ -150,30 +155,21 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-  Future<void> _rename() async {
-    final controller = TextEditingController(
-      text: '${chat.chat?['title'] ?? ''}',
+  /// Rename in place in the header (#63): Enter saves, Escape cancels.
+  void _rename() {
+    _title.text = '${chat.chat?['title'] ?? ''}';
+    _title.selection = TextSelection(
+      baseOffset: 0,
+      extentOffset: _title.text.length,
     );
-    final l = AppLocalizations.of(context);
-    final ok = await showAppDialog<bool>(
-      context,
-      title: l.rename,
-      content: (c) => AppInput(
-        controller: controller,
-        autofocus: true,
-        onSubmitted: (_) => Navigator.pop(c, true),
-      ),
-      actions: (c) => [
-        AppButton.primary(
-          label: l.save,
-          onPressed: () => Navigator.pop(c, true),
-        ),
-        AppButton(label: l.cancel, onPressed: () => Navigator.pop(c, false)),
-      ],
-    );
-    if (mounted && ok == true && controller.text.trim().isNotEmpty) {
-      await runApiAction(context, () => chat.rename(controller.text.trim()));
-    }
+    setState(() => _editing = true);
+  }
+
+  Future<void> _saveTitle() async {
+    final value = _title.text.trim();
+    setState(() => _editing = false);
+    if (value.isEmpty || value == '${chat.chat?['title'] ?? ''}') return;
+    await runApiAction(context, () => chat.rename(value));
   }
 
   Future<void> _delete() async {
@@ -200,7 +196,6 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Widget _exchange(Exchange e, int index) {
-    final p = Palette.from(context);
     final compact =
         SizeClass.of(MediaQuery.sizeOf(context).width) == SizeClass.compact;
     return Padding(
@@ -211,75 +206,29 @@ class _ChatScreenState extends State<ChatScreen> {
       child: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: Space.chatColumnWidth),
-          child: LayoutBuilder(
-            builder: (context, box) => Padding(
-              padding: EdgeInsets.only(
-                top: e == _firstPageFirst || index == 0 ? Space.s24 : 0,
-                bottom: index == _olderCount - 1 ? Space.s8 : Space.s32,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: Container(
-                      constraints: BoxConstraints(
-                        maxWidth: box.maxWidth * Space.userBubbleFraction,
-                      ),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: Space.s16,
-                        vertical: Space.s12,
-                      ),
-                      decoration: BoxDecoration(
-                        color: p.surface,
-                        borderRadius: BorderRadius.circular(
-                          FoundationTokens.of(context).groupRadius,
-                        ),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          if (e.text.isNotEmpty)
-                            Text(e.text, style: TextStyles.body),
-                          for (final file in e.files)
-                            Text(
-                              file,
-                              style: TextStyles.label.copyWith(color: p.muted),
-                            ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      if (e.createdAt != null)
-                        Flexible(
-                          child: Text(
-                            '${MaterialLocalizations.of(context).formatMediumDate(e.createdAt!.toLocal())} ${MaterialLocalizations.of(context).formatTimeOfDay(TimeOfDay.fromDateTime(e.createdAt!.toLocal()), alwaysUse24HourFormat: MediaQuery.alwaysUse24HourFormatOf(context))}',
-                            key: ValueKey('message-time-${e.inputId}'),
-                            style: TextStyles.label.copyWith(color: p.muted),
-                          ),
-                        ),
-                      SelectionContainer.disabled(
-                        child: CopyMessageButton(text: e.text),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: Space.s12),
-                  OutputBlock(
-                    output: e.output,
-                    now: widget.now,
-                    onStopThinking: () =>
-                        runApiAction(context, chat.stopThinking),
-                    onMemories: _showMemories,
-                    onRetry:
-                        e.output.running || index != chat.exchanges.length - 1
-                        ? null
-                        : () => chat.send(e.text),
-                  ),
-                ],
-              ),
+          child: Padding(
+            // Message gap 24 (#63).
+            padding: EdgeInsets.only(
+              top: e == _firstPageFirst || index == 0 ? Space.s24 : 0,
+              bottom: index == _olderCount - 1 ? Space.s8 : Space.s24,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                _UserMessage(exchange: e, compact: compact),
+                const SizedBox(height: Space.s24),
+                OutputBlock(
+                  output: e.output,
+                  now: widget.now,
+                  onStopThinking: () =>
+                      runApiAction(context, chat.stopThinking),
+                  onMemories: _showMemories,
+                  onRetry:
+                      e.output.running || index != chat.exchanges.length - 1
+                      ? null
+                      : () => chat.send(e.text),
+                ),
+              ],
             ),
           ),
         ),
@@ -296,23 +245,6 @@ class _ChatScreenState extends State<ChatScreen> {
         : '${chat.chat?['title'] ?? (chat.isNew ? l.newChat : '')}';
     return Column(
       children: [
-        // Fixed while the temporary chat is open (31.2).
-        if (chat.temporary)
-          Container(
-            key: const Key('temporary-banner'),
-            padding: const EdgeInsets.symmetric(
-              horizontal: Space.s16,
-              vertical: Space.s8,
-            ),
-            decoration: BoxDecoration(
-              color: p.surface,
-              border: Border(bottom: BorderSide(color: p.border)),
-            ),
-            child: NoticeLine(
-              message: l.temporaryBanner,
-              kind: NoticeKind.warning,
-            ),
-          ),
         if (chat.reconnecting)
           OfflineBanner(
             key: const Key('reconnecting'),
@@ -331,14 +263,35 @@ class _ChatScreenState extends State<ChatScreen> {
                 const SizedBox(width: Space.s8),
               ],
               Expanded(
-                child: Text(
-                  title,
-                  key: const Key('chat-title'),
-                  style: TextStyles.compact.copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
-                  overflow: TextOverflow.ellipsis,
-                ),
+                child: _editing
+                    ? CallbackShortcuts(
+                        bindings: {
+                          const SingleActivator(
+                            LogicalKeyboardKey.escape,
+                          ): () =>
+                              setState(() => _editing = false),
+                        },
+                        child: AppInput(
+                          key: const Key('rename-title'),
+                          controller: _title,
+                          autofocus: true,
+                          label: l.rename,
+                          onSubmitted: (_) => _saveTitle(),
+                        ),
+                      )
+                    : Align(
+                        alignment: Alignment.centerLeft,
+                        child: Semantics(
+                          header: true,
+                          child: Text(
+                            title,
+                            key: const Key('chat-title'),
+                            style: TextStyles.subtitle1.copyWith(color: p.text),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ),
               ),
               if (chat.chat?['memory_node_id'] case final String nodeId)
                 IconButton(
@@ -350,6 +303,18 @@ class _ChatScreenState extends State<ChatScreen> {
                   icon: const Icon(AppIcons.memory, size: IconSizes.action),
                 ),
               if (!chat.isNew && !chat.temporary) ...[
+                IconButton(
+                  key: const Key('pin-chat'),
+                  tooltip: chat.chat?['is_pinned'] == true ? l.unpin : l.pin,
+                  isSelected: chat.chat?['is_pinned'] == true,
+                  onPressed: () => runApiAction(context, chat.togglePin),
+                  icon: Icon(
+                    chat.chat?['is_pinned'] == true
+                        ? AppIcons.pinSelected
+                        : AppIcons.pin,
+                    size: IconSizes.action,
+                  ),
+                ),
                 FoundationFocus(
                   child: AppMenu<String>(
                     key: const Key('chat-actions'),
@@ -359,20 +324,12 @@ class _ChatScreenState extends State<ChatScreen> {
                       switch (action) {
                         case 'rename':
                           _rename();
-                        case 'pin':
-                          runApiAction(context, chat.togglePin);
                         case 'delete':
                           _delete();
                       }
                     },
                     itemBuilder: (_) => [
                       PopupMenuItem(value: 'rename', child: Text(l.rename)),
-                      PopupMenuItem(
-                        value: 'pin',
-                        child: Text(
-                          chat.chat?['is_pinned'] == true ? l.unpin : l.pin,
-                        ),
-                      ),
                       PopupMenuItem(
                         value: 'delete',
                         child: Text(
@@ -387,6 +344,26 @@ class _ChatScreenState extends State<ChatScreen> {
             ],
           ),
         ),
+        // Fixed at the top of the transcript while the temporary chat is open
+        // (31.2, #63).
+        if (chat.temporary)
+          Padding(
+            key: const Key('temporary-banner'),
+            padding: const EdgeInsets.fromLTRB(
+              Space.s16,
+              Space.s8,
+              Space.s16,
+              0,
+            ),
+            child: Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(
+                  maxWidth: Space.chatColumnWidth,
+                ),
+                child: NoticeLine(message: l.temporaryBanner),
+              ),
+            ),
+          ),
         Expanded(
           child: LayoutBuilder(
             builder: (context, limits) {
@@ -488,15 +465,35 @@ class _ChatScreenState extends State<ChatScreen> {
                             bottom: Space.s16,
                             left: 0,
                             right: 0,
+                            // Secondary icon button 32, circular, shadow8 (#63).
                             child: Center(
-                              child: ActionChip(
-                                key: const Key('jump-latest'),
-                                avatar: const Icon(AppIcons.jumpToLatest),
-                                label: Text(l.jumpToLatest),
-                                onPressed: () {
-                                  _jump();
-                                  setState(() => _atBottom = true);
-                                },
+                              child: DecoratedBox(
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  boxShadow: Shadows.shadow8(
+                                    Theme.of(context).brightness,
+                                  ),
+                                ),
+                                child: IconButton(
+                                  key: const Key('jump-latest'),
+                                  tooltip: l.jumpToLatest,
+                                  style: IconButton.styleFrom(
+                                    fixedSize: const Size.square(Space.s32),
+                                    minimumSize: const Size.square(Space.s32),
+                                    padding: EdgeInsets.zero,
+                                    backgroundColor: p.background,
+                                    side: BorderSide(color: p.stroke),
+                                    shape: const CircleBorder(),
+                                  ),
+                                  icon: const Icon(
+                                    AppIcons.jumpToLatest,
+                                    size: IconSizes.action,
+                                  ),
+                                  onPressed: () {
+                                    _jump();
+                                    setState(() => _atBottom = true);
+                                  },
+                                ),
                               ),
                             ),
                           ),
@@ -577,6 +574,116 @@ class _Empty extends StatelessWidget {
                         child: Text(prompt, textAlign: TextAlign.start),
                       ),
                   ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// User message (#63, Fluent Copilot "user message"): bubble on the right,
+/// at most 80 percent wide, `surface`, radius 8, padding 8 x 12, `body2`.
+/// The time (`caption1` `muted`) and Copy are under the bubble on the right;
+/// they show on hover and focus, and always at compact width or without a
+/// mouse.
+class _UserMessage extends StatefulWidget {
+  const _UserMessage({required this.exchange, required this.compact});
+  final Exchange exchange;
+  final bool compact;
+  @override
+  State<_UserMessage> createState() => _UserMessageState();
+}
+
+class _UserMessageState extends State<_UserMessage> {
+  bool hovered = false, focused = false, touch = false;
+  @override
+  Widget build(BuildContext context) {
+    final p = Palette.from(context);
+    final e = widget.exchange;
+    final visible =
+        widget.compact ||
+        hovered ||
+        focused ||
+        touch ||
+        !RendererBinding.instance.mouseTracker.mouseIsConnected;
+    return MouseRegion(
+      onEnter: (_) => setState(() {
+        hovered = true;
+        touch = false;
+      }),
+      onExit: (_) => setState(() => hovered = false),
+      child: Listener(
+        onPointerDown: (event) {
+          if (event.kind == PointerDeviceKind.touch) {
+            setState(() => touch = true);
+          }
+        },
+        child: Focus(
+          canRequestFocus: false,
+          skipTraversal: true,
+          onFocusChange: (value) => setState(() => focused = value),
+          child: LayoutBuilder(
+            builder: (context, box) => Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Container(
+                  constraints: BoxConstraints(
+                    maxWidth: box.maxWidth * Space.userBubbleFraction,
+                  ),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: Space.s12,
+                    vertical: Space.s8,
+                  ),
+                  decoration: BoxDecoration(
+                    color: p.surface,
+                    borderRadius: BorderRadius.circular(Radii.dialog),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (e.text.isNotEmpty)
+                        Text(
+                          e.text,
+                          style: TextStyles.body2.copyWith(color: p.text),
+                        ),
+                      for (final file in e.files)
+                        Text(
+                          file,
+                          style: TextStyles.caption1.copyWith(color: p.muted),
+                        ),
+                    ],
+                  ),
+                ),
+                Visibility(
+                  visible: visible,
+                  maintainSize: true,
+                  maintainAnimation: true,
+                  maintainState: true,
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: Space.s4),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        if (e.createdAt != null)
+                          Flexible(
+                            child: Text(
+                              '${MaterialLocalizations.of(context).formatMediumDate(e.createdAt!.toLocal())} ${MaterialLocalizations.of(context).formatTimeOfDay(TimeOfDay.fromDateTime(e.createdAt!.toLocal()), alwaysUse24HourFormat: MediaQuery.alwaysUse24HourFormatOf(context))}',
+                              key: ValueKey('message-time-${e.inputId}'),
+                              style: TextStyles.caption1.copyWith(
+                                color: p.muted,
+                              ),
+                            ),
+                          ),
+                        const SizedBox(width: Space.s4),
+                        SelectionContainer.disabled(
+                          child: CopyMessageButton(text: e.text),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               ],
             ),

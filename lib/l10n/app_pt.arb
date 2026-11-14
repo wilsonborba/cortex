@@ -180,7 +180,7 @@
   "steps_chunks_selected": "Trechos selecionados",
   "steps_thinking_step": "Etapa de raciocínio",
   "steps_thinking_stopped": "Raciocínio parado pelo usuário",
-  "temporaryBanner": "Temporária: não é salva e se perde ao recarregar.",
+  "temporaryBanner": "Conversa temporária: não é salva e se perde ao recarregar.",
   "justNow": "Agora",
   "minutesAgo": "{n} min atrás",
   "hoursAgo": "{n} h atrás",
@@ -490,5 +490,6 @@
   "themeDescription": "Use o tema do sistema, o tema claro ou o tema escuro.",
   "languageDescription": "Selecione o idioma do Cortex.",
   "pinnedChats": "Fixadas",
-  "recentChats": "Recentes"
+  "recentChats": "Recentes",
+  "aiNote": "O conteúdo gerado por IA pode estar incorreto"
 }

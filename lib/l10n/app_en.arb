@@ -248,7 +248,7 @@
       }
     }
   },
-  "temporaryBanner": "Temporary: not saved, lost when you refresh.",
+  "temporaryBanner": "Temporary chat: not saved, lost when you refresh.",
   "justNow": "Just now",
   "minutesAgo": "{n} min ago",
   "hoursAgo": "{n} h ago",
@@ -579,5 +579,6 @@
   "themeDescription": "Use the system theme, the light theme or the dark theme.",
   "languageDescription": "Select the language of Cortex.",
   "pinnedChats": "Pinned",
-  "recentChats": "Recent"
+  "recentChats": "Recent",
+  "aiNote": "AI-generated content may be incorrect"
 }
