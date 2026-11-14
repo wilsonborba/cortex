@@ -8,6 +8,8 @@
 
 - Make dark danger text pass 4.5:1 on raised surfaces
 
+- Find Used in memories with the items search
+
 
 ### Chores
 
