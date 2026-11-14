@@ -72,7 +72,7 @@ class _PipelineDiagramState extends State<PipelineDiagram> {
               for (final (i, (name, text)) in stages.indexed)
                 AnimatedContainer(
                   duration: Motion.of(context),
-                  curve: FoundationTokens.curve,
+                  curve: FoundationTokens.hoverCurve,
                   key: Key('stage-$i'),
                   width: 170,
                   padding: const EdgeInsets.all(Space.s12),

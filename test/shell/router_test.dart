@@ -1,3 +1,4 @@
+import 'package:cortex/presentation/frontend/theme/tokens.dart';
 import 'package:cortex/core/utils/return_path.dart';
 import 'package:cortex/dal/remote/auth_api_adapter.dart';
 import 'package:cortex/domain/services/auth_service.dart';
@@ -133,10 +134,13 @@ void main() {
   });
 
   testWidgets(
-    'expanded: 280 px sidebar, one primary, log out at the bottom, 320 px details',
+    'expanded: 260 px sidebar, one primary, log out at the bottom, 320 px details',
     (tester) async {
       final (_, _, details) = await pump(tester, '/v1/chats');
-      expect(tester.getSize(find.byKey(const Key('sidebar'))).width, 280);
+      expect(
+        tester.getSize(find.byKey(const Key('sidebar'))).width,
+        Space.sidebarWidth,
+      );
       expect(find.text('New chat'), findsOneWidget);
       expect(find.text('Log out'), findsNothing);
       expect(find.byKey(const Key('account-button')), findsOneWidget);

@@ -147,7 +147,7 @@ class SchemaFields extends StatelessWidget {
                               Text(
                                 fieldError(l, error)!,
                                 style: TextStyle(
-                                  color: Palette.from(context).danger,
+                                  color: Palette.from(context).dangerForeground,
                                 ),
                               ),
                           ],

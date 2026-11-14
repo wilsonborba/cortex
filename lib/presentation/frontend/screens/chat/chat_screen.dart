@@ -379,7 +379,7 @@ class _ChatScreenState extends State<ChatScreen> {
                         value: 'delete',
                         child: Text(
                           l.delete,
-                          style: TextStyle(color: p.danger),
+                          style: TextStyle(color: p.dangerForeground),
                         ),
                       ),
                     ],

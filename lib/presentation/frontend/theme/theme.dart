@@ -1,38 +1,44 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'tokens.dart';
 
-/// Material theme from the tokens: no shadows, no gradients, 1 px borders.
+/// Material theme from the Fluent 2 tokens (issue #59): neutral surfaces,
+/// 1 px strokes, Fluent corners and Fluent shadows on cards, menus, toasts,
+/// tooltips and dialogs. No gradients.
 ThemeData cortexTheme(Brightness brightness) {
   final p = Palette.of(brightness);
+  final b = brightness;
   final scheme = ColorScheme(
     brightness: brightness,
     primary: p.text,
     onPrimary: p.background,
     secondary: p.text,
     onSecondary: p.background,
-    error: p.danger,
+    error: p.dangerForeground,
     onError: p.onDanger,
     surface: p.surface,
     onSurface: p.text,
     onSurfaceVariant: p.muted,
-    outline: p.border,
-    outlineVariant: p.border,
-    shadow: Colors.black,
-    scrim: p.background.withValues(alpha: 0.6),
+    outline: p.stroke,
+    outlineVariant: p.divider,
+    shadow: Shadows.key(b),
+    scrim: p.overlay,
   );
   final border = OutlineInputBorder(
     borderRadius: BorderRadius.circular(Radii.control),
-    borderSide: BorderSide(color: p.border, width: Controls.border),
+    borderSide: BorderSide(color: p.stroke, width: Controls.border),
   );
   final text = TextTheme(
     displayLarge: TextStyles.display,
-    headlineLarge: TextStyles.pageTitle,
-    headlineMedium: TextStyles.section,
-    titleLarge: TextStyles.subsection,
-    bodyLarge: TextStyles.body,
-    bodyMedium: TextStyles.compact,
-    labelLarge: TextStyles.label,
-    labelMedium: TextStyles.label,
+    headlineLarge: TextStyles.largeTitle,
+    headlineMedium: TextStyles.title3,
+    titleLarge: TextStyles.subtitle1,
+    titleMedium: TextStyles.subtitle2,
+    bodyLarge: TextStyles.body2,
+    bodyMedium: TextStyles.body1,
+    labelLarge: TextStyles.body1Strong,
+    labelMedium: TextStyles.caption1,
+    bodySmall: TextStyles.caption1,
   ).apply(bodyColor: p.text, displayColor: p.text);
   return ThemeData(
     useMaterial3: true,
@@ -49,16 +55,22 @@ ThemeData cortexTheme(Brightness brightness) {
     textTheme: text,
     iconTheme: IconThemeData(size: IconSizes.action, color: p.text),
     scaffoldBackgroundColor: p.background,
-    shadowColor: Colors.transparent,
+    shadowColor: Shadows.key(b),
     splashFactory: NoSplash.splashFactory,
-    dividerTheme: DividerThemeData(color: p.border, thickness: 1, space: 1),
+    dividerTheme: DividerThemeData(
+      color: p.divider,
+      thickness: Strokes.thin,
+      space: Strokes.thin,
+    ),
     cardTheme: CardThemeData(
       color: p.surface,
       elevation: 0,
       margin: EdgeInsets.zero,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(Radii.card),
-        side: BorderSide(color: p.border),
+      shadowColor: Colors.transparent,
+      shape: ShadowedBorder(
+        borderRadius: BorderRadius.circular(Radii.control),
+        side: BorderSide(color: p.stroke),
+        shadows: Shadows.shadow4(b),
       ),
     ),
     inputDecorationTheme: InputDecorationTheme(
@@ -69,51 +81,63 @@ ThemeData cortexTheme(Brightness brightness) {
       focusedBorder: border.copyWith(
         borderSide: BorderSide(color: p.text, width: Controls.focusRing),
       ),
-      errorBorder: border.copyWith(borderSide: BorderSide(color: p.danger)),
-      hintStyle: TextStyles.body.copyWith(color: p.muted),
+      errorBorder: border.copyWith(
+        borderSide: BorderSide(color: p.dangerForeground),
+      ),
+      hintStyle: TextStyles.body1.copyWith(color: p.muted),
       contentPadding: const EdgeInsets.symmetric(
         horizontal: Space.s12,
         vertical: Space.s8,
       ),
     ),
-    // Owner approved Flutter's default menu/dialog elevation on 2026-11-12.
+    // Fluent shadows replace the Material elevation (issue #59, section 7).
     popupMenuTheme: PopupMenuThemeData(
       color: p.raised,
       surfaceTintColor: Colors.transparent,
-      shadowColor: Colors.black,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(Radii.card),
+      elevation: 0,
+      shadowColor: Colors.transparent,
+      shape: ShadowedBorder(
+        borderRadius: BorderRadius.circular(Radii.control),
+        shadows: Shadows.shadow16(b),
       ),
     ),
     menuTheme: MenuThemeData(
       style: MenuStyle(
         backgroundColor: WidgetStatePropertyAll(p.raised),
         surfaceTintColor: const WidgetStatePropertyAll(Colors.transparent),
-        shadowColor: const WidgetStatePropertyAll(Colors.black),
+        elevation: const WidgetStatePropertyAll(0),
+        shadowColor: const WidgetStatePropertyAll(Colors.transparent),
         shape: WidgetStatePropertyAll(
-          RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(Radii.card),
+          ShadowedBorder(
+            borderRadius: BorderRadius.circular(Radii.control),
+            shadows: Shadows.shadow16(b),
           ),
         ),
       ),
     ),
     dialogTheme: DialogThemeData(
       backgroundColor: p.raised,
-      shadowColor: Colors.black,
+      elevation: 0,
+      shadowColor: Colors.transparent,
       surfaceTintColor: Colors.transparent,
-      shape: RoundedRectangleBorder(
+      barrierColor: p.overlay,
+      constraints: const BoxConstraints(maxWidth: Space.dialogMaxWidth),
+      shape: ShadowedBorder(
         borderRadius: BorderRadius.circular(Radii.dialog),
-        side: BorderSide(color: p.border),
+        side: BorderSide(color: p.stroke),
+        shadows: Shadows.shadow64(b),
       ),
     ),
     bottomSheetTheme: BottomSheetThemeData(
       backgroundColor: p.surface,
       elevation: 0,
-      shape: RoundedRectangleBorder(
+      modalBarrierColor: p.overlay,
+      shape: ShadowedBorder(
         borderRadius: const BorderRadius.vertical(
-          top: Radius.circular(Radii.card),
+          top: Radius.circular(Radii.sheet),
         ),
-        side: BorderSide(color: p.border),
+        side: BorderSide(color: p.stroke),
+        shadows: Shadows.shadow64(b),
       ),
     ),
     listTileTheme: ListTileThemeData(
@@ -124,7 +148,7 @@ ThemeData cortexTheme(Brightness brightness) {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(Radii.control),
       ),
-      titleTextStyle: TextStyles.compact.copyWith(color: p.text),
+      titleTextStyle: TextStyles.body1.copyWith(color: p.text),
     ),
     navigationRailTheme: NavigationRailThemeData(
       backgroundColor: p.surface,
@@ -148,7 +172,7 @@ ThemeData cortexTheme(Brightness brightness) {
         ),
       ),
       labelTextStyle: WidgetStateProperty.resolveWith(
-        (states) => TextStyles.label.copyWith(
+        (states) => TextStyles.caption1.copyWith(
           color: states.contains(WidgetState.selected) ? p.text : p.muted,
         ),
       ),
@@ -160,7 +184,7 @@ ThemeData cortexTheme(Brightness brightness) {
       checkColor: WidgetStatePropertyAll(p.background),
       side: WidgetStateBorderSide.resolveWith(
         (states) => BorderSide(
-          color: states.contains(WidgetState.focused) ? p.text : p.border,
+          color: states.contains(WidgetState.focused) ? p.text : p.stroke,
           width: states.contains(WidgetState.focused)
               ? Controls.focusRing
               : Controls.border,
@@ -176,7 +200,7 @@ ThemeData cortexTheme(Brightness brightness) {
             states.contains(WidgetState.selected) ? p.background : p.muted,
       ),
       trackOutlineColor: WidgetStateProperty.resolveWith(
-        (states) => states.contains(WidgetState.focused) ? p.text : p.border,
+        (states) => states.contains(WidgetState.focused) ? p.text : p.stroke,
       ),
       trackOutlineWidth: WidgetStateProperty.resolveWith(
         (states) => states.contains(WidgetState.focused)
@@ -196,7 +220,7 @@ ThemeData cortexTheme(Brightness brightness) {
         ),
         side: WidgetStateProperty.resolveWith(
           (states) => BorderSide(
-            color: states.contains(WidgetState.focused) ? p.text : p.border,
+            color: states.contains(WidgetState.focused) ? p.text : p.stroke,
             width: states.contains(WidgetState.focused)
                 ? Controls.focusRing
                 : Controls.border,
@@ -207,12 +231,12 @@ ThemeData cortexTheme(Brightness brightness) {
     chipTheme: ChipThemeData(
       backgroundColor: p.surface,
       selectedColor: p.text,
-      secondaryLabelStyle: TextStyles.label.copyWith(color: p.background),
+      secondaryLabelStyle: TextStyles.caption1.copyWith(color: p.background),
       checkmarkColor: p.background,
-      labelStyle: TextStyles.label.copyWith(color: p.text),
+      labelStyle: TextStyles.caption1.copyWith(color: p.text),
       side: WidgetStateBorderSide.resolveWith(
         (states) => BorderSide(
-          color: states.contains(WidgetState.focused) ? p.text : p.border,
+          color: states.contains(WidgetState.focused) ? p.text : p.stroke,
           width: states.contains(WidgetState.focused)
               ? Controls.focusRing
               : Controls.border,
@@ -228,7 +252,7 @@ ThemeData cortexTheme(Brightness brightness) {
       style:
           TextButton.styleFrom(
             foregroundColor: p.text,
-            textStyle: TextStyles.compact,
+            textStyle: TextStyles.body1Strong,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(Radii.control),
             ),
@@ -245,19 +269,22 @@ ThemeData cortexTheme(Brightness brightness) {
     ),
     snackBarTheme: SnackBarThemeData(
       backgroundColor: p.raised,
-      contentTextStyle: TextStyles.compact.copyWith(color: p.text),
+      contentTextStyle: TextStyles.body1.copyWith(color: p.text),
       actionTextColor: p.text,
       elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(Radii.card),
+      shape: ShadowedBorder(
+        borderRadius: BorderRadius.circular(Radii.control),
+        shadows: Shadows.shadow8(b),
       ),
     ),
     tooltipTheme: TooltipThemeData(
       waitDuration: const Duration(milliseconds: 400),
-      textStyle: TextStyles.label.copyWith(color: p.text),
+      textStyle: TextStyles.caption1.copyWith(color: p.text),
+      constraints: const BoxConstraints(maxWidth: Space.tooltipMaxWidth),
       decoration: BoxDecoration(
         color: p.raised,
         borderRadius: BorderRadius.circular(Radii.control),
+        boxShadow: Shadows.shadow8(b),
       ),
     ),
     scrollbarTheme: ScrollbarThemeData(
@@ -281,12 +308,153 @@ ThemeData cortexTheme(Brightness brightness) {
     hoverColor: p.text.withValues(alpha: 0.06),
     pageTransitionsTheme: const PageTransitionsTheme(
       builders: {
-        TargetPlatform.android: FadeForwardsPageTransitionsBuilder(),
-        TargetPlatform.linux: FadeForwardsPageTransitionsBuilder(),
-        TargetPlatform.macOS: FadeForwardsPageTransitionsBuilder(),
-        TargetPlatform.windows: FadeForwardsPageTransitionsBuilder(),
-        TargetPlatform.iOS: FadeForwardsPageTransitionsBuilder(),
+        TargetPlatform.android: FadePageTransitionsBuilder(),
+        TargetPlatform.linux: FadePageTransitionsBuilder(),
+        TargetPlatform.macOS: FadePageTransitionsBuilder(),
+        TargetPlatform.windows: FadePageTransitionsBuilder(),
+        TargetPlatform.iOS: FadePageTransitionsBuilder(),
+        TargetPlatform.fuchsia: FadePageTransitionsBuilder(),
       },
     ),
   );
+}
+
+/// Page change: fade, Fluent fast (150 ms). Reduce Motion skips the fade.
+class FadePageTransitionsBuilder extends PageTransitionsBuilder {
+  const FadePageTransitionsBuilder();
+
+  @override
+  Duration get transitionDuration => MotionDurations.fast;
+
+  @override
+  Duration get reverseTransitionDuration => MotionDurations.fast;
+
+  @override
+  Widget buildTransitions<T>(
+    PageRoute<T> route,
+    BuildContext context,
+    Animation<double> animation,
+    Animation<double> secondaryAnimation,
+    Widget child,
+  ) => MediaQuery.maybeDisableAnimationsOf(context) == true
+      ? child
+      : FadeTransition(
+          opacity: CurvedAnimation(
+            parent: animation,
+            curve: MotionCurves.decelerateMid,
+            reverseCurve: MotionCurves.accelerateMid,
+          ),
+          child: child,
+        );
+}
+
+/// A rounded rectangle border that paints Fluent shadows outside its shape.
+/// Material widgets take one elevation value; Fluent uses two shadows
+/// (ambient and key), so the theme sets elevation 0 and uses this border.
+/// The shadows are clipped to the outside of the shape, so the content of the
+/// surface stays clean.
+class ShadowedBorder extends OutlinedBorder {
+  const ShadowedBorder({
+    super.side,
+    this.borderRadius = BorderRadius.zero,
+    this.shadows = const [],
+  });
+  final BorderRadiusGeometry borderRadius;
+  final List<BoxShadow> shadows;
+
+  RoundedRectangleBorder get _shape =>
+      RoundedRectangleBorder(side: side, borderRadius: borderRadius);
+
+  @override
+  EdgeInsetsGeometry get dimensions => _shape.dimensions;
+
+  @override
+  Path getInnerPath(Rect rect, {TextDirection? textDirection}) =>
+      _shape.getInnerPath(rect, textDirection: textDirection);
+
+  @override
+  Path getOuterPath(Rect rect, {TextDirection? textDirection}) =>
+      _shape.getOuterPath(rect, textDirection: textDirection);
+
+  @override
+  void paint(Canvas canvas, Rect rect, {TextDirection? textDirection}) {
+    if (shadows.isNotEmpty) {
+      final outer = getOuterPath(rect, textDirection: textDirection);
+      var reach = 0.0;
+      for (final s in shadows) {
+        reach = [
+          reach,
+          s.blurRadius * 2 + s.offset.distance,
+        ].reduce((a, b) => a > b ? a : b);
+      }
+      canvas
+        ..save()
+        ..clipPath(
+          Path.combine(
+            PathOperation.difference,
+            Path()..addRect(rect.inflate(reach)),
+            outer,
+          ),
+        );
+      for (final s in shadows) {
+        canvas.drawPath(outer.shift(s.offset), s.toPaint());
+      }
+      canvas.restore();
+    }
+    _shape.paint(canvas, rect, textDirection: textDirection);
+  }
+
+  @override
+  ShadowedBorder copyWith({
+    BorderSide? side,
+    BorderRadiusGeometry? borderRadius,
+    List<BoxShadow>? shadows,
+  }) => ShadowedBorder(
+    side: side ?? this.side,
+    borderRadius: borderRadius ?? this.borderRadius,
+    shadows: shadows ?? this.shadows,
+  );
+
+  @override
+  ShapeBorder scale(double t) => ShadowedBorder(
+    side: side.scale(t),
+    borderRadius: borderRadius * t,
+    shadows: BoxShadow.lerpList(null, shadows, t) ?? const [],
+  );
+
+  @override
+  ShapeBorder? lerpFrom(ShapeBorder? a, double t) => a is ShadowedBorder
+      ? ShadowedBorder(
+          side: BorderSide.lerp(a.side, side, t),
+          borderRadius: BorderRadiusGeometry.lerp(
+            a.borderRadius,
+            borderRadius,
+            t,
+          )!,
+          shadows: BoxShadow.lerpList(a.shadows, shadows, t) ?? const [],
+        )
+      : super.lerpFrom(a, t);
+
+  @override
+  ShapeBorder? lerpTo(ShapeBorder? b, double t) => b is ShadowedBorder
+      ? ShadowedBorder(
+          side: BorderSide.lerp(side, b.side, t),
+          borderRadius: BorderRadiusGeometry.lerp(
+            borderRadius,
+            b.borderRadius,
+            t,
+          )!,
+          shadows: BoxShadow.lerpList(shadows, b.shadows, t) ?? const [],
+        )
+      : super.lerpTo(b, t);
+
+  @override
+  bool operator ==(Object other) =>
+      other is ShadowedBorder &&
+      other.side == side &&
+      other.borderRadius == borderRadius &&
+      listEquals(other.shadows, shadows);
+
+  @override
+  int get hashCode => Object.hash(side, borderRadius, Object.hashAll(shadows));
 }

@@ -200,7 +200,7 @@ class _DemoTranscript extends StatelessWidget {
       child: AnimatedOpacity(
         opacity: visible ? 1 : 0,
         duration: Motion.of(context),
-        curve: FoundationTokens.curve,
+        curve: FoundationTokens.hoverCurve,
         child: child,
       ),
     );

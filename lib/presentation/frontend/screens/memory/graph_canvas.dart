@@ -713,7 +713,7 @@ class _GraphPainter extends CustomPainter {
         pos,
         r,
         Paint()
-          ..color = (n.id == selected ? palette.accent : palette.muted)
+          ..color = (n.id == selected ? palette.brandStroke1 : palette.muted)
               .withValues(alpha: opacity)
           ..style = PaintingStyle.stroke
           ..strokeWidth = n.id == selected
@@ -766,7 +766,8 @@ class _GraphPainter extends CustomPainter {
             pos.dx + label.width,
             pos.dy + r + Space.s4 + label.height + (date?.height ?? 0),
           ),
-          Paint()..color = Colors.white.withValues(alpha: opacity),
+          // A layer paint uses only the alpha of the color.
+          Paint()..color = palette.text.withValues(alpha: opacity),
         );
         label.paint(canvas, pos + Offset(-label.width / 2, r + Space.s4));
         date?.paint(

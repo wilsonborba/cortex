@@ -240,7 +240,7 @@ class ComposerState extends State<Composer> {
     )..layout();
     final width = painter.width + IconSizes.action + Space.s8 + Space.s32;
     painter.dispose();
-    return width.clamp(Controls.minTouch, maximum).toDouble();
+    return width.clamp(Space.menuMinWidth, maximum).toDouble();
   }
 
   @override
@@ -344,7 +344,7 @@ class ComposerState extends State<Composer> {
                                             size: IconSizes.chip,
                                             color: file.errorNumber == null
                                                 ? p.muted
-                                                : p.danger,
+                                                : p.dangerForeground,
                                           ),
                                     label: Text(
                                       [
@@ -402,7 +402,7 @@ class ComposerState extends State<Composer> {
                         l.tokenCounter(tokens, chat.budget.maxTokens),
                         key: const Key('token-counter'),
                         style: TextStyles.label.copyWith(
-                          color: over ? p.danger : p.muted,
+                          color: over ? p.dangerForeground : p.muted,
                         ),
                       ),
                     Row(
@@ -427,7 +427,7 @@ class ComposerState extends State<Composer> {
                                       width: _menuWidth(
                                         context,
                                         '${l.webLabel}: ${_webChoices(l).firstWhere((item) => item.$1 == o.web).$2}',
-                                        Space.webMenuWidth,
+                                        Space.menuMaxWidth,
                                       ),
                                       child: AppSelect<WebChoice>(
                                         key: const Key('web-choice'),
@@ -473,7 +473,7 @@ class ComposerState extends State<Composer> {
                                           o.personaId == null
                                               ? l.noPersona
                                               : _personaLabel(l),
-                                          Space.personaMenuWidth,
+                                          Space.menuMaxWidth,
                                         ),
                                         child: AppSelect<String?>(
                                           key: const Key('persona-picker'),

@@ -13,19 +13,19 @@ for path in sorted(root.rglob('*.dart')):
         def fail(reason):errors.append(f'{name}:{i+1}: {reason}')
         if re.search(r'\b(?:Icons|LucideIcons)\.',line) and not name.endswith('/theme/app_icons.dart'):
             fail('Use the central icon map')
-        if re.search(r'Color\s*\(\s*0x',line) and not name.endswith('/theme/tokens.dart'):
+        if re.search(r'Color\s*\(\s*0x|Color\.from(?:RGBO|ARGB)\s*\(|Colors\.(?!transparent\b)[a-z]',line) and not name.endswith('/theme/tokens.dart'):
             fail('Use a color token')
         if 'withOpacity(' in line or 'MaterialStateProperty' in line:
             fail('Use the current Flutter color and state APIs')
         if 'DropdownButton' in line and '/screens/' in name and '/screens/usage/' not in name:
             fail('Use the shared select control in redesigned screens')
-        if re.search(r'\.(?:accent|onAccent)\b',line) and not name.endswith('/theme/tokens.dart'):
+        if re.search(r'\.(?:brand\w*|onBrand)\b',line) and not name.endswith('/theme/tokens.dart'):
             context='\n'.join(lines[max(0,i-3):i+2])
             allowed=(name.endswith('/widgets/common/buttons.dart') and 'ButtonKind.primary' in context
                 or name.endswith('/screens/memory/graph_canvas.dart') and 'n.id == selected' in context
                 or name.endswith('/screens/chat/chat_list.dart') and 'selected ?' in context
                 or name.endswith('/shell/app_shell.dart') and 'widget.location.startsWith(d.path)' in context)
-            if not allowed:fail('Accent is reserved for the primary action and selected marker')
+            if not allowed:fail('Brand is reserved for the Fluent brand places (issue #59, section 2)')
 if errors:
     print('\n'.join(errors));sys.exit(1)
 print('Design checks passed')
