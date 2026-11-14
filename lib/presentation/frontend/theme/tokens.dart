@@ -161,7 +161,7 @@ class Palette extends ThemeExtension<Palette> {
     brandBackground2: Color(0xFF2B411A),
     onBrand: Color(0xFF000000),
     dangerBackground: Color(0xFF3B0509),
-    dangerForeground: Color(0xFFDC626D),
+    dangerForeground: Color(0xFFE37D80),
     dangerBorder: Color(0xFFC50F1F),
     dangerSolid: Color(0xFFC50F1F),
     onDanger: Color(0xFFFFFFFF),
