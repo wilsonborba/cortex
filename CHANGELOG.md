@@ -25,6 +25,10 @@
 
 - Inspect a saved answer in place with a hover cursor (#77)
 
+- Merge #77
+
+- Add certainty rail, text links and alternatives radar (#78)
+
 
 ## v2.2.3 - 2026-11-14
 

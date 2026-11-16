@@ -10,6 +10,8 @@ import '../../../../l10n/generated/app_localizations.dart';
 import '../../theme/app_icons.dart';
 import '../../theme/tokens.dart';
 import '../../widgets/common/reticle.dart';
+import 'inspection_radar.dart';
+import 'inspection_rail.dart';
 
 /// Percent text in the active locale, one decimal at most.
 String inspectionPercent(BuildContext context, double value) =>
@@ -17,7 +19,10 @@ String inspectionPercent(BuildContext context, double value) =>
 
 /// Measured geometry of the inspected text, in [InspectionAnswer] space.
 class InspectionLayout {
-  const InspectionLayout(this.spans, this.lines);
+  const InspectionLayout(this.spans, this.lines, this.height);
+
+  /// Height of the text block.
+  final double height;
 
   /// Last box of each span (a span can wrap).
   final List<Rect> spans;
@@ -38,7 +43,7 @@ class InspectionLine {
   final spans = <int>[];
 }
 
-/// Answer inspection in place (cortex#77). The saved answer text becomes the
+/// Answer inspection in place (cortex#77, cortex#78). The saved answer text becomes the
 /// surface: the cursor follows the pointer, text after it turns to ghost
 /// text, and a click pins the cursor. Nothing here calls a model or changes
 /// the saved text.
@@ -48,9 +53,13 @@ class InspectionAnswer extends StatefulWidget {
     required this.controller,
     required this.onExit,
     this.gutter = 0,
+    this.onContinue,
   });
   final AnswerInspectionController controller;
   final VoidCallback onExit;
+
+  /// Continue the answer with a radar option (cortex#82). Hidden when null.
+  final ValueChanged<InspectionOption>? onContinue;
 
   /// Free space at the left of the text column (the rail space at wide
   /// widths). Zero means compact layout.
@@ -73,7 +82,10 @@ class InspectionAnswerState extends State<InspectionAnswer>
   AnswerInspectionController get c => widget.controller;
 
   /// Left edge of the text inside this widget.
-  double get textLeft => widget.gutter;
+  double get textLeft => widget.gutter > 0 ? widget.gutter : compactRailWidth;
+  bool get compact => widget.gutter <= 0;
+  double _width = 0;
+  List<InspectionLink> _links = const [];
   @override
   void initState() {
     super.initState();
@@ -149,12 +161,13 @@ class InspectionAnswerState extends State<InspectionAnswer>
       }
       lines.last.spans.add(i);
     }
-    final next = InspectionLayout(rects, lines);
+    final next = InspectionLayout(rects, lines, paragraph.size.height);
     final old = layout;
     if (old == null ||
         old.spans.length != rects.length ||
         old.spans.last != rects.last ||
-        old.lines.length != lines.length) {
+        old.lines.length != lines.length ||
+        old.height != next.height) {
       setState(() => layout = next);
     } else {
       layout = next;
@@ -245,14 +258,114 @@ class InspectionAnswerState extends State<InspectionAnswer>
     return KeyEventResult.handled;
   }
 
-  /// Extra space below the text for overlays (the radar of cortex#78).
-  double bottomSpace(InspectionLayout layout) => 0;
+  RadarGeometry? _radar(InspectionLayout layout, Offset cursor) {
+    final span = c.current;
+    if (!c.radarOpen || !c.available || span == null || span.options.isEmpty) {
+      return null;
+    }
+    return RadarGeometry.place(
+      cursorRect: layout.spans[c.cursor],
+      cursor: cursor,
+      width: _width,
+      textLeft: textLeft,
+      compact: compact,
+    );
+  }
 
-  /// Overlays above the text (rail and radar of cortex#78).
-  List<Widget> overlays(InspectionLayout layout, Offset cursor) => const [];
+  /// Extra space below the text, so the radar and its readout fit.
+  double bottomSpace(InspectionLayout layout) {
+    final rect = layout.spans[c.cursor.clamp(0, layout.spans.length - 1)];
+    final radar = _radar(layout, rect.centerRight);
+    if (radar == null) return 0;
+    return (radar.bounds.bottom - layout.height).clamp(0, double.infinity);
+  }
 
-  /// Paint below the cursor (links of cortex#78).
-  void paintLinks(Canvas canvas, InspectionLayout layout, Offset cursor) {}
+  /// Rail at the left, the radar under the cursor and the ghost
+  /// replacement of the selected option (cortex#78).
+  List<Widget> overlays(InspectionLayout layout, Offset cursor) {
+    final p = Palette.from(context);
+    final lines = <int>{for (final link in _links) layout.lineOf(link.span)};
+    final radar = _radar(layout, cursor);
+    final picked = c.picked;
+    final rect = layout.spans[c.cursor];
+    return [
+      if (c.available)
+        Positioned(
+          left: 0,
+          top: 0,
+          width: textLeft - (compact ? Space.s4 : Space.s12),
+          height: layout.height,
+          child: InspectionRail(
+            controller: c,
+            layout: layout,
+            width: textLeft - (compact ? Space.s4 : Space.s12),
+            linkedLines: lines,
+          ),
+        ),
+      if (picked != null)
+        Positioned(
+          left: rect.left,
+          top: rect.top,
+          child: IgnorePointer(
+            child: Container(
+              key: const Key('radar-ghost'),
+              constraints: BoxConstraints(minWidth: rect.width),
+              height: rect.height,
+              color: p.background,
+              child: Text(
+                c.current!.text.startsWith(' ') && !picked.text.startsWith(' ')
+                    ? ' ${picked.text}'
+                    : picked.text,
+                maxLines: 1,
+                softWrap: false,
+                style: TextStyles.body2.copyWith(
+                  color: p.text,
+                  decoration: TextDecoration.underline,
+                  decorationStyle: TextDecorationStyle.dashed,
+                  decorationColor: InspectionTones.range(p),
+                  decorationThickness: 2,
+                ),
+              ),
+            ),
+          ),
+        ),
+      if (radar != null)
+        Positioned.fromRect(
+          rect: radar.bounds,
+          child: InspectionRadar(
+            key: const Key('inspection-radar'),
+            controller: c,
+            geometry: radar,
+            onContinue: widget.onContinue,
+          ),
+        ),
+    ];
+  }
+
+  /// Soft curves from the cursor to earlier linked words. The words have a
+  /// highlight; the curves stay light so they never hide the text.
+  void paintLinks(Canvas canvas, InspectionLayout layout, Offset cursor) {
+    final p = Palette.from(context);
+    final range = InspectionTones.range(p);
+    for (final link in _links) {
+      final target = layout.spans[link.span];
+      final end = target.bottomCenter;
+      final control = Offset(
+        (cursor.dx + end.dx) / 2,
+        (cursor.dy < end.dy ? cursor.dy : end.dy) - 30,
+      );
+      final path = Path()
+        ..moveTo(cursor.dx, cursor.dy)
+        ..quadraticBezierTo(control.dx, control.dy, end.dx, end.dy);
+      canvas.drawPath(
+        path,
+        Paint()
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 1
+          ..color = range.withValues(alpha: link.alternative ? 0.16 : 0.3),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -263,6 +376,7 @@ class InspectionAnswerState extends State<InspectionAnswer>
     final p = Palette.from(context);
     final b = Theme.of(context).brightness;
     final base = TextStyles.body2.copyWith(color: p.text);
+    _links = c.available ? c.links() : const [];
     final spans = <InlineSpan>[
       for (var i = 0; i < c.spans.length; i++)
         TextSpan(text: c.spans[i].text, style: spanStyle(i, p, b)),
@@ -285,83 +399,90 @@ class InspectionAnswerState extends State<InspectionAnswer>
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Padding(
-            padding: EdgeInsets.only(left: textLeft),
+            padding: EdgeInsets.only(left: widget.gutter),
             child: InspectionSummaryBar(controller: c, onExit: widget.onExit),
           ),
           const SizedBox(height: Space.s12),
-          Stack(
-            clipBehavior: Clip.none,
-            children: [
-              Padding(
-                padding: EdgeInsets.only(
-                  left: textLeft,
-                  bottom: measured == null ? 0 : bottomSpace(measured),
-                ),
-                child: Semantics(
-                  slider: true,
-                  label: l.inspectionCursorLabel,
-                  value: _semanticValue(l, c.cursor),
-                  increasedValue: _semanticValue(l, c.cursor + 1),
-                  decreasedValue: _semanticValue(l, c.cursor - 1),
-                  onIncrease: () => c.step(1),
-                  onDecrease: () => c.step(-1),
-                  child: MouseRegion(
-                    cursor: SystemMouseCursors.precise,
-                    onHover: (e) => _follow(e.localPosition),
-                    child: GestureDetector(
-                      key: const Key('inspection-text'),
-                      behavior: HitTestBehavior.opaque,
-                      onTapUp: _tap,
-                      onVerticalDragUpdate: (d) => _drag(d.localPosition),
-                      onHorizontalDragUpdate: (d) => _drag(d.localPosition),
-                      onVerticalDragEnd: (_) => _dragEnd(),
-                      onHorizontalDragEnd: (_) => _dragEnd(),
-                      child: RichText(
-                        key: _text,
-                        textScaler: MediaQuery.textScalerOf(context),
-                        text: TextSpan(style: base, children: spans),
-                      ),
+          LayoutBuilder(
+            builder: (context, box) {
+              _width = box.maxWidth;
+              return Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  Padding(
+                    padding: EdgeInsets.only(
+                      left: textLeft,
+                      bottom: measured == null ? 0 : bottomSpace(measured),
                     ),
-                  ),
-                ),
-              ),
-              if (measured != null && cursor != null) ...[
-                Positioned.fill(
-                  child: IgnorePointer(
-                    child: CustomPaint(
-                      painter: _CursorPainter(
-                        state: this,
-                        layout: measured,
-                        cursor: cursor,
-                        color: p.text,
-                        dot: c.pinned ? InspectionTones.range(p) : p.text,
-                        fill: p.background,
-                        tick: _tick,
-                      ),
-                    ),
-                  ),
-                ),
-                if (!c.moved)
-                  Positioned(
-                    left: cursor.dx + Space.s16,
-                    top: cursor.dy - 9,
-                    child: IgnorePointer(
-                      child: Container(
-                        color: p.background,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: Space.s4,
-                        ),
-                        child: Text(
-                          touch ? l.inspectionHintTouch : l.inspectionHint,
-                          key: const Key('inspection-hint'),
-                          style: TextStyles.caption1.copyWith(color: p.muted),
+                    child: Semantics(
+                      slider: true,
+                      label: l.inspectionCursorLabel,
+                      value: _semanticValue(l, c.cursor),
+                      increasedValue: _semanticValue(l, c.cursor + 1),
+                      decreasedValue: _semanticValue(l, c.cursor - 1),
+                      onIncrease: () => c.step(1),
+                      onDecrease: () => c.step(-1),
+                      child: MouseRegion(
+                        cursor: SystemMouseCursors.precise,
+                        onHover: (e) => _follow(e.localPosition),
+                        child: GestureDetector(
+                          key: const Key('inspection-text'),
+                          behavior: HitTestBehavior.opaque,
+                          onTapUp: _tap,
+                          onVerticalDragUpdate: (d) => _drag(d.localPosition),
+                          onHorizontalDragUpdate: (d) => _drag(d.localPosition),
+                          onVerticalDragEnd: (_) => _dragEnd(),
+                          onHorizontalDragEnd: (_) => _dragEnd(),
+                          child: RichText(
+                            key: _text,
+                            textScaler: MediaQuery.textScalerOf(context),
+                            text: TextSpan(style: base, children: spans),
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ...overlays(measured, cursor),
-              ],
-            ],
+                  if (measured != null && cursor != null) ...[
+                    Positioned.fill(
+                      child: IgnorePointer(
+                        child: CustomPaint(
+                          painter: _CursorPainter(
+                            state: this,
+                            layout: measured,
+                            cursor: cursor,
+                            color: p.text,
+                            dot: c.pinned ? InspectionTones.range(p) : p.text,
+                            fill: p.background,
+                            tick: _tick,
+                          ),
+                        ),
+                      ),
+                    ),
+                    if (!c.moved)
+                      Positioned(
+                        left: cursor.dx + Space.s16,
+                        top: cursor.dy - 9,
+                        child: IgnorePointer(
+                          child: Container(
+                            color: p.background,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: Space.s4,
+                            ),
+                            child: Text(
+                              touch ? l.inspectionHintTouch : l.inspectionHint,
+                              key: const Key('inspection-hint'),
+                              style: TextStyles.caption1.copyWith(
+                                color: p.muted,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ...overlays(measured, cursor),
+                  ],
+                ],
+              );
+            },
           ),
         ],
       ),
@@ -384,6 +505,9 @@ class InspectionAnswerState extends State<InspectionAnswer>
   /// Style of one span: ghost after the cursor, underline at the cursor.
   TextStyle? spanStyle(int i, Palette p, Brightness b) {
     if (i > c.cursor) return TextStyle(color: InspectionTones.ghost(p));
+    if (_links.any((link) => link.span == i)) {
+      return TextStyle(backgroundColor: InspectionTones.linkFill(p));
+    }
     if (i == c.cursor) {
       final certainty = c.spans[i].certainty;
       return TextStyle(

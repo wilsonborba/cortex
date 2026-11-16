@@ -49,9 +49,16 @@ AnswerInspectionData fixtureData(String text) {
       pieces.add(chars.sublist(i, math.min(i + 4, chars.length)).join());
     }
   }
+  var index = 0;
   for (final piece in pieces) {
     final bytes = utf8.encode(piece);
-    final fork = forks[piece.trim()];
+    final thai = RegExp(r'[\u0E00-\u0E7F]').hasMatch(piece);
+    final fork =
+        forks[piece.trim()] ??
+        (thai && (index == 3 || index == 9)
+            ? const [0.47, 'ป่าไม้', 0.32, 'บ้าน', 0.11]
+            : null);
+    index++;
     final chosen = fork == null ? 0.72 + (n++ % 7) * 0.04 : fork[0] as double;
     final alternatives = [InspectionAlternative(bytes, math.log(chosen))];
     if (fork != null) {
@@ -432,20 +439,162 @@ void main() {
     await tester.pumpWidget(const SizedBox());
     c.dispose();
   });
+  testWidgets('radar: hover selects, ghost replaces, text stays saved', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(1300, 1000);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    final text = sampleText('en');
+    final c = AnswerInspectionController(
+      text: text,
+      initialData: fixtureData(text),
+    );
+    InspectionOption? continued;
+    Widget build({bool withContinue = false}) => app(
+      column(
+        (gutter) => InspectionAnswer(
+          controller: c,
+          onExit: () {},
+          gutter: gutter,
+          onContinue: withContinue ? (o) => continued = o : null,
+        ),
+      ),
+    );
+    await tester.pumpWidget(build());
+    await tester.pumpAndSettle();
+    final map = c.spans.indexWhere((s) => s.text == ' map');
+    c.moveTo(map, pin: true);
+    c.openRadar();
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('inspection-radar')), findsOneWidget);
+    for (var k = 0; k < c.current!.options.length; k++) {
+      expect(find.byKey(ValueKey('radar-option-$k')), findsOneWidget);
+    }
+    expect(find.textContaining('The model chose “map” with 47%'), findsOne);
+    expect(find.text('Fork: the second option was close'), findsOne);
+    final mouse = await tester.createGesture(kind: PointerDeviceKind.mouse);
+    await mouse.addPointer(location: Offset.zero);
+    await mouse.moveTo(
+      tester.getCenter(find.byKey(const ValueKey('radar-option-1'))),
+    );
+    await tester.pumpAndSettle();
+    expect(c.pick, 1);
+    expect(c.cursor, map, reason: 'the radar area does not move the cursor');
+    expect(find.byKey(const Key('radar-ghost')), findsOneWidget);
+    expect(find.textContaining('also considered “paper”'), findsOne);
+    expect(find.byKey(const Key('radar-continue')), findsNothing);
+    await tester.pumpWidget(build(withContinue: true));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('radar-continue')));
+    expect(continued?.text, ' paper');
+    expect(continued?.rank, 2);
+    await tester.sendKeyEvent(LogicalKeyboardKey.escape);
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('inspection-radar')), findsNothing);
+    expect(c.text, text);
+    await mouse.removePointer();
+    await tester.pumpWidget(const SizedBox());
+    c.dispose();
+  });
+  testWidgets('rail rows follow lines; a row goes to its weakest token', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(1300, 1000);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    final text = sampleText('en');
+    final c = AnswerInspectionController(
+      text: text,
+      initialData: fixtureData(text),
+    );
+    await tester.pumpWidget(
+      app(
+        column(
+          (gutter) =>
+              InspectionAnswer(controller: c, onExit: () {}, gutter: gutter),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    final state = tester.state<InspectionAnswerState>(
+      find.byType(InspectionAnswer),
+    );
+    final lines = state.layout!.lines;
+    expect(find.byKey(const ValueKey('rail-row-0')), findsOneWidget);
+    expect(find.byKey(ValueKey('rail-row-${lines.length - 1}')), findsOne);
+    await tester.tap(find.byKey(const ValueKey('rail-row-0')));
+    await tester.pumpAndSettle();
+    final first = lines.first.spans.where((i) => c.spans[i].hasWord);
+    final weakest = first.reduce(
+      (a, b) => c.spans[b].certainty! < c.spans[a].certainty! ? b : a,
+    );
+    expect(c.cursor, weakest);
+    expect((c.pinned, c.radarOpen), (true, true));
+    // A later repeated word links back and highlights the earlier word.
+    final second = c.spans.lastIndexWhere((s) => s.word == 'trees');
+    c.moveTo(second, pin: true);
+    await tester.pumpAndSettle();
+    final rich = tester.widget<RichText>(
+      find.descendant(
+        of: find.byKey(const Key('inspection-text')),
+        matching: find.byType(RichText),
+      ),
+    );
+    final children = (rich.text as TextSpan).children!;
+    final firstTrees = c.spans.indexWhere((s) => s.word == 'trees');
+    expect(
+      (children[firstTrees] as TextSpan).style?.backgroundColor,
+      InspectionTones.linkFill(Palette.light),
+    );
+    await tester.pumpWidget(const SizedBox());
+    c.dispose();
+  });
+  testWidgets('narrow width and 200 percent text keep rail and radar', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(390, 1400);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    final text = sampleText('pt');
+    final c = AnswerInspectionController(
+      text: text,
+      initialData: fixtureData(text),
+    );
+    await tester.pumpWidget(
+      app(
+        column((_) => InspectionAnswer(controller: c, onExit: () {})),
+        scale: 2,
+      ),
+    );
+    await tester.pumpAndSettle();
+    c.nextFork();
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('inspection-radar')), findsOneWidget);
+    expect(find.byKey(const ValueKey('rail-row-0')), findsOneWidget);
+    expect(tester.takeException(), isNull);
+    await tester.pumpWidget(const SizedBox());
+    c.dispose();
+  });
   for (final brightness in Brightness.values) {
     for (final width in [390.0, 1300.0]) {
       for (final language in ['en', 'pt', 'th']) {
         testWidgets('in-place ${brightness.name} ${width.toInt()} $language', (
           tester,
         ) async {
-          tester.view.physicalSize = Size(width, 700);
+          tester.view.physicalSize = Size(width, 820);
           tester.view.devicePixelRatio = 1;
           addTearDown(tester.view.reset);
           final text = sampleText(language);
           final c = AnswerInspectionController(
             text: text,
             initialData: fixtureData(text),
-          )..moveTo(12);
+          );
+          final fork = c.summary.forks.first;
+          c
+            ..moveTo(fork, pin: true)
+            ..openRadar()
+            ..select(1);
           await tester.pumpWidget(
             app(
               column(
