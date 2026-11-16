@@ -165,8 +165,34 @@ void main() {
     final c = AnswerInspectionController(text: text, initialData: data);
     expect(c.spans.map((s) => s.text), ['ก', '💡', ' ', 'x']);
     expect(c.spans[1].certainty, closeTo(math.exp(-0.4), 1e-9));
-    expect(c.spans[1].options, isEmpty, reason: 'joined tokens have no rank');
+    expect(c.spans[1].tokenIndex, 3, reason: 'first token of the emoji');
+    expect(c.spans[1].options, isEmpty, reason: 'a byte fragment is not text');
     expect(c.spans.last.tokenIndex, bytes.length - 1);
+    c.dispose();
+  });
+  test('a Thai vowel token joins its consonant and keeps its options', () {
+    const text = 'มี';
+    final consonant = utf8.encode('ม'), vowel = utf8.encode('ี');
+    final data = AnswerInspectionData(
+      reason: null,
+      tokens: [
+        InspectionToken(consonant, -0.4, 0, 3, [
+          InspectionAlternative(consonant, -0.4),
+          InspectionAlternative(utf8.encode('ที่'), -1.2),
+        ]),
+        InspectionToken(vowel, -0.1, 3, 6, [
+          InspectionAlternative(vowel, -0.1),
+        ]),
+      ],
+    );
+    final c = AnswerInspectionController(text: text, initialData: data);
+    expect(c.spans.single.text, 'มี');
+    expect(c.spans.single.tokenIndex, 0);
+    expect(c.spans.single.certainty, closeTo(math.exp(-0.5), 1e-9));
+    expect(c.spans.single.options.map((o) => o.text), ['ม', 'ที่']);
+    expect(c.spans.single.options[1].rank, 2);
+    c.openRadar();
+    expect(c.radarOpen, true);
     c.dispose();
   });
   test('options are sorted, keep their saved rank and are not normalized', () {

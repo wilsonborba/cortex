@@ -134,7 +134,8 @@ class InspectionSpan {
   final String text;
   final InspectionToken? token;
 
-  /// Position of [token] in the saved token list.
+  /// Position of [token] in the saved token list. For a joined span this is
+  /// its first token, where the model made the choice.
   final int? tokenIndex;
 
   /// Recorded likelihood of the chosen text, from 0 to 1.
