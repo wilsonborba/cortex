@@ -54,7 +54,11 @@ class InspectionAnswer extends StatefulWidget {
     required this.onExit,
     this.gutter = 0,
     this.onContinue,
+    this.autofocus = true,
   });
+
+  /// Take keyboard focus on open. The landing example does not.
+  final bool autofocus;
   final AnswerInspectionController controller;
   final VoidCallback onExit;
 
@@ -396,7 +400,7 @@ class InspectionAnswerState extends State<InspectionAnswer>
         Theme.of(context).platform == TargetPlatform.iOS;
     return Focus(
       focusNode: _focus,
-      autofocus: true,
+      autofocus: widget.autofocus,
       onKeyEvent: _key,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,

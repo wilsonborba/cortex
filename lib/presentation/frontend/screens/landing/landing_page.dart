@@ -678,45 +678,30 @@ class _Hero extends StatelessWidget {
     );
     const photo = LandingPhoto(LandingImages.hero, key: Key('hero-image'));
     const demo = LandingInspectionDemo();
-    // cortex#81: a balanced split hero. The real inspection example takes
-    // the wide side; the image stays in its own area under the text. On
-    // compact width the example comes before the image.
-    if (size == SizeClass.compact) {
-      return Padding(
-        padding: const EdgeInsets.only(top: Space.s48),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            text,
-            const SizedBox(height: Space.s24),
-            demo,
-            const SizedBox(height: Space.s24),
-            photo,
-          ],
-        ),
-      );
-    }
-    final gap = size == SizeClass.expanded ? Space.s56 : Space.s32;
+    // cortex#81: the text and the image side by side, then the real
+    // inspection example at full content width, like the approved
+    // prototype. Compact order: text, example, image.
     return Padding(
       padding: const EdgeInsets.only(top: Space.s48),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(
-            flex: 5,
-            child: Column(
+      child: size == SizeClass.compact
+          ? Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 text,
                 const SizedBox(height: Space.s32),
+                demo,
+                const SizedBox(height: Space.s32),
                 photo,
               ],
+            )
+          : Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                _SideBySide(size: size, text: text, visual: photo),
+                const SizedBox(height: Space.s56),
+                demo,
+              ],
             ),
-          ),
-          SizedBox(width: gap),
-          const Expanded(flex: 6, child: demo),
-        ],
-      ),
     );
   }
 }
