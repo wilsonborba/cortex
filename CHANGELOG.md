@@ -1,17 +1,23 @@
 # Changelog
 
 
-## Unreleased
+## v2.3.2 - 2026-11-16
 
 
 ### Bug Fixes
 
 - Keep alternatives on Thai spans after a split vowel token (#83)
 
+- Merge #83
+
 
 ### Chores
 
+- Merge v2.3.1 back to development
+
 - Merge v2.3.1 back to feature/main
+
+- Prepare development for v2.3.2
 
 
 ## v2.3.1 - 2026-11-16
