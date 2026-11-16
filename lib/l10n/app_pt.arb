@@ -603,5 +603,7 @@
   "inspectionChosenTag": "escolhida",
   "inspectionRadarLabel": "Alternativas gravadas",
   "inspectionContinue": "Continuar com “{word}”",
-  "inspectionContinued": "Continuação a partir de “{word}”"
+  "inspectionContinued": "Continuação a partir de “{word}”",
+  "heroDemoLabel": "Exemplo gravado: dados reais do modelo, sem chamada ao vivo",
+  "heroDemoQuestion": "Escreva uma história de duas frases sobre uma menina chamada Mira que encontra um mapa antigo sob uma figueira."
 }

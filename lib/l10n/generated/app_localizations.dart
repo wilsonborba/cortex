@@ -3554,6 +3554,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Continued from “{word}”'**
   String inspectionContinued(String word);
+
+  /// No description provided for @heroDemoLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Recorded example: real model data, no live call'**
+  String get heroDemoLabel;
+
+  /// No description provided for @heroDemoQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'Write a two-sentence story about a girl named Mira who finds an old map under a fig tree.'**
+  String get heroDemoQuestion;
 }
 
 class _AppLocalizationsDelegate

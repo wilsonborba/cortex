@@ -15,6 +15,7 @@ import '../../shell/account_menu.dart';
 import 'code_snippet.dart';
 import 'demo.dart';
 import 'diagrams.dart';
+import 'inspection_demo.dart';
 import 'engineering_page.dart';
 
 const hippocampusRepo = 'https://github.com/wilsonborba/hippocampus';
@@ -675,12 +676,46 @@ class _Hero extends StatelessWidget {
         ),
       ],
     );
+    const photo = LandingPhoto(LandingImages.hero, key: Key('hero-image'));
+    const demo = LandingInspectionDemo();
+    // cortex#81: a balanced split hero. The real inspection example takes
+    // the wide side; the image stays in its own area under the text. On
+    // compact width the example comes before the image.
+    if (size == SizeClass.compact) {
+      return Padding(
+        padding: const EdgeInsets.only(top: Space.s48),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            text,
+            const SizedBox(height: Space.s24),
+            demo,
+            const SizedBox(height: Space.s24),
+            photo,
+          ],
+        ),
+      );
+    }
+    final gap = size == SizeClass.expanded ? Space.s56 : Space.s32;
     return Padding(
       padding: const EdgeInsets.only(top: Space.s48),
-      child: _SideBySide(
-        size: size,
-        text: text,
-        visual: const LandingPhoto(LandingImages.hero, key: Key('hero-image')),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            flex: 5,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                text,
+                const SizedBox(height: Space.s32),
+                photo,
+              ],
+            ),
+          ),
+          SizedBox(width: gap),
+          const Expanded(flex: 6, child: demo),
+        ],
       ),
     );
   }

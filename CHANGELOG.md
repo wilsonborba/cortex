@@ -33,6 +33,10 @@
 
 - Continue a saved answer from a radar alternative (#82)
 
+- Merge #82
+
+- Show the real inspection interaction in the hero (#81)
+
 
 ## v2.2.3 - 2026-11-14
 

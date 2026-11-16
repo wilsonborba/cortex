@@ -1981,4 +1981,12 @@ class AppLocalizationsPt extends AppLocalizations {
   String inspectionContinued(String word) {
     return 'Continuação a partir de “$word”';
   }
+
+  @override
+  String get heroDemoLabel =>
+      'Exemplo gravado: dados reais do modelo, sem chamada ao vivo';
+
+  @override
+  String get heroDemoQuestion =>
+      'Escreva uma história de duas frases sobre uma menina chamada Mira que encontra um mapa antigo sob uma figueira.';
 }
