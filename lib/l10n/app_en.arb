@@ -860,5 +860,29 @@
       }
     }
   },
-  "usageKindColumn": "Kind of answer"
+  "usageKindColumn": "Kind of answer",
+  "inspectionTitle": "Inspect answer",
+  "inspectionAction": "Inspect answer",
+  "inspectionDescription": "Move the circle or slider to reveal the saved answer. This does not generate or change text.",
+  "inspectionVisible": "{percent}% visible",
+  "inspectionRecorded": "Recorded model likelihood. This does not measure correctness.",
+  "inspectionNoData": "No prediction data was recorded for this answer. Text replay remains available.",
+  "inspectionUnsupported": "This model did not provide prediction data. Text replay remains available.",
+  "inspectionUnverified": "Prediction data could not be verified. Text replay remains available.",
+  "inspectionLoading": "Loading recorded predictions…",
+  "inspectionReadFailed": "Could not load prediction data. The saved text remains available.",
+  "inspectionNextToken": "Recorded next token",
+  "inspectionAlternatives": "Other recorded possibilities",
+  "inspectionEnd": "End of the saved answer. Move back to inspect a prediction.",
+  "inspectionPartial": "Partial character token",
+  "inspectionControlToken": "Token with no visible text",
+  "inspectionPlainText": "Original text, including any formatting marks. Quoted tokens show spaces and line breaks.",
+  "inspectionDragHint": "Drag up to hide text. Drag down to reveal text.",
+  "@inspectionVisible": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  }
 }

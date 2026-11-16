@@ -1,3 +1,4 @@
+import '../../handlers/answer_inspection.dart';
 import '../../theme/app_icons.dart';
 import '../../handlers/api_action.dart';
 import '../../handlers/process_messages.dart';
@@ -218,6 +219,13 @@ class _ChatScreenState extends State<ChatScreen> {
                 _UserMessage(exchange: e, compact: compact),
                 const SizedBox(height: Space.s24),
                 OutputBlock(
+                  onInspect: () => openAnswerInspection(
+                    context,
+                    api: widget.api,
+                    output: e.output,
+                    temporary: chat.temporary,
+                    sessionId: chat.sessionId,
+                  ),
                   output: e.output,
                   now: widget.now,
                   onStopThinking: () =>

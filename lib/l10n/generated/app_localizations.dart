@@ -3375,6 +3375,108 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Kind of answer'**
   String get usageKindColumn;
+
+  /// No description provided for @inspectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Inspect answer'**
+  String get inspectionTitle;
+
+  /// No description provided for @inspectionAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Inspect answer'**
+  String get inspectionAction;
+
+  /// No description provided for @inspectionDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Move the circle or slider to reveal the saved answer. This does not generate or change text.'**
+  String get inspectionDescription;
+
+  /// No description provided for @inspectionVisible.
+  ///
+  /// In en, this message translates to:
+  /// **'{percent}% visible'**
+  String inspectionVisible(int percent);
+
+  /// No description provided for @inspectionRecorded.
+  ///
+  /// In en, this message translates to:
+  /// **'Recorded model likelihood. This does not measure correctness.'**
+  String get inspectionRecorded;
+
+  /// No description provided for @inspectionNoData.
+  ///
+  /// In en, this message translates to:
+  /// **'No prediction data was recorded for this answer. Text replay remains available.'**
+  String get inspectionNoData;
+
+  /// No description provided for @inspectionUnsupported.
+  ///
+  /// In en, this message translates to:
+  /// **'This model did not provide prediction data. Text replay remains available.'**
+  String get inspectionUnsupported;
+
+  /// No description provided for @inspectionUnverified.
+  ///
+  /// In en, this message translates to:
+  /// **'Prediction data could not be verified. Text replay remains available.'**
+  String get inspectionUnverified;
+
+  /// No description provided for @inspectionLoading.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading recorded predictions…'**
+  String get inspectionLoading;
+
+  /// No description provided for @inspectionReadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load prediction data. The saved text remains available.'**
+  String get inspectionReadFailed;
+
+  /// No description provided for @inspectionNextToken.
+  ///
+  /// In en, this message translates to:
+  /// **'Recorded next token'**
+  String get inspectionNextToken;
+
+  /// No description provided for @inspectionAlternatives.
+  ///
+  /// In en, this message translates to:
+  /// **'Other recorded possibilities'**
+  String get inspectionAlternatives;
+
+  /// No description provided for @inspectionEnd.
+  ///
+  /// In en, this message translates to:
+  /// **'End of the saved answer. Move back to inspect a prediction.'**
+  String get inspectionEnd;
+
+  /// No description provided for @inspectionPartial.
+  ///
+  /// In en, this message translates to:
+  /// **'Partial character token'**
+  String get inspectionPartial;
+
+  /// No description provided for @inspectionControlToken.
+  ///
+  /// In en, this message translates to:
+  /// **'Token with no visible text'**
+  String get inspectionControlToken;
+
+  /// No description provided for @inspectionPlainText.
+  ///
+  /// In en, this message translates to:
+  /// **'Original text, including any formatting marks. Quoted tokens show spaces and line breaks.'**
+  String get inspectionPlainText;
+
+  /// No description provided for @inspectionDragHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Drag up to hide text. Drag down to reveal text.'**
+  String get inspectionDragHint;
 }
 
 class _AppLocalizationsDelegate
