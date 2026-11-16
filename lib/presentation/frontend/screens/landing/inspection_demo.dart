@@ -3,7 +3,6 @@ import '../../../../dal/local/inspection_demo.dart';
 import '../../../../domain/services/answer_inspection_controller.dart';
 import '../../../../l10n/generated/app_localizations.dart';
 import '../../theme/tokens.dart';
-import '../../widgets/common/surfaces.dart';
 import '../chat/answer_inspection.dart';
 
 /// The real answer inspection in the landing hero (cortex#81), with a
@@ -69,47 +68,86 @@ class _LandingInspectionDemoState extends State<LandingInspectionDemo> {
     final l = AppLocalizations.of(context);
     final p = Palette.from(context);
     final c = _controller;
-    return AppCard(
-      key: const Key('landing-inspection'),
-      radius: Radii.dialog,
-      padding: const EdgeInsets.all(Space.s20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Text(
-            l.heroDemoLabel,
-            style: TextStyles.caption1Strong.copyWith(color: p.muted),
-          ),
-          const SizedBox(height: Space.s12),
-          Align(
-            alignment: Alignment.centerRight,
-            child: Container(
-              constraints: const BoxConstraints(maxWidth: 420),
-              padding: const EdgeInsets.symmetric(
-                horizontal: Space.s12,
-                vertical: Space.s8,
-              ),
-              decoration: BoxDecoration(
-                color: p.selected,
-                borderRadius: BorderRadius.circular(Radii.large),
-              ),
-              child: Text(
-                l.heroDemoQuestion,
-                style: TextStyles.body1.copyWith(color: p.text),
+    // The approved prototype layout: the chat column, the question bubble at
+    // the right and the answer below it, with the full rail in the left
+    // gutter when the width allows it.
+    return LayoutBuilder(
+      builder: (context, box) {
+        final free = (box.maxWidth - Space.chatColumnWidth) / 2;
+        final gutter = free >= Space.inspectionGutter
+            ? Space.inspectionGutter
+            : 0.0;
+        return Center(
+          key: const Key('landing-inspection'),
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxWidth: Space.chatColumnWidth + gutter * 2,
+            ),
+            child: Padding(
+              padding: EdgeInsets.only(right: gutter),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Padding(
+                    padding: EdgeInsets.only(left: gutter),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Text(
+                          l.heroDemoLabel,
+                          style: TextStyles.caption1Strong.copyWith(
+                            color: p.muted,
+                          ),
+                        ),
+                        const SizedBox(height: Space.s16),
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: FractionallySizedBox(
+                            widthFactor: Space.userBubbleFraction,
+                            alignment: Alignment.centerRight,
+                            child: Align(
+                              alignment: Alignment.centerRight,
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: Space.s12,
+                                  vertical: Space.s8,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: p.surface,
+                                  borderRadius: BorderRadius.circular(
+                                    Radii.dialog,
+                                  ),
+                                ),
+                                child: Text(
+                                  l.heroDemoQuestion,
+                                  style: TextStyles.body2.copyWith(
+                                    color: p.text,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: Space.s24),
+                  if (c == null)
+                    const SizedBox(height: 160)
+                  else
+                    InspectionAnswer(
+                      key: ValueKey(_language),
+                      controller: c,
+                      gutter: gutter,
+                      autofocus: false,
+                      onExit: _reset,
+                    ),
+                ],
               ),
             ),
           ),
-          const SizedBox(height: Space.s16),
-          if (c == null)
-            const SizedBox(height: 160)
-          else
-            InspectionAnswer(
-              key: ValueKey(_language),
-              controller: c,
-              onExit: _reset,
-            ),
-        ],
-      ),
+        );
+      },
     );
   }
 }

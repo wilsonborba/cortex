@@ -1,6 +1,25 @@
 # Changelog
 
 
+## v2.3.1 - 2026-11-16
+
+
+### Bug Fixes
+
+- Show the inspection example in the prototype layout (#81)
+
+- Merge #81 prototype layout
+
+
+### Chores
+
+- Merge v2.3.0 back to development
+
+- Merge v2.3.0 back to feature/main
+
+- Prepare development for v2.3.1
+
+
 ## v2.3.0 - 2026-11-16
 
 
@@ -13,6 +32,10 @@
 - Merge v2.2.3 back to feature/main
 
 - Prepare development for v2.3.0
+
+- Prepare v2.3.0
+
+- Release v2.3.0
 
 
 ### Features
