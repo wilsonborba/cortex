@@ -457,7 +457,7 @@ void main() {
           controller: c,
           onExit: () {},
           gutter: gutter,
-          onContinue: withContinue ? (o) => continued = o : null,
+          onContinue: withContinue ? (_, o) => continued = o : null,
         ),
       ),
     );
@@ -602,6 +602,7 @@ void main() {
                   controller: c,
                   onExit: () {},
                   gutter: gutter,
+                  onContinue: (_, _) {},
                 ),
               ),
               brightness: brightness,

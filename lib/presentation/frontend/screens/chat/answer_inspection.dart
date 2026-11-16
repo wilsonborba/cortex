@@ -58,8 +58,9 @@ class InspectionAnswer extends StatefulWidget {
   final AnswerInspectionController controller;
   final VoidCallback onExit;
 
-  /// Continue the answer with a radar option (cortex#82). Hidden when null.
-  final ValueChanged<InspectionOption>? onContinue;
+  /// Continue the answer with a radar option at a span (cortex#82). The
+  /// button is hidden when this is null.
+  final void Function(InspectionSpan span, InspectionOption option)? onContinue;
 
   /// Free space at the left of the text column (the rail space at wide
   /// widths). Zero means compact layout.
@@ -336,7 +337,9 @@ class InspectionAnswerState extends State<InspectionAnswer>
             key: const Key('inspection-radar'),
             controller: c,
             geometry: radar,
-            onContinue: widget.onContinue,
+            onContinue: widget.onContinue == null
+                ? null
+                : (option) => widget.onContinue!(c.current!, option),
           ),
         ),
     ];
