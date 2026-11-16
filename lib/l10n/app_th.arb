@@ -603,5 +603,7 @@
   "inspectionChosenTag": "ที่เลือก",
   "inspectionRadarLabel": "ตัวเลือกที่บันทึกไว้",
   "inspectionContinue": "ต่อด้วย “{word}”",
-  "inspectionContinued": "ต่อจาก “{word}”"
+  "inspectionContinued": "ต่อจาก “{word}”",
+  "heroDemoLabel": "ตัวอย่างที่บันทึกไว้: ข้อมูลจริงจากโมเดล ไม่มีการเรียกใช้สด",
+  "heroDemoQuestion": "เขียนเรื่องสั้นสองประโยคเกี่ยวกับเด็กหญิงชื่อมีราที่พบแผนที่เก่าใต้ต้นมะเดื่อ"
 }

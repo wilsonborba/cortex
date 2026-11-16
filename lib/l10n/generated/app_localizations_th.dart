@@ -1942,4 +1942,12 @@ class AppLocalizationsTh extends AppLocalizations {
   String inspectionContinued(String word) {
     return 'ต่อจาก “$word”';
   }
+
+  @override
+  String get heroDemoLabel =>
+      'ตัวอย่างที่บันทึกไว้: ข้อมูลจริงจากโมเดล ไม่มีการเรียกใช้สด';
+
+  @override
+  String get heroDemoQuestion =>
+      'เขียนเรื่องสั้นสองประโยคเกี่ยวกับเด็กหญิงชื่อมีราที่พบแผนที่เก่าใต้ต้นมะเดื่อ';
 }

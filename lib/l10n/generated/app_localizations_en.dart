@@ -1963,4 +1963,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String inspectionContinued(String word) {
     return 'Continued from “$word”';
   }
+
+  @override
+  String get heroDemoLabel => 'Recorded example: real model data, no live call';
+
+  @override
+  String get heroDemoQuestion =>
+      'Write a two-sentence story about a girl named Mira who finds an old map under a fig tree.';
 }

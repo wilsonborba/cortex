@@ -965,5 +965,7 @@
         "type": "String"
       }
     }
-  }
+  },
+  "heroDemoLabel": "Recorded example: real model data, no live call",
+  "heroDemoQuestion": "Write a two-sentence story about a girl named Mira who finds an old map under a fig tree."
 }

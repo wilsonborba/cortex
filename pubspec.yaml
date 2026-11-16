@@ -35,6 +35,7 @@ flutter:
   assets:
     - lib/presentation/frontend/assets/img/
     - lib/presentation/frontend/assets/snippets/
+    - lib/dal/data/
     - assets/images/
   uses-material-design: true
   fonts:

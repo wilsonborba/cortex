@@ -463,8 +463,13 @@ class InspectionAnswerState extends State<InspectionAnswer>
                     ),
                     if (!c.moved)
                       Positioned(
-                        left: cursor.dx + Space.s16,
-                        top: cursor.dy - 9,
+                        // Beside the cursor when it fits, else under the line.
+                        left: cursor.dx + Space.s16 + 200 <= _width
+                            ? cursor.dx + Space.s16
+                            : textLeft,
+                        top: cursor.dx + Space.s16 + 200 <= _width
+                            ? cursor.dy - 9
+                            : cursorRect!.bottom + Space.s4,
                         child: IgnorePointer(
                           child: Container(
                             color: p.background,
