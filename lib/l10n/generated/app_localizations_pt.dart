@@ -1855,4 +1855,66 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get usageKindColumn => 'Tipo de resposta';
+
+  @override
+  String get inspectionTitle => 'Inspecionar resposta';
+
+  @override
+  String get inspectionAction => 'Inspecionar resposta';
+
+  @override
+  String get inspectionDescription =>
+      'Mova o círculo ou o controle para revelar a resposta salva. Isso não gera nem altera o texto.';
+
+  @override
+  String inspectionVisible(int percent) {
+    return '$percent% visível';
+  }
+
+  @override
+  String get inspectionRecorded =>
+      'Probabilidade registrada pelo modelo. Isso não mede a correção da resposta.';
+
+  @override
+  String get inspectionNoData =>
+      'Nenhum dado de previsão foi registrado para esta resposta. Você ainda pode explorar o texto.';
+
+  @override
+  String get inspectionUnsupported =>
+      'Este modelo não forneceu dados de previsão. Você ainda pode explorar o texto.';
+
+  @override
+  String get inspectionUnverified =>
+      'Não foi possível verificar os dados de previsão. Você ainda pode explorar o texto.';
+
+  @override
+  String get inspectionLoading => 'Carregando previsões registradas…';
+
+  @override
+  String get inspectionReadFailed =>
+      'Não foi possível carregar os dados de previsão. O texto salvo continua disponível.';
+
+  @override
+  String get inspectionNextToken => 'Próximo token registrado';
+
+  @override
+  String get inspectionAlternatives => 'Outras possibilidades registradas';
+
+  @override
+  String get inspectionEnd =>
+      'Fim da resposta salva. Volte para inspecionar uma previsão.';
+
+  @override
+  String get inspectionPartial => 'Token de parte de um caractere';
+
+  @override
+  String get inspectionControlToken => 'Token sem texto visível';
+
+  @override
+  String get inspectionPlainText =>
+      'Texto original, incluindo marcas de formatação. Os tokens entre aspas mostram espaços e quebras de linha.';
+
+  @override
+  String get inspectionDragHint =>
+      'Arraste para cima para ocultar o texto. Arraste para baixo para revelá-lo.';
 }

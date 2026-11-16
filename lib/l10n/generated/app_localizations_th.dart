@@ -1820,4 +1820,66 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get usageKindColumn => 'ประเภทคำตอบ';
+
+  @override
+  String get inspectionTitle => 'สำรวจคำตอบ';
+
+  @override
+  String get inspectionAction => 'สำรวจคำตอบ';
+
+  @override
+  String get inspectionDescription =>
+      'เลื่อนวงกลมหรือแถบเลื่อนเพื่อแสดงคำตอบที่บันทึกไว้ การทำเช่นนี้จะไม่สร้างหรือเปลี่ยนข้อความ';
+
+  @override
+  String inspectionVisible(int percent) {
+    return 'แสดง $percent%';
+  }
+
+  @override
+  String get inspectionRecorded =>
+      'ค่าความน่าจะเป็นที่โมเดลบันทึกไว้ ไม่ใช่ค่าความถูกต้องของคำตอบ';
+
+  @override
+  String get inspectionNoData =>
+      'คำตอบนี้ไม่มีข้อมูลการคาดการณ์ที่บันทึกไว้ แต่ยังสำรวจข้อความได้';
+
+  @override
+  String get inspectionUnsupported =>
+      'โมเดลนี้ไม่ได้ให้ข้อมูลการคาดการณ์ แต่ยังสำรวจข้อความได้';
+
+  @override
+  String get inspectionUnverified =>
+      'ไม่สามารถตรวจสอบข้อมูลการคาดการณ์ได้ แต่ยังสำรวจข้อความได้';
+
+  @override
+  String get inspectionLoading => 'กำลังโหลดข้อมูลการคาดการณ์ที่บันทึกไว้…';
+
+  @override
+  String get inspectionReadFailed =>
+      'ไม่สามารถโหลดข้อมูลการคาดการณ์ได้ แต่ยังอ่านข้อความที่บันทึกไว้ได้';
+
+  @override
+  String get inspectionNextToken => 'โทเค็นถัดไปที่บันทึกไว้';
+
+  @override
+  String get inspectionAlternatives => 'ตัวเลือกอื่นที่บันทึกไว้';
+
+  @override
+  String get inspectionEnd =>
+      'จบคำตอบที่บันทึกไว้ เลื่อนย้อนกลับเพื่อสำรวจการคาดการณ์';
+
+  @override
+  String get inspectionPartial => 'โทเค็นที่เป็นส่วนหนึ่งของอักขระ';
+
+  @override
+  String get inspectionControlToken => 'โทเค็นที่ไม่มีข้อความให้แสดง';
+
+  @override
+  String get inspectionPlainText =>
+      'ข้อความต้นฉบับรวมเครื่องหมายจัดรูปแบบ โทเค็นในเครื่องหมายคำพูดจะแสดงช่องว่างและการขึ้นบรรทัดใหม่';
+
+  @override
+  String get inspectionDragHint =>
+      'ลากขึ้นเพื่อซ่อนข้อความ ลากลงเพื่อแสดงข้อความ';
 }

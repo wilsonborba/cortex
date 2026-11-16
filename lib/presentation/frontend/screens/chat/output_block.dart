@@ -27,12 +27,14 @@ class OutputBlock extends StatefulWidget {
     this.onStopThinking,
     this.onRetry,
     this.onMemories,
+    this.onInspect,
     this.now,
   });
   final OutputView output;
   final DateTime Function()? now;
   final VoidCallback? onStopThinking;
   final VoidCallback? onRetry;
+  final VoidCallback? onInspect;
   final ValueChanged<List<(String, String)>>? onMemories;
   @override
   State<OutputBlock> createState() => _OutputBlockState();
@@ -336,6 +338,14 @@ class _OutputBlockState extends State<OutputBlock> {
               child: Row(
                 children: [
                   CopyMessageButton(text: o.answer.toString()),
+                  if (widget.onInspect != null && o.answer.isNotEmpty)
+                    IconButton(
+                      key: const Key('inspect-answer'),
+                      tooltip: l.inspectionAction,
+                      style: _smallIcon,
+                      icon: const Icon(AppIcons.search, size: IconSizes.small),
+                      onPressed: widget.onInspect,
+                    ),
                   if (canRetry)
                     IconButton(
                       key: const Key('retry-output'),

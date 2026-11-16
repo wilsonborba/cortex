@@ -575,5 +575,29 @@
   "personaEdit": "Editar",
   "personaSelect": "Selecione uma persona para ver os detalhes.",
   "personaBack": "Todas as personas",
-  "usageKindColumn": "Tipo de resposta"
+  "usageKindColumn": "Tipo de resposta",
+  "inspectionTitle": "Inspecionar resposta",
+  "inspectionAction": "Inspecionar resposta",
+  "inspectionDescription": "Mova o círculo ou o controle para revelar a resposta salva. Isso não gera nem altera o texto.",
+  "inspectionVisible": "{percent}% visível",
+  "inspectionRecorded": "Probabilidade registrada pelo modelo. Isso não mede a correção da resposta.",
+  "inspectionNoData": "Nenhum dado de previsão foi registrado para esta resposta. Você ainda pode explorar o texto.",
+  "inspectionUnsupported": "Este modelo não forneceu dados de previsão. Você ainda pode explorar o texto.",
+  "inspectionUnverified": "Não foi possível verificar os dados de previsão. Você ainda pode explorar o texto.",
+  "inspectionLoading": "Carregando previsões registradas…",
+  "inspectionReadFailed": "Não foi possível carregar os dados de previsão. O texto salvo continua disponível.",
+  "inspectionNextToken": "Próximo token registrado",
+  "inspectionAlternatives": "Outras possibilidades registradas",
+  "inspectionEnd": "Fim da resposta salva. Volte para inspecionar uma previsão.",
+  "inspectionPartial": "Token de parte de um caractere",
+  "inspectionControlToken": "Token sem texto visível",
+  "inspectionPlainText": "Texto original, incluindo marcas de formatação. Os tokens entre aspas mostram espaços e quebras de linha.",
+  "inspectionDragHint": "Arraste para cima para ocultar o texto. Arraste para baixo para revelá-lo.",
+  "@inspectionVisible": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  }
 }

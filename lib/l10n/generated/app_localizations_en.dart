@@ -1839,4 +1839,66 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get usageKindColumn => 'Kind of answer';
+
+  @override
+  String get inspectionTitle => 'Inspect answer';
+
+  @override
+  String get inspectionAction => 'Inspect answer';
+
+  @override
+  String get inspectionDescription =>
+      'Move the circle or slider to reveal the saved answer. This does not generate or change text.';
+
+  @override
+  String inspectionVisible(int percent) {
+    return '$percent% visible';
+  }
+
+  @override
+  String get inspectionRecorded =>
+      'Recorded model likelihood. This does not measure correctness.';
+
+  @override
+  String get inspectionNoData =>
+      'No prediction data was recorded for this answer. Text replay remains available.';
+
+  @override
+  String get inspectionUnsupported =>
+      'This model did not provide prediction data. Text replay remains available.';
+
+  @override
+  String get inspectionUnverified =>
+      'Prediction data could not be verified. Text replay remains available.';
+
+  @override
+  String get inspectionLoading => 'Loading recorded predictions…';
+
+  @override
+  String get inspectionReadFailed =>
+      'Could not load prediction data. The saved text remains available.';
+
+  @override
+  String get inspectionNextToken => 'Recorded next token';
+
+  @override
+  String get inspectionAlternatives => 'Other recorded possibilities';
+
+  @override
+  String get inspectionEnd =>
+      'End of the saved answer. Move back to inspect a prediction.';
+
+  @override
+  String get inspectionPartial => 'Partial character token';
+
+  @override
+  String get inspectionControlToken => 'Token with no visible text';
+
+  @override
+  String get inspectionPlainText =>
+      'Original text, including any formatting marks. Quoted tokens show spaces and line breaks.';
+
+  @override
+  String get inspectionDragHint =>
+      'Drag up to hide text. Drag down to reveal text.';
 }
