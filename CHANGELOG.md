@@ -1,7 +1,7 @@
 # Changelog
 
 
-## Unreleased
+## v2.3.0 - 2026-11-16
 
 
 ### Chores
@@ -11,6 +11,8 @@
 - Merge v2.2.3 back to development
 
 - Merge v2.2.3 back to feature/main
+
+- Prepare development for v2.3.0
 
 
 ### Features
@@ -36,6 +38,8 @@
 - Merge #82
 
 - Show the real inspection interaction in the hero (#81)
+
+- Merge #81
 
 
 ## v2.2.3 - 2026-11-14
