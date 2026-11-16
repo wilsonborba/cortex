@@ -1855,4 +1855,138 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get usageKindColumn => 'Tipo de resposta';
+
+  @override
+  String get inspectionAction => 'Inspecionar resposta';
+
+  @override
+  String get inspectionExit => 'Sair da inspeção';
+
+  @override
+  String get inspectionAverage => 'Certeza média';
+
+  @override
+  String get inspectionLowest => 'Menor certeza';
+
+  @override
+  String get inspectionForks => 'Bifurcações · próxima →';
+
+  @override
+  String get inspectionTokens => 'Tokens';
+
+  @override
+  String get inspectionInfo =>
+      'Estes valores vêm das probabilidades que o modelo gravou ao escrever esta resposta. As ligações mostram palavras que já apareceram antes no texto. Elas não são a atenção interna do modelo.';
+
+  @override
+  String get inspectionHint => 'Passe o mouse pelo texto';
+
+  @override
+  String get inspectionHintTouch => 'Arraste o dedo pelo texto';
+
+  @override
+  String get inspectionLoading => 'Carregando as previsões gravadas…';
+
+  @override
+  String get inspectionReadFailed =>
+      'Não foi possível carregar os dados de previsão.';
+
+  @override
+  String get inspectionNoData =>
+      'Nenhum dado de previsão foi gravado para esta resposta.';
+
+  @override
+  String get inspectionUnsupported =>
+      'Este modelo não forneceu dados de previsão.';
+
+  @override
+  String get inspectionUnverified =>
+      'Não foi possível verificar os dados de previsão.';
+
+  @override
+  String get inspectionCursorLabel => 'Cursor da resposta';
+
+  @override
+  String inspectionCursorValue(String word, String value) {
+    return '$word, certeza $value';
+  }
+
+  @override
+  String get inspectionRailLine => 'linha';
+
+  @override
+  String get inspectionRailTokens => 'tokens';
+
+  @override
+  String get inspectionRailCertainty => 'certeza';
+
+  @override
+  String inspectionLineTip(
+    int line,
+    String value,
+    String word,
+    String lowest,
+    num forks,
+  ) {
+    final intl.NumberFormat forksNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String forksString = forksNumberFormat.format(forks);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      forks,
+      locale: localeName,
+      other: ' · $forksString bifurcações',
+      one: ' · 1 bifurcação',
+      zero: '',
+    );
+    return 'Linha $line · certeza $value · menor: “$word” $lowest$_temp0';
+  }
+
+  @override
+  String inspectionChose(String word, String value) {
+    return 'O modelo escolheu “$word” com $value.';
+  }
+
+  @override
+  String inspectionInstead(
+    String word,
+    String value,
+    String other,
+    String otherValue,
+  ) {
+    return 'No lugar de “$word” ($value), o modelo também considerou “$other” com $otherValue.';
+  }
+
+  @override
+  String inspectionRest(String value) {
+    return 'Outras opções somam $value.';
+  }
+
+  @override
+  String get inspectionFork => 'Bifurcação: a segunda opção estava perto';
+
+  @override
+  String get inspectionChosenTag => 'escolhida';
+
+  @override
+  String get inspectionRadarLabel => 'Alternativas gravadas';
+
+  @override
+  String inspectionContinue(String word) {
+    return 'Continuar com “$word”';
+  }
+
+  @override
+  String inspectionContinued(String word) {
+    return 'Continuação a partir de “$word”';
+  }
+
+  @override
+  String get heroDemoLabel =>
+      'Exemplo gravado: dados reais do modelo, sem chamada ao vivo';
+
+  @override
+  String get heroDemoQuestion =>
+      'Escreva uma história de duas frases sobre uma menina chamada Mira que encontra um mapa antigo sob uma figueira.';
 }

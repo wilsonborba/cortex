@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'api.dart';
 
 class StageState {
@@ -36,6 +37,9 @@ class OutputView {
   int lastEventId = 0;
   DateTime started = DateTime.now();
 
+  /// Set when this answer continues a saved answer (cortex#82).
+  ContinueSource? continuedFrom;
+
   bool get running => status == 'running';
   bool get thinkingRuns =>
       running && stages.any((s) => s.name == 'think' && s.status == 'started');
@@ -55,6 +59,13 @@ class OutputView {
     }
     for (final m in (o['memories'] as List? ?? const [])) {
       view.memories.add(('${m['id']}', '${m['title']}'));
+    }
+    final from = o['continued_from'];
+    if (from is Map) {
+      view.continuedFrom = ContinueSource.fromHistory(
+        from.cast<String, dynamic>(),
+        view.answer.toString(),
+      );
     }
     return view;
   }
@@ -134,5 +145,39 @@ class OutputView {
         return true;
     }
     return false;
+  }
+}
+
+/// The source of a continued answer (cortex#82): the saved answer, the token
+/// position and the 1-based rank of the recorded alternative.
+class ContinueSource {
+  const ContinueSource({
+    required this.outputId,
+    required this.tokenPosition,
+    required this.rank,
+    required this.word,
+  });
+  final String outputId;
+  final int tokenPosition, rank;
+
+  /// The alternative text that starts the continuation.
+  final String word;
+
+  /// History gives the byte where the alternative starts in the new answer;
+  /// the caption shows the word that starts there.
+  factory ContinueSource.fromHistory(Map<String, dynamic> value, String text) {
+    final byte = (value['source_byte'] as num?)?.toInt() ?? 0;
+    final bytes = utf8.encode(text);
+    var word = '';
+    if (byte >= 0 && byte < bytes.length) {
+      final rest = utf8.decode(bytes.sublist(byte), allowMalformed: true);
+      word = RegExp(r'^\s*\S+').firstMatch(rest)?.group(0)?.trim() ?? '';
+    }
+    return ContinueSource(
+      outputId: '${value['output_id']}',
+      tokenPosition: (value['token_position'] as num).toInt(),
+      rank: (value['alternative_rank'] as num).toInt(),
+      word: word,
+    );
   }
 }

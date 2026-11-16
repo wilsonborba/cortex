@@ -1,4 +1,8 @@
 import '../../theme/app_icons.dart';
+import '../../../../domain/services/answer_inspection_controller.dart';
+import '../../preferences.dart';
+import '../../widgets/common/reticle.dart';
+import 'answer_inspection.dart';
 import 'dart:async';
 import '../../handlers/process_messages.dart';
 import 'package:flutter/material.dart';
@@ -27,12 +31,29 @@ class OutputBlock extends StatefulWidget {
     this.onStopThinking,
     this.onRetry,
     this.onMemories,
+    this.inspect,
+    this.onContinue,
+    this.onSource,
+    this.gutter = 0,
     this.now,
   });
   final OutputView output;
   final DateTime Function()? now;
   final VoidCallback? onStopThinking;
   final VoidCallback? onRetry;
+
+  /// Starts in-place inspection of the finished answer (cortex#77).
+  final AnswerInspectionController Function()? inspect;
+
+  /// Continue this answer with a recorded alternative (cortex#82).
+  final ValueChanged<ContinueSource>? onContinue;
+
+  /// Show the source answer of a continued answer.
+  final VoidCallback? onSource;
+
+  /// Free space at the left of the column for the inspection rail. The
+  /// normal content starts after it.
+  final double gutter;
   final ValueChanged<List<(String, String)>>? onMemories;
   @override
   State<OutputBlock> createState() => _OutputBlockState();
@@ -47,10 +68,20 @@ class _OutputBlockState extends State<OutputBlock> {
   String _announcement = '';
   DateTime? _thinkingStarted;
   int _thoughtSeconds = 0;
+  AnswerInspectionController? _inspection;
   @override
   void dispose() {
     _clock?.cancel();
+    _inspection?.dispose();
     super.dispose();
+  }
+
+  void _toggleInspection() {
+    final open = _inspection;
+    setState(() {
+      _inspection = open == null ? widget.inspect?.call() : null;
+    });
+    open?.dispose();
   }
 
   /// Title shortened to 30 characters for a source tag (#63).
@@ -186,192 +217,258 @@ class _OutputBlockState extends State<OutputBlock> {
       if (stage != null) _thoughtSeconds = (stage.timeMs / 1000).round();
     }
     final canRetry = widget.onRetry != null && o.errorNumber != securityBlock;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // Screen readers hear the status changes, not each token (polite).
-        Semantics(
-          container: true,
-          liveRegion: true,
-          label: _announcement,
-          child: const SizedBox.shrink(),
-        ),
-        if (o.running)
-          Padding(
-            padding: EdgeInsets.only(
-              bottom: elapsedMs < WaitTimes.indicator.inMilliseconds
-                  ? 0
-                  : Space.s8,
-            ),
-            child: _waitStatus(l, p, o, elapsedMs),
-          ),
-        if (_stages && o.stages.isNotEmpty)
-          Padding(
-            key: const Key('stage-timeline'),
-            padding: const EdgeInsets.only(top: Space.s4, bottom: Space.s8),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                for (final s in o.stages)
-                  Text(
-                    '${stageText(l, s.name)}  ${stageStatus(l, s.status)}  ${s.timeMs} ms',
-                    style: TextStyles.caption1.copyWith(
-                      color: p.muted,
-                      fontFamily: TextStyles.mono,
-                    ),
-                  ),
-              ],
-            ),
-          ),
-        if (o.thinking.isNotEmpty || o.thinkingRuns) _thinkingSection(l, p, o),
-        if (o.answer.isNotEmpty) _Answer(text: o.answer.toString()),
-        if (o.sources.isNotEmpty)
-          Padding(
-            key: const Key('sources'),
-            padding: const EdgeInsets.only(top: Space.s12),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  l.sources,
-                  style: TextStyles.caption1Strong.copyWith(color: p.text2),
-                ),
-                const SizedBox(height: Space.s4),
-                Wrap(
-                  spacing: Space.s8,
-                  runSpacing: Space.s8,
-                  children: [
-                    for (final (index, (title, url)) in o.sources.indexed)
-                      SelectionContainer.disabled(
-                        child: Tooltip(
-                          message: title,
-                          child: ActionChip(
-                            visualDensity: Controls.tagDensity,
-                            label: Text.rich(
-                              TextSpan(
-                                children: [
-                                  TextSpan(
-                                    text: '${index + 1}  ${_short(title)}  ',
-                                  ),
-                                  TextSpan(
-                                    text: Uri.tryParse(url)?.host ?? url,
-                                    style: TextStyles.caption1.copyWith(
-                                      color: p.muted,
-                                    ),
-                                  ),
-                                  const WidgetSpan(
-                                    alignment: PlaceholderAlignment.middle,
-                                    child: Padding(
-                                      padding: EdgeInsets.only(left: Space.s4),
-                                      child: Icon(
-                                        AppIcons.externalLink,
-                                        size: IconSizes.small,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            onPressed: () => launchUrl(
-                              Uri.parse(url),
-                              webOnlyWindowName: '_blank',
-                            ),
-                          ),
-                        ),
+    final inspection = _inspection == null || o.running
+        ? null
+        : InspectionAnswer(
+            key: const Key('answer-inspection'),
+            controller: _inspection!,
+            gutter: widget.gutter,
+            onExit: _toggleInspection,
+            onContinue: widget.onContinue == null || o.outputId == null
+                ? null
+                : (span, option) {
+                    final position = span.tokenIndex, rank = option.rank;
+                    if (position == null || rank == null) return;
+                    _toggleInspection();
+                    widget.onContinue!(
+                      ContinueSource(
+                        outputId: o.outputId!,
+                        tokenPosition: position,
+                        rank: rank,
+                        word: optionLabel(option),
                       ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        if (o.memories.isNotEmpty)
-          Padding(
-            padding: const EdgeInsets.only(top: Space.s8),
-            child: SelectionContainer.disabled(
-              child: AppButton(
-                key: const Key('used-memories'),
-                kind: ButtonKind.subtle,
-                size: ButtonSize.small,
-                icon: AppIcons.memory,
-                label: l.usedMemories(o.memories.length),
-                onPressed: () => widget.onMemories?.call(o.memories),
-              ),
-            ),
-          ),
-        for (final (number, _) in o.notices)
-          Padding(
-            padding: const EdgeInsets.only(top: Space.s8),
-            child: NoticeLine(
-              message: processMessage(l, number),
-              kind: NoticeKind.warning,
-            ),
-          ),
-        if (o.errorNumber != null || o.status == 'failed')
-          Padding(
-            padding: const EdgeInsets.only(top: Space.s12),
-            child: SelectionContainer.disabled(
-              child: MessageBar(
-                key: const Key('output-error'),
-                message: processMessage(l, o.errorNumber),
-                kind: NoticeKind.error,
-                icon: o.errorNumber == securityBlock
-                    ? AppIcons.securityBlock
-                    : null,
-                actionLabel: canRetry ? l.retry : null,
-                onAction: canRetry ? widget.onRetry : null,
-              ),
-            ),
-          ),
-        if (o.status == 'cancelled')
-          Padding(
-            padding: const EdgeInsets.only(top: Space.s8),
-            child: NoticeLine(message: l.cancelledLine),
-          ),
-        if (!o.running) ...[
-          // Action row (#63): subtle 24 icon buttons with tooltips.
-          Padding(
-            padding: const EdgeInsets.only(top: Space.s8),
-            child: SelectionContainer.disabled(
+                    );
+                  },
+          );
+    final from = o.continuedFrom;
+    final children = <Widget>[
+      if (from != null)
+        Padding(
+          padding: const EdgeInsets.only(bottom: Space.s8),
+          child: InkWell(
+            key: const Key('continued-from'),
+            onTap: widget.onSource,
+            borderRadius: BorderRadius.circular(Radii.control),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: Space.s2),
               child: Row(
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  CopyMessageButton(text: o.answer.toString()),
-                  if (canRetry)
-                    IconButton(
-                      key: const Key('retry-output'),
-                      tooltip: l.retry,
-                      style: _smallIcon,
-                      icon: const Icon(AppIcons.retry, size: IconSizes.small),
-                      onPressed: widget.onRetry,
-                    ),
+                  Icon(
+                    AppIcons.branchFork,
+                    size: IconSizes.small,
+                    color: p.muted,
+                  ),
+                  const SizedBox(width: Space.s6),
+                  Text(
+                    l.inspectionContinued(from.word),
+                    style: TextStyles.caption1.copyWith(color: p.muted),
+                  ),
                 ],
               ),
             ),
           ),
-          if (o.totalMs != null)
-            Padding(
-              padding: const EdgeInsets.only(top: Space.s4),
-              child: Text(
-                l.statsLine(
-                  TimeOfDay.fromDateTime(o.started.toLocal()).format(context),
-                  (o.totalMs! / 1000).toStringAsFixed(1),
-                  o.inputTokens ?? 0,
-                  o.outputTokens ?? 0,
+        ),
+      // Screen readers hear the status changes, not each token (polite).
+      Semantics(
+        container: true,
+        liveRegion: true,
+        label: _announcement,
+        child: const SizedBox.shrink(),
+      ),
+      if (o.running)
+        Padding(
+          padding: EdgeInsets.only(
+            bottom: elapsedMs < WaitTimes.indicator.inMilliseconds
+                ? 0
+                : Space.s8,
+          ),
+          child: _waitStatus(l, p, o, elapsedMs),
+        ),
+      if (_stages && o.stages.isNotEmpty)
+        Padding(
+          key: const Key('stage-timeline'),
+          padding: const EdgeInsets.only(top: Space.s4, bottom: Space.s8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              for (final s in o.stages)
+                Text(
+                  '${stageText(l, s.name)}  ${stageStatus(l, s.status)}  ${s.timeMs} ms',
+                  style: TextStyles.caption1.copyWith(
+                    color: p.muted,
+                    fontFamily: TextStyles.mono,
+                  ),
                 ),
-                key: const Key('stats-line'),
-                style: TextStyles.caption1.copyWith(color: p.muted),
+            ],
+          ),
+        ),
+      if (o.thinking.isNotEmpty || o.thinkingRuns) _thinkingSection(l, p, o),
+      if (o.answer.isNotEmpty) inspection ?? _Answer(text: o.answer.toString()),
+      if (o.sources.isNotEmpty)
+        Padding(
+          key: const Key('sources'),
+          padding: const EdgeInsets.only(top: Space.s12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                l.sources,
+                style: TextStyles.caption1Strong.copyWith(color: p.text2),
               ),
-            ),
-          if (o.answer.isNotEmpty)
-            Padding(
-              padding: const EdgeInsets.only(top: Space.s2),
-              child: Text(
-                l.aiNote,
-                key: const Key('ai-note'),
-                style: TextStyles.caption1.copyWith(color: p.muted),
+              const SizedBox(height: Space.s4),
+              Wrap(
+                spacing: Space.s8,
+                runSpacing: Space.s8,
+                children: [
+                  for (final (index, (title, url)) in o.sources.indexed)
+                    SelectionContainer.disabled(
+                      child: Tooltip(
+                        message: title,
+                        child: ActionChip(
+                          visualDensity: Controls.tagDensity,
+                          label: Text.rich(
+                            TextSpan(
+                              children: [
+                                TextSpan(
+                                  text: '${index + 1}  ${_short(title)}  ',
+                                ),
+                                TextSpan(
+                                  text: Uri.tryParse(url)?.host ?? url,
+                                  style: TextStyles.caption1.copyWith(
+                                    color: p.muted,
+                                  ),
+                                ),
+                                const WidgetSpan(
+                                  alignment: PlaceholderAlignment.middle,
+                                  child: Padding(
+                                    padding: EdgeInsets.only(left: Space.s4),
+                                    child: Icon(
+                                      AppIcons.externalLink,
+                                      size: IconSizes.small,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          onPressed: () => launchUrl(
+                            Uri.parse(url),
+                            webOnlyWindowName: '_blank',
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
               ),
+            ],
+          ),
+        ),
+      if (o.memories.isNotEmpty)
+        Padding(
+          padding: const EdgeInsets.only(top: Space.s8),
+          child: SelectionContainer.disabled(
+            child: AppButton(
+              key: const Key('used-memories'),
+              kind: ButtonKind.subtle,
+              size: ButtonSize.small,
+              icon: AppIcons.memory,
+              label: l.usedMemories(o.memories.length),
+              onPressed: () => widget.onMemories?.call(o.memories),
             ),
-        ],
+          ),
+        ),
+      for (final (number, _) in o.notices)
+        Padding(
+          padding: const EdgeInsets.only(top: Space.s8),
+          child: NoticeLine(
+            message: processMessage(l, number),
+            kind: NoticeKind.warning,
+          ),
+        ),
+      if (o.errorNumber != null || o.status == 'failed')
+        Padding(
+          padding: const EdgeInsets.only(top: Space.s12),
+          child: SelectionContainer.disabled(
+            child: MessageBar(
+              key: const Key('output-error'),
+              message: processMessage(l, o.errorNumber),
+              kind: NoticeKind.error,
+              icon: o.errorNumber == securityBlock
+                  ? AppIcons.securityBlock
+                  : null,
+              actionLabel: canRetry ? l.retry : null,
+              onAction: canRetry ? widget.onRetry : null,
+            ),
+          ),
+        ),
+      if (o.status == 'cancelled')
+        Padding(
+          padding: const EdgeInsets.only(top: Space.s8),
+          child: NoticeLine(message: l.cancelledLine),
+        ),
+      if (!o.running) ...[
+        // Action row (#63): subtle 24 icon buttons with tooltips.
+        Padding(
+          padding: const EdgeInsets.only(top: Space.s8),
+          child: SelectionContainer.disabled(
+            child: Row(
+              children: [
+                CopyMessageButton(text: o.answer.toString()),
+                if (widget.inspect != null && o.answer.isNotEmpty)
+                  InspectButton(
+                    selected: _inspection != null,
+                    onPressed: _toggleInspection,
+                  ),
+                if (canRetry)
+                  IconButton(
+                    key: const Key('retry-output'),
+                    tooltip: l.retry,
+                    style: _smallIcon,
+                    icon: const Icon(AppIcons.retry, size: IconSizes.small),
+                    onPressed: widget.onRetry,
+                  ),
+              ],
+            ),
+          ),
+        ),
+        if (o.totalMs != null)
+          Padding(
+            padding: const EdgeInsets.only(top: Space.s4),
+            child: Text(
+              l.statsLine(
+                TimeOfDay.fromDateTime(o.started.toLocal()).format(context),
+                (o.totalMs! / 1000).toStringAsFixed(1),
+                o.inputTokens ?? 0,
+                o.outputTokens ?? 0,
+              ),
+              key: const Key('stats-line'),
+              style: TextStyles.caption1.copyWith(color: p.muted),
+            ),
+          ),
+        if (o.answer.isNotEmpty)
+          Padding(
+            padding: const EdgeInsets.only(top: Space.s2),
+            child: Text(
+              l.aiNote,
+              key: const Key('ai-note'),
+              style: TextStyles.caption1.copyWith(color: p.muted),
+            ),
+          ),
+      ],
+    ];
+    final gutter = widget.gutter;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        for (final child in children)
+          identical(child, inspection)
+              ? child
+              : Padding(
+                  padding: EdgeInsets.only(left: gutter),
+                  child: Align(alignment: Alignment.centerLeft, child: child),
+                ),
       ],
     );
   }
@@ -486,6 +583,103 @@ class _OutputBlockState extends State<OutputBlock> {
               ),
             ),
         ],
+      ),
+    );
+  }
+}
+
+/// Inspect action (cortex#77): a reticle that turns 45 degrees on hover.
+/// The first time a user sees it, one ring pulse calls attention to it.
+class InspectButton extends StatefulWidget {
+  const InspectButton({
+    super.key,
+    required this.selected,
+    required this.onPressed,
+  });
+  final bool selected;
+  final VoidCallback onPressed;
+  @override
+  State<InspectButton> createState() => _InspectButtonState();
+}
+
+class _InspectButtonState extends State<InspectButton>
+    with SingleTickerProviderStateMixin {
+  bool _hover = false;
+  late final AnimationController _pulse = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 1400),
+  );
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final preferences = PreferencesScope.maybeOf(context);
+      if (preferences == null || preferences.inspectionSeen) return;
+      preferences.inspectionSeen = true;
+      if (MediaQuery.maybeDisableAnimationsOf(context) != true) {
+        _pulse.forward();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _pulse.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
+    final p = Palette.from(context);
+    final color = widget.selected
+        ? InspectionTones.range(p)
+        : _hover
+        ? p.text
+        : p.text2;
+    final turn = FoundationTokens.of(
+      context,
+    ).duration(context, MotionDurations.gentle);
+    return MouseRegion(
+      onEnter: (_) => setState(() => _hover = true),
+      onExit: (_) => setState(() => _hover = false),
+      child: IconButton(
+        key: const Key('inspect-answer'),
+        tooltip: widget.selected ? l.inspectionExit : l.inspectionAction,
+        style: _smallIcon,
+        isSelected: widget.selected,
+        onPressed: widget.onPressed,
+        icon: Stack(
+          alignment: Alignment.center,
+          clipBehavior: Clip.none,
+          children: [
+            AnimatedBuilder(
+              animation: _pulse,
+              builder: (context, _) => _pulse.isAnimating
+                  ? Container(
+                      width: IconSizes.small * (0.6 + _pulse.value),
+                      height: IconSizes.small * (0.6 + _pulse.value),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: InspectionTones.range(
+                            p,
+                          ).withValues(alpha: 1 - _pulse.value),
+                          width: 1.5,
+                        ),
+                      ),
+                    )
+                  : const SizedBox.shrink(),
+            ),
+            AnimatedRotation(
+              turns: _hover || widget.selected ? 0.125 : 0,
+              duration: turn,
+              curve: MotionCurves.easyEase,
+              child: Reticle(color: color, size: IconSizes.small),
+            ),
+          ],
+        ),
       ),
     );
   }

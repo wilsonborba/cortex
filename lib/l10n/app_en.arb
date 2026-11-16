@@ -860,5 +860,112 @@
       }
     }
   },
-  "usageKindColumn": "Kind of answer"
+  "usageKindColumn": "Kind of answer",
+  "inspectionAction": "Inspect answer",
+  "inspectionExit": "Exit inspection",
+  "inspectionAverage": "Average certainty",
+  "inspectionLowest": "Lowest certainty",
+  "inspectionForks": "Forks · next →",
+  "inspectionTokens": "Tokens",
+  "inspectionInfo": "These values come from the probabilities the model recorded while writing this answer. Links show words that appeared earlier in the text. They are not the model's internal attention.",
+  "inspectionHint": "Move the pointer over the text",
+  "inspectionHintTouch": "Drag your finger over the text",
+  "inspectionLoading": "Loading recorded predictions…",
+  "inspectionReadFailed": "Could not load prediction data.",
+  "inspectionNoData": "No prediction data was recorded for this answer.",
+  "inspectionUnsupported": "This model did not provide prediction data.",
+  "inspectionUnverified": "Prediction data could not be verified.",
+  "inspectionCursorLabel": "Answer cursor",
+  "inspectionCursorValue": "{word}, certainty {value}",
+  "inspectionRailLine": "line",
+  "inspectionRailTokens": "tokens",
+  "inspectionRailCertainty": "certainty",
+  "inspectionLineTip": "Line {line} · certainty {value} · lowest: “{word}” {lowest}{forks, plural, =0{} =1{ · 1 fork} other{ · {forks} forks}}",
+  "inspectionChose": "The model chose “{word}” with {value}.",
+  "inspectionInstead": "Instead of “{word}” ({value}), the model also considered “{other}” with {otherValue}.",
+  "inspectionRest": "Other options add up to {value}.",
+  "inspectionFork": "Fork: the second option was close",
+  "inspectionChosenTag": "chosen",
+  "inspectionRadarLabel": "Recorded alternatives",
+  "inspectionContinue": "Continue with “{word}”",
+  "inspectionContinued": "Continued from “{word}”",
+  "@inspectionCursorValue": {
+    "placeholders": {
+      "word": {
+        "type": "String"
+      },
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "@inspectionLineTip": {
+    "placeholders": {
+      "line": {
+        "type": "int"
+      },
+      "value": {
+        "type": "String"
+      },
+      "word": {
+        "type": "String"
+      },
+      "lowest": {
+        "type": "String"
+      },
+      "forks": {
+        "type": "num",
+        "format": "compact"
+      }
+    }
+  },
+  "@inspectionChose": {
+    "placeholders": {
+      "word": {
+        "type": "String"
+      },
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "@inspectionInstead": {
+    "placeholders": {
+      "word": {
+        "type": "String"
+      },
+      "value": {
+        "type": "String"
+      },
+      "other": {
+        "type": "String"
+      },
+      "otherValue": {
+        "type": "String"
+      }
+    }
+  },
+  "@inspectionRest": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "@inspectionContinue": {
+    "placeholders": {
+      "word": {
+        "type": "String"
+      }
+    }
+  },
+  "@inspectionContinued": {
+    "placeholders": {
+      "word": {
+        "type": "String"
+      }
+    }
+  },
+  "heroDemoLabel": "Recorded example: real model data, no live call",
+  "heroDemoQuestion": "Write a two-sentence story about a girl named Mira who finds an old map under a fig tree."
 }

@@ -1839,4 +1839,135 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get usageKindColumn => 'Kind of answer';
+
+  @override
+  String get inspectionAction => 'Inspect answer';
+
+  @override
+  String get inspectionExit => 'Exit inspection';
+
+  @override
+  String get inspectionAverage => 'Average certainty';
+
+  @override
+  String get inspectionLowest => 'Lowest certainty';
+
+  @override
+  String get inspectionForks => 'Forks · next →';
+
+  @override
+  String get inspectionTokens => 'Tokens';
+
+  @override
+  String get inspectionInfo =>
+      'These values come from the probabilities the model recorded while writing this answer. Links show words that appeared earlier in the text. They are not the model\'s internal attention.';
+
+  @override
+  String get inspectionHint => 'Move the pointer over the text';
+
+  @override
+  String get inspectionHintTouch => 'Drag your finger over the text';
+
+  @override
+  String get inspectionLoading => 'Loading recorded predictions…';
+
+  @override
+  String get inspectionReadFailed => 'Could not load prediction data.';
+
+  @override
+  String get inspectionNoData =>
+      'No prediction data was recorded for this answer.';
+
+  @override
+  String get inspectionUnsupported =>
+      'This model did not provide prediction data.';
+
+  @override
+  String get inspectionUnverified => 'Prediction data could not be verified.';
+
+  @override
+  String get inspectionCursorLabel => 'Answer cursor';
+
+  @override
+  String inspectionCursorValue(String word, String value) {
+    return '$word, certainty $value';
+  }
+
+  @override
+  String get inspectionRailLine => 'line';
+
+  @override
+  String get inspectionRailTokens => 'tokens';
+
+  @override
+  String get inspectionRailCertainty => 'certainty';
+
+  @override
+  String inspectionLineTip(
+    int line,
+    String value,
+    String word,
+    String lowest,
+    num forks,
+  ) {
+    final intl.NumberFormat forksNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String forksString = forksNumberFormat.format(forks);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      forks,
+      locale: localeName,
+      other: ' · $forksString forks',
+      one: ' · 1 fork',
+      zero: '',
+    );
+    return 'Line $line · certainty $value · lowest: “$word” $lowest$_temp0';
+  }
+
+  @override
+  String inspectionChose(String word, String value) {
+    return 'The model chose “$word” with $value.';
+  }
+
+  @override
+  String inspectionInstead(
+    String word,
+    String value,
+    String other,
+    String otherValue,
+  ) {
+    return 'Instead of “$word” ($value), the model also considered “$other” with $otherValue.';
+  }
+
+  @override
+  String inspectionRest(String value) {
+    return 'Other options add up to $value.';
+  }
+
+  @override
+  String get inspectionFork => 'Fork: the second option was close';
+
+  @override
+  String get inspectionChosenTag => 'chosen';
+
+  @override
+  String get inspectionRadarLabel => 'Recorded alternatives';
+
+  @override
+  String inspectionContinue(String word) {
+    return 'Continue with “$word”';
+  }
+
+  @override
+  String inspectionContinued(String word) {
+    return 'Continued from “$word”';
+  }
+
+  @override
+  String get heroDemoLabel => 'Recorded example: real model data, no live call';
+
+  @override
+  String get heroDemoQuestion =>
+      'Write a two-sentence story about a girl named Mira who finds an old map under a fig tree.';
 }

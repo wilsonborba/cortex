@@ -1820,4 +1820,134 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get usageKindColumn => 'ประเภทคำตอบ';
+
+  @override
+  String get inspectionAction => 'ตรวจคำตอบ';
+
+  @override
+  String get inspectionExit => 'ออกจากการตรวจ';
+
+  @override
+  String get inspectionAverage => 'ความมั่นใจเฉลี่ย';
+
+  @override
+  String get inspectionLowest => 'ความมั่นใจต่ำสุด';
+
+  @override
+  String get inspectionForks => 'จุดแยก · ถัดไป →';
+
+  @override
+  String get inspectionTokens => 'โทเค็น';
+
+  @override
+  String get inspectionInfo =>
+      'ค่าเหล่านี้มาจากความน่าจะเป็นที่โมเดลบันทึกไว้ขณะเขียนคำตอบนี้ เส้นเชื่อมแสดงคำที่เคยปรากฏก่อนหน้าในข้อความ ไม่ใช่ความสนใจภายในของโมเดล';
+
+  @override
+  String get inspectionHint => 'เลื่อนเมาส์ไปบนข้อความ';
+
+  @override
+  String get inspectionHintTouch => 'ลากนิ้วไปบนข้อความ';
+
+  @override
+  String get inspectionLoading => 'กำลังโหลดการคาดการณ์ที่บันทึกไว้…';
+
+  @override
+  String get inspectionReadFailed => 'โหลดข้อมูลการคาดการณ์ไม่ได้';
+
+  @override
+  String get inspectionNoData =>
+      'ไม่มีการบันทึกข้อมูลการคาดการณ์สำหรับคำตอบนี้';
+
+  @override
+  String get inspectionUnsupported => 'โมเดลนี้ไม่ได้ให้ข้อมูลการคาดการณ์';
+
+  @override
+  String get inspectionUnverified => 'ไม่สามารถยืนยันข้อมูลการคาดการณ์ได้';
+
+  @override
+  String get inspectionCursorLabel => 'เคอร์เซอร์คำตอบ';
+
+  @override
+  String inspectionCursorValue(String word, String value) {
+    return '$word ความมั่นใจ $value';
+  }
+
+  @override
+  String get inspectionRailLine => 'บรรทัด';
+
+  @override
+  String get inspectionRailTokens => 'โทเค็น';
+
+  @override
+  String get inspectionRailCertainty => 'ความมั่นใจ';
+
+  @override
+  String inspectionLineTip(
+    int line,
+    String value,
+    String word,
+    String lowest,
+    num forks,
+  ) {
+    final intl.NumberFormat forksNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String forksString = forksNumberFormat.format(forks);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      forks,
+      locale: localeName,
+      other: ' · จุดแยก $forksString',
+      zero: '',
+    );
+    return 'บรรทัด $line · ความมั่นใจ $value · ต่ำสุด: “$word” $lowest$_temp0';
+  }
+
+  @override
+  String inspectionChose(String word, String value) {
+    return 'โมเดลเลือก “$word” ด้วย $value';
+  }
+
+  @override
+  String inspectionInstead(
+    String word,
+    String value,
+    String other,
+    String otherValue,
+  ) {
+    return 'แทนที่ “$word” ($value) โมเดลยังพิจารณา “$other” ด้วย $otherValue';
+  }
+
+  @override
+  String inspectionRest(String value) {
+    return 'ตัวเลือกอื่นรวมกัน $value';
+  }
+
+  @override
+  String get inspectionFork => 'จุดแยก: ตัวเลือกที่สองใกล้เคียงกัน';
+
+  @override
+  String get inspectionChosenTag => 'ที่เลือก';
+
+  @override
+  String get inspectionRadarLabel => 'ตัวเลือกที่บันทึกไว้';
+
+  @override
+  String inspectionContinue(String word) {
+    return 'ต่อด้วย “$word”';
+  }
+
+  @override
+  String inspectionContinued(String word) {
+    return 'ต่อจาก “$word”';
+  }
+
+  @override
+  String get heroDemoLabel =>
+      'ตัวอย่างที่บันทึกไว้: ข้อมูลจริงจากโมเดล ไม่มีการเรียกใช้สด';
+
+  @override
+  String get heroDemoQuestion =>
+      'เขียนเรื่องสั้นสองประโยคเกี่ยวกับเด็กหญิงชื่อมีราที่พบแผนที่เก่าใต้ต้นมะเดื่อ';
 }

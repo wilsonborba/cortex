@@ -1,3 +1,4 @@
+import '../../handlers/answer_inspection.dart';
 import '../../theme/app_icons.dart';
 import '../../handlers/api_action.dart';
 import '../../handlers/process_messages.dart';
@@ -190,6 +191,25 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
+  /// Keys of output blocks, so a continued answer can show its source.
+  final _outputKeys = Expando<GlobalKey>();
+  GlobalKey _outputKey(Exchange e) => _outputKeys[e] ??= GlobalKey();
+  void _showSource(String id) {
+    final source = chat.exchanges
+        .where((e) => e.output.outputId == id)
+        .firstOrNull;
+    final target = source == null ? null : _outputKeys[source]?.currentContext;
+    if (target == null) return;
+    Scrollable.ensureVisible(
+      target,
+      duration: FoundationTokens.of(
+        context,
+      ).duration(context, MotionDurations.slow),
+      curve: MotionCurves.easyEase,
+      alignment: 0.1,
+    );
+  }
+
   int get _olderCount {
     final index = chat.exchanges.indexOf(_firstPageFirst!);
     return index < 0 ? 0 : index;
@@ -203,35 +223,69 @@ class _ChatScreenState extends State<ChatScreen> {
       padding: EdgeInsets.symmetric(
         horizontal: compact ? Space.s16 : Space.s24,
       ),
-      child: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: Space.chatColumnWidth),
-          child: Padding(
-            // Message gap 24 (#63).
-            padding: EdgeInsets.only(
-              top: e == _firstPageFirst || index == 0 ? Space.s24 : 0,
-              bottom: index == _olderCount - 1 ? Space.s8 : Space.s24,
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                _UserMessage(exchange: e, compact: compact),
-                const SizedBox(height: Space.s24),
-                OutputBlock(
-                  output: e.output,
-                  now: widget.now,
-                  onStopThinking: () =>
-                      runApiAction(context, chat.stopThinking),
-                  onMemories: _showMemories,
-                  onRetry:
-                      e.output.running || index != chat.exchanges.length - 1
-                      ? null
-                      : () => chat.send(e.text),
+      child: LayoutBuilder(
+        builder: (context, box) {
+          // The inspection rail uses the left gutter when it is wide enough
+          // (cortex#78). The gutter stays inside the hit-test area.
+          final free = (box.maxWidth - Space.chatColumnWidth) / 2;
+          final gutter = free >= Space.inspectionGutter
+              ? Space.inspectionGutter
+              : 0.0;
+          return Center(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                maxWidth: Space.chatColumnWidth + gutter * 2,
+              ),
+              child: Padding(
+                // Message gap 24 (#63).
+                padding: EdgeInsets.only(
+                  top: e == _firstPageFirst || index == 0 ? Space.s24 : 0,
+                  bottom: index == _olderCount - 1 ? Space.s8 : Space.s24,
+                  right: gutter,
                 ),
-              ],
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.only(left: gutter),
+                      child: _UserMessage(exchange: e, compact: compact),
+                    ),
+                    const SizedBox(height: Space.s24),
+                    OutputBlock(
+                      key: _outputKey(e),
+                      gutter: gutter,
+                      onContinue: chat.temporary
+                          ? null
+                          : (from) => chat.continueFrom(e, from),
+                      onSource: e.output.continuedFrom == null
+                          ? null
+                          : () => _showSource(e.output.continuedFrom!.outputId),
+                      inspect: e.output.running
+                          ? null
+                          : () => startAnswerInspection(
+                              api: widget.api,
+                              output: e.output,
+                              temporary: chat.temporary,
+                              sessionId: chat.sessionId,
+                            ),
+                      output: e.output,
+                      now: widget.now,
+                      onStopThinking: () =>
+                          runApiAction(context, chat.stopThinking),
+                      onMemories: _showMemories,
+                      onRetry:
+                          e.output.running || index != chat.exchanges.length - 1
+                          ? null
+                          : e.output.continuedFrom != null
+                          ? () => chat.continueFrom(e, e.output.continuedFrom!)
+                          : () => chat.send(e.text),
+                    ),
+                  ],
+                ),
+              ),
             ),
-          ),
-        ),
+          );
+        },
       ),
     );
   }

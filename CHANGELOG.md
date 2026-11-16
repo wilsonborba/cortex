@@ -1,6 +1,43 @@
 # Changelog
 
 
+## Unreleased
+
+
+### Chores
+
+- Merge v2.2.3 back to release/v2.2.3
+
+- Merge v2.2.3 back to development
+
+- Merge v2.2.3 back to feature/main
+
+
+### Features
+
+- Add accessible saved-answer replay (#77)
+
+- Merge #77
+
+- Add honest text links and inspection controls (#78)
+
+- Merge #78
+
+- Inspect a saved answer in place with a hover cursor (#77)
+
+- Merge #77
+
+- Add certainty rail, text links and alternatives radar (#78)
+
+- Merge #78
+
+- Continue a saved answer from a radar alternative (#82)
+
+- Merge #82
+
+- Show the real inspection interaction in the hero (#81)
+
+
 ## v2.2.3 - 2026-11-14
 
 
@@ -20,6 +57,10 @@
 - Merge v2.2.2 back to feature/main
 
 - Prepare development for v2.2.3
+
+- Prepare v2.2.3
+
+- Release v2.2.3
 
 
 ## v2.2.2 - 2026-11-14

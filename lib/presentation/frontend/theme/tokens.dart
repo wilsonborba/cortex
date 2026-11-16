@@ -320,6 +320,42 @@ class Palette extends ThemeExtension<Palette> {
 
 /// Fluent global spacing ramp (base 4 px). Allowed values: 0, 2, 4, 6, 8, 10,
 /// 12, 16, 20, 24, 28, 32, 36, 40, 48, 52, 56.
+/// Answer inspection colors (cortex#77, cortex#78, owner prototype
+/// `83f373f728424eeb9d043556ab2e9c62`). The range is the theme brand; the
+/// grid is the opposite brand hue, soft. Dark: green range, purple grid.
+/// Light: purple range, green grid.
+abstract final class InspectionTones {
+  static const _darkGrid = Color(0xFFB794FF);
+  static const _lightGrid = Color(0xFF3D8C00);
+
+  /// Range color: radar polygon, needle, selected marks, links.
+  static Color range(Palette p) => p.brandForeground1;
+
+  /// Text on a filled [range] mark.
+  static Color onRange(Palette p) => p.onBrand;
+
+  /// Soft grid color: radar rings and spokes, fork marks.
+  static Color grid(Brightness b) =>
+      b == Brightness.dark ? _darkGrid : _lightGrid;
+
+  /// Certainty grade: grid color at 40 percent or lower, range at 100.
+  static Color grade(Palette p, Brightness b, double certainty) =>
+      Color.lerp(grid(b), range(p), ((certainty - 0.4) / 0.6).clamp(0.0, 1.0))!;
+
+  /// Rail bars: the grade mixed with the background, so the levels stay
+  /// readable but bright green never dominates (owner, 16 November 2026).
+  static Color soft(Palette p, Brightness b, double certainty) =>
+      Color.lerp(p.background, grade(p, b, certainty), 0.42)!;
+
+  /// Text after the cursor: close to the background, still readable as a
+  /// block (about 13 percent text).
+  static Color ghost(Palette p) => Color.lerp(p.background, p.text, 0.13)!;
+
+  /// Link highlight behind earlier words.
+  static Color linkFill(Palette p) => range(p).withValues(alpha: 0.24);
+  static Color linkStroke(Palette p) => range(p).withValues(alpha: 0.45);
+}
+
 abstract final class Space {
   static const s2 = 2.0, s4 = 4.0, s6 = 6.0, s8 = 8.0, s10 = 10.0;
   static const s12 = 12.0, s16 = 16.0, s20 = 20.0, s24 = 24.0, s28 = 28.0;
@@ -332,6 +368,9 @@ abstract final class Space {
   static const detailsWidth = 320.0;
   static const personaFormWidth = 640.0;
   static const chatColumnWidth = 768.0;
+
+  /// Left space for the answer inspection rail at wide widths (cortex#78).
+  static const inspectionGutter = 176.0;
   static const userBubbleFraction = 0.8;
   static const menuMinWidth = 138.0;
   static const menuMaxWidth = 300.0;
