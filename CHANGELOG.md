@@ -17,6 +17,10 @@
 
 - Add accessible saved-answer replay (#77)
 
+- Merge #77
+
+- Add honest text links and inspection controls (#78)
+
 
 ## v2.2.3 - 2026-11-14
 

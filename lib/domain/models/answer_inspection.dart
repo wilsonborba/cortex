@@ -39,6 +39,16 @@ class InspectionToken extends InspectionAlternative {
   );
   final int startByte, endByte;
   final List<InspectionAlternative> alternatives;
+  bool isChosen(InspectionAlternative value) {
+    if (value.bytes.length != bytes.length) return false;
+    for (var i = 0; i < bytes.length; i++) {
+      if (value.bytes[i] != bytes[i]) return false;
+    }
+    return true;
+  }
+
+  Iterable<InspectionAlternative> get otherAlternatives =>
+      alternatives.where((a) => !isChosen(a));
   factory InspectionToken.fromJson(Map<String, dynamic> value) {
     final base = InspectionAlternative.fromJson(value);
     final alternatives = [
@@ -98,4 +108,11 @@ class AnswerInspectionData {
 class RevealPosition {
   const RevealPosition(this.codeUnit, this.byte);
   final int codeUnit, byte;
+}
+
+enum InspectionMode { predictions, repeatedText }
+
+class InspectionTextMatch {
+  const InspectionTextMatch(this.start, this.end);
+  final int start, end;
 }

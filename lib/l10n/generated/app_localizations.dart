@@ -3477,6 +3477,72 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Drag up to hide text. Drag down to reveal text.'**
   String get inspectionDragHint;
+
+  /// No description provided for @inspectionControls.
+  ///
+  /// In en, this message translates to:
+  /// **'Inspection controls'**
+  String get inspectionControls;
+
+  /// No description provided for @inspectionPredictions.
+  ///
+  /// In en, this message translates to:
+  /// **'Predictions'**
+  String get inspectionPredictions;
+
+  /// No description provided for @inspectionRepeatedText.
+  ///
+  /// In en, this message translates to:
+  /// **'Repeated text'**
+  String get inspectionRepeatedText;
+
+  /// No description provided for @inspectionMode.
+  ///
+  /// In en, this message translates to:
+  /// **'View'**
+  String get inspectionMode;
+
+  /// No description provided for @inspectionDetail.
+  ///
+  /// In en, this message translates to:
+  /// **'Show up to {count} entries'**
+  String inspectionDetail(int count);
+
+  /// No description provided for @inspectionDialHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a view with the angle. Move outward for more detail. These controls only change this view.'**
+  String get inspectionDialHint;
+
+  /// No description provided for @inspectionMatchNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Exact earlier text matches. These links are not model attention or explanations.'**
+  String get inspectionMatchNote;
+
+  /// No description provided for @inspectionNoMatches.
+  ///
+  /// In en, this message translates to:
+  /// **'No earlier text match at this position.'**
+  String get inspectionNoMatches;
+
+  /// No description provided for @inspectionMatches.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} earlier matches shown'**
+  String inspectionMatches(int count);
+
+  /// No description provided for @inspectionRailLegend.
+  ///
+  /// In en, this message translates to:
+  /// **'Rail: mean recorded token likelihood per line.'**
+  String get inspectionRailLegend;
+
+  /// No description provided for @inspectionMatchLegend.
+  ///
+  /// In en, this message translates to:
+  /// **'Links connect earlier lines with matching text.'**
+  String get inspectionMatchLegend;
 }
 
 class _AppLocalizationsDelegate

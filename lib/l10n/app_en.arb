@@ -884,5 +884,30 @@
         "type": "int"
       }
     }
+  },
+  "inspectionControls": "Inspection controls",
+  "inspectionPredictions": "Predictions",
+  "inspectionRepeatedText": "Repeated text",
+  "inspectionMode": "View",
+  "inspectionDetail": "Show up to {count} entries",
+  "inspectionDialHint": "Choose a view with the angle. Move outward for more detail. These controls only change this view.",
+  "inspectionMatchNote": "Exact earlier text matches. These links are not model attention or explanations.",
+  "inspectionNoMatches": "No earlier text match at this position.",
+  "inspectionMatches": "{count} earlier matches shown",
+  "inspectionRailLegend": "Rail: mean recorded token likelihood per line.",
+  "inspectionMatchLegend": "Links connect earlier lines with matching text.",
+  "@inspectionDetail": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@inspectionMatches": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }

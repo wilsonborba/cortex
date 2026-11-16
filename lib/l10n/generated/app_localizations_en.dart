@@ -1901,4 +1901,45 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get inspectionDragHint =>
       'Drag up to hide text. Drag down to reveal text.';
+
+  @override
+  String get inspectionControls => 'Inspection controls';
+
+  @override
+  String get inspectionPredictions => 'Predictions';
+
+  @override
+  String get inspectionRepeatedText => 'Repeated text';
+
+  @override
+  String get inspectionMode => 'View';
+
+  @override
+  String inspectionDetail(int count) {
+    return 'Show up to $count entries';
+  }
+
+  @override
+  String get inspectionDialHint =>
+      'Choose a view with the angle. Move outward for more detail. These controls only change this view.';
+
+  @override
+  String get inspectionMatchNote =>
+      'Exact earlier text matches. These links are not model attention or explanations.';
+
+  @override
+  String get inspectionNoMatches => 'No earlier text match at this position.';
+
+  @override
+  String inspectionMatches(int count) {
+    return '$count earlier matches shown';
+  }
+
+  @override
+  String get inspectionRailLegend =>
+      'Rail: mean recorded token likelihood per line.';
+
+  @override
+  String get inspectionMatchLegend =>
+      'Links connect earlier lines with matching text.';
 }
