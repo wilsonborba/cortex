@@ -300,6 +300,13 @@ abstract final class AppIcons {
     fontPackage: _package,
   );
 
+  /// `FluentIcons.branch_fork_20_regular`
+  static const branchFork = IconData(
+    0xE1DE,
+    fontFamily: _regular,
+    fontPackage: _package,
+  );
+
   /// `FluentIcons.info_20_regular`
   static const info = IconData(
     0xF4A3,
@@ -615,6 +622,11 @@ abstract final class AppIcons {
     ),
     logOut: const IconData(0xF6DA, fontFamily: _regular, fontPackage: _package),
     search: const IconData(0xF690, fontFamily: _regular, fontPackage: _package),
+    branchFork: const IconData(
+      0xE1DF,
+      fontFamily: _regular,
+      fontPackage: _package,
+    ),
     attach: const IconData(0xF1AA, fontFamily: _regular, fontPackage: _package),
     send: const IconData(0xF69A, fontFamily: _regular, fontPackage: _package),
     stop: const IconData(0xF72B, fontFamily: _regular, fontPackage: _package),

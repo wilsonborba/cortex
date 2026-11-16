@@ -1857,106 +1857,128 @@ class AppLocalizationsPt extends AppLocalizations {
   String get usageKindColumn => 'Tipo de resposta';
 
   @override
-  String get inspectionTitle => 'Inspecionar resposta';
-
-  @override
   String get inspectionAction => 'Inspecionar resposta';
 
   @override
-  String get inspectionDescription =>
-      'Mova o círculo ou o controle para revelar a resposta salva. Isso não gera nem altera o texto.';
+  String get inspectionExit => 'Sair da inspeção';
 
   @override
-  String inspectionVisible(int percent) {
-    return '$percent% visível';
-  }
+  String get inspectionAverage => 'Certeza média';
 
   @override
-  String get inspectionRecorded =>
-      'Probabilidade registrada pelo modelo. Isso não mede a correção da resposta.';
+  String get inspectionLowest => 'Menor certeza';
 
   @override
-  String get inspectionNoData =>
-      'Nenhum dado de previsão foi registrado para esta resposta. Você ainda pode explorar o texto.';
+  String get inspectionForks => 'Bifurcações · próxima →';
 
   @override
-  String get inspectionUnsupported =>
-      'Este modelo não forneceu dados de previsão. Você ainda pode explorar o texto.';
+  String get inspectionTokens => 'Tokens';
 
   @override
-  String get inspectionUnverified =>
-      'Não foi possível verificar os dados de previsão. Você ainda pode explorar o texto.';
+  String get inspectionInfo =>
+      'Estes valores vêm das probabilidades que o modelo gravou ao escrever esta resposta. As ligações mostram palavras que já apareceram antes no texto. Elas não são a atenção interna do modelo.';
 
   @override
-  String get inspectionLoading => 'Carregando previsões registradas…';
+  String get inspectionHint => 'Passe o mouse pelo texto';
+
+  @override
+  String get inspectionHintTouch => 'Arraste o dedo pelo texto';
+
+  @override
+  String get inspectionLoading => 'Carregando as previsões gravadas…';
 
   @override
   String get inspectionReadFailed =>
-      'Não foi possível carregar os dados de previsão. O texto salvo continua disponível.';
+      'Não foi possível carregar os dados de previsão.';
 
   @override
-  String get inspectionNextToken => 'Próximo token registrado';
+  String get inspectionNoData =>
+      'Nenhum dado de previsão foi gravado para esta resposta.';
 
   @override
-  String get inspectionAlternatives => 'Outras possibilidades registradas';
+  String get inspectionUnsupported =>
+      'Este modelo não forneceu dados de previsão.';
 
   @override
-  String get inspectionEnd =>
-      'Fim da resposta salva. Volte para inspecionar uma previsão.';
+  String get inspectionUnverified =>
+      'Não foi possível verificar os dados de previsão.';
 
   @override
-  String get inspectionPartial => 'Token de parte de um caractere';
+  String get inspectionCursorLabel => 'Cursor da resposta';
 
   @override
-  String get inspectionControlToken => 'Token sem texto visível';
-
-  @override
-  String get inspectionPlainText =>
-      'Texto original, incluindo marcas de formatação. Os tokens entre aspas mostram espaços e quebras de linha.';
-
-  @override
-  String get inspectionDragHint =>
-      'Arraste para cima para ocultar o texto. Arraste para baixo para revelá-lo.';
-
-  @override
-  String get inspectionControls => 'Controles de inspeção';
-
-  @override
-  String get inspectionPredictions => 'Previsões';
-
-  @override
-  String get inspectionRepeatedText => 'Texto repetido';
-
-  @override
-  String get inspectionMode => 'Visualização';
-
-  @override
-  String inspectionDetail(int count) {
-    return 'Mostrar até $count itens';
+  String inspectionCursorValue(String word, String value) {
+    return '$word, certeza $value';
   }
 
   @override
-  String get inspectionDialHint =>
-      'Escolha a visualização pelo ângulo. Mova para fora para ver mais detalhes. Estes controles só alteram esta visualização.';
+  String get inspectionRailLine => 'linha';
 
   @override
-  String get inspectionMatchNote =>
-      'Correspondências exatas com texto anterior. Estes links não representam a atenção nem o raciocínio do modelo.';
+  String get inspectionRailTokens => 'tokens';
 
   @override
-  String get inspectionNoMatches =>
-      'Nenhum texto anterior coincide nesta posição.';
+  String get inspectionRailCertainty => 'certeza';
 
   @override
-  String inspectionMatches(int count) {
-    return '$count correspondências anteriores exibidas';
+  String inspectionLineTip(
+    int line,
+    String value,
+    String word,
+    String lowest,
+    num forks,
+  ) {
+    final intl.NumberFormat forksNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String forksString = forksNumberFormat.format(forks);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      forks,
+      locale: localeName,
+      other: ' · $forksString bifurcações',
+      one: ' · 1 bifurcação',
+      zero: '',
+    );
+    return 'Linha $line · certeza $value · menor: “$word” $lowest$_temp0';
   }
 
   @override
-  String get inspectionRailLegend =>
-      'Barras: probabilidade média dos tokens registrados em cada linha.';
+  String inspectionChose(String word, String value) {
+    return 'O modelo escolheu “$word” com $value.';
+  }
 
   @override
-  String get inspectionMatchLegend =>
-      'Os links conectam linhas anteriores com texto igual.';
+  String inspectionInstead(
+    String word,
+    String value,
+    String other,
+    String otherValue,
+  ) {
+    return 'No lugar de “$word” ($value), o modelo também considerou “$other” com $otherValue.';
+  }
+
+  @override
+  String inspectionRest(String value) {
+    return 'Outras opções somam $value.';
+  }
+
+  @override
+  String get inspectionFork => 'Bifurcação: a segunda opção estava perto';
+
+  @override
+  String get inspectionChosenTag => 'escolhida';
+
+  @override
+  String get inspectionRadarLabel => 'Alternativas gravadas';
+
+  @override
+  String inspectionContinue(String word) {
+    return 'Continuar com “$word”';
+  }
+
+  @override
+  String inspectionContinued(String word) {
+    return 'Continuação a partir de “$word”';
+  }
 }

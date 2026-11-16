@@ -21,6 +21,10 @@
 
 - Add honest text links and inspection controls (#78)
 
+- Merge #78
+
+- Inspect a saved answer in place with a hover cursor (#77)
+
 
 ## v2.2.3 - 2026-11-14
 

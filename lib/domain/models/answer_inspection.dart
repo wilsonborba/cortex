@@ -105,14 +105,80 @@ class AnswerInspectionData {
   }
 }
 
-class RevealPosition {
-  const RevealPosition(this.codeUnit, this.byte);
-  final int codeUnit, byte;
+/// One recorded option at a span: the chosen token or an alternative.
+class InspectionOption {
+  const InspectionOption(this.text, this.likelihood, this.chosen, this.rank);
+  final String text;
+  final double likelihood;
+  final bool chosen;
+
+  /// 1-based rank in the saved alternatives, or null when the chosen token
+  /// is not in the saved list. The continue request uses this rank.
+  final int? rank;
 }
 
-enum InspectionMode { predictions, repeatedText }
-
-class InspectionTextMatch {
-  const InspectionTextMatch(this.start, this.end);
+/// A piece of the answer text that the cursor can stop on. With recorded
+/// data it is one model token (or a few tokens that split one character).
+/// Without data it is one word, and it has no certainty.
+class InspectionSpan {
+  const InspectionSpan({
+    required this.start,
+    required this.end,
+    required this.text,
+    this.token,
+    this.tokenIndex,
+    this.certainty,
+    this.options = const [],
+  });
   final int start, end;
+  final String text;
+  final InspectionToken? token;
+
+  /// Position of [token] in the saved token list.
+  final int? tokenIndex;
+
+  /// Recorded likelihood of the chosen text, from 0 to 1.
+  final double? certainty;
+
+  /// Chosen token and saved alternatives, most likely first.
+  final List<InspectionOption> options;
+
+  /// Normalized word for exact earlier-word links.
+  String get word => text.toLowerCase().replaceAll(
+    RegExp(r'[^\p{L}\p{N}\p{M}]', unicode: true),
+    '',
+  );
+  bool get hasWord => word.isNotEmpty;
+
+  /// The best other option is at least half as likely as the chosen one.
+  bool get fork {
+    final chosen = certainty;
+    if (chosen == null) return false;
+    final others = options.where((o) => !o.chosen);
+    return others.isNotEmpty && others.first.likelihood >= chosen * 0.5;
+  }
+
+  double get otherLikelihood =>
+      math.max(0, 1 - options.fold<double>(0, (v, o) => v + o.likelihood));
+}
+
+/// An earlier span with the same word, or with the word of an alternative.
+class InspectionLink {
+  const InspectionLink(this.span, {this.alternative = false});
+  final int span;
+  final bool alternative;
+}
+
+/// Answer statistics for the summary cards.
+class InspectionSummary {
+  const InspectionSummary({
+    required this.average,
+    required this.lowest,
+    required this.forks,
+    required this.tokens,
+  });
+  final double? average;
+  final int? lowest;
+  final List<int> forks;
+  final int tokens;
 }

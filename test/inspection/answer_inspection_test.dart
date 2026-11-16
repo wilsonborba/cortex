@@ -1,35 +1,81 @@
-import 'package:flutter/services.dart';
-import 'package:cortex/domain/models/output.dart';
-import 'package:cortex/presentation/frontend/handlers/answer_inspection.dart';
-import 'package:cortex/presentation/frontend/screens/chat/output_block.dart';
-import 'dart:async';
 import 'dart:convert';
+import 'dart:math' as math;
 import 'package:cortex/dal/remote/cortex_api.dart';
 import 'package:cortex/domain/models/answer_inspection.dart';
+import 'package:cortex/domain/models/output.dart';
 import 'package:cortex/domain/services/answer_inspection_controller.dart';
 import 'package:cortex/l10n/generated/app_localizations.dart';
+import 'package:cortex/presentation/frontend/handlers/answer_inspection.dart';
 import 'package:cortex/presentation/frontend/screens/chat/answer_inspection.dart';
+import 'package:cortex/presentation/frontend/screens/chat/output_block.dart';
 import 'package:cortex/presentation/frontend/theme/theme.dart';
-import 'package:cortex/presentation/frontend/widgets/common/surfaces.dart';
+import 'package:cortex/presentation/frontend/theme/tokens.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 
+/// Synthetic fork words: chosen likelihood, then alternatives.
+const forks = {
+  'map': [0.47, ' paper', 0.32, ' book', 0.11],
+  'trees': [0.58, ' roots', 0.31, ' rocks', 0.06],
+  'mapa': [0.47, ' papel', 0.32, ' livro', 0.11],
+  'árvores': [0.58, ' raízes', 0.31, ' pedras', 0.06],
+  'ต้นไม้ใ': [0.47, 'ป่าใกล้', 0.32, 'บ้านใ', 0.11],
+  'อ่านแผ': [0.52, 'มองแผ', 0.33, 'ถือแผ', 0.09],
+};
+
+/// Synthetic recorded tokens: words with their leading space, punctuation
+/// alone. Fork words get close alternatives; the rest are near certain.
 AnswerInspectionData fixtureData(String text) {
-  var offset = 0;
   final tokens = <InspectionToken>[];
-  for (final rune in text.runes) {
-    final bytes = utf8.encode(String.fromCharCode(rune));
-    tokens.add(
-      InspectionToken(bytes, -0.2, offset, offset + bytes.length, [
-        InspectionAlternative(bytes, -0.2),
-        for (var i = 0; i < 4; i++)
+  var offset = 0;
+  var n = 0;
+  final pieces = <String>[];
+  for (final m in RegExp(
+    r'\s*[^\s.,:;]+|[.,:;]|\s+',
+    unicode: true,
+  ).allMatches(text)) {
+    final piece = m.group(0)!;
+    // Scripts without spaces (Thai) get short pieces, like real tokens.
+    if (piece.characters.length <= 12 || forks.containsKey(piece.trim())) {
+      pieces.add(piece);
+      continue;
+    }
+    final chars = piece.characters.toList();
+    for (var i = 0; i < chars.length; i += 4) {
+      pieces.add(chars.sublist(i, math.min(i + 4, chars.length)).join());
+    }
+  }
+  for (final piece in pieces) {
+    final bytes = utf8.encode(piece);
+    final fork = forks[piece.trim()];
+    final chosen = fork == null ? 0.72 + (n++ % 7) * 0.04 : fork[0] as double;
+    final alternatives = [InspectionAlternative(bytes, math.log(chosen))];
+    if (fork != null) {
+      for (var i = 1; i < fork.length; i += 2) {
+        alternatives.add(
           InspectionAlternative(
-            utf8.encode([' tree', ' path', ' river', ' map'][i]),
-            -3.0 - i,
+            utf8.encode(fork[i] as String),
+            math.log(fork[i + 1] as double),
           ),
-      ]),
+        );
+      }
+    } else {
+      alternatives.add(
+        InspectionAlternative(utf8.encode(' the'), math.log((1 - chosen) / 2)),
+      );
+    }
+    tokens.add(
+      InspectionToken(
+        bytes,
+        math.log(chosen),
+        offset,
+        offset + bytes.length,
+        alternatives,
+      ),
     );
     offset += bytes.length;
   }
@@ -39,6 +85,15 @@ AnswerInspectionData fixtureData(String text) {
     tokens: tokens,
   );
 }
+
+String sampleText(String language) => switch (language) {
+  'pt' =>
+    'Mira encontrou um mapa sob as árvores. Mira leu o mapa com cuidado.\n\nAs árvores do mapa ficam perto do rio. Este texto é um exemplo criado para o teste.',
+  'th' =>
+    'มีราพบแผนที่ใต้ต้นไม้ มีราอ่านแผนที่อย่างช้า ๆ\n\nต้นไม้ในแผนที่อยู่ใกล้แม่น้ำ นี่คือข้อความตัวอย่างสำหรับการทดสอบเท่านั้น',
+  _ =>
+    'Mira found a map beneath the trees. Mira read the map with care.\n\nThe trees on the map stand near the river. This is a synthetic example for testing.',
+};
 
 Widget app(
   Widget child, {
@@ -59,304 +114,345 @@ Widget app(
     ),
   ),
 );
-void main() {
-  test(
-    'replay preserves the original and respects combined Unicode characters',
-    () {
-      const text = 'Olá ก้ 👨‍👩‍👧‍👦 café';
-      final c = AnswerInspectionController(text: text);
-      final seen = <String>{};
-      for (var i = 0; i <= 100; i++) {
-        c.reveal(i / 100);
-        seen.add(c.visibleText);
-        expect(utf8.decode(utf8.encode(c.visibleText)), c.visibleText);
-      }
-      expect(seen.any((s) => s.endsWith('ก')), false);
-      expect(seen.any((s) => s.endsWith('👨')), false);
-      c.reveal(0);
-      expect(c.visibleText, '');
-      c.reveal(1);
-      expect(c.visibleText, text);
-      expect(c.text, text);
-      c.dispose();
-    },
-  );
-  test(
-    'real token boundaries map raw UTF-8 fragments to safe display positions',
-    () {
-      const text = 'ก💡';
-      final bytes = utf8.encode(text);
-      final tokens = <InspectionToken>[];
-      for (var i = 0; i < bytes.length; i++) {
-        tokens.add(InspectionToken([bytes[i]], -1, i, i + 1, const []));
-      }
-      final c = AnswerInspectionController(
-        text: text,
-        initialData: AnswerInspectionData(
-          model: 'synthetic',
-          reason: null,
-          tokens: tokens,
+
+/// The chat column of the chat screen, with the rail gutter when it fits.
+Widget column(Widget Function(double gutter) child) => LayoutBuilder(
+  builder: (context, box) {
+    final free = (box.maxWidth - 48 - Space.chatColumnWidth) / 2;
+    final gutter = free >= Space.inspectionGutter
+        ? Space.inspectionGutter
+        : 0.0;
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(Space.s24),
+      child: Center(
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            maxWidth: Space.chatColumnWidth + gutter * 2,
+          ),
+          child: Padding(
+            padding: EdgeInsets.only(right: gutter),
+            child: child(gutter),
+          ),
         ),
-      );
-      c.reveal(0.5);
-      expect(c.visibleText, 'ก');
-      expect(c.cursor.byte, 3);
-      expect(c.nextToken!.startByte, 3);
-      c.step(1);
-      expect(c.visibleText, text);
-      expect(c.nextToken, isNull);
-      c.dispose();
-    },
-  );
-  test('progress measures revealed characters instead of token count', () {
-    const text = 'abcdefghij x';
+      ),
+    );
+  },
+);
+
+OutputView doneOutput(String text) =>
+    OutputView(outputId: 'output', status: 'done')
+      ..sessionId = 'session'
+      ..answer.write(text);
+
+void main() {
+  test('spans keep whole characters and join split byte tokens', () {
+    const text = 'ก💡 x';
+    final bytes = utf8.encode(text);
     final data = AnswerInspectionData(
       reason: null,
       tokens: [
-        InspectionToken(utf8.encode('abcdefghij'), -0.2, 0, 10, const []),
-        InspectionToken(utf8.encode(' x'), -0.2, 10, 12, const []),
+        for (var i = 0; i < bytes.length; i++)
+          InspectionToken([bytes[i]], -0.1, i, i + 1, const []),
       ],
     );
-    final c = AnswerInspectionController(text: text, initialData: data)
-      ..reveal(0.7);
-    expect(c.visibleText, 'abcdefghij');
-    expect(c.fraction, closeTo(10 / 12, 0.000001));
+    final c = AnswerInspectionController(text: text, initialData: data);
+    expect(c.spans.map((s) => s.text), ['ก', '💡', ' ', 'x']);
+    expect(c.spans[1].certainty, closeTo(math.exp(-0.4), 1e-9));
+    expect(c.spans[1].options, isEmpty, reason: 'joined tokens have no rank');
+    expect(c.spans.last.tokenIndex, bytes.length - 1);
     c.dispose();
   });
-  test('probabilities are not normalized over the displayed alternatives', () {
-    final data = fixtureData('x');
-    expect(
-      data.tokens.first.otherAlternatives.first.likelihood,
-      closeTo(0.049787, 0.000001),
-    );
-    expect(
-      data.tokens.first.alternatives.fold<double>(
-        0,
-        (v, a) => v + a.likelihood,
-      ),
-      lessThan(1),
-    );
-  });
-  test(
-    'read errors can retry and mismatched records cannot create predictions',
-    () async {
-      var calls = 0;
-      final c = AnswerInspectionController(
-        text: 'answer',
-        loader: () async {
-          calls++;
-          if (calls == 1) throw StateError('synthetic error');
-          return fixtureData('different');
-        },
-      );
-      await c.load();
-      expect(c.failed, true);
-      await c.load();
-      expect(c.failed, false);
-      expect(c.data.reason, 'invalid_data');
-      expect(c.data.tokens, isEmpty);
-      expect(c.text, 'answer');
-      c.dispose();
-    },
-  );
-  test('closing during a read does not update a disposed controller', () async {
-    final pending = Completer<AnswerInspectionData>();
+  test('options are sorted, keep their saved rank and are not normalized', () {
     final c = AnswerInspectionController(
-      text: 'x',
-      loader: () => pending.future,
+      text: sampleText('en'),
+      initialData: fixtureData(sampleText('en')),
     );
-    final future = c.load();
+    final map = c.spans.indexWhere((s) => s.text == ' map');
+    final options = c.spans[map].options;
+    expect(options.first.chosen, true);
+    expect(options.first.likelihood, closeTo(0.47, 1e-9));
+    expect(options[1].text, ' paper');
+    expect(options[1].rank, 2);
+    expect(c.spans[map].fork, true);
+    expect(c.spans[map].otherLikelihood, closeTo(0.10, 1e-9));
     c.dispose();
-    pending.complete(fixtureData('x'));
-    await future;
   });
-  test('typed client makes only the scoped read request', () async {
+  test('summary: geometric average, lowest word, forks and token count', () {
+    final data = fixtureData(sampleText('en'));
+    final c = AnswerInspectionController(
+      text: sampleText('en'),
+      initialData: data,
+    );
+    final s = c.summary;
+    final mean = math.exp(
+      c.spans.fold<double>(0, (v, x) => v + math.log(x.certainty!)) /
+          c.spans.length,
+    );
+    expect(s.average, closeTo(mean, 1e-9));
+    expect(c.spans[s.lowest!].text.trim(), 'map');
+    expect(s.forks, isNotEmpty);
+    expect(s.forks.every((i) => c.spans[i].fork), true);
+    expect(s.tokens, data.tokens.length);
+    c.dispose();
+  });
+  test('without data the cursor moves by words and shows no values', () {
+    const text = 'Synthetic answer, no data.';
+    final c = AnswerInspectionController(text: text);
+    expect(c.available, false);
+    expect(c.spans.map((s) => s.text).join(), text);
+    expect(c.spans.every((s) => s.certainty == null), true);
+    expect(c.summary.average, isNull);
+    c.openRadar();
+    expect(c.radarOpen, false);
+    c.dispose();
+  });
+  test('invalid saved data is not shown', () async {
+    final c = AnswerInspectionController(
+      text: 'other text',
+      loader: () async => fixtureData(sampleText('en')),
+    );
+    await c.load();
+    expect(c.data.reason, 'invalid_data');
+    expect(c.available, false);
+    final failed = AnswerInspectionController(
+      text: 'x',
+      loader: () async => throw StateError('offline'),
+    );
+    await failed.load();
+    expect(failed.failed, true);
+    c.dispose();
+    failed.dispose();
+  });
+  test('cursor, pin, forks and lowest move without changing the text', () {
+    final text = sampleText('pt');
+    final c = AnswerInspectionController(
+      text: text,
+      initialData: fixtureData(text),
+    );
+    expect(c.cursor, c.spans.length - 1);
+    c.moveTo(3);
+    expect((c.cursor, c.pinned, c.moved), (3, false, true));
+    c.step(1);
+    expect((c.cursor, c.pinned), (4, true));
+    c.nextFork();
+    expect(c.current!.fork, true);
+    expect(c.radarOpen, true);
+    c.select(1);
+    expect(c.picked, isNotNull);
+    c.closeRadar(unpin: true);
+    expect((c.radarOpen, c.pinned, c.pick), (false, false, null));
+    c.showLowest();
+    expect(c.cursor, c.summary.lowest);
+    expect(c.text, text);
+    c.dispose();
+  });
+  test('links use earlier words only and alternatives found earlier', () {
+    const text = 'The river and the bridge. The bridge crossed the river.';
+    final data = fixtureData(text);
+    final c = AnswerInspectionController(text: text, initialData: data);
+    final second = c.spans.lastIndexWhere((s) => s.word == 'river');
+    final links = c.links(second);
+    expect(links.map((l) => c.spans[l.span].word), ['river']);
+    expect(links.every((l) => l.span < second), true);
+    final first = c.spans.indexWhere((s) => s.word == 'river');
+    expect(c.links(first), isEmpty);
+    final the = c.spans.lastIndexWhere((s) => s.word == 'the');
+    expect(c.links(the), isEmpty, reason: 'stop words have no links');
+    c.dispose();
+  });
+
+  testWidgets('Inspect opens in place, follows the pointer and pins', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(1300, 1000);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
     final requests = <http.Request>[];
+    final text = sampleText('en');
     final api = CortexApi(
       baseUrl: 'https://api.test',
       client: MockClient((r) async {
         requests.add(r);
+        final data = fixtureData(text);
         return http.Response(
           jsonEncode({
             'data': {
-              'model': 'synthetic',
-              'reason': 'not_recorded',
-              'tokens': [],
+              'model': data.model,
+              'reason': null,
+              'tokens': [
+                for (final t in data.tokens)
+                  {
+                    'start_byte': t.startByte,
+                    'end_byte': t.endByte,
+                    'bytes': t.bytes,
+                    'logprob': t.logprob,
+                    'alternatives': [
+                      for (final a in t.alternatives)
+                        {'bytes': a.bytes, 'logprob': a.logprob},
+                    ],
+                  },
+              ],
             },
           }),
           200,
         );
       }),
     );
-    final data = await api.answerInspection('session', 'output');
-    expect(data.available, false);
-    expect(requests.single.method, 'GET');
-    expect(
-      requests.single.url.path,
-      '/chats/session/outputs/output/inspection',
-    );
-  });
-  testWidgets(
-    'slider, circle and selection preserve text without another read',
-    (tester) async {
-      var reads = 0;
-      const text = 'Synthetic answer. A synthetic answer stays unchanged.';
-      final c = AnswerInspectionController(
-        text: text,
-        loader: () async {
-          reads++;
-          return fixtureData(text);
-        },
-      );
-      await c.load();
-      await tester.pumpWidget(app(AnswerInspectionView(controller: c)));
-      final originalHeight = tester
-          .getSize(find.byKey(const Key('inspection-text-area')))
-          .height;
-      await tester.drag(find.byType(Slider), const Offset(-160, 0));
-      await tester.pump();
-      expect(c.fraction, lessThan(1));
-      expect(c.text, text);
-      expect(reads, 1);
-      expect(
-        tester.getSize(find.byKey(const Key('inspection-text-area'))).height,
-        originalHeight,
-      );
-      await tester.drag(
-        find.byKey(const Key('inspection-handle')),
-        const Offset(0, 40),
-      );
-      await tester.pump();
-      c.reveal(1);
-      await tester.pump();
-      expect(c.visibleText, text);
-      expect(tester.takeException(), isNull);
-      await tester.pumpWidget(const SizedBox());
-      c.dispose();
-    },
-  );
-  testWidgets(
-    'Inspect opens a read-only dialog; keyboard, copy and Escape work',
-    (tester) async {
-      var reads = 0;
-      String? clipboard;
-      tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
-        SystemChannels.platform,
-        (call) async {
-          if (call.method == 'Clipboard.setData') {
-            clipboard = (call.arguments as Map)['text'] as String?;
-          }
-          if (call.method == 'Clipboard.getData') return {'text': clipboard};
-          return null;
-        },
-      );
-      addTearDown(
-        () => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
-          SystemChannels.platform,
-          null,
-        ),
-      );
-      final api = CortexApi(
-        baseUrl: 'https://api.test',
-        client: MockClient((r) async {
-          reads++;
-          expect(r.method, 'GET');
-          return http.Response(
-            jsonEncode({
-              'data': {'model': '', 'reason': 'not_recorded', 'tokens': []},
-            }),
-            200,
-          );
-        }),
-      );
-      const text = 'Synthetic original answer. This answer stays unchanged.';
-      final output = OutputView(outputId: 'output', status: 'done')
-        ..sessionId = 'session'
-        ..answer.write(text);
-      await tester.pumpWidget(
-        app(
-          Builder(
-            builder: (context) => OutputBlock(
+    final output = doneOutput(text);
+    await tester.pumpWidget(
+      app(
+        column(
+          (gutter) => OutputBlock(
+            output: output,
+            gutter: gutter,
+            inspect: () => startAnswerInspection(
+              api: api,
               output: output,
-              onInspect: () => openAnswerInspection(
-                context,
-                api: api,
-                output: output,
-                temporary: false,
-              ),
+              temporary: false,
             ),
           ),
         ),
-      );
-      await tester.tap(find.byKey(const Key('inspect-answer')));
-      await tester.pumpAndSettle();
-      expect(find.byType(AnswerInspectionView), findsOneWidget);
-      expect(reads, 1);
-      final slider = find.byType(Slider);
-      await tester.tap(slider);
-      await tester.pump();
-      final before = tester.widget<Slider>(slider).value;
-      await tester.sendKeyEvent(LogicalKeyboardKey.arrowLeft);
-      await tester.pump();
-      expect(tester.widget<Slider>(slider).value, lessThan(before));
-      final controller = tester
-          .widget<AnswerInspectionView>(find.byType(AnswerInspectionView))
-          .controller;
-      await tester.tap(find.text('Inspection controls').last);
-      await tester.pumpAndSettle();
-      expect(find.byKey(const Key('inspection-dial')), findsOneWidget);
-      await tester.tap(find.byKey(const Key('inspection-mode')));
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('Repeated text').last);
-      await tester.pumpAndSettle();
-      expect(controller.mode, InspectionMode.repeatedText);
-      expect(reads, 1);
-      expect(output.answer.toString(), text);
-      await tester.sendKeyEvent(LogicalKeyboardKey.escape);
-      await tester.pumpAndSettle();
-      expect(find.byKey(const Key('inspection-dial')), findsNothing);
-      await tester.tap(find.byType(CopyMessageButton).last);
-      await tester.pumpAndSettle();
-      expect(clipboard, text);
-      await tester.sendKeyEvent(LogicalKeyboardKey.escape);
-      await tester.pumpAndSettle();
-      expect(find.byType(AnswerInspectionView), findsNothing);
-      expect(output.answer.toString(), text);
-      expect(reads, 1);
-      expect(tester.takeException(), isNull);
-    },
-  );
+      ),
+    );
+    expect(find.byKey(const Key('answer')), findsOneWidget);
+    await tester.tap(find.byKey(const Key('inspect-answer')));
+    await tester.pumpAndSettle();
+    expect(find.byType(Dialog), findsNothing);
+    expect(find.byKey(const Key('answer-inspection')), findsOneWidget);
+    expect(find.byKey(const Key('answer')), findsNothing);
+    expect(find.byKey(const Key('inspection-hint')), findsOneWidget);
+    expect(find.byKey(const Key('inspection-average')), findsOneWidget);
+    final state = tester.state<InspectionAnswerState>(
+      find.byType(InspectionAnswer),
+    );
+    final c = state.widget.controller;
+    expect(c.available, true);
+    // Hover over the first word: the cursor follows without a click.
+    final rich = find.descendant(
+      of: find.byKey(const Key('inspection-text')),
+      matching: find.byType(RichText),
+    );
+    final origin = tester.getTopLeft(rich.first);
+    final mouse = await tester.createGesture(kind: PointerDeviceKind.mouse);
+    await mouse.addPointer(location: origin + const Offset(5, 8));
+    await mouse.moveTo(origin + const Offset(8, 10));
+    await tester.pump();
+    expect(c.cursor, 0);
+    expect(c.pinned, false);
+    expect(find.byKey(const Key('inspection-hint')), findsNothing);
+    // Pause opens the radar data state; a click pins and a second unpins.
+    await tester.pump(const Duration(milliseconds: 700));
+    expect(c.radarOpen, true);
+    await mouse.moveTo(origin + const Offset(60, 10));
+    await tester.pump();
+    final hovered = c.cursor;
+    expect(hovered, greaterThan(0));
+    await tester.tapAt(
+      origin + const Offset(60, 10),
+      kind: PointerDeviceKind.mouse,
+    );
+    await tester.pump();
+    expect(c.pinned, true);
+    await mouse.moveTo(origin + const Offset(200, 10));
+    await tester.pump();
+    expect(c.cursor, hovered, reason: 'a pinned cursor does not follow');
+    await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+    await tester.pump();
+    expect(c.cursor, hovered + 1);
+    // Ghost text after the cursor keeps the saved text in place.
+    final paragraph = tester.widget<RichText>(rich.first);
+    final children = (paragraph.text as TextSpan).children!;
+    final p = Palette.light;
+    expect((children.last as TextSpan).style?.color, InspectionTones.ghost(p));
+    expect(children.map((s) => (s as TextSpan).text).join(), text);
+    await tester.sendKeyEvent(LogicalKeyboardKey.escape);
+    await tester.pump();
+    expect(c.pinned, false);
+    await tester.sendKeyEvent(LogicalKeyboardKey.escape);
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('answer-inspection')), findsNothing);
+    expect(find.byKey(const Key('answer')), findsOneWidget);
+    expect(output.answer.toString(), text);
+    expect(requests.length, 1);
+    expect(requests.single.method, 'GET');
+    expect(requests.single.url.path, endsWith('/inspection'));
+    await mouse.removePointer();
+    expect(tester.takeException(), isNull);
+  });
+  testWidgets('touch drag moves the cursor and release pins it', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(390, 900);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    final text = sampleText('en');
+    final c = AnswerInspectionController(
+      text: text,
+      initialData: fixtureData(text),
+    );
+    await tester.pumpWidget(
+      app(column((_) => InspectionAnswer(controller: c, onExit: () {}))),
+    );
+    await tester.pumpAndSettle();
+    final rich = find.descendant(
+      of: find.byKey(const Key('inspection-text')),
+      matching: find.byType(RichText),
+    );
+    final origin = tester.getTopLeft(rich.first);
+    final gesture = await tester.startGesture(
+      origin + const Offset(10, 10),
+      kind: PointerDeviceKind.touch,
+    );
+    await gesture.moveBy(const Offset(0, 30));
+    await gesture.moveBy(const Offset(40, 0));
+    await tester.pump();
+    final dragged = c.cursor;
+    expect(c.pinned, false);
+    await gesture.up();
+    await tester.pump();
+    expect(c.cursor, dragged);
+    expect(c.pinned, true);
+    expect(c.radarOpen, true);
+    await tester.pumpWidget(const SizedBox());
+    c.dispose();
+  });
+  testWidgets('unavailable data keeps the word cursor and says why', (
+    tester,
+  ) async {
+    final c = AnswerInspectionController(
+      text: 'Synthetic answer without data.',
+      initialData: const AnswerInspectionData(reason: 'not_supported'),
+    );
+    await tester.pumpWidget(
+      app(column((_) => InspectionAnswer(controller: c, onExit: () {}))),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('This model did not provide prediction data.'), findsOne);
+    expect(find.byKey(const Key('inspection-average')), findsNothing);
+    await tester.pumpWidget(const SizedBox());
+    c.dispose();
+  });
   for (final brightness in Brightness.values) {
     for (final width in [390.0, 1300.0]) {
       for (final language in ['en', 'pt', 'th']) {
-        testWidgets('replay ${brightness.name} ${width.toInt()} $language', (
+        testWidgets('in-place ${brightness.name} ${width.toInt()} $language', (
           tester,
         ) async {
-          tester.view.physicalSize = Size(width, 1000);
+          tester.view.physicalSize = Size(width, 700);
           tester.view.devicePixelRatio = 1;
           addTearDown(tester.view.reset);
-          final text = switch (language) {
-            'th' =>
-              'มีราพบแผนที่ใต้ต้นไม้ มีราอ่านแผนที่อย่างช้า ๆ\n\nต้นไม้ในแผนที่อยู่ใกล้แม่น้ำ นี่คือข้อความตัวอย่างสำหรับการทดสอบเท่านั้น',
-            'pt' =>
-              'Mira encontrou um mapa sob as árvores. Mira leu o mapa com cuidado.\n\nAs árvores do mapa ficam perto do rio. Este texto é um exemplo criado para o teste.',
-            _ =>
-              'Mira found a map beneath the trees. Mira read the map with care.\n\nThe trees on the map stand near the river. This is a synthetic example for testing.',
-          };
+          final text = sampleText(language);
           final c = AnswerInspectionController(
             text: text,
             initialData: fixtureData(text),
-          )..reveal(0.5);
+          )..moveTo(12);
           await tester.pumpWidget(
             app(
-              Builder(
-                builder: (context) => AppDialog(
-                  title: AppLocalizations.of(context).inspectionTitle,
-                  content: AnswerInspectionView(
-                    controller: c,
-                    onControls: () => openInspectionControls(context, c),
-                  ),
-                  actions: const [],
+              column(
+                (gutter) => InspectionAnswer(
+                  controller: c,
+                  onExit: () {},
+                  gutter: gutter,
                 ),
               ),
               brightness: brightness,
@@ -368,47 +464,12 @@ void main() {
           await expectLater(
             find.byType(Scaffold),
             matchesGoldenFile(
-              'goldens/replay_${brightness.name}_${width.toInt()}_$language.png',
+              'goldens/inplace_${brightness.name}_${width.toInt()}_$language.png',
             ),
           );
           await tester.pumpWidget(const SizedBox());
           c.dispose();
         });
-        testWidgets(
-          'replay 200 percent ${brightness.name} ${width.toInt()} $language',
-          (tester) async {
-            tester.view.physicalSize = Size(width, 1000);
-            tester.view.devicePixelRatio = 1;
-            addTearDown(tester.view.reset);
-            final c = AnswerInspectionController(
-              text: 'Synthetic text without recorded model data.',
-              initialData: fixtureData(
-                'Synthetic text without recorded model data.',
-              ),
-            );
-            await tester.pumpWidget(
-              app(
-                Builder(
-                  builder: (context) => AppDialog(
-                    title: AppLocalizations.of(context).inspectionTitle,
-                    content: AnswerInspectionView(
-                      controller: c,
-                      onControls: () => openInspectionControls(context, c),
-                    ),
-                    actions: const [],
-                  ),
-                ),
-                brightness: brightness,
-                language: language,
-                scale: 2,
-              ),
-            );
-            await tester.pumpAndSettle();
-            expect(tester.takeException(), isNull);
-            await tester.pumpWidget(const SizedBox());
-            c.dispose();
-          },
-        );
       }
     }
   }
