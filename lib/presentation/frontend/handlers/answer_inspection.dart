@@ -1,22 +1,16 @@
-import '../screens/chat/inspection_controls.dart';
 import 'dart:async';
-import 'package:flutter/material.dart';
 import '../../../dal/remote/cortex_api.dart';
 import '../../../domain/models/output.dart';
 import '../../../domain/services/answer_inspection_controller.dart';
-import '../../../l10n/generated/app_localizations.dart';
-import '../screens/chat/answer_inspection.dart';
-import '../screens/chat/output_block.dart' show CopyMessageButton;
-import '../widgets/common/buttons.dart';
-import '../widgets/common/surfaces.dart';
 
-Future<void> openAnswerInspection(
-  BuildContext context, {
+/// Start in-place inspection of one finished answer (cortex#77). Saved data
+/// loads only now. Temporary answers have no saved data and show words only.
+AnswerInspectionController startAnswerInspection({
   required CortexApi api,
   required OutputView output,
   required bool temporary,
   String? sessionId,
-}) async {
+}) {
   final session = output.sessionId ?? sessionId;
   final id = output.outputId;
   final controller = AnswerInspectionController(
@@ -26,38 +20,5 @@ Future<void> openAnswerInspection(
         : () => api.answerInspection(session, id),
   );
   unawaited(controller.load());
-  try {
-    await showAppDialog<void>(
-      context,
-      title: AppLocalizations.of(context).inspectionTitle,
-      content: (_) => AnswerInspectionView(
-        controller: controller,
-        onControls: () => openInspectionControls(context, controller),
-      ),
-      actions: (c) => [
-        CopyMessageButton(text: controller.text),
-        AppButton(
-          label: AppLocalizations.of(c).close,
-          onPressed: () => Navigator.of(c).pop(),
-        ),
-      ],
-    );
-  } finally {
-    controller.dispose();
-  }
+  return controller;
 }
-
-Future<void> openInspectionControls(
-  BuildContext context,
-  AnswerInspectionController controller,
-) => showAppDialog<void>(
-  context,
-  title: AppLocalizations.of(context).inspectionControls,
-  content: (_) => InspectionControls(controller: controller),
-  actions: (c) => [
-    AppButton(
-      label: AppLocalizations.of(c).close,
-      onPressed: () => Navigator.of(c).pop(),
-    ),
-  ],
-);

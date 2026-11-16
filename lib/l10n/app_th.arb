@@ -576,53 +576,32 @@
   "personaSelect": "เลือกเพอร์โซนาเพื่อดูรายละเอียด",
   "personaBack": "เพอร์โซนาทั้งหมด",
   "usageKindColumn": "ประเภทคำตอบ",
-  "inspectionTitle": "สำรวจคำตอบ",
-  "inspectionAction": "สำรวจคำตอบ",
-  "inspectionDescription": "เลื่อนวงกลมหรือแถบเลื่อนเพื่อแสดงคำตอบที่บันทึกไว้ การทำเช่นนี้จะไม่สร้างหรือเปลี่ยนข้อความ",
-  "inspectionVisible": "แสดง {percent}%",
-  "inspectionRecorded": "ค่าความน่าจะเป็นที่โมเดลบันทึกไว้ ไม่ใช่ค่าความถูกต้องของคำตอบ",
-  "inspectionNoData": "คำตอบนี้ไม่มีข้อมูลการคาดการณ์ที่บันทึกไว้ แต่ยังสำรวจข้อความได้",
-  "inspectionUnsupported": "โมเดลนี้ไม่ได้ให้ข้อมูลการคาดการณ์ แต่ยังสำรวจข้อความได้",
-  "inspectionUnverified": "ไม่สามารถตรวจสอบข้อมูลการคาดการณ์ได้ แต่ยังสำรวจข้อความได้",
-  "inspectionLoading": "กำลังโหลดข้อมูลการคาดการณ์ที่บันทึกไว้…",
-  "inspectionReadFailed": "ไม่สามารถโหลดข้อมูลการคาดการณ์ได้ แต่ยังอ่านข้อความที่บันทึกไว้ได้",
-  "inspectionNextToken": "โทเค็นถัดไปที่บันทึกไว้",
-  "inspectionAlternatives": "ตัวเลือกอื่นที่บันทึกไว้",
-  "inspectionEnd": "จบคำตอบที่บันทึกไว้ เลื่อนย้อนกลับเพื่อสำรวจการคาดการณ์",
-  "inspectionPartial": "โทเค็นที่เป็นส่วนหนึ่งของอักขระ",
-  "inspectionControlToken": "โทเค็นที่ไม่มีข้อความให้แสดง",
-  "inspectionPlainText": "ข้อความต้นฉบับรวมเครื่องหมายจัดรูปแบบ โทเค็นในเครื่องหมายคำพูดจะแสดงช่องว่างและการขึ้นบรรทัดใหม่",
-  "inspectionDragHint": "ลากขึ้นเพื่อซ่อนข้อความ ลากลงเพื่อแสดงข้อความ",
-  "@inspectionVisible": {
-    "placeholders": {
-      "percent": {
-        "type": "int"
-      }
-    }
-  },
-  "inspectionControls": "ตัวควบคุมการสำรวจ",
-  "inspectionPredictions": "การคาดการณ์",
-  "inspectionRepeatedText": "ข้อความที่ซ้ำกัน",
-  "inspectionMode": "มุมมอง",
-  "inspectionDetail": "แสดงได้สูงสุด {count} รายการ",
-  "inspectionDialHint": "เลือกมุมเพื่อเปลี่ยนมุมมอง เลื่อนออกจากจุดกลางเพื่อดูรายละเอียดเพิ่ม ตัวควบคุมนี้เปลี่ยนเฉพาะมุมมองเท่านั้น",
-  "inspectionMatchNote": "ข้อความก่อนหน้าที่ตรงกันทุกอักขระ เส้นเชื่อมนี้ไม่ใช่ค่าความสนใจหรือคำอธิบายการทำงานของโมเดล",
-  "inspectionNoMatches": "ไม่มีข้อความก่อนหน้าที่ตรงกัน ณ ตำแหน่งนี้",
-  "inspectionMatches": "แสดงข้อความก่อนหน้าที่ตรงกัน {count} แห่ง",
-  "inspectionRailLegend": "แถบด้านข้าง: ค่าเฉลี่ยความน่าจะเป็นของโทเค็นที่บันทึกไว้ในแต่ละบรรทัด",
-  "inspectionMatchLegend": "เส้นเชื่อมแสดงบรรทัดก่อนหน้าที่มีข้อความตรงกัน",
-  "@inspectionDetail": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "@inspectionMatches": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  }
+  "inspectionAction": "ตรวจคำตอบ",
+  "inspectionExit": "ออกจากการตรวจ",
+  "inspectionAverage": "ความมั่นใจเฉลี่ย",
+  "inspectionLowest": "ความมั่นใจต่ำสุด",
+  "inspectionForks": "จุดแยก · ถัดไป →",
+  "inspectionTokens": "โทเค็น",
+  "inspectionInfo": "ค่าเหล่านี้มาจากความน่าจะเป็นที่โมเดลบันทึกไว้ขณะเขียนคำตอบนี้ เส้นเชื่อมแสดงคำที่เคยปรากฏก่อนหน้าในข้อความ ไม่ใช่ความสนใจภายในของโมเดล",
+  "inspectionHint": "เลื่อนเมาส์ไปบนข้อความ",
+  "inspectionHintTouch": "ลากนิ้วไปบนข้อความ",
+  "inspectionLoading": "กำลังโหลดการคาดการณ์ที่บันทึกไว้…",
+  "inspectionReadFailed": "โหลดข้อมูลการคาดการณ์ไม่ได้",
+  "inspectionNoData": "ไม่มีการบันทึกข้อมูลการคาดการณ์สำหรับคำตอบนี้",
+  "inspectionUnsupported": "โมเดลนี้ไม่ได้ให้ข้อมูลการคาดการณ์",
+  "inspectionUnverified": "ไม่สามารถยืนยันข้อมูลการคาดการณ์ได้",
+  "inspectionCursorLabel": "เคอร์เซอร์คำตอบ",
+  "inspectionCursorValue": "{word} ความมั่นใจ {value}",
+  "inspectionRailLine": "บรรทัด",
+  "inspectionRailTokens": "โทเค็น",
+  "inspectionRailCertainty": "ความมั่นใจ",
+  "inspectionLineTip": "บรรทัด {line} · ความมั่นใจ {value} · ต่ำสุด: “{word}” {lowest}{forks, plural, =0{} other{ · จุดแยก {forks}}}",
+  "inspectionChose": "โมเดลเลือก “{word}” ด้วย {value}",
+  "inspectionInstead": "แทนที่ “{word}” ({value}) โมเดลยังพิจารณา “{other}” ด้วย {otherValue}",
+  "inspectionRest": "ตัวเลือกอื่นรวมกัน {value}",
+  "inspectionFork": "จุดแยก: ตัวเลือกที่สองใกล้เคียงกัน",
+  "inspectionChosenTag": "ที่เลือก",
+  "inspectionRadarLabel": "ตัวเลือกที่บันทึกไว้",
+  "inspectionContinue": "ต่อด้วย “{word}”",
+  "inspectionContinued": "ต่อจาก “{word}”"
 }

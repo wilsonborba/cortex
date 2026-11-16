@@ -1822,106 +1822,124 @@ class AppLocalizationsTh extends AppLocalizations {
   String get usageKindColumn => 'ประเภทคำตอบ';
 
   @override
-  String get inspectionTitle => 'สำรวจคำตอบ';
+  String get inspectionAction => 'ตรวจคำตอบ';
 
   @override
-  String get inspectionAction => 'สำรวจคำตอบ';
+  String get inspectionExit => 'ออกจากการตรวจ';
 
   @override
-  String get inspectionDescription =>
-      'เลื่อนวงกลมหรือแถบเลื่อนเพื่อแสดงคำตอบที่บันทึกไว้ การทำเช่นนี้จะไม่สร้างหรือเปลี่ยนข้อความ';
+  String get inspectionAverage => 'ความมั่นใจเฉลี่ย';
 
   @override
-  String inspectionVisible(int percent) {
-    return 'แสดง $percent%';
-  }
+  String get inspectionLowest => 'ความมั่นใจต่ำสุด';
 
   @override
-  String get inspectionRecorded =>
-      'ค่าความน่าจะเป็นที่โมเดลบันทึกไว้ ไม่ใช่ค่าความถูกต้องของคำตอบ';
+  String get inspectionForks => 'จุดแยก · ถัดไป →';
+
+  @override
+  String get inspectionTokens => 'โทเค็น';
+
+  @override
+  String get inspectionInfo =>
+      'ค่าเหล่านี้มาจากความน่าจะเป็นที่โมเดลบันทึกไว้ขณะเขียนคำตอบนี้ เส้นเชื่อมแสดงคำที่เคยปรากฏก่อนหน้าในข้อความ ไม่ใช่ความสนใจภายในของโมเดล';
+
+  @override
+  String get inspectionHint => 'เลื่อนเมาส์ไปบนข้อความ';
+
+  @override
+  String get inspectionHintTouch => 'ลากนิ้วไปบนข้อความ';
+
+  @override
+  String get inspectionLoading => 'กำลังโหลดการคาดการณ์ที่บันทึกไว้…';
+
+  @override
+  String get inspectionReadFailed => 'โหลดข้อมูลการคาดการณ์ไม่ได้';
 
   @override
   String get inspectionNoData =>
-      'คำตอบนี้ไม่มีข้อมูลการคาดการณ์ที่บันทึกไว้ แต่ยังสำรวจข้อความได้';
+      'ไม่มีการบันทึกข้อมูลการคาดการณ์สำหรับคำตอบนี้';
 
   @override
-  String get inspectionUnsupported =>
-      'โมเดลนี้ไม่ได้ให้ข้อมูลการคาดการณ์ แต่ยังสำรวจข้อความได้';
+  String get inspectionUnsupported => 'โมเดลนี้ไม่ได้ให้ข้อมูลการคาดการณ์';
 
   @override
-  String get inspectionUnverified =>
-      'ไม่สามารถตรวจสอบข้อมูลการคาดการณ์ได้ แต่ยังสำรวจข้อความได้';
+  String get inspectionUnverified => 'ไม่สามารถยืนยันข้อมูลการคาดการณ์ได้';
 
   @override
-  String get inspectionLoading => 'กำลังโหลดข้อมูลการคาดการณ์ที่บันทึกไว้…';
+  String get inspectionCursorLabel => 'เคอร์เซอร์คำตอบ';
 
   @override
-  String get inspectionReadFailed =>
-      'ไม่สามารถโหลดข้อมูลการคาดการณ์ได้ แต่ยังอ่านข้อความที่บันทึกไว้ได้';
-
-  @override
-  String get inspectionNextToken => 'โทเค็นถัดไปที่บันทึกไว้';
-
-  @override
-  String get inspectionAlternatives => 'ตัวเลือกอื่นที่บันทึกไว้';
-
-  @override
-  String get inspectionEnd =>
-      'จบคำตอบที่บันทึกไว้ เลื่อนย้อนกลับเพื่อสำรวจการคาดการณ์';
-
-  @override
-  String get inspectionPartial => 'โทเค็นที่เป็นส่วนหนึ่งของอักขระ';
-
-  @override
-  String get inspectionControlToken => 'โทเค็นที่ไม่มีข้อความให้แสดง';
-
-  @override
-  String get inspectionPlainText =>
-      'ข้อความต้นฉบับรวมเครื่องหมายจัดรูปแบบ โทเค็นในเครื่องหมายคำพูดจะแสดงช่องว่างและการขึ้นบรรทัดใหม่';
-
-  @override
-  String get inspectionDragHint =>
-      'ลากขึ้นเพื่อซ่อนข้อความ ลากลงเพื่อแสดงข้อความ';
-
-  @override
-  String get inspectionControls => 'ตัวควบคุมการสำรวจ';
-
-  @override
-  String get inspectionPredictions => 'การคาดการณ์';
-
-  @override
-  String get inspectionRepeatedText => 'ข้อความที่ซ้ำกัน';
-
-  @override
-  String get inspectionMode => 'มุมมอง';
-
-  @override
-  String inspectionDetail(int count) {
-    return 'แสดงได้สูงสุด $count รายการ';
+  String inspectionCursorValue(String word, String value) {
+    return '$word ความมั่นใจ $value';
   }
 
   @override
-  String get inspectionDialHint =>
-      'เลือกมุมเพื่อเปลี่ยนมุมมอง เลื่อนออกจากจุดกลางเพื่อดูรายละเอียดเพิ่ม ตัวควบคุมนี้เปลี่ยนเฉพาะมุมมองเท่านั้น';
+  String get inspectionRailLine => 'บรรทัด';
 
   @override
-  String get inspectionMatchNote =>
-      'ข้อความก่อนหน้าที่ตรงกันทุกอักขระ เส้นเชื่อมนี้ไม่ใช่ค่าความสนใจหรือคำอธิบายการทำงานของโมเดล';
+  String get inspectionRailTokens => 'โทเค็น';
 
   @override
-  String get inspectionNoMatches =>
-      'ไม่มีข้อความก่อนหน้าที่ตรงกัน ณ ตำแหน่งนี้';
+  String get inspectionRailCertainty => 'ความมั่นใจ';
 
   @override
-  String inspectionMatches(int count) {
-    return 'แสดงข้อความก่อนหน้าที่ตรงกัน $count แห่ง';
+  String inspectionLineTip(
+    int line,
+    String value,
+    String word,
+    String lowest,
+    num forks,
+  ) {
+    final intl.NumberFormat forksNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String forksString = forksNumberFormat.format(forks);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      forks,
+      locale: localeName,
+      other: ' · จุดแยก $forksString',
+      zero: '',
+    );
+    return 'บรรทัด $line · ความมั่นใจ $value · ต่ำสุด: “$word” $lowest$_temp0';
   }
 
   @override
-  String get inspectionRailLegend =>
-      'แถบด้านข้าง: ค่าเฉลี่ยความน่าจะเป็นของโทเค็นที่บันทึกไว้ในแต่ละบรรทัด';
+  String inspectionChose(String word, String value) {
+    return 'โมเดลเลือก “$word” ด้วย $value';
+  }
 
   @override
-  String get inspectionMatchLegend =>
-      'เส้นเชื่อมแสดงบรรทัดก่อนหน้าที่มีข้อความตรงกัน';
+  String inspectionInstead(
+    String word,
+    String value,
+    String other,
+    String otherValue,
+  ) {
+    return 'แทนที่ “$word” ($value) โมเดลยังพิจารณา “$other” ด้วย $otherValue';
+  }
+
+  @override
+  String inspectionRest(String value) {
+    return 'ตัวเลือกอื่นรวมกัน $value';
+  }
+
+  @override
+  String get inspectionFork => 'จุดแยก: ตัวเลือกที่สองใกล้เคียงกัน';
+
+  @override
+  String get inspectionChosenTag => 'ที่เลือก';
+
+  @override
+  String get inspectionRadarLabel => 'ตัวเลือกที่บันทึกไว้';
+
+  @override
+  String inspectionContinue(String word) {
+    return 'ต่อด้วย “$word”';
+  }
+
+  @override
+  String inspectionContinued(String word) {
+    return 'ต่อจาก “$word”';
+  }
 }

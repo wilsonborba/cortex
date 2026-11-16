@@ -3376,53 +3376,59 @@ abstract class AppLocalizations {
   /// **'Kind of answer'**
   String get usageKindColumn;
 
-  /// No description provided for @inspectionTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Inspect answer'**
-  String get inspectionTitle;
-
   /// No description provided for @inspectionAction.
   ///
   /// In en, this message translates to:
   /// **'Inspect answer'**
   String get inspectionAction;
 
-  /// No description provided for @inspectionDescription.
+  /// No description provided for @inspectionExit.
   ///
   /// In en, this message translates to:
-  /// **'Move the circle or slider to reveal the saved answer. This does not generate or change text.'**
-  String get inspectionDescription;
+  /// **'Exit inspection'**
+  String get inspectionExit;
 
-  /// No description provided for @inspectionVisible.
+  /// No description provided for @inspectionAverage.
   ///
   /// In en, this message translates to:
-  /// **'{percent}% visible'**
-  String inspectionVisible(int percent);
+  /// **'Average certainty'**
+  String get inspectionAverage;
 
-  /// No description provided for @inspectionRecorded.
+  /// No description provided for @inspectionLowest.
   ///
   /// In en, this message translates to:
-  /// **'Recorded model likelihood. This does not measure correctness.'**
-  String get inspectionRecorded;
+  /// **'Lowest certainty'**
+  String get inspectionLowest;
 
-  /// No description provided for @inspectionNoData.
+  /// No description provided for @inspectionForks.
   ///
   /// In en, this message translates to:
-  /// **'No prediction data was recorded for this answer. Text replay remains available.'**
-  String get inspectionNoData;
+  /// **'Forks · next →'**
+  String get inspectionForks;
 
-  /// No description provided for @inspectionUnsupported.
+  /// No description provided for @inspectionTokens.
   ///
   /// In en, this message translates to:
-  /// **'This model did not provide prediction data. Text replay remains available.'**
-  String get inspectionUnsupported;
+  /// **'Tokens'**
+  String get inspectionTokens;
 
-  /// No description provided for @inspectionUnverified.
+  /// No description provided for @inspectionInfo.
   ///
   /// In en, this message translates to:
-  /// **'Prediction data could not be verified. Text replay remains available.'**
-  String get inspectionUnverified;
+  /// **'These values come from the probabilities the model recorded while writing this answer. Links show words that appeared earlier in the text. They are not the model\'s internal attention.'**
+  String get inspectionInfo;
+
+  /// No description provided for @inspectionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Move the pointer over the text'**
+  String get inspectionHint;
+
+  /// No description provided for @inspectionHintTouch.
+  ///
+  /// In en, this message translates to:
+  /// **'Drag your finger over the text'**
+  String get inspectionHintTouch;
 
   /// No description provided for @inspectionLoading.
   ///
@@ -3433,116 +3439,121 @@ abstract class AppLocalizations {
   /// No description provided for @inspectionReadFailed.
   ///
   /// In en, this message translates to:
-  /// **'Could not load prediction data. The saved text remains available.'**
+  /// **'Could not load prediction data.'**
   String get inspectionReadFailed;
 
-  /// No description provided for @inspectionNextToken.
+  /// No description provided for @inspectionNoData.
   ///
   /// In en, this message translates to:
-  /// **'Recorded next token'**
-  String get inspectionNextToken;
+  /// **'No prediction data was recorded for this answer.'**
+  String get inspectionNoData;
 
-  /// No description provided for @inspectionAlternatives.
+  /// No description provided for @inspectionUnsupported.
   ///
   /// In en, this message translates to:
-  /// **'Other recorded possibilities'**
-  String get inspectionAlternatives;
+  /// **'This model did not provide prediction data.'**
+  String get inspectionUnsupported;
 
-  /// No description provided for @inspectionEnd.
+  /// No description provided for @inspectionUnverified.
   ///
   /// In en, this message translates to:
-  /// **'End of the saved answer. Move back to inspect a prediction.'**
-  String get inspectionEnd;
+  /// **'Prediction data could not be verified.'**
+  String get inspectionUnverified;
 
-  /// No description provided for @inspectionPartial.
+  /// No description provided for @inspectionCursorLabel.
   ///
   /// In en, this message translates to:
-  /// **'Partial character token'**
-  String get inspectionPartial;
+  /// **'Answer cursor'**
+  String get inspectionCursorLabel;
 
-  /// No description provided for @inspectionControlToken.
+  /// No description provided for @inspectionCursorValue.
   ///
   /// In en, this message translates to:
-  /// **'Token with no visible text'**
-  String get inspectionControlToken;
+  /// **'{word}, certainty {value}'**
+  String inspectionCursorValue(String word, String value);
 
-  /// No description provided for @inspectionPlainText.
+  /// No description provided for @inspectionRailLine.
   ///
   /// In en, this message translates to:
-  /// **'Original text, including any formatting marks. Quoted tokens show spaces and line breaks.'**
-  String get inspectionPlainText;
+  /// **'line'**
+  String get inspectionRailLine;
 
-  /// No description provided for @inspectionDragHint.
+  /// No description provided for @inspectionRailTokens.
   ///
   /// In en, this message translates to:
-  /// **'Drag up to hide text. Drag down to reveal text.'**
-  String get inspectionDragHint;
+  /// **'tokens'**
+  String get inspectionRailTokens;
 
-  /// No description provided for @inspectionControls.
+  /// No description provided for @inspectionRailCertainty.
   ///
   /// In en, this message translates to:
-  /// **'Inspection controls'**
-  String get inspectionControls;
+  /// **'certainty'**
+  String get inspectionRailCertainty;
 
-  /// No description provided for @inspectionPredictions.
+  /// No description provided for @inspectionLineTip.
   ///
   /// In en, this message translates to:
-  /// **'Predictions'**
-  String get inspectionPredictions;
+  /// **'Line {line} · certainty {value} · lowest: “{word}” {lowest}{forks, plural, =0{} =1{ · 1 fork} other{ · {forks} forks}}'**
+  String inspectionLineTip(
+    int line,
+    String value,
+    String word,
+    String lowest,
+    num forks,
+  );
 
-  /// No description provided for @inspectionRepeatedText.
+  /// No description provided for @inspectionChose.
   ///
   /// In en, this message translates to:
-  /// **'Repeated text'**
-  String get inspectionRepeatedText;
+  /// **'The model chose “{word}” with {value}.'**
+  String inspectionChose(String word, String value);
 
-  /// No description provided for @inspectionMode.
+  /// No description provided for @inspectionInstead.
   ///
   /// In en, this message translates to:
-  /// **'View'**
-  String get inspectionMode;
+  /// **'Instead of “{word}” ({value}), the model also considered “{other}” with {otherValue}.'**
+  String inspectionInstead(
+    String word,
+    String value,
+    String other,
+    String otherValue,
+  );
 
-  /// No description provided for @inspectionDetail.
+  /// No description provided for @inspectionRest.
   ///
   /// In en, this message translates to:
-  /// **'Show up to {count} entries'**
-  String inspectionDetail(int count);
+  /// **'Other options add up to {value}.'**
+  String inspectionRest(String value);
 
-  /// No description provided for @inspectionDialHint.
+  /// No description provided for @inspectionFork.
   ///
   /// In en, this message translates to:
-  /// **'Choose a view with the angle. Move outward for more detail. These controls only change this view.'**
-  String get inspectionDialHint;
+  /// **'Fork: the second option was close'**
+  String get inspectionFork;
 
-  /// No description provided for @inspectionMatchNote.
+  /// No description provided for @inspectionChosenTag.
   ///
   /// In en, this message translates to:
-  /// **'Exact earlier text matches. These links are not model attention or explanations.'**
-  String get inspectionMatchNote;
+  /// **'chosen'**
+  String get inspectionChosenTag;
 
-  /// No description provided for @inspectionNoMatches.
+  /// No description provided for @inspectionRadarLabel.
   ///
   /// In en, this message translates to:
-  /// **'No earlier text match at this position.'**
-  String get inspectionNoMatches;
+  /// **'Recorded alternatives'**
+  String get inspectionRadarLabel;
 
-  /// No description provided for @inspectionMatches.
+  /// No description provided for @inspectionContinue.
   ///
   /// In en, this message translates to:
-  /// **'{count} earlier matches shown'**
-  String inspectionMatches(int count);
+  /// **'Continue with “{word}”'**
+  String inspectionContinue(String word);
 
-  /// No description provided for @inspectionRailLegend.
+  /// No description provided for @inspectionContinued.
   ///
   /// In en, this message translates to:
-  /// **'Rail: mean recorded token likelihood per line.'**
-  String get inspectionRailLegend;
-
-  /// No description provided for @inspectionMatchLegend.
-  ///
-  /// In en, this message translates to:
-  /// **'Links connect earlier lines with matching text.'**
-  String get inspectionMatchLegend;
+  /// **'Continued from “{word}”'**
+  String inspectionContinued(String word);
 }
 
 class _AppLocalizationsDelegate

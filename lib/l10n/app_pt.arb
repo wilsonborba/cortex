@@ -576,53 +576,32 @@
   "personaSelect": "Selecione uma persona para ver os detalhes.",
   "personaBack": "Todas as personas",
   "usageKindColumn": "Tipo de resposta",
-  "inspectionTitle": "Inspecionar resposta",
   "inspectionAction": "Inspecionar resposta",
-  "inspectionDescription": "Mova o círculo ou o controle para revelar a resposta salva. Isso não gera nem altera o texto.",
-  "inspectionVisible": "{percent}% visível",
-  "inspectionRecorded": "Probabilidade registrada pelo modelo. Isso não mede a correção da resposta.",
-  "inspectionNoData": "Nenhum dado de previsão foi registrado para esta resposta. Você ainda pode explorar o texto.",
-  "inspectionUnsupported": "Este modelo não forneceu dados de previsão. Você ainda pode explorar o texto.",
-  "inspectionUnverified": "Não foi possível verificar os dados de previsão. Você ainda pode explorar o texto.",
-  "inspectionLoading": "Carregando previsões registradas…",
-  "inspectionReadFailed": "Não foi possível carregar os dados de previsão. O texto salvo continua disponível.",
-  "inspectionNextToken": "Próximo token registrado",
-  "inspectionAlternatives": "Outras possibilidades registradas",
-  "inspectionEnd": "Fim da resposta salva. Volte para inspecionar uma previsão.",
-  "inspectionPartial": "Token de parte de um caractere",
-  "inspectionControlToken": "Token sem texto visível",
-  "inspectionPlainText": "Texto original, incluindo marcas de formatação. Os tokens entre aspas mostram espaços e quebras de linha.",
-  "inspectionDragHint": "Arraste para cima para ocultar o texto. Arraste para baixo para revelá-lo.",
-  "@inspectionVisible": {
-    "placeholders": {
-      "percent": {
-        "type": "int"
-      }
-    }
-  },
-  "inspectionControls": "Controles de inspeção",
-  "inspectionPredictions": "Previsões",
-  "inspectionRepeatedText": "Texto repetido",
-  "inspectionMode": "Visualização",
-  "inspectionDetail": "Mostrar até {count} itens",
-  "inspectionDialHint": "Escolha a visualização pelo ângulo. Mova para fora para ver mais detalhes. Estes controles só alteram esta visualização.",
-  "inspectionMatchNote": "Correspondências exatas com texto anterior. Estes links não representam a atenção nem o raciocínio do modelo.",
-  "inspectionNoMatches": "Nenhum texto anterior coincide nesta posição.",
-  "inspectionMatches": "{count} correspondências anteriores exibidas",
-  "inspectionRailLegend": "Barras: probabilidade média dos tokens registrados em cada linha.",
-  "inspectionMatchLegend": "Os links conectam linhas anteriores com texto igual.",
-  "@inspectionDetail": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "@inspectionMatches": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  }
+  "inspectionExit": "Sair da inspeção",
+  "inspectionAverage": "Certeza média",
+  "inspectionLowest": "Menor certeza",
+  "inspectionForks": "Bifurcações · próxima →",
+  "inspectionTokens": "Tokens",
+  "inspectionInfo": "Estes valores vêm das probabilidades que o modelo gravou ao escrever esta resposta. As ligações mostram palavras que já apareceram antes no texto. Elas não são a atenção interna do modelo.",
+  "inspectionHint": "Passe o mouse pelo texto",
+  "inspectionHintTouch": "Arraste o dedo pelo texto",
+  "inspectionLoading": "Carregando as previsões gravadas…",
+  "inspectionReadFailed": "Não foi possível carregar os dados de previsão.",
+  "inspectionNoData": "Nenhum dado de previsão foi gravado para esta resposta.",
+  "inspectionUnsupported": "Este modelo não forneceu dados de previsão.",
+  "inspectionUnverified": "Não foi possível verificar os dados de previsão.",
+  "inspectionCursorLabel": "Cursor da resposta",
+  "inspectionCursorValue": "{word}, certeza {value}",
+  "inspectionRailLine": "linha",
+  "inspectionRailTokens": "tokens",
+  "inspectionRailCertainty": "certeza",
+  "inspectionLineTip": "Linha {line} · certeza {value} · menor: “{word}” {lowest}{forks, plural, =0{} =1{ · 1 bifurcação} other{ · {forks} bifurcações}}",
+  "inspectionChose": "O modelo escolheu “{word}” com {value}.",
+  "inspectionInstead": "No lugar de “{word}” ({value}), o modelo também considerou “{other}” com {otherValue}.",
+  "inspectionRest": "Outras opções somam {value}.",
+  "inspectionFork": "Bifurcação: a segunda opção estava perto",
+  "inspectionChosenTag": "escolhida",
+  "inspectionRadarLabel": "Alternativas gravadas",
+  "inspectionContinue": "Continuar com “{word}”",
+  "inspectionContinued": "Continuação a partir de “{word}”"
 }

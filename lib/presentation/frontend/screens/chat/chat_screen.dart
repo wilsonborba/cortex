@@ -204,42 +204,60 @@ class _ChatScreenState extends State<ChatScreen> {
       padding: EdgeInsets.symmetric(
         horizontal: compact ? Space.s16 : Space.s24,
       ),
-      child: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: Space.chatColumnWidth),
-          child: Padding(
-            // Message gap 24 (#63).
-            padding: EdgeInsets.only(
-              top: e == _firstPageFirst || index == 0 ? Space.s24 : 0,
-              bottom: index == _olderCount - 1 ? Space.s8 : Space.s24,
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                _UserMessage(exchange: e, compact: compact),
-                const SizedBox(height: Space.s24),
-                OutputBlock(
-                  onInspect: () => openAnswerInspection(
-                    context,
-                    api: widget.api,
-                    output: e.output,
-                    temporary: chat.temporary,
-                    sessionId: chat.sessionId,
-                  ),
-                  output: e.output,
-                  now: widget.now,
-                  onStopThinking: () =>
-                      runApiAction(context, chat.stopThinking),
-                  onMemories: _showMemories,
-                  onRetry:
-                      e.output.running || index != chat.exchanges.length - 1
-                      ? null
-                      : () => chat.send(e.text),
+      child: LayoutBuilder(
+        builder: (context, box) {
+          // The inspection rail uses the left gutter when it is wide enough
+          // (cortex#78). The gutter stays inside the hit-test area.
+          final free = (box.maxWidth - Space.chatColumnWidth) / 2;
+          final gutter = free >= Space.inspectionGutter
+              ? Space.inspectionGutter
+              : 0.0;
+          return Center(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                maxWidth: Space.chatColumnWidth + gutter * 2,
+              ),
+              child: Padding(
+                // Message gap 24 (#63).
+                padding: EdgeInsets.only(
+                  top: e == _firstPageFirst || index == 0 ? Space.s24 : 0,
+                  bottom: index == _olderCount - 1 ? Space.s8 : Space.s24,
+                  right: gutter,
                 ),
-              ],
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.only(left: gutter),
+                      child: _UserMessage(exchange: e, compact: compact),
+                    ),
+                    const SizedBox(height: Space.s24),
+                    OutputBlock(
+                      gutter: gutter,
+                      inspect: e.output.running
+                          ? null
+                          : () => startAnswerInspection(
+                              api: widget.api,
+                              output: e.output,
+                              temporary: chat.temporary,
+                              sessionId: chat.sessionId,
+                            ),
+                      output: e.output,
+                      now: widget.now,
+                      onStopThinking: () =>
+                          runApiAction(context, chat.stopThinking),
+                      onMemories: _showMemories,
+                      onRetry:
+                          e.output.running || index != chat.exchanges.length - 1
+                          ? null
+                          : () => chat.send(e.text),
+                    ),
+                  ],
+                ),
+              ),
             ),
-          ),
-        ),
+          );
+        },
       ),
     );
   }

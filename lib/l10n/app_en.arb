@@ -861,52 +861,108 @@
     }
   },
   "usageKindColumn": "Kind of answer",
-  "inspectionTitle": "Inspect answer",
   "inspectionAction": "Inspect answer",
-  "inspectionDescription": "Move the circle or slider to reveal the saved answer. This does not generate or change text.",
-  "inspectionVisible": "{percent}% visible",
-  "inspectionRecorded": "Recorded model likelihood. This does not measure correctness.",
-  "inspectionNoData": "No prediction data was recorded for this answer. Text replay remains available.",
-  "inspectionUnsupported": "This model did not provide prediction data. Text replay remains available.",
-  "inspectionUnverified": "Prediction data could not be verified. Text replay remains available.",
+  "inspectionExit": "Exit inspection",
+  "inspectionAverage": "Average certainty",
+  "inspectionLowest": "Lowest certainty",
+  "inspectionForks": "Forks · next →",
+  "inspectionTokens": "Tokens",
+  "inspectionInfo": "These values come from the probabilities the model recorded while writing this answer. Links show words that appeared earlier in the text. They are not the model's internal attention.",
+  "inspectionHint": "Move the pointer over the text",
+  "inspectionHintTouch": "Drag your finger over the text",
   "inspectionLoading": "Loading recorded predictions…",
-  "inspectionReadFailed": "Could not load prediction data. The saved text remains available.",
-  "inspectionNextToken": "Recorded next token",
-  "inspectionAlternatives": "Other recorded possibilities",
-  "inspectionEnd": "End of the saved answer. Move back to inspect a prediction.",
-  "inspectionPartial": "Partial character token",
-  "inspectionControlToken": "Token with no visible text",
-  "inspectionPlainText": "Original text, including any formatting marks. Quoted tokens show spaces and line breaks.",
-  "inspectionDragHint": "Drag up to hide text. Drag down to reveal text.",
-  "@inspectionVisible": {
+  "inspectionReadFailed": "Could not load prediction data.",
+  "inspectionNoData": "No prediction data was recorded for this answer.",
+  "inspectionUnsupported": "This model did not provide prediction data.",
+  "inspectionUnverified": "Prediction data could not be verified.",
+  "inspectionCursorLabel": "Answer cursor",
+  "inspectionCursorValue": "{word}, certainty {value}",
+  "inspectionRailLine": "line",
+  "inspectionRailTokens": "tokens",
+  "inspectionRailCertainty": "certainty",
+  "inspectionLineTip": "Line {line} · certainty {value} · lowest: “{word}” {lowest}{forks, plural, =0{} =1{ · 1 fork} other{ · {forks} forks}}",
+  "inspectionChose": "The model chose “{word}” with {value}.",
+  "inspectionInstead": "Instead of “{word}” ({value}), the model also considered “{other}” with {otherValue}.",
+  "inspectionRest": "Other options add up to {value}.",
+  "inspectionFork": "Fork: the second option was close",
+  "inspectionChosenTag": "chosen",
+  "inspectionRadarLabel": "Recorded alternatives",
+  "inspectionContinue": "Continue with “{word}”",
+  "inspectionContinued": "Continued from “{word}”",
+  "@inspectionCursorValue": {
     "placeholders": {
-      "percent": {
-        "type": "int"
+      "word": {
+        "type": "String"
+      },
+      "value": {
+        "type": "String"
       }
     }
   },
-  "inspectionControls": "Inspection controls",
-  "inspectionPredictions": "Predictions",
-  "inspectionRepeatedText": "Repeated text",
-  "inspectionMode": "View",
-  "inspectionDetail": "Show up to {count} entries",
-  "inspectionDialHint": "Choose a view with the angle. Move outward for more detail. These controls only change this view.",
-  "inspectionMatchNote": "Exact earlier text matches. These links are not model attention or explanations.",
-  "inspectionNoMatches": "No earlier text match at this position.",
-  "inspectionMatches": "{count} earlier matches shown",
-  "inspectionRailLegend": "Rail: mean recorded token likelihood per line.",
-  "inspectionMatchLegend": "Links connect earlier lines with matching text.",
-  "@inspectionDetail": {
+  "@inspectionLineTip": {
     "placeholders": {
-      "count": {
+      "line": {
         "type": "int"
+      },
+      "value": {
+        "type": "String"
+      },
+      "word": {
+        "type": "String"
+      },
+      "lowest": {
+        "type": "String"
+      },
+      "forks": {
+        "type": "num",
+        "format": "compact"
       }
     }
   },
-  "@inspectionMatches": {
+  "@inspectionChose": {
     "placeholders": {
-      "count": {
-        "type": "int"
+      "word": {
+        "type": "String"
+      },
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "@inspectionInstead": {
+    "placeholders": {
+      "word": {
+        "type": "String"
+      },
+      "value": {
+        "type": "String"
+      },
+      "other": {
+        "type": "String"
+      },
+      "otherValue": {
+        "type": "String"
+      }
+    }
+  },
+  "@inspectionRest": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "@inspectionContinue": {
+    "placeholders": {
+      "word": {
+        "type": "String"
+      }
+    }
+  },
+  "@inspectionContinued": {
+    "placeholders": {
+      "word": {
+        "type": "String"
       }
     }
   }

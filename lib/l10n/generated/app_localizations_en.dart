@@ -1841,105 +1841,126 @@ class AppLocalizationsEn extends AppLocalizations {
   String get usageKindColumn => 'Kind of answer';
 
   @override
-  String get inspectionTitle => 'Inspect answer';
-
-  @override
   String get inspectionAction => 'Inspect answer';
 
   @override
-  String get inspectionDescription =>
-      'Move the circle or slider to reveal the saved answer. This does not generate or change text.';
+  String get inspectionExit => 'Exit inspection';
 
   @override
-  String inspectionVisible(int percent) {
-    return '$percent% visible';
-  }
+  String get inspectionAverage => 'Average certainty';
 
   @override
-  String get inspectionRecorded =>
-      'Recorded model likelihood. This does not measure correctness.';
+  String get inspectionLowest => 'Lowest certainty';
 
   @override
-  String get inspectionNoData =>
-      'No prediction data was recorded for this answer. Text replay remains available.';
+  String get inspectionForks => 'Forks · next →';
 
   @override
-  String get inspectionUnsupported =>
-      'This model did not provide prediction data. Text replay remains available.';
+  String get inspectionTokens => 'Tokens';
 
   @override
-  String get inspectionUnverified =>
-      'Prediction data could not be verified. Text replay remains available.';
+  String get inspectionInfo =>
+      'These values come from the probabilities the model recorded while writing this answer. Links show words that appeared earlier in the text. They are not the model\'s internal attention.';
+
+  @override
+  String get inspectionHint => 'Move the pointer over the text';
+
+  @override
+  String get inspectionHintTouch => 'Drag your finger over the text';
 
   @override
   String get inspectionLoading => 'Loading recorded predictions…';
 
   @override
-  String get inspectionReadFailed =>
-      'Could not load prediction data. The saved text remains available.';
+  String get inspectionReadFailed => 'Could not load prediction data.';
 
   @override
-  String get inspectionNextToken => 'Recorded next token';
+  String get inspectionNoData =>
+      'No prediction data was recorded for this answer.';
 
   @override
-  String get inspectionAlternatives => 'Other recorded possibilities';
+  String get inspectionUnsupported =>
+      'This model did not provide prediction data.';
 
   @override
-  String get inspectionEnd =>
-      'End of the saved answer. Move back to inspect a prediction.';
+  String get inspectionUnverified => 'Prediction data could not be verified.';
 
   @override
-  String get inspectionPartial => 'Partial character token';
+  String get inspectionCursorLabel => 'Answer cursor';
 
   @override
-  String get inspectionControlToken => 'Token with no visible text';
-
-  @override
-  String get inspectionPlainText =>
-      'Original text, including any formatting marks. Quoted tokens show spaces and line breaks.';
-
-  @override
-  String get inspectionDragHint =>
-      'Drag up to hide text. Drag down to reveal text.';
-
-  @override
-  String get inspectionControls => 'Inspection controls';
-
-  @override
-  String get inspectionPredictions => 'Predictions';
-
-  @override
-  String get inspectionRepeatedText => 'Repeated text';
-
-  @override
-  String get inspectionMode => 'View';
-
-  @override
-  String inspectionDetail(int count) {
-    return 'Show up to $count entries';
+  String inspectionCursorValue(String word, String value) {
+    return '$word, certainty $value';
   }
 
   @override
-  String get inspectionDialHint =>
-      'Choose a view with the angle. Move outward for more detail. These controls only change this view.';
+  String get inspectionRailLine => 'line';
 
   @override
-  String get inspectionMatchNote =>
-      'Exact earlier text matches. These links are not model attention or explanations.';
+  String get inspectionRailTokens => 'tokens';
 
   @override
-  String get inspectionNoMatches => 'No earlier text match at this position.';
+  String get inspectionRailCertainty => 'certainty';
 
   @override
-  String inspectionMatches(int count) {
-    return '$count earlier matches shown';
+  String inspectionLineTip(
+    int line,
+    String value,
+    String word,
+    String lowest,
+    num forks,
+  ) {
+    final intl.NumberFormat forksNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String forksString = forksNumberFormat.format(forks);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      forks,
+      locale: localeName,
+      other: ' · $forksString forks',
+      one: ' · 1 fork',
+      zero: '',
+    );
+    return 'Line $line · certainty $value · lowest: “$word” $lowest$_temp0';
   }
 
   @override
-  String get inspectionRailLegend =>
-      'Rail: mean recorded token likelihood per line.';
+  String inspectionChose(String word, String value) {
+    return 'The model chose “$word” with $value.';
+  }
 
   @override
-  String get inspectionMatchLegend =>
-      'Links connect earlier lines with matching text.';
+  String inspectionInstead(
+    String word,
+    String value,
+    String other,
+    String otherValue,
+  ) {
+    return 'Instead of “$word” ($value), the model also considered “$other” with $otherValue.';
+  }
+
+  @override
+  String inspectionRest(String value) {
+    return 'Other options add up to $value.';
+  }
+
+  @override
+  String get inspectionFork => 'Fork: the second option was close';
+
+  @override
+  String get inspectionChosenTag => 'chosen';
+
+  @override
+  String get inspectionRadarLabel => 'Recorded alternatives';
+
+  @override
+  String inspectionContinue(String word) {
+    return 'Continue with “$word”';
+  }
+
+  @override
+  String inspectionContinued(String word) {
+    return 'Continued from “$word”';
+  }
 }
