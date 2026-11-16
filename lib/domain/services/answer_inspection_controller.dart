@@ -62,7 +62,8 @@ class AnswerInspectionController extends ChangeNotifier {
   }
 
   /// Spans of whole grapheme clusters. Tokens that end inside a character
-  /// join the next token, so the cursor never splits a character.
+  /// join the next token, so the cursor never splits a character. A joined
+  /// span keeps the options and position of its first token.
   List<InspectionSpan> _tokenSpans(AnswerInspectionData data) {
     final boundaries = <int, int>{0: 0};
     var units = 0, bytes = 0;
@@ -81,16 +82,20 @@ class AnswerInspectionController extends ChangeNotifier {
       if (end == null) continue;
       final start = boundaries[startByte]!;
       if (end > start) {
-        final single = i == first;
+        // The choice point of a joined span is its first token: in Thai a
+        // consonant token is often followed by a vowel or tone mark token.
+        // The certainty stays the joint likelihood of the whole span.
+        final head = data.tokens[first];
         result.add(
           InspectionSpan(
             start: start,
             end: end,
             text: text.substring(start, end),
-            token: single ? token : null,
-            tokenIndex: single ? i : null,
+            token: head,
+            tokenIndex: first,
             certainty: math.exp(logprob),
-            options: single ? _options(token) : const [],
+            // A byte fragment (half an emoji) has no readable options.
+            options: head.text == null ? const [] : _options(head),
           ),
         );
       }
