@@ -32,6 +32,8 @@ class OutputBlock extends StatefulWidget {
     this.onRetry,
     this.onMemories,
     this.inspect,
+    this.onContinue,
+    this.onSource,
     this.gutter = 0,
     this.now,
   });
@@ -42,6 +44,12 @@ class OutputBlock extends StatefulWidget {
 
   /// Starts in-place inspection of the finished answer (cortex#77).
   final AnswerInspectionController Function()? inspect;
+
+  /// Continue this answer with a recorded alternative (cortex#82).
+  final ValueChanged<ContinueSource>? onContinue;
+
+  /// Show the source answer of a continued answer.
+  final VoidCallback? onSource;
 
   /// Free space at the left of the column for the inspection rail. The
   /// normal content starts after it.
@@ -216,8 +224,51 @@ class _OutputBlockState extends State<OutputBlock> {
             controller: _inspection!,
             gutter: widget.gutter,
             onExit: _toggleInspection,
+            onContinue: widget.onContinue == null || o.outputId == null
+                ? null
+                : (span, option) {
+                    final position = span.tokenIndex, rank = option.rank;
+                    if (position == null || rank == null) return;
+                    _toggleInspection();
+                    widget.onContinue!(
+                      ContinueSource(
+                        outputId: o.outputId!,
+                        tokenPosition: position,
+                        rank: rank,
+                        word: optionLabel(option),
+                      ),
+                    );
+                  },
           );
+    final from = o.continuedFrom;
     final children = <Widget>[
+      if (from != null)
+        Padding(
+          padding: const EdgeInsets.only(bottom: Space.s8),
+          child: InkWell(
+            key: const Key('continued-from'),
+            onTap: widget.onSource,
+            borderRadius: BorderRadius.circular(Radii.control),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: Space.s2),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    AppIcons.branchFork,
+                    size: IconSizes.small,
+                    color: p.muted,
+                  ),
+                  const SizedBox(width: Space.s6),
+                  Text(
+                    l.inspectionContinued(from.word),
+                    style: TextStyles.caption1.copyWith(color: p.muted),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
       // Screen readers hear the status changes, not each token (polite).
       Semantics(
         container: true,

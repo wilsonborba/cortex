@@ -29,6 +29,10 @@
 
 - Add certainty rail, text links and alternatives radar (#78)
 
+- Merge #78
+
+- Continue a saved answer from a radar alternative (#82)
+
 
 ## v2.2.3 - 2026-11-14
 

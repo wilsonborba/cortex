@@ -191,6 +191,25 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
+  /// Keys of output blocks, so a continued answer can show its source.
+  final _outputKeys = Expando<GlobalKey>();
+  GlobalKey _outputKey(Exchange e) => _outputKeys[e] ??= GlobalKey();
+  void _showSource(String id) {
+    final source = chat.exchanges
+        .where((e) => e.output.outputId == id)
+        .firstOrNull;
+    final target = source == null ? null : _outputKeys[source]?.currentContext;
+    if (target == null) return;
+    Scrollable.ensureVisible(
+      target,
+      duration: FoundationTokens.of(
+        context,
+      ).duration(context, MotionDurations.slow),
+      curve: MotionCurves.easyEase,
+      alignment: 0.1,
+    );
+  }
+
   int get _olderCount {
     final index = chat.exchanges.indexOf(_firstPageFirst!);
     return index < 0 ? 0 : index;
@@ -233,7 +252,14 @@ class _ChatScreenState extends State<ChatScreen> {
                     ),
                     const SizedBox(height: Space.s24),
                     OutputBlock(
+                      key: _outputKey(e),
                       gutter: gutter,
+                      onContinue: chat.temporary
+                          ? null
+                          : (from) => chat.continueFrom(e, from),
+                      onSource: e.output.continuedFrom == null
+                          ? null
+                          : () => _showSource(e.output.continuedFrom!.outputId),
                       inspect: e.output.running
                           ? null
                           : () => startAnswerInspection(
@@ -250,6 +276,8 @@ class _ChatScreenState extends State<ChatScreen> {
                       onRetry:
                           e.output.running || index != chat.exchanges.length - 1
                           ? null
+                          : e.output.continuedFrom != null
+                          ? () => chat.continueFrom(e, e.output.continuedFrom!)
                           : () => chat.send(e.text),
                     ),
                   ],
