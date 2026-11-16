@@ -599,5 +599,30 @@
         "type": "int"
       }
     }
+  },
+  "inspectionControls": "ตัวควบคุมการสำรวจ",
+  "inspectionPredictions": "การคาดการณ์",
+  "inspectionRepeatedText": "ข้อความที่ซ้ำกัน",
+  "inspectionMode": "มุมมอง",
+  "inspectionDetail": "แสดงได้สูงสุด {count} รายการ",
+  "inspectionDialHint": "เลือกมุมเพื่อเปลี่ยนมุมมอง เลื่อนออกจากจุดกลางเพื่อดูรายละเอียดเพิ่ม ตัวควบคุมนี้เปลี่ยนเฉพาะมุมมองเท่านั้น",
+  "inspectionMatchNote": "ข้อความก่อนหน้าที่ตรงกันทุกอักขระ เส้นเชื่อมนี้ไม่ใช่ค่าความสนใจหรือคำอธิบายการทำงานของโมเดล",
+  "inspectionNoMatches": "ไม่มีข้อความก่อนหน้าที่ตรงกัน ณ ตำแหน่งนี้",
+  "inspectionMatches": "แสดงข้อความก่อนหน้าที่ตรงกัน {count} แห่ง",
+  "inspectionRailLegend": "แถบด้านข้าง: ค่าเฉลี่ยความน่าจะเป็นของโทเค็นที่บันทึกไว้ในแต่ละบรรทัด",
+  "inspectionMatchLegend": "เส้นเชื่อมแสดงบรรทัดก่อนหน้าที่มีข้อความตรงกัน",
+  "@inspectionDetail": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@inspectionMatches": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }

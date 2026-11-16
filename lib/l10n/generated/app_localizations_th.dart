@@ -1882,4 +1882,46 @@ class AppLocalizationsTh extends AppLocalizations {
   @override
   String get inspectionDragHint =>
       'ลากขึ้นเพื่อซ่อนข้อความ ลากลงเพื่อแสดงข้อความ';
+
+  @override
+  String get inspectionControls => 'ตัวควบคุมการสำรวจ';
+
+  @override
+  String get inspectionPredictions => 'การคาดการณ์';
+
+  @override
+  String get inspectionRepeatedText => 'ข้อความที่ซ้ำกัน';
+
+  @override
+  String get inspectionMode => 'มุมมอง';
+
+  @override
+  String inspectionDetail(int count) {
+    return 'แสดงได้สูงสุด $count รายการ';
+  }
+
+  @override
+  String get inspectionDialHint =>
+      'เลือกมุมเพื่อเปลี่ยนมุมมอง เลื่อนออกจากจุดกลางเพื่อดูรายละเอียดเพิ่ม ตัวควบคุมนี้เปลี่ยนเฉพาะมุมมองเท่านั้น';
+
+  @override
+  String get inspectionMatchNote =>
+      'ข้อความก่อนหน้าที่ตรงกันทุกอักขระ เส้นเชื่อมนี้ไม่ใช่ค่าความสนใจหรือคำอธิบายการทำงานของโมเดล';
+
+  @override
+  String get inspectionNoMatches =>
+      'ไม่มีข้อความก่อนหน้าที่ตรงกัน ณ ตำแหน่งนี้';
+
+  @override
+  String inspectionMatches(int count) {
+    return 'แสดงข้อความก่อนหน้าที่ตรงกัน $count แห่ง';
+  }
+
+  @override
+  String get inspectionRailLegend =>
+      'แถบด้านข้าง: ค่าเฉลี่ยความน่าจะเป็นของโทเค็นที่บันทึกไว้ในแต่ละบรรทัด';
+
+  @override
+  String get inspectionMatchLegend =>
+      'เส้นเชื่อมแสดงบรรทัดก่อนหน้าที่มีข้อความตรงกัน';
 }

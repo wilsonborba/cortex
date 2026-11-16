@@ -599,5 +599,30 @@
         "type": "int"
       }
     }
+  },
+  "inspectionControls": "Controles de inspeção",
+  "inspectionPredictions": "Previsões",
+  "inspectionRepeatedText": "Texto repetido",
+  "inspectionMode": "Visualização",
+  "inspectionDetail": "Mostrar até {count} itens",
+  "inspectionDialHint": "Escolha a visualização pelo ângulo. Mova para fora para ver mais detalhes. Estes controles só alteram esta visualização.",
+  "inspectionMatchNote": "Correspondências exatas com texto anterior. Estes links não representam a atenção nem o raciocínio do modelo.",
+  "inspectionNoMatches": "Nenhum texto anterior coincide nesta posição.",
+  "inspectionMatches": "{count} correspondências anteriores exibidas",
+  "inspectionRailLegend": "Barras: probabilidade média dos tokens registrados em cada linha.",
+  "inspectionMatchLegend": "Os links conectam linhas anteriores com texto igual.",
+  "@inspectionDetail": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@inspectionMatches": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }

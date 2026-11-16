@@ -1,3 +1,4 @@
+import 'dart:math' as math;
 import 'dart:convert';
 import 'package:characters/characters.dart';
 import 'package:flutter/foundation.dart';
@@ -22,6 +23,7 @@ class AnswerInspectionController extends ChangeNotifier {
     };
     _positions = positions(data.available ? data : null);
     index = _positions.length - 1;
+    _updateMatches();
   }
   final String text;
   final Future<AnswerInspectionData> Function()? loader;
@@ -31,6 +33,87 @@ class AnswerInspectionController extends ChangeNotifier {
   late Map<int, int> _graphemeIndex;
   late int index;
   bool loading = false, failed = false, _disposed = false;
+  InspectionMode mode = InspectionMode.predictions;
+  int detail = 3;
+  double dialAngle = math.pi * 0.75, dialDistance = 0.5;
+  InspectionTextMatch? focusMatch;
+  List<InspectionTextMatch> _earlier = [];
+  List<InspectionTextMatch> get earlierMatches =>
+      _earlier.take(detail).toList(growable: false);
+  Iterable<InspectionToken> get visibleRecordedTokens =>
+      data.tokens.where((t) => t.endByte <= cursor.byte && t.bytes.isNotEmpty);
+  List<InspectionAlternative> get alternatives =>
+      nextToken?.otherAlternatives.take(detail).toList(growable: false) ??
+      const [];
+  void selectMode(InspectionMode value) {
+    if (mode == value) return;
+    mode = value;
+    dialAngle = value == InspectionMode.predictions
+        ? math.pi * 0.75
+        : math.pi * 0.25;
+    notifyListeners();
+  }
+
+  void selectDetail(int value) {
+    detail = value.clamp(1, 5);
+    dialDistance = (detail - 1) / 4;
+    notifyListeners();
+  }
+
+  void setDial(double angle, double distance) {
+    if (!angle.isFinite || !distance.isFinite) return;
+    dialAngle = angle.clamp(0, math.pi);
+    dialDistance = distance.clamp(0, 1);
+    mode = dialAngle >= math.pi / 2
+        ? InspectionMode.predictions
+        : InspectionMode.repeatedText;
+    detail = 1 + (dialDistance * 4).round();
+    notifyListeners();
+  }
+
+  int codeUnitAtByte(int byte) {
+    var low = 0, high = _allPositions.length - 1;
+    while (low < high) {
+      final middle = (low + high + 1) ~/ 2;
+      if (_allPositions[middle].byte <= byte) {
+        low = middle;
+      } else {
+        high = middle - 1;
+      }
+    }
+    return _allPositions[low].codeUnit;
+  }
+
+  void _updateMatches() {
+    focusMatch = null;
+    _earlier = [];
+    final prefix = visibleText.trimRight();
+    final units = prefix.characters.toList();
+    final letters = RegExp(r'[\p{L}\p{N}]', unicode: true);
+    for (var length = math.min(24, units.length); length >= 2; length--) {
+      final needle = units.sublist(units.length - length).join().trimLeft();
+      if (needle.characters.length < 2 || !letters.hasMatch(needle)) continue;
+      final start = prefix.length - needle.length;
+      final earlier = text.substring(0, start);
+      var from = earlier.length;
+      final matches = <InspectionTextMatch>[];
+      while (from >= 0 && matches.length < 5) {
+        final found = earlier.lastIndexOf(needle, from);
+        if (found < 0) break;
+        if (_graphemeIndex.containsKey(found) &&
+            _graphemeIndex.containsKey(found + needle.length)) {
+          matches.add(InspectionTextMatch(found, found + needle.length));
+        }
+        from = found - needle.length;
+      }
+      if (matches.isNotEmpty) {
+        focusMatch = InspectionTextMatch(start, prefix.length);
+        _earlier = matches;
+        return;
+      }
+    }
+  }
+
   List<RevealPosition> positions(AnswerInspectionData? source) {
     final allowed = source?.tokens.map((t) => t.endByte).toSet();
     final result = [const RevealPosition(0, 0)];
@@ -85,6 +168,7 @@ class AnswerInspectionController extends ChangeNotifier {
     final next = indexForFraction(value);
     if (next != index) {
       index = next;
+      _updateMatches();
       notifyListeners();
     }
   }
@@ -95,6 +179,7 @@ class AnswerInspectionController extends ChangeNotifier {
     final next = (index + delta).clamp(0, _positions.length - 1);
     if (next != index) {
       index = next;
+      _updateMatches();
       notifyListeners();
     }
   }
@@ -113,6 +198,7 @@ class AnswerInspectionController extends ChangeNotifier {
           : const AnswerInspectionData(reason: 'invalid_data');
       _positions = positions(data.available ? data : null);
       index = indexForFraction(old);
+      _updateMatches();
     } catch (_) {
       if (!_disposed) failed = true;
     } finally {

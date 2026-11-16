@@ -1917,4 +1917,46 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get inspectionDragHint =>
       'Arraste para cima para ocultar o texto. Arraste para baixo para revelá-lo.';
+
+  @override
+  String get inspectionControls => 'Controles de inspeção';
+
+  @override
+  String get inspectionPredictions => 'Previsões';
+
+  @override
+  String get inspectionRepeatedText => 'Texto repetido';
+
+  @override
+  String get inspectionMode => 'Visualização';
+
+  @override
+  String inspectionDetail(int count) {
+    return 'Mostrar até $count itens';
+  }
+
+  @override
+  String get inspectionDialHint =>
+      'Escolha a visualização pelo ângulo. Mova para fora para ver mais detalhes. Estes controles só alteram esta visualização.';
+
+  @override
+  String get inspectionMatchNote =>
+      'Correspondências exatas com texto anterior. Estes links não representam a atenção nem o raciocínio do modelo.';
+
+  @override
+  String get inspectionNoMatches =>
+      'Nenhum texto anterior coincide nesta posição.';
+
+  @override
+  String inspectionMatches(int count) {
+    return '$count correspondências anteriores exibidas';
+  }
+
+  @override
+  String get inspectionRailLegend =>
+      'Barras: probabilidade média dos tokens registrados em cada linha.';
+
+  @override
+  String get inspectionMatchLegend =>
+      'Os links conectam linhas anteriores com texto igual.';
 }

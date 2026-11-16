@@ -23,10 +23,11 @@ AnswerInspectionData fixtureData(String text) {
     final bytes = utf8.encode(String.fromCharCode(rune));
     tokens.add(
       InspectionToken(bytes, -0.2, offset, offset + bytes.length, [
-        for (var i = 0; i < 5; i++)
+        InspectionAlternative(bytes, -0.2),
+        for (var i = 0; i < 4; i++)
           InspectionAlternative(
-            utf8.encode([' tree', ' path', ' river', ' map', ' story'][i]),
-            -1.0 - i,
+            utf8.encode([' tree', ' path', ' river', ' map'][i]),
+            -3.0 - i,
           ),
       ]),
     );
@@ -125,8 +126,8 @@ void main() {
   test('probabilities are not normalized over the displayed alternatives', () {
     final data = fixtureData('x');
     expect(
-      data.tokens.first.alternatives.first.likelihood,
-      closeTo(0.367879, 0.000001),
+      data.tokens.first.otherAlternatives.first.likelihood,
+      closeTo(0.049787, 0.000001),
     );
     expect(
       data.tokens.first.alternatives.fold<double>(
@@ -298,6 +299,22 @@ void main() {
       await tester.sendKeyEvent(LogicalKeyboardKey.arrowLeft);
       await tester.pump();
       expect(tester.widget<Slider>(slider).value, lessThan(before));
+      final controller = tester
+          .widget<AnswerInspectionView>(find.byType(AnswerInspectionView))
+          .controller;
+      await tester.tap(find.text('Inspection controls').last);
+      await tester.pumpAndSettle();
+      expect(find.byKey(const Key('inspection-dial')), findsOneWidget);
+      await tester.tap(find.byKey(const Key('inspection-mode')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Repeated text').last);
+      await tester.pumpAndSettle();
+      expect(controller.mode, InspectionMode.repeatedText);
+      expect(reads, 1);
+      expect(output.answer.toString(), text);
+      await tester.sendKeyEvent(LogicalKeyboardKey.escape);
+      await tester.pumpAndSettle();
+      expect(find.byKey(const Key('inspection-dial')), findsNothing);
       await tester.tap(find.byType(CopyMessageButton).last);
       await tester.pumpAndSettle();
       expect(clipboard, text);
@@ -335,7 +352,10 @@ void main() {
               Builder(
                 builder: (context) => AppDialog(
                   title: AppLocalizations.of(context).inspectionTitle,
-                  content: AnswerInspectionView(controller: c),
+                  content: AnswerInspectionView(
+                    controller: c,
+                    onControls: () => openInspectionControls(context, c),
+                  ),
                   actions: const [],
                 ),
               ),
@@ -362,13 +382,19 @@ void main() {
             addTearDown(tester.view.reset);
             final c = AnswerInspectionController(
               text: 'Synthetic text without recorded model data.',
+              initialData: fixtureData(
+                'Synthetic text without recorded model data.',
+              ),
             );
             await tester.pumpWidget(
               app(
                 Builder(
                   builder: (context) => AppDialog(
                     title: AppLocalizations.of(context).inspectionTitle,
-                    content: AnswerInspectionView(controller: c),
+                    content: AnswerInspectionView(
+                      controller: c,
+                      onControls: () => openInspectionControls(context, c),
+                    ),
                     actions: const [],
                   ),
                 ),

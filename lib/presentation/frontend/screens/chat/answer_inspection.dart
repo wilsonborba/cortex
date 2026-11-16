@@ -1,3 +1,5 @@
+import 'inspection_controls.dart';
+import 'inspection_rail.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'dart:math' as math;
@@ -11,8 +13,13 @@ import '../../widgets/common/buttons.dart';
 import '../../widgets/common/states.dart';
 
 class AnswerInspectionView extends StatefulWidget {
-  const AnswerInspectionView({super.key, required this.controller});
+  const AnswerInspectionView({
+    super.key,
+    required this.controller,
+    this.onControls,
+  });
   final AnswerInspectionController controller;
+  final VoidCallback? onControls;
   @override
   State<AnswerInspectionView> createState() => _AnswerInspectionViewState();
 }
@@ -54,6 +61,35 @@ class _AnswerInspectionViewState extends State<AnswerInspectionView> {
     final l = AppLocalizations.of(context);
     final p = Palette.from(context);
     final next = c.nextToken;
+    if (c.mode == InspectionMode.repeatedText) {
+      final focus = c.focusMatch;
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            l.inspectionMatchNote,
+            style: TextStyles.caption1.copyWith(color: p.muted),
+          ),
+          const SizedBox(height: Space.s8),
+          if (focus == null)
+            Text(
+              l.inspectionNoMatches,
+              style: TextStyles.body1.copyWith(color: p.text2),
+            )
+          else ...[
+            SelectableText(
+              c.text.substring(focus.start, focus.end),
+              style: TextStyles.body2.copyWith(color: p.text),
+            ),
+            Text(
+              l.inspectionMatches(c.earlierMatches.length),
+              style: TextStyles.caption1.copyWith(color: p.muted),
+            ),
+          ],
+        ],
+      );
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -112,7 +148,7 @@ class _AnswerInspectionViewState extends State<AnswerInspectionView> {
                 spacing: Space.s12,
                 runSpacing: Space.s4,
                 children: [
-                  for (final alternative in next.alternatives)
+                  for (final alternative in c.alternatives)
                     Text(
                       '${tokenText(alternative, l)}  ${likelihood(context, alternative.likelihood)}',
                       style: TextStyles.code.copyWith(color: p.text2),
@@ -142,9 +178,22 @@ class _AnswerInspectionViewState extends State<AnswerInspectionView> {
             style: TextStyles.body1.copyWith(color: p.text2),
           ),
           const SizedBox(height: Space.s8),
-          Text(
-            l.inspectionVisible((c.fraction * 100).round()),
-            style: TextStyles.body1Strong.copyWith(color: p.text),
+          Wrap(
+            alignment: WrapAlignment.spaceBetween,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            spacing: Space.s8,
+            children: [
+              Text(
+                l.inspectionVisible((c.fraction * 100).round()),
+                style: TextStyles.body1Strong.copyWith(color: p.text),
+              ),
+              if (widget.onControls != null)
+                AppButton(
+                  label: l.inspectionControls,
+                  kind: ButtonKind.subtle,
+                  onPressed: widget.onControls,
+                ),
+            ],
           ),
           InspectionSlider(
             value: c.fraction,
@@ -160,9 +209,28 @@ class _AnswerInspectionViewState extends State<AnswerInspectionView> {
                     constraints: BoxConstraints(
                       maxHeight: constraints.maxHeight * 0.45,
                     ),
-                    child: SingleChildScrollView(child: metadata(context)),
+                    child: SingleChildScrollView(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          metadata(context),
+                          const SizedBox(height: Space.s8),
+                          Text(
+                            l.inspectionPlainText,
+                            style: TextStyles.caption1.copyWith(color: p.muted),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                   const SizedBox(height: Space.s8),
+                  Text(
+                    c.mode == InspectionMode.predictions
+                        ? l.inspectionRailLegend
+                        : l.inspectionMatchLegend,
+                    style: TextStyles.caption1.copyWith(color: p.muted),
+                  ),
+                  const SizedBox(height: Space.s4),
                   Expanded(
                     child: SingleChildScrollView(
                       child: InspectionTextCanvas(
@@ -175,70 +243,7 @@ class _AnswerInspectionViewState extends State<AnswerInspectionView> {
               ),
             ),
           ),
-          const SizedBox(height: Space.s8),
-          Text(
-            l.inspectionPlainText,
-            style: TextStyles.caption1.copyWith(color: p.muted),
-          ),
         ],
-      ),
-    );
-  }
-}
-
-/// The neutral Fluent track and thumb reuse the current spacing and stroke tokens.
-class InspectionSlider extends StatefulWidget {
-  const InspectionSlider({
-    super.key,
-    required this.value,
-    required this.label,
-    required this.onChanged,
-    this.divisions,
-  });
-  final double value;
-  final String label;
-  final ValueChanged<double> onChanged;
-  final int? divisions;
-  @override
-  State<InspectionSlider> createState() => _InspectionSliderState();
-}
-
-class _InspectionSliderState extends State<InspectionSlider> {
-  final focus = FocusNode();
-  @override
-  void dispose() {
-    focus.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final p = Palette.from(context);
-    return FoundationFocus(
-      child: Semantics(
-        label: widget.label,
-        child: SliderTheme(
-          data: SliderTheme.of(context).copyWith(
-            trackHeight: Strokes.thickest,
-            activeTrackColor: p.text2,
-            inactiveTrackColor: p.stroke,
-            thumbColor: p.text,
-            overlayColor: p.subtleHover,
-            thumbShape: const RoundSliderThumbShape(
-              enabledThumbRadius: Space.s8,
-            ),
-          ),
-          child: Slider(
-            value: widget.value,
-            focusNode: focus,
-            divisions: widget.divisions,
-            semanticFormatterCallback: (v) => '${(v * 100).round()}%',
-            onChanged: (value) {
-              focus.requestFocus();
-              widget.onChanged(value);
-            },
-          ),
-        ),
       ),
     );
   }
@@ -310,56 +315,64 @@ class _InspectionTextCanvasState extends State<InspectionTextCanvas> {
         return SizedBox(
           key: const Key('inspection-text-area'),
           height: height,
-          child: Stack(
-            children: [
-              Positioned(
-                top: 0,
-                left: Space.s48,
-                right: 0,
-                child: SelectableText(
-                  controller.visibleText,
-                  key: const Key('inspection-visible-text'),
-                  style: style,
-                  textDirection: direction,
+          child: CustomPaint(
+            painter: InspectionRailPainter(
+              controller: controller,
+              style: style,
+              palette: p,
+              direction: direction,
+              scaler: scaler,
+            ),
+            child: Stack(
+              children: [
+                Positioned(
+                  top: Space.s12,
+                  left: Space.s48,
+                  right: 0,
+                  child: SelectableText.rich(
+                    inspectionSpans(controller, style, p),
+                    key: const Key('inspection-visible-text'),
+                    textDirection: direction,
+                  ),
                 ),
-              ),
-              Positioned(
-                left: 0,
-                top: caretY,
-                width: Space.s48,
-                height: Space.s48,
-                child: Semantics(
-                  label: l.inspectionDragHint,
-                  value: l.inspectionVisible(
-                    (controller.fraction * 100).round(),
-                  ),
-                  increasedValue: l.inspectionVisible(
-                    (controller.fractionAfterStep(1) * 100).round(),
-                  ),
-                  decreasedValue: l.inspectionVisible(
-                    (controller.fractionAfterStep(-1) * 100).round(),
-                  ),
-                  onIncrease: () => controller.step(1),
-                  onDecrease: () => controller.step(-1),
-                  child: MouseRegion(
-                    cursor: SystemMouseCursors.resizeUpDown,
-                    child: GestureDetector(
-                      key: const Key('inspection-handle'),
-                      behavior: HitTestBehavior.opaque,
-                      onVerticalDragUpdate: (d) => controller.reveal(
-                        controller.fraction + d.delta.dy / dragExtent,
-                      ),
-                      child: Center(
-                        key: handle,
-                        child: Container(
-                          width: Space.s16,
-                          height: Space.s16,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: p.background,
-                            border: Border.all(
-                              color: p.text2,
-                              width: Strokes.thick,
+                Positioned(
+                  left: 0,
+                  top: caretY,
+                  width: Space.s48,
+                  height: Space.s48,
+                  child: Semantics(
+                    label: l.inspectionDragHint,
+                    value: l.inspectionVisible(
+                      (controller.fraction * 100).round(),
+                    ),
+                    increasedValue: l.inspectionVisible(
+                      (controller.fractionAfterStep(1) * 100).round(),
+                    ),
+                    decreasedValue: l.inspectionVisible(
+                      (controller.fractionAfterStep(-1) * 100).round(),
+                    ),
+                    onIncrease: () => controller.step(1),
+                    onDecrease: () => controller.step(-1),
+                    child: MouseRegion(
+                      cursor: SystemMouseCursors.resizeUpDown,
+                      child: GestureDetector(
+                        key: const Key('inspection-handle'),
+                        behavior: HitTestBehavior.opaque,
+                        onVerticalDragUpdate: (d) => controller.reveal(
+                          controller.fraction + d.delta.dy / dragExtent,
+                        ),
+                        child: Center(
+                          key: handle,
+                          child: Container(
+                            width: Space.s16,
+                            height: Space.s16,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: p.background,
+                              border: Border.all(
+                                color: p.text2,
+                                width: Strokes.thick,
+                              ),
                             ),
                           ),
                         ),
@@ -367,8 +380,8 @@ class _InspectionTextCanvasState extends State<InspectionTextCanvas> {
                     ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         );
       },

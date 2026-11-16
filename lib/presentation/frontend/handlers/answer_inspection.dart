@@ -1,3 +1,4 @@
+import '../screens/chat/inspection_controls.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import '../../../dal/remote/cortex_api.dart';
@@ -29,7 +30,10 @@ Future<void> openAnswerInspection(
     await showAppDialog<void>(
       context,
       title: AppLocalizations.of(context).inspectionTitle,
-      content: (_) => AnswerInspectionView(controller: controller),
+      content: (_) => AnswerInspectionView(
+        controller: controller,
+        onControls: () => openInspectionControls(context, controller),
+      ),
       actions: (c) => [
         CopyMessageButton(text: controller.text),
         AppButton(
@@ -42,3 +46,18 @@ Future<void> openAnswerInspection(
     controller.dispose();
   }
 }
+
+Future<void> openInspectionControls(
+  BuildContext context,
+  AnswerInspectionController controller,
+) => showAppDialog<void>(
+  context,
+  title: AppLocalizations.of(context).inspectionControls,
+  content: (_) => InspectionControls(controller: controller),
+  actions: (c) => [
+    AppButton(
+      label: AppLocalizations.of(c).close,
+      onPressed: () => Navigator.of(c).pop(),
+    ),
+  ],
+);
