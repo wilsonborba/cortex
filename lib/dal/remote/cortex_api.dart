@@ -1,3 +1,4 @@
+import '../../domain/models/answer_inspection.dart';
 import '../../domain/models/telemetry.dart';
 import 'dart:async';
 import 'dart:convert';
@@ -71,6 +72,17 @@ class CortexApi {
     if (body != null) request.body = jsonEncode(body);
     return _body(await http.Response.fromStream(await _client.send(request)));
   }
+
+  Future<AnswerInspectionData> answerInspection(
+    String sessionId,
+    String outputId,
+  ) async => AnswerInspectionData.fromJson(
+    ((await _get(
+              '/chats/${Uri.encodeComponent(sessionId)}/outputs/${Uri.encodeComponent(outputId)}/inspection',
+            ))['data']
+            as Map)
+        .cast<String, dynamic>(),
+  );
 
   Future<UsageData> usage() async => UsageData.fromJson(
     ((await _get('/telemetry/usage'))['data'] as Map).cast(),

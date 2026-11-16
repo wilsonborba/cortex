@@ -224,6 +224,32 @@ class ChatController extends ChangeNotifier {
     _listen(output, api.input(session: sessionId, body: body));
   }
 
+  /// Continue the saved answer [source] with its recorded alternative
+  /// (cortex#82, cortex_api#125). The server builds the prefix from saved
+  /// data; the client sends only ids. The new answer repeats the source
+  /// question. Temporary chats save no alternatives and cannot continue.
+  Future<void> continueFrom(Exchange source, ContinueSource from) async {
+    if (running != null || temporary || sessionId == null) return;
+    final output = OutputView()..continuedFrom = from;
+    exchanges.add(
+      Exchange(text: source.text, createdAt: DateTime.now(), output: output),
+    );
+    _notify();
+    _listen(
+      output,
+      api.input(
+        session: sessionId,
+        body: {
+          'continue_from': {
+            'output_id': from.outputId,
+            'token_position': from.tokenPosition,
+            'alternative_rank': from.rank,
+          },
+        },
+      ),
+    );
+  }
+
   void _listen(OutputView output, Stream<ChatEvent> stream) {
     _sub?.cancel();
     var ended = false;

@@ -3375,6 +3375,197 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Kind of answer'**
   String get usageKindColumn;
+
+  /// No description provided for @inspectionAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Inspect answer'**
+  String get inspectionAction;
+
+  /// No description provided for @inspectionExit.
+  ///
+  /// In en, this message translates to:
+  /// **'Exit inspection'**
+  String get inspectionExit;
+
+  /// No description provided for @inspectionAverage.
+  ///
+  /// In en, this message translates to:
+  /// **'Average certainty'**
+  String get inspectionAverage;
+
+  /// No description provided for @inspectionLowest.
+  ///
+  /// In en, this message translates to:
+  /// **'Lowest certainty'**
+  String get inspectionLowest;
+
+  /// No description provided for @inspectionForks.
+  ///
+  /// In en, this message translates to:
+  /// **'Forks · next →'**
+  String get inspectionForks;
+
+  /// No description provided for @inspectionTokens.
+  ///
+  /// In en, this message translates to:
+  /// **'Tokens'**
+  String get inspectionTokens;
+
+  /// No description provided for @inspectionInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'These values come from the probabilities the model recorded while writing this answer. Links show words that appeared earlier in the text. They are not the model\'s internal attention.'**
+  String get inspectionInfo;
+
+  /// No description provided for @inspectionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Move the pointer over the text'**
+  String get inspectionHint;
+
+  /// No description provided for @inspectionHintTouch.
+  ///
+  /// In en, this message translates to:
+  /// **'Drag your finger over the text'**
+  String get inspectionHintTouch;
+
+  /// No description provided for @inspectionLoading.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading recorded predictions…'**
+  String get inspectionLoading;
+
+  /// No description provided for @inspectionReadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load prediction data.'**
+  String get inspectionReadFailed;
+
+  /// No description provided for @inspectionNoData.
+  ///
+  /// In en, this message translates to:
+  /// **'No prediction data was recorded for this answer.'**
+  String get inspectionNoData;
+
+  /// No description provided for @inspectionUnsupported.
+  ///
+  /// In en, this message translates to:
+  /// **'This model did not provide prediction data.'**
+  String get inspectionUnsupported;
+
+  /// No description provided for @inspectionUnverified.
+  ///
+  /// In en, this message translates to:
+  /// **'Prediction data could not be verified.'**
+  String get inspectionUnverified;
+
+  /// No description provided for @inspectionCursorLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Answer cursor'**
+  String get inspectionCursorLabel;
+
+  /// No description provided for @inspectionCursorValue.
+  ///
+  /// In en, this message translates to:
+  /// **'{word}, certainty {value}'**
+  String inspectionCursorValue(String word, String value);
+
+  /// No description provided for @inspectionRailLine.
+  ///
+  /// In en, this message translates to:
+  /// **'line'**
+  String get inspectionRailLine;
+
+  /// No description provided for @inspectionRailTokens.
+  ///
+  /// In en, this message translates to:
+  /// **'tokens'**
+  String get inspectionRailTokens;
+
+  /// No description provided for @inspectionRailCertainty.
+  ///
+  /// In en, this message translates to:
+  /// **'certainty'**
+  String get inspectionRailCertainty;
+
+  /// No description provided for @inspectionLineTip.
+  ///
+  /// In en, this message translates to:
+  /// **'Line {line} · certainty {value} · lowest: “{word}” {lowest}{forks, plural, =0{} =1{ · 1 fork} other{ · {forks} forks}}'**
+  String inspectionLineTip(
+    int line,
+    String value,
+    String word,
+    String lowest,
+    num forks,
+  );
+
+  /// No description provided for @inspectionChose.
+  ///
+  /// In en, this message translates to:
+  /// **'The model chose “{word}” with {value}.'**
+  String inspectionChose(String word, String value);
+
+  /// No description provided for @inspectionInstead.
+  ///
+  /// In en, this message translates to:
+  /// **'Instead of “{word}” ({value}), the model also considered “{other}” with {otherValue}.'**
+  String inspectionInstead(
+    String word,
+    String value,
+    String other,
+    String otherValue,
+  );
+
+  /// No description provided for @inspectionRest.
+  ///
+  /// In en, this message translates to:
+  /// **'Other options add up to {value}.'**
+  String inspectionRest(String value);
+
+  /// No description provided for @inspectionFork.
+  ///
+  /// In en, this message translates to:
+  /// **'Fork: the second option was close'**
+  String get inspectionFork;
+
+  /// No description provided for @inspectionChosenTag.
+  ///
+  /// In en, this message translates to:
+  /// **'chosen'**
+  String get inspectionChosenTag;
+
+  /// No description provided for @inspectionRadarLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Recorded alternatives'**
+  String get inspectionRadarLabel;
+
+  /// No description provided for @inspectionContinue.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue with “{word}”'**
+  String inspectionContinue(String word);
+
+  /// No description provided for @inspectionContinued.
+  ///
+  /// In en, this message translates to:
+  /// **'Continued from “{word}”'**
+  String inspectionContinued(String word);
+
+  /// No description provided for @heroDemoLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Recorded example: real model data, no live call'**
+  String get heroDemoLabel;
+
+  /// No description provided for @heroDemoQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'Write a two-sentence story about a girl named Mira who finds an old map under a fig tree.'**
+  String get heroDemoQuestion;
 }
 
 class _AppLocalizationsDelegate

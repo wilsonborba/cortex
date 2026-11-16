@@ -18,6 +18,7 @@ class Preferences extends ChangeNotifier {
       _ => null,
     };
     _collapsed = _read('cortex.ui.sidebarCollapsed') == 'true';
+    _inspectionSeen = _read('cortex.ui.inspectionSeen') == 'true';
   }
   final UiPreferenceStore _store;
   String? _read(String key) {
@@ -41,6 +42,15 @@ class Preferences extends ChangeNotifier {
     _collapsed = value;
     _save('cortex.ui.sidebarCollapsed', '$value');
     notifyListeners();
+  }
+
+  /// The answer inspect action played its one discovery pulse (cortex#77).
+  bool _inspectionSeen = false;
+  bool get inspectionSeen => _inspectionSeen;
+  set inspectionSeen(bool value) {
+    if (_inspectionSeen == value) return;
+    _inspectionSeen = value;
+    _save('cortex.ui.inspectionSeen', '$value');
   }
 
   Locale? _locale;

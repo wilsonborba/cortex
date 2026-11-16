@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:cortex/dal/local/inspection_demo.dart';
 import 'package:cortex/presentation/frontend/screens/landing/code_snippet.dart'
     show prepareCodeSyntax;
 
@@ -14,6 +15,8 @@ Future<void> testExecutable(FutureOr<void> Function() testMain) async {
       throw StateError('${result.stdout}${result.stderr}');
     }
     await loadFonts();
+    // Landing inspection samples load from assets; keep goldens complete.
+    await const InspectionDemoSource().preloadAll();
   });
   await testMain();
 }
