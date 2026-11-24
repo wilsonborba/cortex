@@ -1970,4 +1970,60 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get heroDemoQuestion =>
       'Write a two-sentence story about a girl named Mira who finds an old map under a fig tree.';
+
+  @override
+  String get nativeWelcomeTitle => 'Welcome to Cortex';
+
+  @override
+  String get nativeWelcomeBody =>
+      'Chat and work with your memory and personas in one workspace.';
+
+  @override
+  String get nativeSignIn => 'Sign in with your Asodya account';
+
+  @override
+  String get nativeMatchCode => 'Confirm this code on the browser sign-in page';
+
+  @override
+  String get nativeBrowserOpened =>
+      'Finish signing in in your browser, then return here.';
+
+  @override
+  String get nativeFinishLogin => 'Finish login';
+
+  @override
+  String get nativeCancelLogin => 'Cancel login';
+
+  @override
+  String get nativeLoginChecking => 'Checking login status…';
+
+  @override
+  String get nativeLoginNotFinished =>
+      'Login is not finished yet. Complete it in the browser, then check again.';
+
+  @override
+  String get nativeLoginExpired => 'This login expired. Start again.';
+
+  @override
+  String get nativeLoginRefused =>
+      'Login refused because the browser and app are on different networks. Start again on the same network.';
+
+  @override
+  String get nativeLoginCancelled =>
+      'This login was cancelled. Start again when ready.';
+
+  @override
+  String get nativeLoginUsed => 'This login cannot be used again. Start again.';
+
+  @override
+  String get nativeLoginError =>
+      'Could not finish login. Check your connection and try again.';
+
+  @override
+  String get nativeLoggedIn => 'Logged in';
+
+  @override
+  String nativeLoggedInFrom(String location) {
+    return 'Logged in from $location';
+  }
 }

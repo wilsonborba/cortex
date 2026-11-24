@@ -20,6 +20,32 @@ class AuthService {
     );
   }
 
+  Future<NativeLoginAttempt> startNativeLogin() async {
+    final attempt = await adapter.prepareNativeLogin();
+    final uri = attempt.launchUri;
+    try {
+      if (uri == null ||
+          !await launchUrl(uri, mode: LaunchMode.externalApplication)) {
+        throw StateError('Could not open the sign-in page');
+      }
+    } catch (_) {
+      try {
+        await adapter.cancelNativeLogin();
+      } catch (_) {
+        await adapter.discardNativeLogin();
+      }
+      rethrow;
+    }
+    return attempt;
+  }
+
+  Future<String?> finishNativeLogin() => adapter.finishNativeLogin();
+  Future<String> checkNativeLogin() => adapter.nativeHandoffStatus();
+  Future<void> cancelNativeLogin() => adapter.cancelNativeLogin();
+  Future<void> discardNativeLogin() => adapter.discardNativeLogin();
+  Future<NativeLoginAttempt?> restoreNativeLogin() =>
+      adapter.restoreNativeLogin();
+
   Future<bool> consumeReturn(Uri uri) async {
     final token = uri.queryParameters[AppSettings.authExchangeTokenQueryParam];
     return token != null &&

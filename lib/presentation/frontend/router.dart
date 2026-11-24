@@ -19,6 +19,8 @@ import 'screens/memory/memory_screen.dart';
 import 'shell/app_shell.dart';
 import 'shell/details_panel.dart';
 import 'screens/landing/landing_page.dart';
+import 'screens/native_entry.dart';
+import '../../core/utils/platform.dart';
 
 const homeSections = {'how-it-works', 'memory', 'engineering', 'faq'};
 const _protected = [
@@ -56,6 +58,11 @@ GoRouter buildRouter({
   final memory = MemoryController(api: cortex);
   final personas = PersonaController(api: cortex);
   final usage = UsageController(api: cortex);
+  Future<void> signOut() async {
+    await auth.signOut();
+    await session.refresh();
+  }
+
   Widget screenPage(
     BuildContext c,
     String Function(AppLocalizations) title,
@@ -79,7 +86,7 @@ GoRouter buildRouter({
           signedIn: session.signedIn,
           onSignIn: () => auth.signIn(returnPath: '/v1/chats'),
           onOpenApp: () => GoRouter.of(c).go('/v1/chats'),
-          onLogOut: auth.signOut,
+          onLogOut: signOut,
           emailLoader: emailLoader ?? auth.adapter.currentEmail,
         ),
       );
@@ -89,9 +96,10 @@ GoRouter buildRouter({
     errorBuilder: (_, _) => const NotFoundPage(),
     redirect: (context, state) {
       final path = state.uri.path;
+      if (path == '/v1/entry' && session.signedIn) return '/v1/chats';
       if (isProtected(path) && !session.signedIn) {
         return Uri(
-          path: '/v1/login',
+          path: isAndroidPlatform ? '/v1/entry' : '/v1/login',
           queryParameters: {'from': state.uri.toString()},
         ).toString();
       }
@@ -120,6 +128,10 @@ GoRouter buildRouter({
         ),
       ),
       GoRoute(path: '/v1/home', builder: (c, _) => landing(c)),
+      GoRoute(
+        path: '/v1/entry',
+        builder: (_, _) => NativeEntryPage(auth: auth, session: session),
+      ),
       // Flat public paths: each page contains only its own subject.
       GoRoute(
         path: '/v1/home/:section',
@@ -136,7 +148,7 @@ GoRouter buildRouter({
           location: s.uri.path,
           emailLoader: emailLoader ?? auth.adapter.currentEmail,
           details: panel,
-          onLogOut: auth.signOut,
+          onLogOut: signOut,
           // Test screens replace the content, so they get no live list.
           chatList: screen == null
               ? ChatList(controller: chats, location: s.uri.path)
