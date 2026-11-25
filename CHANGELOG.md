@@ -12,6 +12,8 @@
 
 - Keep long model labels readable in the compact Options menu at narrow widths and larger text sizes (#87)
 
+- Omit profile IDs for legacy budget-only APIs while preserving IDs for explicit catalogs (#87)
+
 
 
 ## v2.3.2 - 2026-11-16

@@ -114,11 +114,15 @@ class ChatModelCatalog {
     required this.models,
     required this.defaultModelId,
     required this.budget,
+    required this.hasExplicitProfiles,
   });
 
   final List<ChatModelProfile> models;
   final String defaultModelId;
   final InputBudget budget;
+
+  /// False only when GET /models returned the legacy budget-only shape.
+  final bool hasExplicitProfiles;
 
   ChatModelProfile? find(String? id) {
     if (id == null) return null;
@@ -175,6 +179,7 @@ class ChatModelCatalog {
       models: List.unmodifiable(models),
       defaultModelId: defaultModelId,
       budget: budget,
+      hasExplicitProfiles: rawModels != null,
     );
   }
 }

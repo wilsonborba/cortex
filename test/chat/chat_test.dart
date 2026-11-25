@@ -55,6 +55,7 @@ class Api {
   List<String> Function(http.BaseRequest) streamFor = (_) => stream();
   bool keepOpen = false;
   bool failModels = false;
+  bool rejectLegacyModelId = false;
   int maxTokens = 5120;
   Map<String, dynamic> modelFields = const {};
   List<Map<String, dynamic>> personas = [];
@@ -87,6 +88,15 @@ class Api {
           status,
           headers: {'content-type': 'application/json'},
         );
+    if (rejectLegacyModelId &&
+        request.method == 'POST' &&
+        (path == '/chats' || path == '/chats/$sid/inputs') &&
+        (jsonDecode(text) as Map<String, dynamic>).containsKey('model_id')) {
+      return json({
+        'message': 'Unknown field: model_id',
+        'data': {'error_number': 4220},
+      }, 422);
+    }
     if (path == '/models') {
       if (failModels) {
         return json({
@@ -265,6 +275,54 @@ void main() {
     expect(body['temporary'], isTrue);
     chat.dispose();
   });
+
+  test(
+    'legacy budget-only API sends schema-valid new, continued and temporary inputs',
+    () async {
+      Future<Map<String, dynamic>> sendLegacy({
+        String? session,
+        bool temporary = false,
+      }) async {
+        final fake = Api()..rejectLegacyModelId = true;
+        if (session != null) {
+          fake.page = {
+            'chat': {'session_id': session, 'title': 'Legacy chat'},
+            'inputs': [],
+            'outputs': [],
+          };
+        }
+        final chat = ChatController(
+          api: CortexApi(
+            baseUrl: 'https://api.test/apps/cortex/v1',
+            client: fake.client,
+          ),
+          sessionId: session,
+          temporary: temporary,
+        );
+        await chat.open();
+        expect(chat.modelCatalog!.hasExplicitProfiles, isFalse);
+        await chat.send('legacy prompt');
+        await pumpEventQueue();
+        final request = fake.requests.firstWhere(
+          (r) =>
+              r.$1 == 'POST' &&
+              r.$2 == (session == null ? '/chats' : '/chats/$sid/inputs'),
+        );
+        final body = jsonDecode(request.$3) as Map<String, dynamic>;
+        expect(body.containsKey('model_id'), isFalse);
+        expect(chat.exchanges.last.output.errorNumber, isNull);
+        chat.dispose();
+        return body;
+      }
+
+      final newBody = await sendLegacy();
+      expect(newBody['app_id'], CortexApi.appId);
+      final continuedBody = await sendLegacy(session: sid);
+      expect(continuedBody['text'], 'legacy prompt');
+      final temporaryBody = await sendLegacy(temporary: true);
+      expect(temporaryBody['temporary'], isTrue);
+    },
+  );
 
   testWidgets('new and continued inputs carry the selected catalog profile', (
     tester,

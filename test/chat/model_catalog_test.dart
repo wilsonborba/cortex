@@ -43,6 +43,7 @@ void main() {
     });
 
     expect(catalog.defaultModelId, 'bonsai25-uncensored');
+    expect(catalog.hasExplicitProfiles, isTrue);
     expect(catalog.models.map((profile) => profile.id), [
       'cortex-t0',
       'bonsai25-uncensored',
@@ -64,6 +65,7 @@ void main() {
     expect(catalog.models.map((profile) => profile.id), ['cortex-t0']);
     expect(catalog.find('bonsai25-uncensored'), isNull);
     expect(catalog.budget.maxTokens, 512);
+    expect(catalog.hasExplicitProfiles, isFalse);
   });
 
   test('does not replace a declared but unavailable default', () {

@@ -247,9 +247,11 @@ class ChatController extends ChangeNotifier {
     final body = <String, Object?>{
       'text': text,
       'file_ids': ids,
-      'model_id': profile.id,
       ...options.toBody(),
     };
+    if (modelCatalog?.hasExplicitProfiles == true) {
+      body['model_id'] = profile.id;
+    }
     if (isNew) {
       body['app_id'] = CortexApi.appId;
       if (temporary) body['temporary'] = true;
@@ -276,20 +278,17 @@ class ChatController extends ChangeNotifier {
       Exchange(text: source.text, createdAt: DateTime.now(), output: output),
     );
     _notify();
-    _listen(
-      output,
-      api.input(
-        session: sessionId,
-        body: {
-          'model_id': profile.id,
-          'continue_from': {
-            'output_id': from.outputId,
-            'token_position': from.tokenPosition,
-            'alternative_rank': from.rank,
-          },
-        },
-      ),
-    );
+    final body = <String, Object?>{
+      'continue_from': {
+        'output_id': from.outputId,
+        'token_position': from.tokenPosition,
+        'alternative_rank': from.rank,
+      },
+    };
+    if (modelCatalog?.hasExplicitProfiles == true) {
+      body['model_id'] = profile.id;
+    }
+    _listen(output, api.input(session: sessionId, body: body));
   }
 
   void _listen(OutputView output, Stream<ChatEvent> stream) {
