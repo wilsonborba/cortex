@@ -6,7 +6,15 @@ import 'package:cortex/domain/services/remote_cli_gateway.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 class _Gateway implements RemoteCliGateway {
-  final stream = StreamController<RemoteCliEvent>.broadcast();
+  bool streamCancelled = false;
+  Completer<void>? cancelGate;
+  Future<List<RemoteCliSession>>? pendingSessions;
+  late final stream = StreamController<RemoteCliEvent>.broadcast(
+    onCancel: () async {
+      streamCancelled = true;
+      await cancelGate?.future;
+    },
+  );
   final cursors = <int>[];
   final scriptedStreams = <Stream<RemoteCliEvent>>[];
   final prompts = <({String sessionId, String prompt, List<String> fileIds})>[];
@@ -15,7 +23,8 @@ class _Gateway implements RemoteCliGateway {
   int uploads = 0;
 
   @override
-  Future<List<RemoteCliSession>> sessions() async => [_session()];
+  Future<List<RemoteCliSession>> sessions() async =>
+      await pendingSessions ?? [_session()];
 
   @override
   Stream<RemoteCliEvent> events(String sessionId, {required int after}) {
@@ -60,13 +69,14 @@ class _Gateway implements RemoteCliGateway {
   Future<void> dispose() => stream.close();
 }
 
-RemoteCliSession _session({bool online = true}) => RemoteCliSession(
-  id: 'session-1',
-  deviceName: 'Laptop',
-  platform: 'linux',
-  lastSeen: DateTime.fromMillisecondsSinceEpoch(1000),
-  online: online,
-);
+RemoteCliSession _session({bool online = true, String id = 'session-1'}) =>
+    RemoteCliSession(
+      id: id,
+      deviceName: 'Laptop',
+      platform: 'linux',
+      lastSeen: DateTime.fromMillisecondsSinceEpoch(1000),
+      online: online,
+    );
 
 RemoteCliEvent _event(
   int id,
@@ -84,7 +94,13 @@ void main() {
     'reconnects from last cursor and suppresses replayed event ids',
     () async {
       final gateway = _Gateway();
-      gateway.scriptedStreams.add(Stream.fromIterable([_event(4, 'progress')]));
+      gateway.scriptedStreams.add(
+        Stream<RemoteCliEvent>.multi((sink) {
+          sink.add(_event(4, 'progress'));
+          sink.addError(const FormatException('invalid next durable event'));
+          sink.close();
+        }),
+      );
       gateway.scriptedStreams.add(
         Stream.fromIterable([
           _event(4, 'progress', {'text': 'duplicate replay'}),
@@ -107,6 +123,56 @@ void main() {
       await gateway.dispose();
     },
   );
+
+  test('closing the selected session cancels its event stream', () async {
+    final gateway = _Gateway();
+    final controller = RemoteCliController(gateway: gateway);
+    await controller.openSession(_session());
+    await Future<void>.delayed(Duration.zero);
+
+    await controller.closeSession();
+
+    expect(gateway.streamCancelled, isTrue);
+    controller.dispose();
+    await gateway.dispose();
+  });
+
+  test(
+    'late session refresh cannot restore cleared private device data',
+    () async {
+      final gateway = _Gateway();
+      final pending = Completer<List<RemoteCliSession>>();
+      gateway.pendingSessions = pending.future;
+      final controller = RemoteCliController(gateway: gateway);
+      final refresh = controller.refreshSessions();
+
+      await controller.closeSession(clearSessions: true);
+      pending.complete([_session()]);
+      await refresh;
+
+      expect(controller.sessions, isEmpty);
+      expect(controller.loadingSessions, isFalse);
+      controller.dispose();
+      await gateway.dispose();
+    },
+  );
+
+  test('old stream cancellation cannot clear a newly opened session', () async {
+    final gateway = _Gateway()..cancelGate = Completer<void>();
+    final controller = RemoteCliController(gateway: gateway);
+    await controller.openSession(_session());
+    await Future<void>.delayed(Duration.zero);
+    final closing = controller.closeSession();
+    expect(controller.activeSession, isNull);
+
+    await controller.openSession(_session(id: 'session-2'));
+    gateway.cancelGate!.complete();
+    await closing;
+
+    expect(controller.activeSession?.id, 'session-2');
+    controller.dispose();
+    await gateway.dispose();
+  });
 
   test(
     'uploads only selected image and sends its file id with prompt',

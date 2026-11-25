@@ -1965,6 +1965,117 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get remoteSessionsTitle => 'Remote sessions';
+
+  @override
+  String get remoteSessionsDescription =>
+      'Control CLI sessions connected to your Asodya account.';
+
+  @override
+  String get remoteRefresh => 'Refresh sessions';
+
+  @override
+  String get remoteNoSessionsTitle => 'No CLI sessions yet';
+
+  @override
+  String get remoteNoSessionsBody =>
+      'Turn on remote control in Cortex CLI to see a session here.';
+
+  @override
+  String get remoteOpenSession => 'Open session';
+
+  @override
+  String get remoteOnline => 'Online';
+
+  @override
+  String get remoteOffline => 'Offline';
+
+  @override
+  String remoteLastSeen(String time) {
+    return 'Last seen $time';
+  }
+
+  @override
+  String get remoteBackToSessions => 'All sessions';
+
+  @override
+  String get remoteProgress => 'Progress';
+
+  @override
+  String get remoteAnswer => 'Answer';
+
+  @override
+  String get remoteApprovals => 'Approval requests';
+
+  @override
+  String get remoteApprovalDescription =>
+      'Choose whether the CLI may continue with this action.';
+
+  @override
+  String get remoteApprove => 'Approve';
+
+  @override
+  String get remoteDeny => 'Deny';
+
+  @override
+  String get remoteNoApprovals => 'No pending approvals';
+
+  @override
+  String get remotePromptHint => 'Send a prompt to this CLI session';
+
+  @override
+  String get remoteSendPrompt => 'Send prompt';
+
+  @override
+  String get remoteAttachImage => 'Attach image';
+
+  @override
+  String remoteRemoveAttachment(String name) {
+    return 'Remove $name';
+  }
+
+  @override
+  String get remoteCancelTurn => 'Cancel turn';
+
+  @override
+  String get remoteCancelPending =>
+      'Cancellation requested; waiting for CLI status.';
+
+  @override
+  String get remoteCancelled => 'Turn cancelled.';
+
+  @override
+  String get remotePromptSent => 'Prompt sent to the CLI session.';
+
+  @override
+  String get remotePromptQueued => 'Prompt queued. The CLI session is offline.';
+
+  @override
+  String get remoteCommandExpired =>
+      'The command expired before the CLI received it.';
+
+  @override
+  String get remoteReconnecting => 'Reconnecting to the event stream…';
+
+  @override
+  String get remoteSessionExpired => 'This session is no longer available.';
+
+  @override
+  String get remoteRequestFailed =>
+      'The request failed. Check your connection and try again.';
+
+  @override
+  String get remotePreparingImage => 'Uploading selected image…';
+
+  @override
+  String get remoteNoEvents => 'Progress and answers will appear here.';
+
+  @override
+  String remoteArtifact(String name) {
+    return 'Session file: $name';
+  }
+
+  @override
   String get heroDemoLabel => 'Recorded example: real model data, no live call';
 
   @override

@@ -13,6 +13,10 @@ import 'stream_client.dart';
 
 /// Authenticated gateway adapter for cortex_api #132.
 class RemoteCliApi implements RemoteCliGateway {
+  static const maxSseLineCharacters = 64 * 1024;
+  static const maxSseFrameBytes = 256 * 1024;
+  static const requestTimeout = Duration(seconds: 30);
+
   RemoteCliApi({
     String? baseUrl,
     http.Client? client,
@@ -61,7 +65,9 @@ class RemoteCliApi implements RemoteCliGateway {
     String path, [
     Map<String, String>? query,
   ]) async => _decode(
-    await _client.get(_uri(path, query), headers: _headers(json: false)),
+    await _client
+        .get(_uri(path, query), headers: _headers(json: false))
+        .timeout(requestTimeout),
   );
 
   Future<Map<String, dynamic>> _post(
@@ -69,11 +75,9 @@ class RemoteCliApi implements RemoteCliGateway {
     Map<String, Object?> body, {
     Map<String, String>? query,
   }) async {
-    final response = await _client.post(
-      _uri(path, query),
-      headers: _headers(),
-      body: jsonEncode(body),
-    );
+    final response = await _client
+        .post(_uri(path, query), headers: _headers(), body: jsonEncode(body))
+        .timeout(requestTimeout);
     return _decode(response);
   }
 
@@ -96,40 +100,92 @@ class RemoteCliApi implements RemoteCliGateway {
       _uri('${_sessionPath(sessionId)}/events', {'cursor': '$after'}),
     )..headers.addAll(_headers(json: false));
     request.headers['Accept'] = 'text/event-stream';
-    final response = await _stream.send(request);
+    final response = await _stream.send(request).timeout(requestTimeout);
     if (response.statusCode >= 400) {
-      _decode(await http.Response.fromStream(response));
+      _decode(await http.Response.fromStream(response).timeout(requestTimeout));
     }
-    var buffer = '';
-    await for (final chunk in response.stream.transform(utf8.decoder)) {
-      buffer += chunk.replaceAll('\r\n', '\n');
-      int end;
-      while ((end = buffer.indexOf('\n\n')) >= 0) {
-        final block = buffer.substring(0, end);
-        buffer = buffer.substring(end + 2);
-        final event = _parseEvent(block);
-        if (event != null) yield event;
+    String? id;
+    final data = StringBuffer();
+    var hasData = false;
+    var frameBytes = 0;
+    await for (final line in _lines(
+      response.stream.timeout(requestTimeout).transform(utf8.decoder),
+    )) {
+      if (line.isEmpty) {
+        if (hasData || id != null) yield _parseEvent(id, data.toString());
+        id = null;
+        data.clear();
+        hasData = false;
+        frameBytes = 0;
+        continue;
+      }
+      if (line.startsWith(':')) continue;
+      final colon = line.indexOf(':');
+      final field = colon < 0 ? line : line.substring(0, colon);
+      var value = colon < 0 ? '' : line.substring(colon + 1);
+      if (value.startsWith(' ')) value = value.substring(1);
+      if (field == 'id') {
+        id = value;
+      } else if (field == 'data') {
+        frameBytes += utf8.encode(value).length + (hasData ? 1 : 0);
+        if (frameBytes > maxSseFrameBytes) {
+          throw const FormatException('Remote event exceeds the allowed size.');
+        }
+        if (hasData) data.write('\n');
+        data.write(value);
+        hasData = true;
       }
     }
   }
 
-  static RemoteCliEvent? _parseEvent(String block) {
-    String? cursor;
-    final data = StringBuffer();
-    for (final line in block.split('\n')) {
-      if (line.startsWith('id:')) cursor = line.substring(3).trim();
-      if (line.startsWith('data:')) {
-        if (data.isNotEmpty) data.write('\n');
-        data.write(line.substring(5).trimLeft());
+  static Stream<String> _lines(Stream<String> chunks) async* {
+    final line = StringBuffer();
+    var pendingCarriageReturn = false;
+    await for (final chunk in chunks) {
+      for (var index = 0; index < chunk.length; index++) {
+        final unit = chunk.codeUnitAt(index);
+        if (pendingCarriageReturn) {
+          yield line.toString();
+          line.clear();
+          pendingCarriageReturn = false;
+          if (unit == 0x0a) continue;
+        }
+        if (unit == 0x0d) {
+          pendingCarriageReturn = true;
+        } else if (unit == 0x0a) {
+          yield line.toString();
+          line.clear();
+        } else {
+          line.writeCharCode(unit);
+          if (line.length > maxSseLineCharacters) {
+            throw const FormatException(
+              'Remote event line exceeds the allowed size.',
+            );
+          }
+        }
       }
     }
-    if (cursor == null || data.isEmpty) return null;
-    final json = jsonDecode(data.toString()) as Map<String, dynamic>;
+    if (pendingCarriageReturn || line.isNotEmpty) yield line.toString();
+  }
+
+  static RemoteCliEvent _parseEvent(String? cursor, String data) {
+    if (cursor == null || cursor.isEmpty || data.isEmpty) {
+      throw const FormatException(
+        'Remote event is missing its cursor or data.',
+      );
+    }
+    final decoded = jsonDecode(data);
+    if (decoded is! Map<String, dynamic>) {
+      throw const FormatException('Remote event data must be an object.');
+    }
+    final json = decoded;
     final event = RemoteCliEvent.fromJson(json);
     final sseId = int.tryParse(cursor);
-    // The event's own id is the durable cursor; a malformed or mismatched SSE
-    // id must not silently advance the reconnect position.
-    if (sseId == null || sseId != event.id) return null;
+    if (sseId == null || sseId != event.id) {
+      throw const FormatException(
+        'Remote event cursor does not match its body.',
+      );
+    }
     return event;
   }
 
@@ -168,7 +224,9 @@ class RemoteCliApi implements RemoteCliGateway {
     required List<int> bytes,
     required String contentType,
   }) async {
-    final result = await _filesApi.upload(name, bytes, contentType);
+    final result = await _filesApi
+        .upload(name, bytes, contentType)
+        .timeout(requestTimeout);
     final id = result.fileId;
     if (id == null || id.isEmpty) {
       throw const RemoteCliFailure(422, 'The selected image was not saved.');

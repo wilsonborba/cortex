@@ -1983,6 +1983,119 @@ class AppLocalizationsPt extends AppLocalizations {
   }
 
   @override
+  String get remoteSessionsTitle => 'Sessões remotas';
+
+  @override
+  String get remoteSessionsDescription =>
+      'Controle sessões do CLI conectadas à sua conta Asodya.';
+
+  @override
+  String get remoteRefresh => 'Atualizar sessões';
+
+  @override
+  String get remoteNoSessionsTitle => 'Nenhuma sessão do CLI ainda';
+
+  @override
+  String get remoteNoSessionsBody =>
+      'Ative o controle remoto no Cortex CLI para ver uma sessão aqui.';
+
+  @override
+  String get remoteOpenSession => 'Abrir sessão';
+
+  @override
+  String get remoteOnline => 'Conectado';
+
+  @override
+  String get remoteOffline => 'Desconectado';
+
+  @override
+  String remoteLastSeen(String time) {
+    return 'Visto por último $time';
+  }
+
+  @override
+  String get remoteBackToSessions => 'Todas as sessões';
+
+  @override
+  String get remoteProgress => 'Progresso';
+
+  @override
+  String get remoteAnswer => 'Resposta';
+
+  @override
+  String get remoteApprovals => 'Solicitações de aprovação';
+
+  @override
+  String get remoteApprovalDescription =>
+      'Escolha se o CLI pode continuar com esta ação.';
+
+  @override
+  String get remoteApprove => 'Aprovar';
+
+  @override
+  String get remoteDeny => 'Negar';
+
+  @override
+  String get remoteNoApprovals => 'Nenhuma aprovação pendente';
+
+  @override
+  String get remotePromptHint =>
+      'Envie uma solicitação para esta sessão do CLI';
+
+  @override
+  String get remoteSendPrompt => 'Enviar solicitação';
+
+  @override
+  String get remoteAttachImage => 'Anexar imagem';
+
+  @override
+  String remoteRemoveAttachment(String name) {
+    return 'Remover $name';
+  }
+
+  @override
+  String get remoteCancelTurn => 'Cancelar execução';
+
+  @override
+  String get remoteCancelPending =>
+      'Cancelamento solicitado; aguardando o status do CLI.';
+
+  @override
+  String get remoteCancelled => 'Execução cancelada.';
+
+  @override
+  String get remotePromptSent => 'Solicitação enviada para a sessão do CLI.';
+
+  @override
+  String get remotePromptQueued =>
+      'Solicitação na fila. A sessão do CLI está desconectada.';
+
+  @override
+  String get remoteCommandExpired =>
+      'O comando expirou antes de ser recebido pelo CLI.';
+
+  @override
+  String get remoteReconnecting => 'Reconectando ao fluxo de eventos…';
+
+  @override
+  String get remoteSessionExpired => 'Esta sessão não está mais disponível.';
+
+  @override
+  String get remoteRequestFailed =>
+      'A solicitação falhou. Verifique a conexão e tente novamente.';
+
+  @override
+  String get remotePreparingImage => 'Enviando imagem selecionada…';
+
+  @override
+  String get remoteNoEvents => 'O progresso e as respostas aparecerão aqui.';
+
+  @override
+  String remoteArtifact(String name) {
+    return 'Arquivo da sessão: $name';
+  }
+
+  @override
   String get heroDemoLabel =>
       'Exemplo gravado: dados reais do modelo, sem chamada ao vivo';
 

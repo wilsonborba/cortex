@@ -57,7 +57,8 @@ class RemoteCliFailure implements Exception {
   final int? number;
   final String message;
 
-  bool get expired => number == 1051 || status == 404;
+  bool get expired =>
+      number == 1051 || status == 404 || status == 401 || status == 403;
 
   @override
   String toString() => message.isEmpty ? 'Remote CLI request failed' : message;

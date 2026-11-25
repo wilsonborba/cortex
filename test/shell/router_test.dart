@@ -4,6 +4,8 @@ import 'package:cortex/dal/remote/auth_api_adapter.dart';
 import 'package:cortex/domain/services/auth_service.dart';
 import 'package:cortex/domain/services/session_controller.dart';
 import 'package:cortex/domain/services/session_service.dart';
+import 'package:cortex/domain/models/remote_cli.dart';
+import 'package:cortex/domain/services/remote_cli_gateway.dart';
 import 'package:cortex/l10n/generated/app_localizations.dart';
 import 'package:cortex/presentation/frontend/router.dart';
 import 'package:cortex/presentation/frontend/shell/details_panel.dart';
@@ -13,6 +15,34 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
 bool signedIn = false;
+
+class _RemoteGateway implements RemoteCliGateway {
+  @override
+  Future<List<RemoteCliSession>> sessions() async => const [];
+  @override
+  Stream<RemoteCliEvent> events(String sessionId, {required int after}) =>
+      const Stream.empty();
+  @override
+  Future<void> sendPrompt(
+    String sessionId,
+    String prompt, {
+    List<String> fileIds = const [],
+  }) async {}
+  @override
+  Future<void> answerApproval(
+    String sessionId,
+    String approvalId, {
+    required bool approved,
+  }) async {}
+  @override
+  Future<void> cancel(String sessionId, {String? turnId}) async {}
+  @override
+  Future<String> uploadImage({
+    required String name,
+    required List<int> bytes,
+    required String contentType,
+  }) async => 'unused';
+}
 
 class FakeAuth extends AuthService {
   FakeAuth() : super(AuthApiAdapter());
@@ -41,6 +71,7 @@ Future<(GoRouter, FakeAuth, DetailsController)> pump(
   String location, {
   Size size = const Size(1200, 800),
   bool settle = true,
+  RemoteCliGateway? remoteGateway,
 }) async {
   tester.view.physicalSize = size;
   tester.view.devicePixelRatio = 1;
@@ -57,6 +88,7 @@ Future<(GoRouter, FakeAuth, DetailsController)> pump(
     details: details,
     initialLocation: location,
     emailLoader: () async => null,
+    remoteGateway: remoteGateway,
     screen: (_, title) => Center(child: Text('screen: $title')),
   );
   await tester.pumpWidget(
@@ -96,6 +128,7 @@ void main() {
       '/v1/usage/timing': 'Timing',
       '/v1/usage/stats': 'Statistics',
       '/v1/usage/events': 'Events',
+      '/v1/remote': 'Remote sessions',
     };
     for (final MapEntry(key: location, value: title) in cases.entries) {
       final (router, _, _) = await pump(tester, location);
@@ -178,6 +211,45 @@ void main() {
     expect(path(router), isNot(contains('auth_exchange_token')));
     expect(find.text('screen: Memory'), findsOneWidget);
   });
+
+  testWidgets(
+    'remote route is account protected and preserves its return path',
+    (tester) async {
+      final gateway = _RemoteGateway();
+      expect(isProtected('/v1/remote'), isTrue);
+      expect(isProtected('/v1/remote/session-1'), isTrue);
+      expect(isProtected('/v1/remotely'), isFalse);
+
+      var (router, _, _) = await pump(
+        tester,
+        '/v1/remote',
+        remoteGateway: gateway,
+      );
+      expect(path(router), '/v1/remote');
+      expect(find.text('screen: Remote sessions'), findsOneWidget);
+      expect(find.byKey(const Key('nav-/v1/remote')), findsOneWidget);
+
+      final (shellRouter, _, _) = await pump(
+        tester,
+        '/v1/chats',
+        remoteGateway: gateway,
+      );
+      await tester.tap(find.byKey(const Key('nav-/v1/remote')));
+      await tester.pumpAndSettle();
+      expect(path(shellRouter), '/v1/remote');
+      expect(find.text('screen: Remote sessions'), findsOneWidget);
+
+      signedIn = false;
+      final (signedOutRouter, auth, _) = await pump(
+        tester,
+        '/v1/remote',
+        settle: false,
+        remoteGateway: gateway,
+      );
+      expect(auth.returns, ['/v1/remote']);
+      expect(path(signedOutRouter), '/v1/login?from=%2Fv1%2Fremote');
+    },
+  );
 
   testWidgets(
     'expanded: 260 px sidebar, one primary, log out at the bottom, 320 px details',

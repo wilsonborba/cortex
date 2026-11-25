@@ -2,10 +2,22 @@ import 'dart:convert';
 
 import 'package:cortex/dal/remote/cortex_api.dart';
 import 'package:cortex/dal/remote/remote_cli_api.dart';
-import 'package:cortex/domain/models/remote_cli.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
+
+class _ChunkedClient extends http.BaseClient {
+  _ChunkedClient(this.chunks);
+  final List<List<int>> chunks;
+
+  @override
+  Future<http.StreamedResponse> send(http.BaseRequest request) async =>
+      http.StreamedResponse(
+        Stream<List<int>>.fromIterable(chunks),
+        200,
+        headers: const {'content-type': 'text/event-stream'},
+      );
+}
 
 void main() {
   test('lists only the API-provided session fields', () async {
@@ -62,34 +74,85 @@ void main() {
     await api.sendPrompt('s1', 'Review this image', fileIds: ['fsm-file-7']);
   });
 
-  test('parses durable event ids and ignores malformed cursor blocks', () async {
-    final sse = [
-      'id: 5\ndata: {"id":5,"kind":"progress","payload":{"text":"reading"},"created_at_ms":500}\n\n',
-      'id: 4\ndata: {"id":5,"kind":"progress","payload":{"text":"mismatch"},"created_at_ms":500}\n\n',
-    ].join();
+  test('parses UTF-8 events when CRLF separators cross byte chunks', () async {
+    final body = utf8.encode(
+      'id: 5\r\ndata: {"id":5,"kind":"progress","payload":{"text":"กำลังอ่าน"},"created_at_ms":500}\r\n\r\n',
+    );
     final client = MockClient((request) async {
       expect(request.headers['accept'], 'text/event-stream');
       expect(request.url.queryParameters['cursor'], '4');
-      return http.Response(
-        sse,
-        200,
-        headers: {'content-type': 'text/event-stream'},
-      );
+      return http.Response('', 200);
     });
     final api = RemoteCliApi(
       baseUrl: 'https://api.test/apps/cortex/v1',
       client: client,
-      streamClient: client,
+      streamClient: _ChunkedClient([
+        for (final byte in body) [byte],
+      ]),
     );
 
     final events = await api.events('s1', after: 4).toList();
 
     expect(events, hasLength(1));
-    expect(events.single, isA<RemoteCliEvent>());
     expect(events.single.id, 5);
     expect(events.single.kind, 'progress');
-    expect(events.single.payload['text'], 'reading');
+    expect(events.single.payload['text'], 'กำลังอ่าน');
   });
+
+  test('rejects mismatched durable event ids instead of skipping them', () async {
+    final client = MockClient((_) async => http.Response('', 200));
+    final api = RemoteCliApi(
+      baseUrl: 'https://api.test/apps/cortex/v1',
+      client: client,
+      streamClient: _ChunkedClient([
+        utf8.encode(
+          'id: 4\ndata: {"id":5,"kind":"progress","payload":{},"created_at_ms":500}\n\n',
+        ),
+      ]),
+    );
+
+    await expectLater(
+      api.events('s1', after: 3).toList(),
+      throwsA(isA<FormatException>()),
+    );
+  });
+
+  test(
+    'rejects an oversized SSE line without waiting for a delimiter',
+    () async {
+      final client = MockClient((_) async => http.Response('', 200));
+      final api = RemoteCliApi(
+        baseUrl: 'https://api.test/apps/cortex/v1',
+        client: client,
+        streamClient: _ChunkedClient([
+          utf8.encode('data: ${'x' * (RemoteCliApi.maxSseLineCharacters + 1)}'),
+        ]),
+      );
+
+      await expectLater(
+        api.events('s1', after: 0).toList(),
+        throwsA(isA<FormatException>()),
+      );
+    },
+  );
+
+  test(
+    'bounds a frame made from several individually valid data lines',
+    () async {
+      final dataLine = 'x' * (RemoteCliApi.maxSseLineCharacters - 5);
+      final frame = 'id: 1\n${'data: $dataLine\n' * 5}\n';
+      final api = RemoteCliApi(
+        baseUrl: 'https://api.test/apps/cortex/v1',
+        client: MockClient((_) async => http.Response('', 200)),
+        streamClient: _ChunkedClient([utf8.encode(frame)]),
+      );
+
+      await expectLater(
+        api.events('s1', after: 0).toList(),
+        throwsA(isA<FormatException>()),
+      );
+    },
+  );
 
   test(
     'uses existing files route through CortexApi and rejects missing file id',

@@ -22,6 +22,7 @@ class RemoteCliAttachment {
 
 /// Owns remote-session state, stream reconnection and command deduplication.
 class RemoteCliController extends ChangeNotifier {
+  static const maxStoredEvents = 500;
   RemoteCliController({
     required this.gateway,
     this.reconnectDelay = const Duration(seconds: 2),
@@ -44,7 +45,15 @@ class RemoteCliController extends ChangeNotifier {
   RemoteCliCommandStatus commandStatus = RemoteCliCommandStatus.none;
   int lastEventId = 0;
   int _generation = 0;
+  int _sessionListGeneration = 0;
   bool _disposed = false;
+  StreamIterator<RemoteCliEvent>? _eventIterator;
+  final _answer = StringBuffer();
+  String get answerText => _answer.toString();
+  int get operationEpoch => _generation;
+
+  bool isCurrentSession(String sessionId, int epoch) =>
+      !_disposed && _generation == epoch && activeSession?.id == sessionId;
 
   List<RemoteCliEvent> get approvalRequests => events
       .where((event) => event.kind == 'approval_request')
@@ -64,30 +73,48 @@ class RemoteCliController extends ChangeNotifier {
   }
 
   Future<void> refreshSessions() async {
+    final generation = _sessionListGeneration;
     loadingSessions = true;
     failure = null;
     _notify();
     try {
       final updated = await gateway.sessions();
+      if (_disposed || generation != _sessionListGeneration) return;
       sessions
         ..clear()
         ..addAll(updated);
       final current = activeSession;
       if (current != null) {
         activeSession = sessions.where((s) => s.id == current.id).firstOrNull;
+        if (activeSession == null) unawaited(closeSession());
       }
     } catch (error) {
+      if (_disposed || generation != _sessionListGeneration) return;
       failure = error;
+      if (error is RemoteCliFailure && error.expired) {
+        await closeSession(clearSessions: true);
+        if (_disposed) return;
+        failure = error;
+        streamExpired = true;
+      }
     } finally {
-      loadingSessions = false;
-      _notify();
+      if (!_disposed && generation == _sessionListGeneration) {
+        loadingSessions = false;
+        _notify();
+      }
     }
   }
 
   Future<void> openSession(RemoteCliSession session) async {
     _generation++;
+    final previous = _eventIterator;
+    _eventIterator = null;
+    if (previous != null) {
+      unawaited(previous.cancel().catchError((Object _) {}));
+    }
     activeSession = session;
     events.clear();
+    _answer.clear();
     attachments.clear();
     answeringApprovals.clear();
     answeredApprovals.clear();
@@ -103,15 +130,23 @@ class RemoteCliController extends ChangeNotifier {
 
   Future<void> _listen(String sessionId, int generation) async {
     while (!_disposed && generation == _generation && !streamExpired) {
+      final iterator = StreamIterator<RemoteCliEvent>(
+        gateway.events(sessionId, after: lastEventId),
+      );
+      _eventIterator = iterator;
       try {
-        await for (final event in gateway.events(
-          sessionId,
-          after: lastEventId,
-        )) {
+        while (await iterator.moveNext()) {
           if (_disposed || generation != _generation) return;
+          final event = iterator.current;
           if (event.id <= lastEventId) continue;
           lastEventId = event.id;
+          if (event.kind == 'answer_part') {
+            _answer.write(event.payload['text'] ?? '');
+          }
           events.add(event);
+          if (events.length > maxStoredEvents) {
+            events.removeRange(0, events.length - maxStoredEvents);
+          }
           _observe(event);
           reconnecting = false;
           failure = null;
@@ -132,6 +167,9 @@ class RemoteCliController extends ChangeNotifier {
         reconnecting = true;
         failure = error;
         _notify();
+      } finally {
+        if (identical(_eventIterator, iterator)) _eventIterator = null;
+        await iterator.cancel();
       }
       await Future<void>.delayed(reconnectDelay);
     }
@@ -161,6 +199,7 @@ class RemoteCliController extends ChangeNotifier {
 
   Future<void> sendPrompt(String prompt) async {
     final session = activeSession;
+    final generation = _generation;
     final text = prompt.trim();
     if (session == null || text.isEmpty) return;
     failure = null;
@@ -172,11 +211,13 @@ class RemoteCliController extends ChangeNotifier {
         text,
         fileIds: [for (final file in attachments) file.fileId],
       );
+      if (_disposed || generation != _generation) return;
       attachments.clear();
       commandStatus = session.online
           ? RemoteCliCommandStatus.promptSent
           : RemoteCliCommandStatus.promptQueuedOffline;
     } catch (error) {
+      if (_disposed || generation != _generation) return;
       failure = error;
     }
     _notify();
@@ -189,6 +230,7 @@ class RemoteCliController extends ChangeNotifier {
   }) async {
     final session = activeSession;
     if (session == null) return;
+    final generation = _generation;
     failure = null;
     _notify();
     try {
@@ -197,8 +239,10 @@ class RemoteCliController extends ChangeNotifier {
         bytes: bytes,
         contentType: contentType,
       );
+      if (_disposed || generation != _generation) return;
       attachments.add(RemoteCliAttachment(name: name, fileId: id));
     } catch (error) {
+      if (_disposed || generation != _generation) return;
       failure = error;
     }
     _notify();
@@ -219,12 +263,15 @@ class RemoteCliController extends ChangeNotifier {
         !answeringApprovals.add(approvalId)) {
       return;
     }
+    final generation = _generation;
     failure = null;
     _notify();
     try {
       await gateway.answerApproval(session.id, approvalId, approved: approved);
+      if (_disposed || generation != _generation) return;
       answeredApprovals.add(approvalId);
     } catch (error) {
+      if (_disposed || generation != _generation) return;
       if (error is RemoteCliFailure && error.status == 409) {
         answeredApprovals.add(approvalId);
       } else {
@@ -239,37 +286,70 @@ class RemoteCliController extends ChangeNotifier {
   Future<void> cancel({String? turnId}) async {
     final session = activeSession;
     if (session == null) return;
+    final generation = _generation;
     failure = null;
     _notify();
     try {
       await gateway.cancel(session.id, turnId: turnId);
+      if (_disposed || generation != _generation) return;
       cancelQueued = true;
       commandStatus = RemoteCliCommandStatus.cancelPending;
     } catch (error) {
+      if (_disposed || generation != _generation) return;
       failure = error;
     }
     _notify();
   }
 
-  Future<void> closeSession() async {
+  Future<void> closeSession({bool clearSessions = false}) async {
     _generation++;
+    if (clearSessions) _sessionListGeneration++;
+    final previous = _eventIterator;
+    _eventIterator = null;
     activeSession = null;
+    if (clearSessions) sessions.clear();
     events.clear();
+    _answer.clear();
     attachments.clear();
     answeringApprovals.clear();
     answeredApprovals.clear();
     lastEventId = 0;
     reconnecting = false;
     streamExpired = false;
+    cancelQueued = false;
     failure = null;
     commandStatus = RemoteCliCommandStatus.none;
+    loadingSessions = false;
     _notify();
+    if (previous != null) {
+      unawaited(previous.cancel().catchError((Object _) {}));
+    }
   }
 
   @override
   void dispose() {
     _disposed = true;
     _generation++;
+    _sessionListGeneration++;
+    final iterator = _eventIterator;
+    _eventIterator = null;
+    if (iterator != null) {
+      unawaited(iterator.cancel().catchError((Object _) {}));
+    }
+    sessions.clear();
+    activeSession = null;
+    events.clear();
+    attachments.clear();
+    answeringApprovals.clear();
+    answeredApprovals.clear();
+    _answer.clear();
+    lastEventId = 0;
+    loadingSessions = false;
+    reconnecting = false;
+    streamExpired = false;
+    cancelQueued = false;
+    failure = null;
+    commandStatus = RemoteCliCommandStatus.none;
     super.dispose();
   }
 }
