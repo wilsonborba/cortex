@@ -457,7 +457,7 @@ abstract class AppLocalizations {
   /// No description provided for @cliReleaseStatus.
   ///
   /// In en, this message translates to:
-  /// **'Owner-published release downloads are not available yet. Check Releases for future verified installers.'**
+  /// **'Installers are not available yet. Build from source or check Releases for updates.'**
   String get cliReleaseStatus;
 
   /// No description provided for @cliCopy.

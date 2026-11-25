@@ -59,7 +59,7 @@
   "cliLinuxPrerequisite": "Linux also needs libdbus-1-dev and pkg-config. macOS uses Keychain.",
   "cliSignIn": "Sign in to Asodya in your browser with cortex login.",
   "cliProviderNote": "Asodya sign-in does not provide external AI provider access. Provider credentials are configured separately.",
-  "cliReleaseStatus": "Owner-published release downloads are not available yet. Check Releases for future verified installers.",
+  "cliReleaseStatus": "Installers are not available yet. Build from source or check Releases for updates.",
   "cliCopy": "Copy commands",
   "cliReadme": "CLI README",
   "cliReleases": "Releases",

@@ -198,7 +198,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get cliReleaseStatus =>
-      'Ainda não há downloads publicados pelo responsável do projeto. Consulte Releases para instaladores verificados no futuro.';
+      'Os instaladores ainda não estão disponíveis. Compile a partir do código-fonte ou consulte Releases para atualizações.';
 
   @override
   String get cliCopy => 'Copiar comandos';

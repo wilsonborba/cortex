@@ -197,7 +197,7 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get cliReleaseStatus =>
-      'ยังไม่มีไฟล์ดาวน์โหลดรุ่นเผยแพร่โดยเจ้าของโครงการ ดูที่ Releases เพื่อรับตัวติดตั้งที่ตรวจสอบแล้วเมื่อพร้อม';
+      'ขณะนี้ยังไม่มีตัวติดตั้ง คุณสามารถสร้างจากซอร์สโค้ดหรือดูการอัปเดตที่ Releases';
 
   @override
   String get cliCopy => 'คัดลอกคำสั่ง';

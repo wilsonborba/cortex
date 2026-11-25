@@ -59,7 +59,7 @@
   "cliLinuxPrerequisite": "Linux ต้องมี libdbus-1-dev และ pkg-config ด้วย ส่วน macOS ใช้ Keychain",
   "cliSignIn": "ลงชื่อเข้าใช้ Asodya ผ่านเบราว์เซอร์ด้วยคำสั่ง cortex login",
   "cliProviderNote": "การลงชื่อเข้าใช้ Asodya ไม่ได้ให้สิทธิ์เข้าถึงผู้ให้บริการ AI ภายนอก ต้องตั้งค่าข้อมูลรับรองของแต่ละผู้ให้บริการแยกกัน",
-  "cliReleaseStatus": "ยังไม่มีไฟล์ดาวน์โหลดรุ่นเผยแพร่โดยเจ้าของโครงการ ดูที่ Releases เพื่อรับตัวติดตั้งที่ตรวจสอบแล้วเมื่อพร้อม",
+  "cliReleaseStatus": "ขณะนี้ยังไม่มีตัวติดตั้ง คุณสามารถสร้างจากซอร์สโค้ดหรือดูการอัปเดตที่ Releases",
   "cliCopy": "คัดลอกคำสั่ง",
   "cliReadme": "README ของ CLI",
   "cliReleases": "Releases",

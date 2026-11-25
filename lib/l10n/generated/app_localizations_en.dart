@@ -198,7 +198,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get cliReleaseStatus =>
-      'Owner-published release downloads are not available yet. Check Releases for future verified installers.';
+      'Installers are not available yet. Build from source or check Releases for updates.';
 
   @override
   String get cliCopy => 'Copy commands';
