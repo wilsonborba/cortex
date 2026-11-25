@@ -629,7 +629,7 @@
   "remoteAttachImage": "Anexar imagem",
   "remoteRemoveAttachment": "Remover {name}",
   "@remoteRemoveAttachment": { "placeholders": { "name": { "type": "String" } } },
-  "remoteCancelTurn": "Cancelar execução",
+  "remoteCancelTurn": "Cancelar",
   "remoteCancelPending": "Cancelamento solicitado; aguardando o status do CLI.",
   "remoteCancelled": "Execução cancelada.",
   "remotePromptSent": "Solicitação enviada para a sessão do CLI.",

@@ -2061,7 +2061,7 @@ class AppLocalizationsPt extends AppLocalizations {
   }
 
   @override
-  String get remoteCancelTurn => 'Cancelar execução';
+  String get remoteCancelTurn => 'Cancelar';
 
   @override
   String get remoteCancelPending =>

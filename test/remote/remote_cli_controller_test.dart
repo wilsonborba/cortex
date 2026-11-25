@@ -8,6 +8,7 @@ import 'package:flutter_test/flutter_test.dart';
 class _Gateway implements RemoteCliGateway {
   bool streamCancelled = false;
   Completer<void>? cancelGate;
+  Completer<void>? promptGate;
   Future<List<RemoteCliSession>>? pendingSessions;
   late final stream = StreamController<RemoteCliEvent>.broadcast(
     onCancel: () async {
@@ -40,6 +41,7 @@ class _Gateway implements RemoteCliGateway {
     List<String> fileIds = const [],
   }) async {
     prompts.add((sessionId: sessionId, prompt: prompt, fileIds: [...fileIds]));
+    await promptGate?.future;
   }
 
   @override
@@ -124,6 +126,58 @@ void main() {
     },
   );
 
+  test(
+    'reconnect replay keeps separate turns and late events stay terminal',
+    () async {
+      final gateway = _Gateway();
+      gateway.scriptedStreams.add(
+        Stream<RemoteCliEvent>.multi((sink) {
+          sink.add(
+            _event(1, 'answer_part', {'turn_id': 'turn-1', 'text': 'first'}),
+          );
+          sink.addError(const FormatException('reconnect'));
+          sink.close();
+        }),
+      );
+      gateway.scriptedStreams.add(
+        Stream.fromIterable([
+          _event(1, 'answer_part', {'turn_id': 'turn-1', 'text': 'duplicate'}),
+          _event(2, 'answer_part', {'turn_id': 'turn-1', 'text': ' answer'}),
+          _event(3, 'turn_end', {'turn_id': 'turn-1', 'status': 'done'}),
+          _event(4, 'approval_answer', {
+            'turn_id': 'turn-1',
+            'approval_id': 'a',
+          }),
+          _event(5, 'artifact', {'turn_id': 'turn-1', 'name': 'old.txt'}),
+          _event(6, 'progress', {'turn_id': 'turn-2', 'message': 'next'}),
+          _event(7, 'answer_part', {'turn_id': 'turn-2', 'text': 'second'}),
+        ]),
+      );
+      final controller = RemoteCliController(
+        gateway: gateway,
+        reconnectDelay: const Duration(milliseconds: 1),
+      );
+      await controller.openSession(_session());
+      await Future<void>.delayed(const Duration(milliseconds: 20));
+
+      expect(controller.answerText, 'first answer\n\nsecond');
+      expect(controller.turnRunning, isTrue);
+      gateway.stream.add(
+        _event(8, 'turn_end', {'turn_id': 'turn-2', 'status': 'done'}),
+      );
+      await Future<void>.delayed(Duration.zero);
+      gateway.stream.add(
+        _event(9, 'approval_answer', {'turn_id': 'turn-2', 'approval_id': 'b'}),
+      );
+      await Future<void>.delayed(Duration.zero);
+      expect(controller.turnRunning, isFalse);
+
+      await controller.closeSession();
+      controller.dispose();
+      await gateway.dispose();
+    },
+  );
+
   test('closing the selected session cancels its event stream', () async {
     final gateway = _Gateway();
     final controller = RemoteCliController(gateway: gateway);
@@ -196,6 +250,57 @@ void main() {
       await gateway.dispose();
     },
   );
+
+  test(
+    'prompt is single-flight and removes only the submitted attachments',
+    () async {
+      final gateway = _Gateway()..promptGate = Completer<void>();
+      final controller = RemoteCliController(gateway: gateway);
+      await controller.openSession(_session());
+      await controller.attachImage(
+        name: 'before.jpg',
+        bytes: [1],
+        contentType: 'image/jpeg',
+      );
+      final first = controller.sendPrompt('one');
+      expect(controller.sendingPrompt, isTrue);
+      expect(await controller.sendPrompt('duplicate'), isFalse);
+
+      await controller.attachImage(
+        name: 'during.jpg',
+        bytes: [2],
+        contentType: 'image/jpeg',
+      );
+      gateway.promptGate!.complete();
+      expect(await first, isTrue);
+      expect(gateway.prompts, hasLength(1));
+      expect(gateway.prompts.single.fileIds, ['file-1']);
+      expect(controller.attachments.map((file) => file.name), ['during.jpg']);
+      expect(controller.sendingPrompt, isFalse);
+
+      await controller.closeSession();
+      controller.dispose();
+      await gateway.dispose();
+    },
+  );
+
+  test('late prompt completion cannot update a newly opened session', () async {
+    final gateway = _Gateway()..promptGate = Completer<void>();
+    final controller = RemoteCliController(gateway: gateway);
+    await controller.openSession(_session());
+    final first = controller.sendPrompt('old prompt');
+    await controller.openSession(_session(id: 'session-2'));
+    gateway.promptGate!.complete();
+
+    expect(await first, isFalse);
+    expect(controller.activeSession?.id, 'session-2');
+    expect(controller.commandStatus, RemoteCliCommandStatus.none);
+    expect(controller.sendingPrompt, isFalse);
+
+    await controller.closeSession();
+    controller.dispose();
+    await gateway.dispose();
+  });
 
   test(
     'reports expired command and waits for truthful cancel status',

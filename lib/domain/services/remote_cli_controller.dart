@@ -41,6 +41,8 @@ class RemoteCliController extends ChangeNotifier {
   bool reconnecting = false;
   bool streamExpired = false;
   bool cancelQueued = false;
+  bool sendingPrompt = false;
+  bool turnRunning = false;
   Object? failure;
   RemoteCliCommandStatus commandStatus = RemoteCliCommandStatus.none;
   int lastEventId = 0;
@@ -48,8 +50,15 @@ class RemoteCliController extends ChangeNotifier {
   int _sessionListGeneration = 0;
   bool _disposed = false;
   StreamIterator<RemoteCliEvent>? _eventIterator;
-  final _answer = StringBuffer();
-  String get answerText => _answer.toString();
+  final Map<String, StringBuffer> _turnAnswers = {};
+  final Set<String> _endedTurnIds = {};
+  int _legacyTurnSequence = 0;
+  String? _currentAnswerKey;
+  String? _activeTurnId;
+  String get answerText => _turnAnswers.values
+      .map((answer) => answer.toString())
+      .where((answer) => answer.isNotEmpty)
+      .join('\n\n');
   int get operationEpoch => _generation;
 
   bool isCurrentSession(String sessionId, int epoch) =>
@@ -114,7 +123,7 @@ class RemoteCliController extends ChangeNotifier {
     }
     activeSession = session;
     events.clear();
-    _answer.clear();
+    _clearTurns();
     attachments.clear();
     answeringApprovals.clear();
     answeredApprovals.clear();
@@ -122,6 +131,7 @@ class RemoteCliController extends ChangeNotifier {
     streamExpired = false;
     reconnecting = false;
     cancelQueued = false;
+    sendingPrompt = false;
     commandStatus = RemoteCliCommandStatus.none;
     failure = null;
     _notify();
@@ -140,9 +150,7 @@ class RemoteCliController extends ChangeNotifier {
           final event = iterator.current;
           if (event.id <= lastEventId) continue;
           lastEventId = event.id;
-          if (event.kind == 'answer_part') {
-            _answer.write(event.payload['text'] ?? '');
-          }
+          _recordAnswer(event);
           events.add(event);
           if (events.length > maxStoredEvents) {
             events.removeRange(0, events.length - maxStoredEvents);
@@ -176,12 +184,25 @@ class RemoteCliController extends ChangeNotifier {
   }
 
   void _observe(RemoteCliEvent event) {
+    final turnId = event.payload['turn_id'];
+    final suppliedTurnId = turnId is String && turnId.isNotEmpty
+        ? turnId
+        : null;
     switch (event.kind) {
       case 'command_expired':
         commandStatus = RemoteCliCommandStatus.commandExpired;
         break;
       case 'turn_end':
         final status = event.payload['status'];
+        if (suppliedTurnId != null) _endedTurnIds.add(suppliedTurnId);
+        if (suppliedTurnId == null || suppliedTurnId == _activeTurnId) {
+          turnRunning = false;
+          _activeTurnId = null;
+          if (suppliedTurnId == null && _currentAnswerKey != null) {
+            _endedTurnIds.add(_currentAnswerKey!);
+            _currentAnswerKey = null;
+          }
+        }
         cancelQueued = false;
         commandStatus = status == 'cancelled'
             ? RemoteCliCommandStatus.cancelled
@@ -194,14 +215,49 @@ class RemoteCliController extends ChangeNotifier {
       case 'cancel':
         cancelQueued = true;
         break;
+      case 'progress':
+      case 'answer_part':
+      case 'approval_request':
+        if (suppliedTurnId == null || !_endedTurnIds.contains(suppliedTurnId)) {
+          turnRunning = true;
+          if (suppliedTurnId != null) _activeTurnId = suppliedTurnId;
+        }
+        break;
     }
   }
 
-  Future<void> sendPrompt(String prompt) async {
+  void _recordAnswer(RemoteCliEvent event) {
+    if (event.kind != 'answer_part') return;
+    final rawTurnId = event.payload['turn_id'];
+    final turnId = rawTurnId is String && rawTurnId.isNotEmpty
+        ? rawTurnId
+        : null;
+    final key =
+        turnId ??
+        (_currentAnswerKey != null && !_endedTurnIds.contains(_currentAnswerKey)
+            ? _currentAnswerKey!
+            : 'legacy-${++_legacyTurnSequence}');
+    final answer = _turnAnswers.putIfAbsent(key, StringBuffer.new);
+    _currentAnswerKey = key;
+    answer.write(event.payload['text'] ?? '');
+  }
+
+  void _clearTurns() {
+    _turnAnswers.clear();
+    _endedTurnIds.clear();
+    _legacyTurnSequence = 0;
+    _currentAnswerKey = null;
+    _activeTurnId = null;
+    turnRunning = false;
+  }
+
+  Future<bool> sendPrompt(String prompt) async {
     final session = activeSession;
     final generation = _generation;
     final text = prompt.trim();
-    if (session == null || text.isEmpty) return;
+    if (session == null || text.isEmpty || sendingPrompt) return false;
+    final sentAttachments = List<RemoteCliAttachment>.of(attachments);
+    sendingPrompt = true;
     failure = null;
     commandStatus = RemoteCliCommandStatus.none;
     _notify();
@@ -209,18 +265,24 @@ class RemoteCliController extends ChangeNotifier {
       await gateway.sendPrompt(
         session.id,
         text,
-        fileIds: [for (final file in attachments) file.fileId],
+        fileIds: [for (final file in sentAttachments) file.fileId],
       );
-      if (_disposed || generation != _generation) return;
-      attachments.clear();
+      if (!isCurrentSession(session.id, generation)) return false;
+      attachments.removeWhere(sentAttachments.contains);
       commandStatus = session.online
           ? RemoteCliCommandStatus.promptSent
           : RemoteCliCommandStatus.promptQueuedOffline;
+      return true;
     } catch (error) {
-      if (_disposed || generation != _generation) return;
+      if (!isCurrentSession(session.id, generation)) return false;
       failure = error;
+      return false;
+    } finally {
+      if (isCurrentSession(session.id, generation)) {
+        sendingPrompt = false;
+        _notify();
+      }
     }
-    _notify();
   }
 
   Future<void> attachImage({
@@ -309,7 +371,7 @@ class RemoteCliController extends ChangeNotifier {
     activeSession = null;
     if (clearSessions) sessions.clear();
     events.clear();
-    _answer.clear();
+    _clearTurns();
     attachments.clear();
     answeringApprovals.clear();
     answeredApprovals.clear();
@@ -320,6 +382,7 @@ class RemoteCliController extends ChangeNotifier {
     failure = null;
     commandStatus = RemoteCliCommandStatus.none;
     loadingSessions = false;
+    sendingPrompt = false;
     _notify();
     if (previous != null) {
       unawaited(previous.cancel().catchError((Object _) {}));
@@ -342,7 +405,7 @@ class RemoteCliController extends ChangeNotifier {
     attachments.clear();
     answeringApprovals.clear();
     answeredApprovals.clear();
-    _answer.clear();
+    _clearTurns();
     lastEventId = 0;
     loadingSessions = false;
     reconnecting = false;

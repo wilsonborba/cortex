@@ -200,8 +200,7 @@ class _RemoteSessionsScreenState extends State<RemoteSessionsScreen> {
     final l = AppLocalizations.of(context);
     final p = Palette.from(context);
     final answer = remote.answerText;
-    final running =
-        remote.events.isNotEmpty && remote.events.last.kind != 'turn_end';
+    final running = remote.turnRunning;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -444,13 +443,19 @@ class _RemoteSessionsScreenState extends State<RemoteSessionsScreen> {
                   key: const Key('remote-send'),
                   label: l.remoteSendPrompt,
                   icon: AppIcons.send,
-                  onPressed: hasText && !remote.streamExpired
+                  onPressed:
+                      hasText && !remote.streamExpired && !remote.sendingPrompt
                       ? () async {
                           final text = prompt.text;
-                          await remote.sendPrompt(text);
-                          if (remote.failure == null) {
+                          final sessionId = session.id;
+                          final epoch = remote.operationEpoch;
+                          final sent = await remote.sendPrompt(text);
+                          if (sent &&
+                              mounted &&
+                              prompt.text == text &&
+                              remote.isCurrentSession(sessionId, epoch)) {
                             prompt.clear();
-                            if (mounted) setState(() {});
+                            setState(() {});
                           }
                         }
                       : null,

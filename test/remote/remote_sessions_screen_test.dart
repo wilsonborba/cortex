@@ -15,6 +15,7 @@ class _Gateway implements RemoteCliGateway {
   final uploads = <({String name, List<int> bytes, String contentType})>[];
   final prompts = <({String sessionId, String prompt, List<String> fileIds})>[];
   final approvals = <({String id, bool approved})>[];
+  Completer<void>? promptGate;
   int cancelCount = 0;
 
   @override
@@ -34,6 +35,7 @@ class _Gateway implements RemoteCliGateway {
     List<String> fileIds = const [],
   }) async {
     prompts.add((sessionId: sessionId, prompt: prompt, fileIds: [...fileIds]));
+    await promptGate?.future;
   }
 
   @override
@@ -252,4 +254,45 @@ void main() {
       expect(gateway.uploads, isEmpty);
     },
   );
+
+  testWidgets('old prompt completion preserves the new session draft', (
+    tester,
+  ) async {
+    final gateway = _Gateway()..promptGate = Completer<void>();
+    final controller = RemoteCliController(
+      gateway: gateway,
+      reconnectDelay: const Duration(hours: 1),
+    );
+    addTearDown(gateway.dispose);
+    addTearDown(controller.dispose);
+    await _pump(tester, controller, size: const Size(390, 844));
+    await tester.tap(find.byKey(const Key('remote-session-linux-session')));
+    await tester.pumpAndSettle();
+
+    await tester.enterText(find.byKey(const Key('remote-prompt')), 'old draft');
+    await tester.pump();
+    await tester.ensureVisible(find.byKey(const Key('remote-send')));
+    await tester.tap(find.byKey(const Key('remote-send')));
+    await tester.pump();
+    expect(gateway.prompts.single.prompt, 'old draft');
+    expect(controller.sendingPrompt, isTrue);
+
+    await controller.openSession(
+      _session('other-session', 'Other device', online: true),
+    );
+    await tester.pump();
+    await tester.enterText(find.byKey(const Key('remote-prompt')), 'new draft');
+    gateway.promptGate!.complete();
+    await tester.pump();
+
+    expect(controller.activeSession?.id, 'other-session');
+    expect(find.byKey(const Key('remote-prompt')), findsOneWidget);
+    expect(
+      tester
+          .widget<TextField>(find.byKey(const Key('remote-prompt')))
+          .controller!
+          .text,
+      'new draft',
+    );
+  });
 }
