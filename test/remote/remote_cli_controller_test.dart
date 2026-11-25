@@ -1,0 +1,180 @@
+import 'dart:async';
+
+import 'package:cortex/domain/models/remote_cli.dart';
+import 'package:cortex/domain/services/remote_cli_controller.dart';
+import 'package:cortex/domain/services/remote_cli_gateway.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+class _Gateway implements RemoteCliGateway {
+  final stream = StreamController<RemoteCliEvent>.broadcast();
+  final cursors = <int>[];
+  final scriptedStreams = <Stream<RemoteCliEvent>>[];
+  final prompts = <({String sessionId, String prompt, List<String> fileIds})>[];
+  final approvals = <({String approvalId, bool approved})>[];
+  final cancelled = <String>[];
+  int uploads = 0;
+
+  @override
+  Future<List<RemoteCliSession>> sessions() async => [_session()];
+
+  @override
+  Stream<RemoteCliEvent> events(String sessionId, {required int after}) {
+    cursors.add(after);
+    if (scriptedStreams.isNotEmpty) return scriptedStreams.removeAt(0);
+    return stream.stream;
+  }
+
+  @override
+  Future<void> sendPrompt(
+    String sessionId,
+    String prompt, {
+    List<String> fileIds = const [],
+  }) async {
+    prompts.add((sessionId: sessionId, prompt: prompt, fileIds: [...fileIds]));
+  }
+
+  @override
+  Future<void> answerApproval(
+    String sessionId,
+    String approvalId, {
+    required bool approved,
+  }) async {
+    approvals.add((approvalId: approvalId, approved: approved));
+  }
+
+  @override
+  Future<void> cancel(String sessionId, {String? turnId}) async {
+    cancelled.add(sessionId);
+  }
+
+  @override
+  Future<String> uploadImage({
+    required String name,
+    required List<int> bytes,
+    required String contentType,
+  }) async {
+    uploads++;
+    return 'file-$uploads';
+  }
+
+  Future<void> dispose() => stream.close();
+}
+
+RemoteCliSession _session({bool online = true}) => RemoteCliSession(
+  id: 'session-1',
+  deviceName: 'Laptop',
+  platform: 'linux',
+  lastSeen: DateTime.fromMillisecondsSinceEpoch(1000),
+  online: online,
+);
+
+RemoteCliEvent _event(
+  int id,
+  String kind, [
+  Map<String, dynamic> payload = const {},
+]) => RemoteCliEvent(
+  id: id,
+  kind: kind,
+  payload: payload,
+  createdAt: DateTime.fromMillisecondsSinceEpoch(id * 1000),
+);
+
+void main() {
+  test(
+    'reconnects from last cursor and suppresses replayed event ids',
+    () async {
+      final gateway = _Gateway();
+      gateway.scriptedStreams.add(Stream.fromIterable([_event(4, 'progress')]));
+      gateway.scriptedStreams.add(
+        Stream.fromIterable([
+          _event(4, 'progress', {'text': 'duplicate replay'}),
+          _event(5, 'progress', {'text': 'continued'}),
+        ]),
+      );
+      final controller = RemoteCliController(
+        gateway: gateway,
+        reconnectDelay: const Duration(milliseconds: 1),
+      );
+      await controller.openSession(_session());
+      await Future<void>.delayed(const Duration(milliseconds: 20));
+
+      expect(controller.events.map((event) => event.id), [4, 5]);
+      expect(gateway.cursors.take(2), [0, 4]);
+      expect(controller.lastEventId, 5);
+
+      await controller.closeSession();
+      controller.dispose();
+      await gateway.dispose();
+    },
+  );
+
+  test(
+    'uploads only selected image and sends its file id with prompt',
+    () async {
+      final gateway = _Gateway();
+      final controller = RemoteCliController(gateway: gateway);
+      await controller.openSession(_session());
+      await controller.attachImage(
+        name: 'phone.jpg',
+        bytes: [1, 2, 3],
+        contentType: 'image/jpeg',
+      );
+      await controller.sendPrompt('Describe this');
+
+      expect(gateway.uploads, 1);
+      expect(gateway.prompts.single.fileIds, ['file-1']);
+      expect(controller.attachments, isEmpty);
+
+      await controller.closeSession();
+      controller.dispose();
+      await gateway.dispose();
+    },
+  );
+
+  test(
+    'reports expired command and waits for truthful cancel status',
+    () async {
+      final gateway = _Gateway();
+      final controller = RemoteCliController(gateway: gateway);
+      await controller.openSession(_session());
+      await controller.cancel(turnId: 'turn-1');
+      expect(controller.cancelQueued, isTrue);
+      expect(controller.commandStatus, RemoteCliCommandStatus.cancelPending);
+
+      gateway.stream.add(_event(1, 'turn_end', {'status': 'cancelled'}));
+      await Future<void>.delayed(Duration.zero);
+      expect(controller.cancelQueued, isFalse);
+      expect(controller.commandStatus, RemoteCliCommandStatus.cancelled);
+
+      gateway.stream.add(_event(2, 'command_expired'));
+      await Future<void>.delayed(Duration.zero);
+      expect(controller.commandStatus, RemoteCliCommandStatus.commandExpired);
+
+      await controller.closeSession();
+      controller.dispose();
+      await gateway.dispose();
+    },
+  );
+
+  test('approval is sent once and disappears from pending requests', () async {
+    final gateway = _Gateway();
+    final controller = RemoteCliController(gateway: gateway);
+    await controller.openSession(_session());
+    gateway.stream.add(
+      _event(1, 'approval_request', {'approval_id': 'approval-1'}),
+    );
+    await Future<void>.delayed(Duration.zero);
+
+    expect(controller.approvalRequests, hasLength(1));
+    await controller.answerApproval('approval-1', approved: false);
+    await controller.answerApproval('approval-1', approved: true);
+
+    expect(gateway.approvals, hasLength(1));
+    expect(gateway.approvals.single.approved, isFalse);
+    expect(controller.approvalRequests, isEmpty);
+
+    await controller.closeSession();
+    controller.dispose();
+    await gateway.dispose();
+  });
+}
