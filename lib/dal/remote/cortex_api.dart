@@ -106,8 +106,11 @@ class CortexApi {
           CallEvent.fromJson((item as Map).cast()),
       ];
 
-  Future<InputBudget> budget() async =>
-      InputBudget.fromJson(((await _get('/models'))['data'] as Map).cast());
+  Future<ChatModelCatalog> modelCatalog() async => ChatModelCatalog.fromJson(
+    ((await _get('/models'))['data'] as Map).cast<String, dynamic>(),
+  );
+
+  Future<InputBudget> budget() async => (await modelCatalog()).budget;
 
   Future<Map<String, dynamic>> page(
     String session, {
