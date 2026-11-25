@@ -67,6 +67,7 @@ class ChatController extends ChangeNotifier {
   final options = InputOptions();
   InputBudget budget = InputBudget.fallback;
   ChatModelCatalog? modelCatalog;
+  bool modelCatalogFailed = false;
   String? selectedModelId;
   bool _modelSelectionRestored = false;
   Map<String, dynamic>? chat;
@@ -102,6 +103,7 @@ class ChatController extends ChangeNotifier {
     _notify();
     try {
       modelCatalog = await api.modelCatalog();
+      modelCatalogFailed = false;
       budget = modelCatalog!.budget;
       if (!_modelSelectionRestored && isNew) {
         selectedModelId = modelCatalog!.defaultModelId;
@@ -109,6 +111,7 @@ class ChatController extends ChangeNotifier {
       }
     } catch (_) {
       modelCatalog = null;
+      modelCatalogFailed = true;
     }
     if (isNew && !temporary) {
       try {

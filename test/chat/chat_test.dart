@@ -54,6 +54,7 @@ class Api {
   final requests = <(String, String, String)>[];
   List<String> Function(http.BaseRequest) streamFor = (_) => stream();
   bool keepOpen = false;
+  bool failModels = false;
   int maxTokens = 5120;
   Map<String, dynamic> modelFields = const {};
   List<Map<String, dynamic>> personas = [];
@@ -87,6 +88,12 @@ class Api {
           headers: {'content-type': 'application/json'},
         );
     if (path == '/models') {
+      if (failModels) {
+        return json({
+          'message': 'Fixture model catalog unavailable',
+          'data': {'error_number': 1001},
+        }, 503);
+      }
       return json({
         'message': 'Active model',
         'data': {
@@ -154,8 +161,9 @@ Future<(ChatController, Api)> pump(
   String? session,
   Api? api,
   List<PickedFile> files = const [],
+  Size viewport = const Size(1200, 900),
 }) async {
-  tester.view.physicalSize = const Size(1200, 900);
+  tester.view.physicalSize = viewport;
   tester.view.devicePixelRatio = 1;
   addTearDown(tester.view.reset);
   final fake = api ?? Api();
@@ -386,8 +394,172 @@ void main() {
     expect(chat.selectedModelId, 'removed-profile');
     expect(chat.selectedModelUnavailable, isTrue);
     expect(chat.overLimit('hello'), isTrue);
+    expect(find.byKey(const Key('model-unavailable')), findsOneWidget);
+    expect(find.text('Unavailable profile: removed-profile'), findsOneWidget);
     await chat.send('hello');
     expect(fake.requests.where((r) => r.$1 == 'POST'), isEmpty);
+
+    await tester.tap(find.byKey(const Key('model-picker')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('model-cortex-t0')));
+    await tester.pump();
+    expect(chat.selectedModelId, 'cortex-t0');
+    await send(tester, 'hello');
+    final request =
+        jsonDecode(fake.requests.firstWhere((r) => r.$1 == 'POST').$3)
+            as Map<String, dynamic>;
+    expect(request['model_id'], 'cortex-t0');
+    await stopReconnecting(tester, chat);
+  });
+
+  testWidgets('composer model picker follows the catalog and selected limit', (
+    tester,
+  ) async {
+    final api = Api()
+      ..modelFields = {
+        'default_model_id': 'bonsai25-uncensored',
+        'models': [
+          {
+            'id': 'cortex-t0',
+            'tier': 't0',
+            'name': 'Cortex T0',
+            'max_input_tokens': 5000,
+            'capabilities': ['text', 'vision'],
+          },
+          {
+            'id': 'bonsai25-uncensored',
+            'tier': 't1',
+            'name': 'Bonsai Uncensored',
+            'max_input_tokens': 4800,
+            'capabilities': ['text', 'vision'],
+          },
+          {
+            'id': 'bonsai25-official',
+            'tier': 't1',
+            'name': 'Bonsai Official',
+            'max_input_tokens': 4,
+            'capabilities': ['text', 'vision'],
+          },
+        ],
+      };
+    final (chat, _) = await pump(tester, api: api);
+    expect(find.byKey(const Key('model-picker')), findsOneWidget);
+    expect(find.text('Model · Bonsai Uncensored'), findsOneWidget);
+
+    await tester.tap(find.byKey(const Key('model-picker')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('model-bonsai25-official')));
+    await tester.pump();
+    expect(chat.selectedModelId, 'bonsai25-official');
+    expect(chat.selectedInputLimit, 4);
+
+    await tester.enterText(find.byKey(const Key('composer-text')), '1234567');
+    await tester.pump();
+    expect(find.textContaining('over the input limit'), findsOneWidget);
+    final sendButton = tester.widget<FilledButton>(
+      find.descendant(
+        of: find.byKey(const Key('send')),
+        matching: find.byType(FilledButton),
+      ),
+    );
+    expect(sendButton.onPressed, isNull);
+    await stopReconnecting(tester, chat);
+  });
+
+  testWidgets('T1 image attachments disclose the Cortex vision prepass', (
+    tester,
+  ) async {
+    final api = Api()
+      ..modelFields = {
+        'default_model_id': 'bonsai25-uncensored',
+        'models': [
+          {
+            'id': 'bonsai25-uncensored',
+            'tier': 't1',
+            'name': 'Bonsai Uncensored',
+            'max_input_tokens': 4800,
+            'capabilities': ['text', 'vision'],
+          },
+        ],
+      };
+    final (chat, _) = await pump(tester, api: api);
+    await chat.attach(AttachedFile('photo.jpg', 3, 'image/jpeg', [1, 2, 3]));
+    await tester.pump();
+    expect(find.byKey(const Key('model-vision-prepass')), findsOneWidget);
+    expect(
+      find.textContaining('Cortex vision summarizes images'),
+      findsOneWidget,
+    );
+    await stopReconnecting(tester, chat);
+  });
+
+  testWidgets('catalog failure blocks sending and retries in place', (
+    tester,
+  ) async {
+    final api = Api()..failModels = true;
+    final (chat, fake) = await pump(tester, api: api);
+    expect(chat.modelCatalogFailed, isTrue);
+    expect(find.byKey(const Key('model-catalog-error')), findsOneWidget);
+    expect(find.byKey(const Key('model-catalog-retry')), findsOneWidget);
+    await tester.enterText(find.byKey(const Key('composer-text')), 'hello');
+    await tester.pump();
+    final sendButton = tester.widget<FilledButton>(
+      find.descendant(
+        of: find.byKey(const Key('send')),
+        matching: find.byType(FilledButton),
+      ),
+    );
+    expect(sendButton.onPressed, isNull);
+    expect(fake.requests.where((r) => r.$1 == 'POST'), isEmpty);
+
+    api.failModels = false;
+    await tester.tap(find.byKey(const Key('model-catalog-retry')));
+    await tester.pumpAndSettle();
+    expect(chat.modelCatalogFailed, isFalse);
+    expect(chat.selectedModelId, 'cortex-t0');
+    expect(find.byKey(const Key('model-catalog-error')), findsNothing);
+    await stopReconnecting(tester, chat);
+  });
+
+  testWidgets('compact composer keeps the model picker inside Options', (
+    tester,
+  ) async {
+    final api = Api()
+      ..modelFields = {
+        'default_model_id': 'bonsai25-uncensored',
+        'models': [
+          {
+            'id': 'bonsai25-uncensored',
+            'tier': 't1',
+            'name': 'Bonsai Uncensored',
+            'max_input_tokens': 4800,
+            'capabilities': ['text'],
+          },
+          {
+            'id': 'bonsai25-official',
+            'tier': 't1',
+            'name': 'Bonsai Official',
+            'max_input_tokens': 4700,
+            'capabilities': ['text'],
+          },
+        ],
+      };
+    final (chat, _) = await pump(
+      tester,
+      api: api,
+      viewport: const Size(390, 844),
+    );
+    expect(find.byKey(const Key('composer-options')), findsOneWidget);
+    expect(find.byKey(const Key('model-picker')), findsNothing);
+    await tester.tap(find.byKey(const Key('composer-options')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('model-picker')), findsOneWidget);
+    await tester.tap(find.byKey(const Key('model-picker')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('model-bonsai25-official')), findsOneWidget);
+    await tester.tap(find.byKey(const Key('model-bonsai25-official')));
+    await tester.pump();
+    expect(chat.selectedModelId, 'bonsai25-official');
     await stopReconnecting(tester, chat);
   });
 

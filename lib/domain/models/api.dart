@@ -74,7 +74,9 @@ class ChatModelProfile {
   final Set<String> capabilities;
 
   bool get isT1 => tier.toLowerCase() == 't1';
-  bool get supportsVision => capabilities.contains('vision');
+  bool get supportsVision =>
+      capabilities.contains('vision') ||
+      (id == 'cortex-t0' && capabilities.isEmpty);
 
   factory ChatModelProfile.fromJson(
     Map<String, dynamic> json, {
