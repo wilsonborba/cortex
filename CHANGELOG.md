@@ -14,6 +14,12 @@
 
 - Omit profile IDs for legacy budget-only APIs while preserving IDs for explicit catalogs (#87)
 
+### Bug Fixes
+
+- Preserve the existing T0 composer for legacy catalogs and keep explicit recovery for unavailable saved profiles (#87)
+
+- Keep model menu boundaries and shadows visible in both themes (#87)
+
 
 
 ## v2.3.2 - 2026-11-16
