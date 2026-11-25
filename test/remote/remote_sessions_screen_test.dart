@@ -16,13 +16,19 @@ class _Gateway implements RemoteCliGateway {
   final prompts = <({String sessionId, String prompt, List<String> fileIds})>[];
   final approvals = <({String id, bool approved})>[];
   Completer<void>? promptGate;
+  Object? sessionsError;
+  int sessionCalls = 0;
   int cancelCount = 0;
 
   @override
-  Future<List<RemoteCliSession>> sessions() async => [
-    _session('linux-session', 'Linux laptop', online: true),
-    _session('offline-session', 'Office workstation', online: false),
-  ];
+  Future<List<RemoteCliSession>> sessions() async {
+    sessionCalls++;
+    if (sessionsError != null && sessionCalls > 1) throw sessionsError!;
+    return [
+      _session('linux-session', 'Linux laptop', online: true),
+      _session('offline-session', 'Office workstation', online: false),
+    ];
+  }
 
   @override
   Stream<RemoteCliEvent> events(String sessionId, {required int after}) =>
@@ -182,6 +188,61 @@ void main() {
         find.text('Cancellation requested; waiting for CLI status.'),
         findsOneWidget,
       );
+    },
+  );
+
+  testWidgets(
+    'phone composer remains visible with answer, approval, error, and cancel',
+    (tester) async {
+      final gateway = _Gateway()
+        ..sessionsError = const RemoteCliFailure(503, 'fixture failure');
+      final controller = RemoteCliController(
+        gateway: gateway,
+        reconnectDelay: const Duration(hours: 1),
+      );
+      addTearDown(gateway.dispose);
+      addTearDown(controller.dispose);
+      await _pump(tester, controller, size: const Size(390, 844));
+      await tester.tap(find.byKey(const Key('remote-session-linux-session')));
+      await tester.pumpAndSettle();
+      gateway.incoming.add(
+        _event(1, 'progress', {'turn_id': 'turn-1', 'message': 'Working'}),
+      );
+      gateway.incoming.add(
+        _event(2, 'answer_part', {
+          'turn_id': 'turn-1',
+          'text': 'Reviewing files',
+        }),
+      );
+      gateway.incoming.add(
+        _event(3, 'approval_request', {
+          'turn_id': 'turn-1',
+          'approval_id': 'approval-1',
+          'action': 'Run this command?',
+        }),
+      );
+      await tester.pump();
+      await tester.pump();
+      controller.commandStatus = RemoteCliCommandStatus.commandExpired;
+      controller.attachments.add(
+        const RemoteCliAttachment(name: 'photo.jpg', fileId: 'file-1'),
+      );
+      await controller.refreshSessions();
+      await tester.pump();
+
+      final prompt = find.byKey(const Key('remote-prompt'));
+      expect(prompt, findsOneWidget);
+      expect(find.text('photo.jpg'), findsOneWidget);
+      expect(find.text('Reviewing files'), findsOneWidget);
+      expect(find.text('Run this command?'), findsOneWidget);
+      expect(find.text('Cancel turn'), findsOneWidget);
+      expect(
+        find.text('The command expired before the CLI received it.'),
+        findsOneWidget,
+      );
+      final promptRect = tester.getRect(prompt);
+      expect(promptRect.top, greaterThanOrEqualTo(0));
+      expect(promptRect.bottom, lessThanOrEqualTo(844));
     },
   );
 
