@@ -182,6 +182,7 @@ class ComposerState extends State<Composer> {
   ];
 
   Widget _modelButton(AppLocalizations l) => MenuAnchor(
+    clipBehavior: Clip.none,
     menuChildren: _modelItems(l),
     builder: (context, controller, _) => TextButton(
       key: const Key('model-picker'),
@@ -308,6 +309,7 @@ class ComposerState extends State<Composer> {
         if (chat.modelCatalog?.models.isNotEmpty == true)
           SubmenuButton(
             key: const Key('model-picker'),
+            clipBehavior: Clip.none,
             leadingIcon: const Icon(AppIcons.settings),
             menuChildren: _modelItems(l),
             child: ConstrainedBox(
