@@ -10,6 +10,8 @@
 
 - Add the T0/T1 model picker, per-profile input limits, and unavailable-model feedback to the composer (#87)
 
+- Keep long model labels readable in the compact Options menu at narrow widths and larger text sizes (#87)
+
 
 
 ## v2.3.2 - 2026-11-16

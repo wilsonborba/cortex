@@ -170,7 +170,14 @@ class ComposerState extends State<Composer> {
               : Colors.transparent,
         ),
         onPressed: () => widget.chat.selectModel(profile.id),
-        child: Text('${profile.name} · ${profile.tier.toUpperCase()}'),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 360),
+          child: Text(
+            '${profile.name} · ${profile.tier.toUpperCase()}',
+            maxLines: 3,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
       ),
   ];
 
@@ -303,7 +310,14 @@ class ComposerState extends State<Composer> {
             key: const Key('model-picker'),
             leadingIcon: const Icon(AppIcons.settings),
             menuChildren: _modelItems(l),
-            child: Text(_modelLabel(l)),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 260),
+              child: Text(
+                _modelLabel(l),
+                maxLines: 3,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
           ),
         if (chat.modelCatalog?.models.isNotEmpty == true)
           const MenuGroupDivider(),

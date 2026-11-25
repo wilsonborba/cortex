@@ -162,6 +162,8 @@ Future<(ChatController, Api)> pump(
   Api? api,
   List<PickedFile> files = const [],
   Size viewport = const Size(1200, 900),
+  Locale locale = const Locale('en'),
+  double textScale = 1,
 }) async {
   tester.view.physicalSize = viewport;
   tester.view.devicePixelRatio = 1;
@@ -178,9 +180,16 @@ Future<(ChatController, Api)> pump(
   );
   await tester.pumpWidget(
     MaterialApp(
+      locale: locale,
       theme: cortexTheme(Brightness.dark),
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
+      builder: (context, child) => MediaQuery(
+        data: MediaQuery.of(
+          context,
+        ).copyWith(textScaler: TextScaler.linear(textScale)),
+        child: child!,
+      ),
       home: Scaffold(
         body: ChatScreen(
           api: cortex,
@@ -562,6 +571,74 @@ void main() {
     expect(chat.selectedModelId, 'bonsai25-official');
     await stopReconnecting(tester, chat);
   });
+
+  for (final locale in [
+    const Locale('en'),
+    const Locale('pt'),
+    const Locale('th'),
+  ]) {
+    for (final width in [320.0, 390.0]) {
+      testWidgets(
+        'large model menu fits ${locale.languageCode} at ${width.toInt()} px',
+        (tester) async {
+          final api = Api()
+            ..modelFields = {
+              'default_model_id': 'bonsai25-uncensored',
+              'models': [
+                {
+                  'id': 'cortex-t0',
+                  'tier': 't0',
+                  'name': 'Cortex T0',
+                  'max_input_tokens': 5000,
+                  'capabilities': ['text', 'vision'],
+                },
+                {
+                  'id': 'bonsai25-uncensored',
+                  'tier': 't1',
+                  'name': 'Bonsai 2.5 27B Uncensored',
+                  'max_input_tokens': 4800,
+                  'capabilities': ['text', 'vision'],
+                },
+                {
+                  'id': 'bonsai25-official',
+                  'tier': 't1',
+                  'name': 'Bonsai 2.5 27B Official',
+                  'max_input_tokens': 4700,
+                  'capabilities': ['text', 'vision'],
+                },
+              ],
+            };
+          final (chat, _) = await pump(
+            tester,
+            api: api,
+            viewport: Size(width, 844),
+            locale: locale,
+            textScale: 1.75,
+          );
+          await tester.tap(find.byKey(const Key('composer-options')));
+          await tester.pumpAndSettle();
+          await tester.tap(find.byKey(const Key('model-picker')));
+          await tester.pumpAndSettle();
+
+          final key = const Key('model-bonsai25-uncensored');
+          expect(find.byKey(key), findsOneWidget);
+          expect(find.text('Bonsai 2.5 27B Uncensored · T1'), findsOneWidget);
+          final rect = tester.getRect(find.byKey(key));
+          expect(rect.left, greaterThanOrEqualTo(0));
+          expect(rect.right, lessThanOrEqualTo(width));
+          expect(rect.top, greaterThanOrEqualTo(0));
+          expect(rect.bottom, lessThanOrEqualTo(844));
+          final menuItem = tester.widget<MenuItemButton>(find.byKey(key));
+          final selectedMark = menuItem.leadingIcon! as Icon;
+          expect(selectedMark.icon, AppIcons.copied);
+          expect(selectedMark.color, isNot(Colors.transparent));
+          expect(chat.selectedModelId, 'bonsai25-uncensored');
+          expect(tester.takeException(), isNull);
+          await stopReconnecting(tester, chat);
+        },
+      );
+    }
+  }
 
   testWidgets('graph link is shown only when history provides a chat node', (
     tester,
