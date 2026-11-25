@@ -1222,6 +1222,34 @@ class AppLocalizationsPt extends AppLocalizations {
   String get composerOptions => 'Opções';
 
   @override
+  String get modelPicker => 'Modelo';
+
+  @override
+  String modelChoice(String name) {
+    return 'Modelo · $name';
+  }
+
+  @override
+  String modelUnavailableSelection(String id) {
+    return 'Perfil indisponível: $id';
+  }
+
+  @override
+  String get modelUnavailableMessage =>
+      'O modelo selecionado não está disponível. Escolha um perfil disponível para continuar.';
+
+  @override
+  String get modelCatalogUnavailable =>
+      'Não foi possível carregar os modelos. Tente novamente antes de enviar.';
+
+  @override
+  String get modelVisionPrepass =>
+      'A visão do Cortex resume as imagens antes da resposta deste perfil de texto.';
+
+  @override
+  String get modelNoVision => 'Este perfil não aceita anexos de imagem.';
+
+  @override
   String get composerEmptyReason => 'Escreva uma mensagem antes de enviar.';
 
   @override

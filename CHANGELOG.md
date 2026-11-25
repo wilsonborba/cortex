@@ -6,7 +6,21 @@
 
 ### Features
 
+- Parse allowlisted chat profiles and preserve model selection on new, saved, continued, and temporary inputs (#87)
+
+- Add the T0/T1 model picker, per-profile input limits, and unavailable-model feedback to the composer (#87)
+
+- Keep long model labels readable in the compact Options menu at narrow widths and larger text sizes (#87)
+
+- Omit profile IDs for legacy budget-only APIs while preserving IDs for explicit catalogs (#87)
+
 - Add localized Cortex CLI source-install help to the product landing page (#88)
+
+### Bug Fixes
+
+- Preserve the existing T0 composer for legacy catalogs and keep explicit recovery for unavailable saved profiles (#87)
+
+- Keep model menu boundaries and shadows visible in both themes (#87)
 
 
 ## v2.3.2 - 2026-11-16

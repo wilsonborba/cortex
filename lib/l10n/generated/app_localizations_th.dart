@@ -1202,6 +1202,34 @@ class AppLocalizationsTh extends AppLocalizations {
   String get composerOptions => 'ตัวเลือก';
 
   @override
+  String get modelPicker => 'โมเดล';
+
+  @override
+  String modelChoice(String name) {
+    return 'โมเดล · $name';
+  }
+
+  @override
+  String modelUnavailableSelection(String id) {
+    return 'โปรไฟล์ไม่พร้อมใช้งาน: $id';
+  }
+
+  @override
+  String get modelUnavailableMessage =>
+      'โมเดลที่เลือกไม่พร้อมใช้งาน เลือกโปรไฟล์ที่ใช้งานได้เพื่อดำเนินการต่อ';
+
+  @override
+  String get modelCatalogUnavailable =>
+      'โหลดโปรไฟล์โมเดลไม่ได้ โปรดลองอีกครั้งก่อนส่ง';
+
+  @override
+  String get modelVisionPrepass =>
+      'ระบบวิชันของ Cortex จะสรุปภาพก่อนที่โปรไฟล์ข้อความนี้จะตอบ';
+
+  @override
+  String get modelNoVision => 'โปรไฟล์นี้ไม่รองรับไฟล์แนบรูปภาพ';
+
+  @override
   String get composerEmptyReason => 'เขียนข้อความก่อนส่ง';
 
   @override
