@@ -3585,6 +3585,18 @@ abstract class AppLocalizations {
   /// **'Turn on remote control in Cortex CLI to see a session here.'**
   String get remoteNoSessionsBody;
 
+  /// No description provided for @remoteSelectSessionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a CLI session'**
+  String get remoteSelectSessionTitle;
+
+  /// No description provided for @remoteSelectSessionBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a session on the left to view progress and send prompts.'**
+  String get remoteSelectSessionBody;
+
   /// No description provided for @remoteOpenSession.
   ///
   /// In en, this message translates to:

@@ -1982,6 +1982,13 @@ class AppLocalizationsEn extends AppLocalizations {
       'Turn on remote control in Cortex CLI to see a session here.';
 
   @override
+  String get remoteSelectSessionTitle => 'Select a CLI session';
+
+  @override
+  String get remoteSelectSessionBody =>
+      'Choose a session on the left to view progress and send prompts.';
+
+  @override
   String get remoteOpenSession => 'Open session';
 
   @override

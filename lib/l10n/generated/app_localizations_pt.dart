@@ -2000,6 +2000,13 @@ class AppLocalizationsPt extends AppLocalizations {
       'Ative o controle remoto no Cortex CLI para ver uma sessão aqui.';
 
   @override
+  String get remoteSelectSessionTitle => 'Selecione uma sessão CLI';
+
+  @override
+  String get remoteSelectSessionBody =>
+      'Escolha uma sessão à esquerda para ver o progresso e enviar comandos.';
+
+  @override
   String get remoteOpenSession => 'Abrir sessão';
 
   @override
@@ -2043,7 +2050,7 @@ class AppLocalizationsPt extends AppLocalizations {
       'Envie uma solicitação para esta sessão do CLI';
 
   @override
-  String get remoteSendPrompt => 'Enviar solicitação';
+  String get remoteSendPrompt => 'Enviar';
 
   @override
   String get remoteAttachImage => 'Anexar imagem';

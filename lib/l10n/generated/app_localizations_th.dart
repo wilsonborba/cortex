@@ -1961,6 +1961,13 @@ class AppLocalizationsTh extends AppLocalizations {
       'เปิดการควบคุมระยะไกลใน Cortex CLI เพื่อดูเซสชันที่นี่';
 
   @override
+  String get remoteSelectSessionTitle => 'เลือกเซสชัน CLI';
+
+  @override
+  String get remoteSelectSessionBody =>
+      'เลือกเซสชันทางซ้ายเพื่อดูความคืบหน้าและส่งพรอมป์ต์';
+
+  @override
   String get remoteOpenSession => 'เปิดเซสชัน';
 
   @override

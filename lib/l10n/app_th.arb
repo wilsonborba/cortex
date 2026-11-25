@@ -609,6 +609,8 @@
   "remoteRefresh": "รีเฟรชเซสชัน",
   "remoteNoSessionsTitle": "ยังไม่มีเซสชัน CLI",
   "remoteNoSessionsBody": "เปิดการควบคุมระยะไกลใน Cortex CLI เพื่อดูเซสชันที่นี่",
+  "remoteSelectSessionTitle": "เลือกเซสชัน CLI",
+  "remoteSelectSessionBody": "เลือกเซสชันทางซ้ายเพื่อดูความคืบหน้าและส่งพรอมป์ต์",
   "remoteOpenSession": "เปิดเซสชัน",
   "remoteOnline": "ออนไลน์",
   "remoteOffline": "ออฟไลน์",

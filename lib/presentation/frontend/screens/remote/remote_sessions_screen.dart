@@ -186,8 +186,8 @@ class _RemoteSessionsScreenState extends State<RemoteSessionsScreen> {
   Widget _emptyDetail(BuildContext context) {
     final l = AppLocalizations.of(context);
     return EmptyState(
-      title: l.remoteNoSessionsTitle,
-      message: l.remoteNoSessionsBody,
+      title: l.remoteSelectSessionTitle,
+      message: l.remoteSelectSessionBody,
       icon: AppIcons.systemTheme,
     );
   }

@@ -971,6 +971,8 @@
   "remoteRefresh": "Refresh sessions",
   "remoteNoSessionsTitle": "No CLI sessions yet",
   "remoteNoSessionsBody": "Turn on remote control in Cortex CLI to see a session here.",
+  "remoteSelectSessionTitle": "Select a CLI session",
+  "remoteSelectSessionBody": "Choose a session on the left to view progress and send prompts.",
   "remoteOpenSession": "Open session",
   "remoteOnline": "Online",
   "remoteOffline": "Offline",

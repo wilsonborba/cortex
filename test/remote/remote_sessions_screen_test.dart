@@ -206,6 +206,19 @@ void main() {
     );
   });
 
+  testWidgets('desktop detail asks for a session when the list is populated', (
+    tester,
+  ) async {
+    final gateway = _Gateway();
+    final controller = RemoteCliController(gateway: gateway);
+    addTearDown(gateway.dispose);
+    addTearDown(controller.dispose);
+    await _pump(tester, controller, size: const Size(1024, 768));
+
+    expect(find.text('Linux laptop'), findsOneWidget);
+    expect(find.text('Select a CLI session'), findsOneWidget);
+  });
+
   testWidgets(
     'a completed picker cannot upload into a newly selected session',
     (tester) async {
