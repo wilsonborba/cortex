@@ -149,6 +149,14 @@ class ComposerState extends State<Composer> {
     l,
   ).firstWhere((item) => item.$1 == widget.chat.options.web).$2;
 
+  bool get _showModelPicker {
+    final chat = widget.chat;
+    final catalog = chat.modelCatalog;
+    if (catalog == null || catalog.models.isEmpty) return false;
+    return catalog.hasExplicitProfiles ||
+        (chat.selectedModelId != null && chat.selectedModelUnavailable);
+  }
+
   String _modelLabel(AppLocalizations l) {
     final chat = widget.chat;
     final selected = chat.selectedModel;
@@ -187,7 +195,7 @@ class ComposerState extends State<Composer> {
     builder: (context, controller, _) => TextButton(
       key: const Key('model-picker'),
       style: _toolStyle(Palette.from(context), false),
-      onPressed: widget.chat.modelCatalog?.models.isNotEmpty == true
+      onPressed: _showModelPicker
           ? () => controller.isOpen ? controller.close() : controller.open()
           : null,
       child: ConstrainedBox(
@@ -306,7 +314,7 @@ class ComposerState extends State<Composer> {
       clipBehavior: Clip.none,
       childFocusNode: _optionsFocus,
       menuChildren: [
-        if (chat.modelCatalog?.models.isNotEmpty == true)
+        if (_showModelPicker)
           SubmenuButton(
             key: const Key('model-picker'),
             clipBehavior: Clip.none,
@@ -321,8 +329,7 @@ class ComposerState extends State<Composer> {
               ),
             ),
           ),
-        if (chat.modelCatalog?.models.isNotEmpty == true)
-          const MenuGroupDivider(),
+        if (_showModelPicker) const MenuGroupDivider(),
         ..._webItems(l),
         const MenuGroupDivider(),
         MenuItemButton(
@@ -682,7 +689,8 @@ class ComposerState extends State<Composer> {
                                           crossAxisAlignment:
                                               WrapCrossAlignment.center,
                                           children: [
-                                            _modelButton(l),
+                                            if (_showModelPicker)
+                                              _modelButton(l),
                                             _menuButton(
                                               key: const Key('web-choice'),
                                               icon: AppIcons.web,

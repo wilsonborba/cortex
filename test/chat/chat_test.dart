@@ -324,6 +324,57 @@ void main() {
     },
   );
 
+  testWidgets('legacy T0 keeps the existing composer without a model picker', (
+    tester,
+  ) async {
+    for (final viewport in [const Size(1200, 900), const Size(390, 844)]) {
+      final (chat, _) = await pump(tester, api: Api(), viewport: viewport);
+      expect(chat.modelCatalog!.hasExplicitProfiles, isFalse);
+      expect(chat.selectedModelId, 'cortex-t0');
+      expect(find.byKey(const Key('model-picker')), findsNothing);
+      if (viewport.width < 600) {
+        await tester.tap(find.byKey(const Key('composer-options')));
+        await tester.pumpAndSettle();
+        expect(find.byKey(const Key('model-picker')), findsNothing);
+        expect(find.byKey(const Key('thinking-switch')), findsOneWidget);
+      } else {
+        expect(find.byKey(const Key('web-choice')), findsOneWidget);
+      }
+      await stopReconnecting(tester, chat);
+    }
+  });
+
+  testWidgets('legacy catalog exposes saved unavailable profile recovery', (
+    tester,
+  ) async {
+    final api = Api()
+      ..page = {
+        'chat': {
+          'session_id': sid,
+          'title': 'Saved legacy model',
+          'model_id': 'removed-t1-profile',
+        },
+        'inputs': [],
+        'outputs': [],
+      };
+    final (chat, _) = await pump(
+      tester,
+      session: sid,
+      api: api,
+      viewport: const Size(1200, 900),
+    );
+    expect(chat.modelCatalog!.hasExplicitProfiles, isFalse);
+    expect(chat.selectedModelId, 'removed-t1-profile');
+    expect(chat.selectedModelUnavailable, isTrue);
+    expect(find.byKey(const Key('model-picker')), findsOneWidget);
+    await tester.tap(find.byKey(const Key('model-picker')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('model-cortex-t0')));
+    await tester.pump();
+    expect(chat.selectedModelId, 'cortex-t0');
+    await stopReconnecting(tester, chat);
+  });
+
   testWidgets('new and continued inputs carry the selected catalog profile', (
     tester,
   ) async {
