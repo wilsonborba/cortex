@@ -55,6 +55,7 @@ class Api {
   List<String> Function(http.BaseRequest) streamFor = (_) => stream();
   bool keepOpen = false;
   int maxTokens = 5120;
+  Map<String, dynamic> modelFields = const {};
   List<Map<String, dynamic>> personas = [];
   Map<String, dynamic> page = {
     'chat': {'session_id': sid, 'title': 'Saved chat', 'is_pinned': false},
@@ -95,6 +96,7 @@ class Api {
             'bytes_per_token': 3,
             'copies': 2,
           },
+          ...modelFields,
         },
       });
     }
@@ -204,6 +206,191 @@ Future<void> send(WidgetTester tester, String text) async {
 }
 
 void main() {
+  test('temporary inputs preserve the chosen profile in the request', () async {
+    final fake = Api()
+      ..modelFields = {
+        'default_model_id': 'bonsai25-uncensored',
+        'models': [
+          {
+            'id': 'bonsai25-uncensored',
+            'tier': 't1',
+            'name': 'Bonsai Uncensored',
+            'max_input_tokens': 4800,
+          },
+          {
+            'id': 'bonsai25-official',
+            'tier': 't1',
+            'name': 'Bonsai Official',
+            'max_input_tokens': 4700,
+          },
+        ],
+      };
+    final chat = ChatController(
+      api: CortexApi(
+        baseUrl: 'https://api.test/apps/cortex/v1',
+        client: fake.client,
+      ),
+      temporary: true,
+    );
+    await chat.open();
+    chat.selectModel('bonsai25-official');
+    await chat.send('temporary prompt');
+    await pumpEventQueue();
+
+    final body =
+        jsonDecode(
+              fake.requests
+                  .firstWhere((r) => r.$1 == 'POST' && r.$2 == '/chats')
+                  .$3,
+            )
+            as Map<String, dynamic>;
+    expect(body['model_id'], 'bonsai25-official');
+    expect(body['temporary'], isTrue);
+    chat.dispose();
+  });
+
+  testWidgets('new and continued inputs carry the selected catalog profile', (
+    tester,
+  ) async {
+    final api = Api()
+      ..modelFields = {
+        'default_model_id': 'bonsai25-uncensored',
+        'models': [
+          {
+            'id': 'cortex-t0',
+            'tier': 't0',
+            'name': 'Cortex T0',
+            'max_input_tokens': 5000,
+            'capabilities': ['text'],
+          },
+          {
+            'id': 'bonsai25-uncensored',
+            'tier': 't1',
+            'name': 'Bonsai 2.5 27B Uncensored',
+            'max_input_tokens': 4800,
+            'capabilities': ['text'],
+          },
+          {
+            'id': 'bonsai25-official',
+            'tier': 't1',
+            'name': 'Bonsai 2.5 27B Official',
+            'max_input_tokens': 4700,
+            'capabilities': ['text'],
+          },
+        ],
+      };
+    final (chat, fake) = await pump(tester, api: api);
+    expect(chat.selectedModelId, 'bonsai25-uncensored');
+    expect(chat.selectedInputLimit, 4800);
+
+    await send(tester, 'first');
+    final newChatBody =
+        jsonDecode(
+              fake.requests
+                  .firstWhere((r) => r.$1 == 'POST' && r.$2 == '/chats')
+                  .$3,
+            )
+            as Map<String, dynamic>;
+    expect(newChatBody['model_id'], 'bonsai25-uncensored');
+
+    chat.selectModel('bonsai25-official');
+    expect(chat.selectedInputLimit, 4700);
+    await send(tester, 'second');
+    final continuedBody =
+        jsonDecode(
+              fake.requests
+                  .firstWhere(
+                    (r) => r.$1 == 'POST' && r.$2 == '/chats/$sid/inputs',
+                  )
+                  .$3,
+            )
+            as Map<String, dynamic>;
+    expect(continuedBody['model_id'], 'bonsai25-official');
+    await stopReconnecting(tester, chat);
+  });
+
+  testWidgets('saved chat restores its model ID and profile input limit', (
+    tester,
+  ) async {
+    final api = Api()
+      ..modelFields = {
+        'default_model_id': 'bonsai25-uncensored',
+        'models': [
+          {
+            'id': 'cortex-t0',
+            'tier': 't0',
+            'name': 'Cortex T0',
+            'max_input_tokens': 5000,
+          },
+          {
+            'id': 'bonsai25-uncensored',
+            'tier': 't1',
+            'name': 'Bonsai Uncensored',
+            'max_input_tokens': 4800,
+          },
+          {
+            'id': 'bonsai25-official',
+            'tier': 't1',
+            'name': 'Bonsai Official',
+            'max_input_tokens': 4700,
+          },
+        ],
+      }
+      ..page = {
+        'chat': {
+          'session_id': sid,
+          'title': 'Saved chat',
+          'is_pinned': false,
+          'model_id': 'bonsai25-official',
+        },
+        'inputs': [],
+        'outputs': [],
+      };
+    final (chat, _) = await pump(tester, session: sid, api: api);
+    expect(chat.selectedModelId, 'bonsai25-official');
+    expect(chat.selectedInputLimit, 4700);
+    await stopReconnecting(tester, chat);
+  });
+
+  testWidgets('unknown persisted model stays unavailable and cannot be sent', (
+    tester,
+  ) async {
+    final api = Api()
+      ..modelFields = {
+        'default_model_id': 'bonsai25-uncensored',
+        'models': [
+          {
+            'id': 'cortex-t0',
+            'tier': 't0',
+            'name': 'Cortex T0',
+            'max_input_tokens': 5000,
+          },
+          {
+            'id': 'bonsai25-uncensored',
+            'tier': 't1',
+            'name': 'Bonsai Uncensored',
+            'max_input_tokens': 4800,
+          },
+        ],
+      }
+      ..page = {
+        'chat': {
+          'session_id': sid,
+          'title': 'Unavailable model',
+          'model_id': 'removed-profile',
+        },
+        'inputs': [],
+        'outputs': [],
+      };
+    final (chat, fake) = await pump(tester, session: sid, api: api);
+    expect(chat.selectedModelId, 'removed-profile');
+    expect(chat.selectedModelUnavailable, isTrue);
+    expect(chat.overLimit('hello'), isTrue);
+    await chat.send('hello');
+    expect(fake.requests.where((r) => r.$1 == 'POST'), isEmpty);
+    await stopReconnecting(tester, chat);
+  });
+
   testWidgets('graph link is shown only when history provides a chat node', (
     tester,
   ) async {
