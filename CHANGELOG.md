@@ -1,6 +1,19 @@
 # Changelog
 
 
+## Unreleased
+
+
+### Chores
+
+- Merge v2.3.2 back to feature/main
+
+
+### Features
+
+- Add native account handoff for #85
+
+
 ## v2.3.2 - 2026-11-16
 
 
@@ -18,6 +31,10 @@
 - Merge v2.3.1 back to feature/main
 
 - Prepare development for v2.3.2
+
+- Prepare v2.3.2
+
+- Release v2.3.2
 
 
 ## v2.3.1 - 2026-11-16

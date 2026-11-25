@@ -3566,6 +3566,102 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Write a two-sentence story about a girl named Mira who finds an old map under a fig tree.'**
   String get heroDemoQuestion;
+
+  /// No description provided for @nativeWelcomeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome to Cortex'**
+  String get nativeWelcomeTitle;
+
+  /// No description provided for @nativeWelcomeBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Chat and work with your memory and personas in one workspace.'**
+  String get nativeWelcomeBody;
+
+  /// No description provided for @nativeSignIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in with your Asodya account'**
+  String get nativeSignIn;
+
+  /// No description provided for @nativeMatchCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm this code on the browser sign-in page'**
+  String get nativeMatchCode;
+
+  /// No description provided for @nativeBrowserOpened.
+  ///
+  /// In en, this message translates to:
+  /// **'Finish signing in in your browser, then return here.'**
+  String get nativeBrowserOpened;
+
+  /// No description provided for @nativeFinishLogin.
+  ///
+  /// In en, this message translates to:
+  /// **'Finish login'**
+  String get nativeFinishLogin;
+
+  /// No description provided for @nativeCancelLogin.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel login'**
+  String get nativeCancelLogin;
+
+  /// No description provided for @nativeLoginChecking.
+  ///
+  /// In en, this message translates to:
+  /// **'Checking login status…'**
+  String get nativeLoginChecking;
+
+  /// No description provided for @nativeLoginNotFinished.
+  ///
+  /// In en, this message translates to:
+  /// **'Login is not finished yet. Complete it in the browser, then check again.'**
+  String get nativeLoginNotFinished;
+
+  /// No description provided for @nativeLoginExpired.
+  ///
+  /// In en, this message translates to:
+  /// **'This login expired. Start again.'**
+  String get nativeLoginExpired;
+
+  /// No description provided for @nativeLoginRefused.
+  ///
+  /// In en, this message translates to:
+  /// **'Login refused because the browser and app are on different networks. Start again on the same network.'**
+  String get nativeLoginRefused;
+
+  /// No description provided for @nativeLoginCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'This login was cancelled. Start again when ready.'**
+  String get nativeLoginCancelled;
+
+  /// No description provided for @nativeLoginUsed.
+  ///
+  /// In en, this message translates to:
+  /// **'This login cannot be used again. Start again.'**
+  String get nativeLoginUsed;
+
+  /// No description provided for @nativeLoginError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not finish login. Check your connection and try again.'**
+  String get nativeLoginError;
+
+  /// No description provided for @nativeLoggedIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Logged in'**
+  String get nativeLoggedIn;
+
+  /// No description provided for @nativeLoggedInFrom.
+  ///
+  /// In en, this message translates to:
+  /// **'Logged in from {location}'**
+  String nativeLoggedInFrom(String location);
 }
 
 class _AppLocalizationsDelegate
