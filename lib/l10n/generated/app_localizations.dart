@@ -412,6 +412,72 @@ abstract class AppLocalizations {
   /// **'What it does'**
   String get whatTitle;
 
+  /// No description provided for @cliTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Cortex CLI'**
+  String get cliTitle;
+
+  /// No description provided for @cliIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'Use Cortex from Linux or macOS. Supported targets are x86_64 and ARM64.'**
+  String get cliIntro;
+
+  /// No description provided for @cliSourceTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Build from source'**
+  String get cliSourceTitle;
+
+  /// No description provided for @cliSourceDetail.
+  ///
+  /// In en, this message translates to:
+  /// **'Requires Rust 1.91.1 or newer with Cargo. These commands install cortex from its source checkout.'**
+  String get cliSourceDetail;
+
+  /// No description provided for @cliLinuxPrerequisite.
+  ///
+  /// In en, this message translates to:
+  /// **'Linux also needs libdbus-1-dev and pkg-config. macOS uses Keychain.'**
+  String get cliLinuxPrerequisite;
+
+  /// No description provided for @cliSignIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to Asodya in your browser with cortex login.'**
+  String get cliSignIn;
+
+  /// No description provided for @cliProviderNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Asodya sign-in does not provide external AI provider access. Provider credentials are configured separately.'**
+  String get cliProviderNote;
+
+  /// No description provided for @cliReleaseStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Owner-published release downloads are not available yet. Check Releases for future verified installers.'**
+  String get cliReleaseStatus;
+
+  /// No description provided for @cliCopy.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy commands'**
+  String get cliCopy;
+
+  /// No description provided for @cliReadme.
+  ///
+  /// In en, this message translates to:
+  /// **'CLI README'**
+  String get cliReadme;
+
+  /// No description provided for @cliReleases.
+  ///
+  /// In en, this message translates to:
+  /// **'Releases'**
+  String get cliReleases;
+
   /// No description provided for @whatMemory.
   ///
   /// In en, this message translates to:

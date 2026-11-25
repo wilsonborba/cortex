@@ -1,6 +1,14 @@
 # Changelog
 
 
+## Unreleased
+
+
+### Features
+
+- Add localized Cortex CLI source-install help to the product landing page (#88)
+
+
 ## v2.3.2 - 2026-11-16
 
 

@@ -171,6 +171,45 @@ class AppLocalizationsEn extends AppLocalizations {
   String get whatTitle => 'What it does';
 
   @override
+  String get cliTitle => 'Cortex CLI';
+
+  @override
+  String get cliIntro =>
+      'Use Cortex from Linux or macOS. Supported targets are x86_64 and ARM64.';
+
+  @override
+  String get cliSourceTitle => 'Build from source';
+
+  @override
+  String get cliSourceDetail =>
+      'Requires Rust 1.91.1 or newer with Cargo. These commands install cortex from its source checkout.';
+
+  @override
+  String get cliLinuxPrerequisite =>
+      'Linux also needs libdbus-1-dev and pkg-config. macOS uses Keychain.';
+
+  @override
+  String get cliSignIn =>
+      'Sign in to Asodya in your browser with cortex login.';
+
+  @override
+  String get cliProviderNote =>
+      'Asodya sign-in does not provide external AI provider access. Provider credentials are configured separately.';
+
+  @override
+  String get cliReleaseStatus =>
+      'Owner-published release downloads are not available yet. Check Releases for future verified installers.';
+
+  @override
+  String get cliCopy => 'Copy commands';
+
+  @override
+  String get cliReadme => 'CLI README';
+
+  @override
+  String get cliReleases => 'Releases';
+
+  @override
   String get whatMemory => 'Chat with memory';
 
   @override

@@ -9,9 +9,11 @@ import 'package:cortex/l10n/generated/app_localizations.dart';
 import 'package:cortex/presentation/frontend/preferences.dart';
 import 'package:cortex/presentation/frontend/router.dart';
 import 'package:cortex/presentation/frontend/screens/landing/demo.dart';
+import 'package:cortex/presentation/frontend/screens/landing/cli_install_section.dart';
 import 'package:cortex/presentation/frontend/screens/landing/diagrams.dart';
 import 'package:cortex/presentation/frontend/theme/theme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
@@ -96,6 +98,90 @@ Widget demo({bool still = false}) => MaterialApp(
 );
 
 void main() {
+  test('CLI help points to canonical repository README and releases', () {
+    expect(cliRepositoryUrl, 'https://github.com/wilsonborba/cortex_cli');
+    expect(cliReadmeUrl, '$cliRepositoryUrl#readme');
+    expect(cliReleasesUrl, '$cliRepositoryUrl/releases');
+    expect(
+      cliSourceInstallCommand,
+      contains('cargo install --locked --path .'),
+    );
+    expect(
+      cliSourceInstallCommand,
+      contains('git clone $cliRepositoryUrl.git'),
+    );
+  });
+
+  for (final locale in [
+    const Locale('en'),
+    const Locale('pt', 'BR'),
+    const Locale('th'),
+  ]) {
+    for (final width in [320.0, 390.0, 1440.0]) {
+      testWidgets(
+        'CLI help fits ${locale.languageCode} at ${width.toInt()}px',
+        (tester) async {
+          final (_, _) = await pump(
+            tester,
+            '/v1/home',
+            size: Size(width, 1000),
+            locale: locale,
+            scale: 1.5,
+          );
+          final section = find.byKey(const Key('cli-install-section'));
+          expect(section, findsOneWidget);
+          final l = AppLocalizations.of(tester.element(section));
+          expect(find.text(l.cliTitle), findsOneWidget);
+          expect(find.text(l.cliIntro), findsOneWidget);
+          expect(find.text(l.cliSourceTitle), findsOneWidget);
+          expect(find.text(l.cliReleaseStatus), findsOneWidget);
+          expect(find.text(l.cliProviderNote), findsOneWidget);
+          expect(find.text(l.cliSignIn), findsOneWidget);
+          expect(find.text(l.cliLinuxPrerequisite), findsOneWidget);
+          final command = tester.widget<SelectableText>(
+            find.byKey(const Key('cli-install-command-text')),
+          );
+          expect(command.data, cliSourceInstallCommand);
+          expect(find.byKey(const Key('cli-copy-command')), findsOneWidget);
+          expect(find.byKey(const Key('cli-readme-link')), findsOneWidget);
+          expect(find.byKey(const Key('cli-releases-link')), findsOneWidget);
+          expect(tester.getRect(section).left, greaterThanOrEqualTo(0));
+          expect(tester.getRect(section).right, lessThanOrEqualTo(width));
+          expect(tester.takeException(), isNull);
+        },
+      );
+    }
+  }
+
+  testWidgets('CLI install command copy button writes the full command', (
+    tester,
+  ) async {
+    String? clipboardText;
+    tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+      SystemChannels.platform,
+      (call) async {
+        if (call.method == 'Clipboard.setData') {
+          clipboardText =
+              (call.arguments as Map<Object?, Object?>)['text'] as String?;
+        }
+        return null;
+      },
+    );
+    addTearDown(
+      () => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+        SystemChannels.platform,
+        null,
+      ),
+    );
+    await pump(tester, '/v1/home');
+    final copy = find.byKey(const Key('cli-copy-command'));
+    await tester.ensureVisible(copy);
+    await tester.pump();
+    await tester.tap(copy);
+    expect(clipboardText, cliSourceInstallCommand);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets(
     'expanded header: logo, 5 section links, language, theme, Log in',
     (tester) async {

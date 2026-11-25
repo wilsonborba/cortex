@@ -170,6 +170,45 @@ class AppLocalizationsTh extends AppLocalizations {
   String get whatTitle => 'ทำอะไรได้บ้าง';
 
   @override
+  String get cliTitle => 'Cortex CLI';
+
+  @override
+  String get cliIntro =>
+      'ใช้ Cortex บน Linux หรือ macOS ได้ รองรับสถาปัตยกรรม x86_64 และ ARM64';
+
+  @override
+  String get cliSourceTitle => 'คอมไพล์จากซอร์สโค้ด';
+
+  @override
+  String get cliSourceDetail =>
+      'ต้องใช้ Rust 1.91.1 ขึ้นไปพร้อม Cargo คำสั่งนี้ติดตั้ง cortex จากซอร์สโค้ด';
+
+  @override
+  String get cliLinuxPrerequisite =>
+      'Linux ต้องมี libdbus-1-dev และ pkg-config ด้วย ส่วน macOS ใช้ Keychain';
+
+  @override
+  String get cliSignIn =>
+      'ลงชื่อเข้าใช้ Asodya ผ่านเบราว์เซอร์ด้วยคำสั่ง cortex login';
+
+  @override
+  String get cliProviderNote =>
+      'การลงชื่อเข้าใช้ Asodya ไม่ได้ให้สิทธิ์เข้าถึงผู้ให้บริการ AI ภายนอก ต้องตั้งค่าข้อมูลรับรองของแต่ละผู้ให้บริการแยกกัน';
+
+  @override
+  String get cliReleaseStatus =>
+      'ยังไม่มีไฟล์ดาวน์โหลดรุ่นเผยแพร่โดยเจ้าของโครงการ ดูที่ Releases เพื่อรับตัวติดตั้งที่ตรวจสอบแล้วเมื่อพร้อม';
+
+  @override
+  String get cliCopy => 'คัดลอกคำสั่ง';
+
+  @override
+  String get cliReadme => 'README ของ CLI';
+
+  @override
+  String get cliReleases => 'Releases';
+
+  @override
   String get whatMemory => 'แชทพร้อมความจำ';
 
   @override
