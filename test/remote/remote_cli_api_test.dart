@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:cortex/dal/remote/cortex_api.dart';
@@ -18,6 +19,15 @@ class _ChunkedClient extends http.BaseClient {
         200,
         headers: const {'content-type': 'text/event-stream'},
       );
+}
+
+class _StreamedResponseClient extends http.BaseClient {
+  _StreamedResponseClient(this.response);
+  final http.StreamedResponse response;
+
+  @override
+  Future<http.StreamedResponse> send(http.BaseRequest request) async =>
+      response;
 }
 
 void main() {
@@ -261,5 +271,57 @@ void main() {
       expired.downloadFileContent('expired'),
       throwsA(isA<ApiError>().having((error) => error.status, 'status', 404)),
     );
+  });
+
+  test('bounds declared and streamed file error responses', () async {
+    var declaredStreamCancelled = false;
+    final declaredStream = StreamController<List<int>>(
+      onCancel: () => declaredStreamCancelled = true,
+    );
+    final declared = CortexApi(
+      baseUrl: 'https://api.test/apps/cortex/v1',
+      client: _StreamedResponseClient(
+        http.StreamedResponse(
+          declaredStream.stream,
+          404,
+          contentLength: CortexApi.maxFileErrorResponseBytes + 1,
+        ),
+      ),
+    );
+    await expectLater(
+      declared.downloadFileContent('expired'),
+      throwsA(
+        isA<ApiError>()
+            .having((error) => error.status, 'status', 404)
+            .having((error) => error.number, 'number', isNull),
+      ),
+    );
+    expect(declaredStreamCancelled, isTrue);
+
+    var deliveredChunks = 0;
+    Stream<List<int>> oversizedChunks() async* {
+      deliveredChunks++;
+      yield List.filled(CortexApi.maxFileErrorResponseBytes, 0);
+      deliveredChunks++;
+      yield [1];
+      deliveredChunks++;
+      yield [2];
+    }
+
+    final streamed = CortexApi(
+      baseUrl: 'https://api.test/apps/cortex/v1',
+      client: _StreamedResponseClient(
+        http.StreamedResponse(oversizedChunks(), 404),
+      ),
+    );
+    await expectLater(
+      streamed.downloadFileContent('expired'),
+      throwsA(
+        isA<ApiError>()
+            .having((error) => error.status, 'status', 404)
+            .having((error) => error.number, 'number', isNull),
+      ),
+    );
+    expect(deliveredChunks, 2);
   });
 }

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:cortex/domain/models/remote_cli.dart';
 import 'package:cortex/domain/models/api.dart';
@@ -10,6 +11,10 @@ import 'package:cortex/presentation/frontend/screens/remote/remote_sessions_scre
 import 'package:cortex/presentation/frontend/theme/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+final _validTestPng = base64.decode(
+  'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR4nGP4z8DwHwAFAAH/iZk9HQAAAABJRU5ErkJggg==',
+);
 
 class _Gateway implements RemoteCliGateway {
   final incoming = StreamController<RemoteCliEvent>.broadcast();
@@ -79,9 +84,9 @@ class _Gateway implements RemoteCliGateway {
     artifactRequests.add(fileId);
     final error = artifactErrors[fileId];
     if (error != null) throw error;
-    return const DownloadedFileContent(
+    return DownloadedFileContent(
       contentType: 'image/png',
-      bytes: [137, 80, 78, 71, 13, 10, 26, 10],
+      bytes: _validTestPng,
     );
   }
 
@@ -213,11 +218,21 @@ void main() {
         find.byKey(const Key('remote-artifact-preview-artifact-1')),
       );
       await tester.pumpAndSettle();
-      expect(gateway.artifactRequests, ['artifact-1']);
-      expect(
-        find.byKey(const Key('remote-artifact-image-artifact-1')),
-        findsOneWidget,
+      await tester.runAsync(
+        () => Future<void>.delayed(const Duration(milliseconds: 100)),
       );
+      await tester.pumpAndSettle();
+      expect(gateway.artifactRequests, ['artifact-1']);
+      final artifactImage = find.byKey(
+        const Key('remote-artifact-image-artifact-1'),
+      );
+      expect(artifactImage, findsOneWidget);
+      final decodedRawImage = find.descendant(
+        of: artifactImage,
+        matching: find.byType(RawImage),
+      );
+      expect(decodedRawImage, findsOneWidget);
+      expect(tester.widget<RawImage>(decodedRawImage).image, isNotNull);
       await tester.tap(find.byTooltip('View image larger'));
       await tester.pumpAndSettle();
       expect(find.byType(InteractiveViewer), findsOneWidget);
@@ -253,12 +268,22 @@ void main() {
     await tester.pumpAndSettle();
 
     gateway.incoming.add(
-      _event(1, 'artifact', {
+      _event(1, 'progress', {
+        'turn_id': 'turn-1',
+        'message': 'Preparing the image',
+      }),
+    );
+    gateway.incoming.add(
+      _event(2, 'turn_end', {'turn_id': 'turn-1', 'status': 'complete'}),
+    );
+    gateway.incoming.add(
+      _event(3, 'artifact', {
         'turn_id': 'turn-1',
         'file_id': 'expired-file',
         'name': 'expired.png',
       }),
     );
+    await tester.pump();
     await tester.pump();
     await tester.pump();
     await tester.ensureVisible(
@@ -271,7 +296,7 @@ void main() {
     expect(find.text('This file is no longer available.'), findsOneWidget);
 
     gateway.incoming.add(
-      _event(2, 'artifact', {
+      _event(4, 'artifact', {
         'turn_id': 'turn-1',
         'file_id': 'offline-file',
         'name': 'offline.png',

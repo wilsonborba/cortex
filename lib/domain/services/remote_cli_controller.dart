@@ -199,11 +199,8 @@ class RemoteCliController extends ChangeNotifier {
           if (event.id <= lastEventId) continue;
           lastEventId = event.id;
           _recordAnswer(event);
-          events.add(event);
-          if (events.length > maxStoredEvents) {
-            events.removeRange(0, events.length - maxStoredEvents);
-          }
           _observe(event);
+          _retainEvent(event);
           reconnecting = false;
           failure = null;
           _notify();
@@ -341,6 +338,36 @@ class RemoteCliController extends ChangeNotifier {
     _activeTurn = null;
   }
 
+  void _retainEvent(RemoteCliEvent event) {
+    events.add(event);
+    while (events.length > maxStoredEvents) {
+      final removed = events.removeAt(0);
+      final turn = _turnsByEventId.remove(removed.id);
+      turn?.events.removeWhere((item) => item.id == removed.id);
+    }
+    _pruneTurns();
+  }
+
+  void _pruneTurns() {
+    while (turns.length > maxStoredEvents) {
+      final index = turns.indexWhere((turn) => !identical(turn, _activeTurn));
+      if (index < 0) return;
+      final removed = turns.removeAt(index);
+      final remoteTurnId = removed.remoteTurnId;
+      if (remoteTurnId != null &&
+          identical(_turnsByRemoteId[remoteTurnId], removed)) {
+        _turnsByRemoteId.remove(remoteTurnId);
+      }
+      final removedEventIds = _turnsByEventId.entries
+          .where((entry) => identical(entry.value, removed))
+          .map((entry) => entry.key)
+          .toSet();
+      _turnsByEventId.removeWhere((_, turn) => identical(turn, removed));
+      events.removeWhere((event) => removedEventIds.contains(event.id));
+      removed.events.clear();
+    }
+  }
+
   static String? _remoteTurnId(RemoteCliEvent event) {
     final id = event.payload['turn_id'];
     return id is String && id.isNotEmpty ? id : null;
@@ -363,6 +390,18 @@ class RemoteCliController extends ChangeNotifier {
           .where((turn) => turn.commandId == commandId.toInt())
           .firstOrNull;
     }
+    final lifecycleOnly =
+        event.kind == 'turn_end' ||
+        event.kind == 'approval_answer' ||
+        event.kind == 'cancel' ||
+        event.kind == 'artifact' ||
+        (event.kind == 'progress' &&
+            const {
+              'cancel_requested',
+              'cancel_pending',
+              'cancel_failed',
+              'cancelled',
+            }.contains(event.payload['status']));
     if (remoteTurnId != null) {
       final known = _turnsByRemoteId[remoteTurnId];
       if (known != null) return known;
@@ -372,6 +411,7 @@ class RemoteCliController extends ChangeNotifier {
         _turnsByRemoteId[remoteTurnId] = active;
         return active;
       }
+      if (lifecycleOnly) return null;
       return _turnsByRemoteId.putIfAbsent(remoteTurnId, () {
         final turn = RemoteCliTurn(
           key: 'remote-$remoteTurnId',
@@ -379,12 +419,11 @@ class RemoteCliController extends ChangeNotifier {
           prompt: '',
         );
         turns.add(turn);
+        _pruneTurns();
         return turn;
       });
     }
-    if (event.kind == 'turn_end' || event.kind == 'approval_answer') {
-      return _activeTurn;
-    }
+    if (lifecycleOnly) return _activeTurn;
     if (event.kind == 'progress' &&
         !event.payload.containsKey('event') &&
         !event.payload.containsKey('stage') &&
@@ -401,6 +440,7 @@ class RemoteCliController extends ChangeNotifier {
     );
     turns.add(turn);
     _activeTurn = turn;
+    _pruneTurns();
     return turn;
   }
 
@@ -425,6 +465,7 @@ class RemoteCliController extends ChangeNotifier {
     );
     turns.add(turn);
     _activeTurn = turn;
+    _pruneTurns();
     sendingPrompt = true;
     failure = null;
     commandStatus = RemoteCliCommandStatus.none;
