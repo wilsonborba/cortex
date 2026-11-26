@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:cortex/dal/remote/cortex_api.dart';
 import 'package:cortex/dal/remote/remote_cli_api.dart';
 import 'package:cortex/domain/models/api.dart';
+import 'package:fake_async/fake_async.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
@@ -323,5 +324,43 @@ void main() {
       ),
     );
     expect(deliveredChunks, 2);
+  });
+
+  test('times out and cancels an idle file error response stream', () async {
+    var streamCancelled = false;
+    late Future<void> expectation;
+    fakeAsync((async) {
+      var streamListened = false;
+      final stalledStream = StreamController<List<int>>(
+        onListen: () => streamListened = true,
+        onCancel: () => streamCancelled = true,
+      );
+      final api = CortexApi(
+        baseUrl: 'https://api.test/apps/cortex/v1',
+        client: _StreamedResponseClient(
+          http.StreamedResponse(stalledStream.stream, 503),
+        ),
+      );
+      expectation = expectLater(
+        api.downloadFileContent('stalled'),
+        throwsA(
+          isA<ApiError>()
+              .having((error) => error.status, 'status', 503)
+              .having(
+                (error) => error.message,
+                'message',
+                contains('timed out'),
+              ),
+        ),
+      );
+
+      async.flushMicrotasks();
+      expect(streamListened, isTrue);
+      expect(async.nonPeriodicTimerCount, greaterThan(0));
+      async.elapse(const Duration(seconds: 30));
+      async.flushMicrotasks();
+    });
+    await expectation;
+    expect(streamCancelled, isTrue);
   });
 }

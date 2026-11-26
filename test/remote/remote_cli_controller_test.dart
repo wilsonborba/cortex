@@ -658,6 +658,83 @@ void main() {
     await gateway.dispose();
   });
 
+  test(
+    'unknown artifact cannot bind a pending prompt over a known completed turn',
+    () async {
+      final gateway = _Gateway();
+      final controller = RemoteCliController(gateway: gateway);
+      await controller.openSession(_session());
+      await Future<void>.delayed(Duration.zero);
+
+      expect(await controller.sendPrompt('first prompt'), isTrue);
+      gateway.stream.add(
+        _event(1, 'progress', {
+          'turn_id': 'completed-turn',
+          'message': 'Working',
+        }),
+      );
+      gateway.stream.add(
+        _event(2, 'turn_end', {
+          'turn_id': 'completed-turn',
+          'status': 'complete',
+        }),
+      );
+      await Future<void>.delayed(Duration.zero);
+
+      gateway.stream.add(
+        _event(3, 'artifact', {
+          'turn_id': 'completed-turn',
+          'file_id': 'late-file',
+        }),
+      );
+      await Future<void>.delayed(Duration.zero);
+      expect(controller.turns.single.status, RemoteCliTurnStatus.complete);
+      expect(
+        controller.turns.single.events.any(
+          (event) =>
+              event.kind == 'artifact' &&
+              event.payload['file_id'] == 'late-file',
+        ),
+        isTrue,
+      );
+
+      expect(await controller.sendPrompt('second prompt'), isTrue);
+      final pendingTurn = controller.turns.last;
+      expect(pendingTurn.remoteTurnId, isNull);
+      gateway.stream.add(
+        _event(4, 'artifact', {
+          'turn_id': 'unknown-previous-turn',
+          'file_id': 'stale-file',
+        }),
+      );
+      await Future<void>.delayed(Duration.zero);
+
+      expect(pendingTurn.remoteTurnId, isNull);
+      expect(pendingTurn.status, RemoteCliTurnStatus.awaitingResponse);
+      expect(
+        pendingTurn.events.any(
+          (event) => event.payload['file_id'] == 'stale-file',
+        ),
+        isFalse,
+      );
+
+      gateway.stream.add(
+        _event(5, 'progress', {
+          'turn_id': 'second-turn',
+          'event': 'stage',
+          'message': 'Starting second prompt',
+        }),
+      );
+      await Future<void>.delayed(Duration.zero);
+      expect(pendingTurn.remoteTurnId, 'second-turn');
+      expect(controller.turns.first.remoteTurnId, 'completed-turn');
+
+      await controller.closeSession();
+      controller.dispose();
+      await gateway.dispose();
+    },
+  );
+
   test('per-session turn and event history stays within 500 items', () async {
     final gateway = _Gateway();
     final controller = RemoteCliController(gateway: gateway);

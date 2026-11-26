@@ -306,7 +306,16 @@ class CortexApi {
         .send(request)
         .timeout(const Duration(seconds: 30));
     if (response.statusCode >= 400) {
-      final errorResponse = await _boundedFileErrorResponse(response);
+      http.Response? errorResponse;
+      try {
+        errorResponse = await _boundedFileErrorResponse(response);
+      } on TimeoutException {
+        throw ApiError(
+          response.statusCode,
+          null,
+          'File error response timed out.',
+        );
+      }
       if (errorResponse == null) {
         throw ApiError(
           response.statusCode,
@@ -352,7 +361,7 @@ class CortexApi {
     final iterator = StreamIterator<List<int>>(response.stream);
     final bytes = BytesBuilder(copy: false);
     try {
-      while (await iterator.moveNext()) {
+      while (await iterator.moveNext().timeout(const Duration(seconds: 30))) {
         final chunk = iterator.current;
         if (bytes.length + chunk.length > maxFileErrorResponseBytes) {
           await iterator.cancel();
