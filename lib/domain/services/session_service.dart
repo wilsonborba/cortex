@@ -23,18 +23,23 @@ class SessionService {
   const SessionService({
     String? Function()? cookieReader,
     bool isNative = false,
+    NativeSessionStore sessionStore = const NativeSessionStore(),
   }) : _readSessionCookie = cookieReader ?? readCsrfToken,
-       _isNative = isNative;
+       _isNative = isNative,
+       _sessionStore = sessionStore;
 
   final String? Function() _readSessionCookie;
   final bool _isNative;
+  final NativeSessionStore _sessionStore;
 
   Future<SessionStatus> currentStatus() async {
     if (_isNative) {
-      final store = NativeSessionStore();
-      final sid = await store.readSessionId();
-      final csrf = await store.readCsrfToken();
-      return sid != null && csrf != null
+      final sid = await _sessionStore.readSessionId();
+      final csrf = await _sessionStore.readCsrfToken();
+      return sid != null &&
+              csrf != null &&
+              sid.isNotEmpty &&
+              csrf.isNotEmpty
           ? SessionStatus.authenticated
           : SessionStatus.none;
     }
@@ -51,7 +56,7 @@ class SessionService {
   /// the real backend session revocation.
   Future<void> clear() async {
     if (_isNative) {
-      await NativeSessionStore().clearSession();
+      await _sessionStore.clearSession();
     } else {
       deleteCookie('csrf');
     }

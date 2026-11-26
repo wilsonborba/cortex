@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 
@@ -29,11 +30,14 @@ class AuthApiAdapter {
     this.ssoAuthBaseUrl = AppSettings.ssoAuthBaseUrl,
     this.apiForAppsBaseUrl = AppSettings.apiForAppsBaseUrl,
     http.Client? httpClient,
-  }) : _httpClient = httpClient ?? createCredentialsClient();
+    NativeSessionStore sessionStore = const NativeSessionStore(),
+  }) : _httpClient = httpClient ?? createCredentialsClient(),
+       _sessionStore = sessionStore;
 
   final String ssoAuthBaseUrl;
   final String apiForAppsBaseUrl;
   final http.Client _httpClient;
+  final NativeSessionStore _sessionStore;
 
   /// Builds the URL Cortex should redirect the browser to in order to start
   /// an `auth_apps` login/signup, carrying an encrypted `app_context` that
@@ -125,7 +129,7 @@ class AuthApiAdapter {
       challenge: challenge,
       matchCode: code,
     );
-    await const NativeSessionStore().writePendingHandoff(
+    await _sessionStore.writePendingHandoff(
       jsonEncode({
         'handoff_id': handoffId,
         'secret': secret,
@@ -149,25 +153,32 @@ class AuthApiAdapter {
     );
   }
 
-  Future<String> nativeHandoffStatus() async {
+  static const Duration defaultTimeout = Duration(seconds: 15);
+
+  Future<String> nativeHandoffStatus({Duration timeout = defaultTimeout}) async {
     final pending = await _pendingHandoff();
-    final response = await _httpClient.post(
-      Uri.parse('$apiForAppsBaseUrl/apps/api/v1/exchange'),
-      headers: const {'Content-Type': 'application/json'},
-      body: jsonEncode({
-        'app': AppSettings.appIdentifier,
-        'handoff_id': pending.handoffId,
-        'challenge': pending.challenge,
-        'status': true,
-      }),
-    );
+    http.Response response;
+    try {
+      response = await _httpClient.post(
+        Uri.parse('$apiForAppsBaseUrl/apps/api/v1/exchange'),
+        headers: const {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'app': AppSettings.appIdentifier,
+          'handoff_id': pending.handoffId,
+          'challenge': pending.challenge,
+          'status': true,
+        }),
+      ).timeout(timeout);
+    } on TimeoutException {
+      throw const NativeHandoffException('TIMEOUT', 408);
+    }
     final body = _handoffBody(response);
     final status = (body['data'] as Map?)?['status'];
     return status is String ? status : 'unknown';
   }
 
   Future<NativeLoginAttempt?> restoreNativeLogin() async {
-    final raw = await const NativeSessionStore().readPendingHandoff();
+    final raw = await _sessionStore.readPendingHandoff();
     if (raw == null) return null;
     final value = (jsonDecode(raw) as Map).cast<String, dynamic>();
     final challenge = value['challenge'] as String;
@@ -179,32 +190,40 @@ class AuthApiAdapter {
     );
   }
 
-  Future<String?> finishNativeLogin() async {
+  Future<String?> finishNativeLogin({Duration timeout = defaultTimeout}) async {
     final pending = await _pendingHandoff();
-    final response = await _httpClient.post(
-      Uri.parse('$apiForAppsBaseUrl/apps/api/v1/exchange'),
-      headers: const {'Content-Type': 'application/json'},
-      body: jsonEncode({
-        'app': AppSettings.appIdentifier,
-        'handoff_id': pending.handoffId,
-        'secret': pending.secret,
-      }),
-    );
+    http.Response response;
+    try {
+      response = await _httpClient.post(
+        Uri.parse('$apiForAppsBaseUrl/apps/api/v1/exchange'),
+        headers: const {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'app': AppSettings.appIdentifier,
+          'handoff_id': pending.handoffId,
+          'secret': pending.secret,
+        }),
+      ).timeout(timeout);
+    } on TimeoutException {
+      throw const NativeHandoffException('TIMEOUT', 408);
+    }
     final data = (_handoffBody(response)['data'] as Map)
         .cast<String, dynamic>();
     final sid = data['session_id'];
     final csrf = data['csrf_token'];
-    if (sid is! String || csrf is! String) {
+    if (sid is! String ||
+        csrf is! String ||
+        sid.trim().isEmpty ||
+        csrf.trim().isEmpty) {
       throw const NativeHandoffException('INVALID_RESPONSE', 502);
     }
-    await const NativeSessionStore().writeSession(sid: sid, csrf: csrf);
-    await const NativeSessionStore().clearPendingHandoff();
+    await _sessionStore.writeSession(sid: sid, csrf: csrf);
+    await _sessionStore.clearPendingHandoff();
     final location = data['location'];
     if (location is Map) {
       final city = location['city'];
       final country = location['country'];
       final countryName = country is String && country.trim().isNotEmpty
-          ? await const NativeSessionStore().localizedCountryName(
+          ? await _sessionStore.localizedCountryName(
               country.trim(),
             )
           : null;
@@ -217,27 +236,32 @@ class AuthApiAdapter {
     return null;
   }
 
-  Future<void> cancelNativeLogin() async {
+  Future<void> cancelNativeLogin({Duration timeout = defaultTimeout}) async {
     final pending = await _pendingHandoff();
-    final response = await _httpClient.post(
-      Uri.parse('$apiForAppsBaseUrl/apps/api/v1/exchange'),
-      headers: const {'Content-Type': 'application/json'},
-      body: jsonEncode({
-        'app': AppSettings.appIdentifier,
-        'handoff_id': pending.handoffId,
-        'secret': pending.secret,
-        'cancel': true,
-      }),
-    );
+    http.Response response;
+    try {
+      response = await _httpClient.post(
+        Uri.parse('$apiForAppsBaseUrl/apps/api/v1/exchange'),
+        headers: const {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'app': AppSettings.appIdentifier,
+          'handoff_id': pending.handoffId,
+          'secret': pending.secret,
+          'cancel': true,
+        }),
+      ).timeout(timeout);
+    } on TimeoutException {
+      throw const NativeHandoffException('TIMEOUT', 408);
+    }
     _handoffBody(response);
-    await const NativeSessionStore().clearPendingHandoff();
+    await _sessionStore.clearPendingHandoff();
   }
 
   Future<void> discardNativeLogin() =>
-      const NativeSessionStore().clearPendingHandoff();
+      _sessionStore.clearPendingHandoff();
 
   Future<NativeLoginAttempt> _pendingHandoff() async {
-    final raw = await const NativeSessionStore().readPendingHandoff();
+    final raw = await _sessionStore.readPendingHandoff();
     if (raw == null) {
       throw const NativeHandoffException('NO_PENDING_LOGIN', 400);
     }

@@ -30,12 +30,29 @@ class NativeSessionStore {
     return countryCode;
   }
 
-  Future<String?> readSessionId() => _storage.read(key: _sidKey);
-  Future<String?> readCsrfToken() => _storage.read(key: _csrfKey);
+  Future<String?> readSessionId() async {
+    final val = await _storage.read(key: _sidKey);
+    return (val != null && val.trim().isNotEmpty) ? val.trim() : null;
+  }
+
+  Future<String?> readCsrfToken() async {
+    final val = await _storage.read(key: _csrfKey);
+    return (val != null && val.trim().isNotEmpty) ? val.trim() : null;
+  }
 
   Future<void> writeSession({required String sid, required String csrf}) async {
-    await _storage.write(key: _sidKey, value: sid);
-    await _storage.write(key: _csrfKey, value: csrf);
+    final cleanSid = sid.trim();
+    final cleanCsrf = csrf.trim();
+    if (cleanSid.isEmpty || cleanCsrf.isEmpty) {
+      throw const FormatException('Session ID and CSRF token must not be empty');
+    }
+    try {
+      await _storage.write(key: _sidKey, value: cleanSid);
+      await _storage.write(key: _csrfKey, value: cleanCsrf);
+    } catch (_) {
+      await clearSession().catchError((_) {});
+      rethrow;
+    }
   }
 
   Future<void> clearSession() async {
