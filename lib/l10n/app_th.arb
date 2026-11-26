@@ -656,7 +656,7 @@
   "remoteApprove": "อนุมัติ",
   "remoteDeny": "ปฏิเสธ",
   "remoteNoApprovals": "ไม่มีคำขออนุมัติที่รอดำเนินการ",
-  "remotePromptHint": "ส่งคำสั่งไปยังเซสชัน CLI นี้",
+  "remotePromptHint": "ส่งข้อความถึงเซสชันนี้",
   "remoteSendPrompt": "ส่งคำสั่ง",
   "remoteAttachImage": "แนบรูปภาพ",
   "remoteRemoveAttachment": "นำ {name} ออก",

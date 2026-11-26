@@ -3852,7 +3852,7 @@ abstract class AppLocalizations {
   /// No description provided for @remotePromptHint.
   ///
   /// In en, this message translates to:
-  /// **'Send a prompt to this CLI session'**
+  /// **'Message this session'**
   String get remotePromptHint;
 
   /// No description provided for @remoteSendPrompt.
