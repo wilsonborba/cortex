@@ -643,8 +643,9 @@ void main() {
         'status': 'complete',
       }),
     );
+    gateway.stream.add(_event(6, 'cancel'));
     gateway.stream.add(
-      _event(6, 'artifact', {'turn_id': 'completed-turn', 'file_id': 'file-2'}),
+      _event(7, 'artifact', {'turn_id': 'completed-turn', 'file_id': 'file-2'}),
     );
     await Future<void>.delayed(Duration.zero);
 
