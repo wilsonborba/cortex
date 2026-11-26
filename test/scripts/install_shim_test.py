@@ -90,7 +90,9 @@ class InstallShimTest(unittest.TestCase):
         headers = (ROOT / "web" / "_headers").read_text()
         self.assertIn("/install.sh\n  Content-Type: text/x-shellscript", headers)
         self.assertIn("X-Content-Type-Options: nosniff", headers)
-        self.assertIn("/* /index.html 200", (ROOT / "web" / "_redirects").read_text())
+        redirects = (ROOT / "web" / "_redirects").read_text()
+        self.assertNotIn("/* /index.html 200", redirects)
+        self.assertFalse((ROOT / "web" / "404.html").exists())
 
     def test_resolves_valid_release_downloads_existing_installer_and_cleans_temp(self) -> None:
         result = self.run_shim("--dry-run", "--install-dir", "/opt/cortex/bin")
