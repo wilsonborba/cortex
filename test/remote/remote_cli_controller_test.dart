@@ -659,6 +659,44 @@ void main() {
   });
 
   test(
+    'idle lifecycle events with unknown turn ids do not create turns',
+    () async {
+      final gateway = _Gateway();
+      final controller = RemoteCliController(gateway: gateway);
+      await controller.openSession(_session());
+      await Future<void>.delayed(Duration.zero);
+
+      gateway.stream.add(_event(1, 'cancel', {'turn_id': 'unknown-idle-turn'}));
+      gateway.stream.add(
+        _event(2, 'turn_end', {
+          'turn_id': 'unknown-idle-turn',
+          'status': 'cancelled',
+        }),
+      );
+      gateway.stream.add(
+        _event(3, 'approval_answer', {
+          'turn_id': 'unknown-idle-turn',
+          'approval_id': 'late-approval',
+        }),
+      );
+      gateway.stream.add(
+        _event(4, 'progress', {
+          'turn_id': 'unknown-idle-turn',
+          'status': 'cancelled',
+        }),
+      );
+      await Future<void>.delayed(Duration.zero);
+
+      expect(controller.turns, isEmpty);
+      expect(controller.turnRunning, isFalse);
+
+      await controller.closeSession();
+      controller.dispose();
+      await gateway.dispose();
+    },
+  );
+
+  test(
     'unknown artifact cannot bind a pending prompt over a known completed turn',
     () async {
       final gateway = _Gateway();

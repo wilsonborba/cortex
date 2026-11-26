@@ -412,6 +412,7 @@ class RemoteCliController extends ChangeNotifier {
         _turnsByRemoteId[remoteTurnId] = active;
         return active;
       }
+      if (lifecycleOnly) return null;
       return _turnsByRemoteId.putIfAbsent(remoteTurnId, () {
         final turn = RemoteCliTurn(
           key: 'remote-$remoteTurnId',
