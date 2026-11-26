@@ -2055,6 +2055,180 @@ class AppLocalizationsTh extends AppLocalizations {
   }
 
   @override
+  String get remoteSessionsTitle => 'เซสชันระยะไกล';
+
+  @override
+  String get remoteSessionsDescription =>
+      'ควบคุมเซสชัน CLI ที่เชื่อมต่อกับบัญชี Asodya ของคุณ';
+
+  @override
+  String get remoteRefresh => 'รีเฟรชเซสชัน';
+
+  @override
+  String get remoteNoSessionsTitle => 'ยังไม่มีเซสชัน CLI';
+
+  @override
+  String get remoteNoSessionsBody =>
+      'เปิดการควบคุมระยะไกลใน Cortex CLI เพื่อดูเซสชันที่นี่';
+
+  @override
+  String get remoteSelectSessionTitle => 'เลือกเซสชัน CLI';
+
+  @override
+  String get remoteSelectSessionBody =>
+      'เลือกเซสชันทางซ้ายเพื่อดูความคืบหน้าและส่งพรอมป์ต์';
+
+  @override
+  String get remoteOpenSession => 'เปิดเซสชัน';
+
+  @override
+  String get remoteOnline => 'ออนไลน์';
+
+  @override
+  String get remoteOffline => 'ออฟไลน์';
+
+  @override
+  String remoteLastSeen(String time) {
+    return 'พบล่าสุด $time';
+  }
+
+  @override
+  String get remoteBackToSessions => 'เซสชันทั้งหมด';
+
+  @override
+  String get remoteProgress => 'ความคืบหน้า';
+
+  @override
+  String get remoteAnswer => 'คำตอบ';
+
+  @override
+  String get remoteApprovals => 'คำขออนุมัติ';
+
+  @override
+  String get remoteApprovalDescription =>
+      'เลือกว่าจะอนุญาตให้ CLI ทำรายการนี้ต่อหรือไม่';
+
+  @override
+  String get remoteApprove => 'อนุมัติ';
+
+  @override
+  String get remoteDeny => 'ปฏิเสธ';
+
+  @override
+  String get remoteNoApprovals => 'ไม่มีคำขออนุมัติที่รอดำเนินการ';
+
+  @override
+  String get remotePromptHint => 'ส่งข้อความถึงเซสชันนี้';
+
+  @override
+  String get remoteSendPrompt => 'ส่งคำสั่ง';
+
+  @override
+  String get remoteAttachImage => 'แนบรูปภาพ';
+
+  @override
+  String remoteRemoveAttachment(String name) {
+    return 'นำ $name ออก';
+  }
+
+  @override
+  String get remoteCancelTurn => 'ยกเลิกงาน';
+
+  @override
+  String get remoteCancelPending => 'ส่งคำขอยกเลิกแล้ว กำลังรอสถานะจาก CLI';
+
+  @override
+  String get remoteCancelled => 'ยกเลิกงานแล้ว';
+
+  @override
+  String get remotePromptSent => 'ส่งคำสั่งไปยังเซสชัน CLI แล้ว';
+
+  @override
+  String get remotePromptQueued => 'เข้าคิวคำสั่งแล้ว เซสชัน CLI ออฟไลน์อยู่';
+
+  @override
+  String get remoteCommandExpired => 'คำสั่งหมดอายุก่อนที่ CLI จะได้รับ';
+
+  @override
+  String get remoteReconnecting => 'กำลังเชื่อมต่อสตรีมเหตุการณ์อีกครั้ง…';
+
+  @override
+  String get remoteSessionExpired => 'เซสชันนี้ไม่พร้อมใช้งานแล้ว';
+
+  @override
+  String get remoteRequestFailed =>
+      'คำขอไม่สำเร็จ ตรวจสอบการเชื่อมต่อแล้วลองอีกครั้ง';
+
+  @override
+  String get remotePreparingImage => 'กำลังอัปโหลดรูปภาพที่เลือก…';
+
+  @override
+  String get remoteNoEvents => 'ความคืบหน้าและคำตอบจะแสดงที่นี่';
+
+  @override
+  String remoteArtifact(String name) {
+    return 'ไฟล์เซสชัน: $name';
+  }
+
+  @override
+  String get remoteArtifactPreview => 'แสดงตัวอย่างรูปภาพ';
+
+  @override
+  String get remoteArtifactExpand => 'ขยายรูปภาพ';
+
+  @override
+  String get remoteArtifactExpired => 'ไฟล์นี้ไม่พร้อมใช้งานแล้ว';
+
+  @override
+  String get remoteArtifactMissingFile =>
+      'ไม่สามารถแสดงตัวอย่างได้เนื่องจากเหตุการณ์นี้ไม่มีการอ้างอิงไฟล์ที่บันทึกไว้';
+
+  @override
+  String get remoteArtifactNotImage => 'ไฟล์นี้ไม่ใช่รูปภาพที่รองรับ';
+
+  @override
+  String get remoteArtifactTooLarge =>
+      'รูปภาพนี้มีขนาดใหญ่เกินกว่าจะแสดงตัวอย่างได้';
+
+  @override
+  String get remoteTurnWaiting => 'กำลังรอ CLI';
+
+  @override
+  String get remoteTurnPrompt => 'คำสั่ง';
+
+  @override
+  String get remoteTurnRunning => 'กำลังทำงาน';
+
+  @override
+  String get remoteTurnComplete => 'เสร็จสมบูรณ์';
+
+  @override
+  String get remoteTurnIncomplete => 'สตรีมจาก CLI จบก่อนแจ้งผลลัพธ์';
+
+  @override
+  String get remoteTurnFailed => 'CLI ทำงานนี้ไม่สำเร็จ';
+
+  @override
+  String remoteTurnProgressNotice(int number) {
+    return 'ประกาศ $number';
+  }
+
+  @override
+  String get remoteProgressCommandReceived => 'CLI ได้รับคำสั่งแล้ว';
+
+  @override
+  String get remoteProgressActionCancelled => 'ยกเลิกการดำเนินการแล้ว';
+
+  @override
+  String get remoteProgressCancelRequested => 'ส่งคำขอยกเลิกแล้ว';
+
+  @override
+  String get remoteProgressCancelFailed => 'ยกเลิกไม่สำเร็จ';
+
+  @override
+  String get remoteProgressCancelPending => 'กำลังรอการยกเลิก';
+
+  @override
   String get heroDemoLabel =>
       'ตัวอย่างที่บันทึกไว้: ข้อมูลจริงจากโมเดล ไม่มีการเรียกใช้สด';
 

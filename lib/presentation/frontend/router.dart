@@ -21,6 +21,10 @@ import 'shell/details_panel.dart';
 import 'screens/landing/landing_page.dart';
 import 'screens/native_entry.dart';
 import '../../core/utils/platform.dart';
+import '../../dal/remote/remote_cli_api.dart';
+import '../../domain/services/remote_cli_controller.dart';
+import '../../domain/services/remote_cli_gateway.dart';
+import 'screens/remote/remote_sessions_screen.dart';
 
 const homeSections = {'how-it-works', 'memory', 'engineering', 'faq'};
 const _protected = [
@@ -28,6 +32,7 @@ const _protected = [
   '/v1/memory',
   '/v1/personas',
   '/v1/usage',
+  '/v1/remote',
   '/v1/settings',
 ];
 final _uuid = RegExp(
@@ -50,6 +55,7 @@ GoRouter buildRouter({
   Widget Function(BuildContext, String)? screen,
   String initialLocation = '/v1/home',
   CortexApi? api,
+  RemoteCliGateway? remoteGateway,
   Future<String?> Function()? emailLoader,
 }) {
   final panel = details ?? DetailsController();
@@ -58,6 +64,9 @@ GoRouter buildRouter({
   final memory = MemoryController(api: cortex);
   final personas = PersonaController(api: cortex);
   final usage = UsageController(api: cortex);
+  final remote = RemoteCliController(
+    gateway: remoteGateway ?? RemoteCliApi(filesApi: cortex),
+  );
   Future<void> signOut() async {
     await auth.signOut();
     await session.refresh();
@@ -311,6 +320,14 @@ GoRouter buildRouter({
                 () => UsageScreen(controller: usage, view: view),
               ),
             ),
+          GoRoute(
+            path: '/v1/remote',
+            builder: (c, _) => screenPage(
+              c,
+              (l) => l.remoteSessionsTitle,
+              () => RemoteSessionsScreen(controller: remote),
+            ),
+          ),
         ],
       ),
     ],

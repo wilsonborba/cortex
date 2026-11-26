@@ -2,6 +2,7 @@ import '../../domain/models/answer_inspection.dart';
 import '../../domain/models/telemetry.dart';
 import 'dart:async';
 import 'dart:convert';
+import 'dart:typed_data';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import '../../core/settings.dart';
@@ -14,6 +15,8 @@ import 'stream_client.dart';
 
 /// Client of the Cortex API v2 through the gateway (route map 06361aef).
 class CortexApi {
+  static const maxFileContentBytes = 5 * 1024 * 1024;
+  static const maxFileErrorResponseBytes = 64 * 1024;
   CortexApi({String? baseUrl, http.Client? client, http.Client? streamClient})
     : base = baseUrl ?? AppSettings.cortexApiBaseUrl,
       _client = client ?? createCredentialsClient(),
@@ -280,6 +283,103 @@ class CortexApi {
     return UploadResult(
       fileId: data['file_id'] as String?,
       noticeNumber: (data['notice_number'] as num?)?.toInt(),
+    );
+  }
+
+  /// Reads one authenticated file through the existing owner/app-scoped route.
+  /// The response is bounded while streaming so a large file cannot be
+  /// materialized in memory by the preview path.
+  Future<DownloadedFileContent> downloadFileContent(
+    String fileId, {
+    int maxBytes = maxFileContentBytes,
+  }) async {
+    if (fileId.isEmpty || maxBytes <= 0) {
+      throw const FormatException(
+        'A valid file id and byte limit are required.',
+      );
+    }
+    final request = http.Request(
+      'GET',
+      _uri('/files/${Uri.encodeComponent(fileId)}/content', {'app_id': appId}),
+    )..headers.addAll(_headers(json: false));
+    final response = await _client
+        .send(request)
+        .timeout(const Duration(seconds: 30));
+    if (response.statusCode >= 400) {
+      http.Response? errorResponse;
+      try {
+        errorResponse = await _boundedFileErrorResponse(response);
+      } on TimeoutException {
+        throw ApiError(
+          response.statusCode,
+          null,
+          'File error response timed out.',
+        );
+      }
+      if (errorResponse == null) {
+        throw ApiError(
+          response.statusCode,
+          null,
+          'File error response is too large to preview.',
+        );
+      }
+      _body(errorResponse);
+    }
+    final declaredLength = response.contentLength;
+    if (declaredLength != null && declaredLength > maxBytes) {
+      await response.stream.listen(null).cancel();
+      throw const ApiError(413, null, 'File is too large to preview.');
+    }
+    final bytes = <int>[];
+    await for (final chunk in response.stream.timeout(
+      const Duration(seconds: 30),
+    )) {
+      if (bytes.length + chunk.length > maxBytes) {
+        throw const ApiError(413, null, 'File is too large to preview.');
+      }
+      bytes.addAll(chunk);
+    }
+    final contentType = response.headers['content-type']
+        ?.split(';')
+        .first
+        .trim()
+        .toLowerCase();
+    if (contentType == null || contentType.isEmpty) {
+      throw const FormatException('File response has no content type.');
+    }
+    return DownloadedFileContent(contentType: contentType, bytes: bytes);
+  }
+
+  Future<http.Response?> _boundedFileErrorResponse(
+    http.StreamedResponse response,
+  ) async {
+    final declaredLength = response.contentLength;
+    if (declaredLength != null && declaredLength > maxFileErrorResponseBytes) {
+      await response.stream.listen((_) {}).cancel();
+      return null;
+    }
+    final iterator = StreamIterator<List<int>>(response.stream);
+    final bytes = BytesBuilder(copy: false);
+    try {
+      while (await iterator.moveNext().timeout(const Duration(seconds: 30))) {
+        final chunk = iterator.current;
+        if (bytes.length + chunk.length > maxFileErrorResponseBytes) {
+          await iterator.cancel();
+          return null;
+        }
+        bytes.add(chunk);
+      }
+    } finally {
+      await iterator.cancel();
+    }
+    return http.Response.bytes(
+      bytes.takeBytes(),
+      response.statusCode,
+      headers: response.headers,
+      request: response.request,
+      isRedirect: response.isRedirect,
+      persistentConnection: response.persistentConnection,
+      reasonPhrase: response.reasonPhrase,
     );
   }
 

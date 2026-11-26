@@ -3735,6 +3735,324 @@ abstract class AppLocalizations {
   /// **'Continued from “{word}”'**
   String inspectionContinued(String word);
 
+  /// No description provided for @remoteSessionsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Remote sessions'**
+  String get remoteSessionsTitle;
+
+  /// No description provided for @remoteSessionsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Control CLI sessions connected to your Asodya account.'**
+  String get remoteSessionsDescription;
+
+  /// No description provided for @remoteRefresh.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh sessions'**
+  String get remoteRefresh;
+
+  /// No description provided for @remoteNoSessionsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No CLI sessions yet'**
+  String get remoteNoSessionsTitle;
+
+  /// No description provided for @remoteNoSessionsBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Turn on remote control in Cortex CLI to see a session here.'**
+  String get remoteNoSessionsBody;
+
+  /// No description provided for @remoteSelectSessionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a CLI session'**
+  String get remoteSelectSessionTitle;
+
+  /// No description provided for @remoteSelectSessionBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a session on the left to view progress and send prompts.'**
+  String get remoteSelectSessionBody;
+
+  /// No description provided for @remoteOpenSession.
+  ///
+  /// In en, this message translates to:
+  /// **'Open session'**
+  String get remoteOpenSession;
+
+  /// No description provided for @remoteOnline.
+  ///
+  /// In en, this message translates to:
+  /// **'Online'**
+  String get remoteOnline;
+
+  /// No description provided for @remoteOffline.
+  ///
+  /// In en, this message translates to:
+  /// **'Offline'**
+  String get remoteOffline;
+
+  /// No description provided for @remoteLastSeen.
+  ///
+  /// In en, this message translates to:
+  /// **'Last seen {time}'**
+  String remoteLastSeen(String time);
+
+  /// No description provided for @remoteBackToSessions.
+  ///
+  /// In en, this message translates to:
+  /// **'All sessions'**
+  String get remoteBackToSessions;
+
+  /// No description provided for @remoteProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Progress'**
+  String get remoteProgress;
+
+  /// No description provided for @remoteAnswer.
+  ///
+  /// In en, this message translates to:
+  /// **'Answer'**
+  String get remoteAnswer;
+
+  /// No description provided for @remoteApprovals.
+  ///
+  /// In en, this message translates to:
+  /// **'Approval requests'**
+  String get remoteApprovals;
+
+  /// No description provided for @remoteApprovalDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose whether the CLI may continue with this action.'**
+  String get remoteApprovalDescription;
+
+  /// No description provided for @remoteApprove.
+  ///
+  /// In en, this message translates to:
+  /// **'Approve'**
+  String get remoteApprove;
+
+  /// No description provided for @remoteDeny.
+  ///
+  /// In en, this message translates to:
+  /// **'Deny'**
+  String get remoteDeny;
+
+  /// No description provided for @remoteNoApprovals.
+  ///
+  /// In en, this message translates to:
+  /// **'No pending approvals'**
+  String get remoteNoApprovals;
+
+  /// No description provided for @remotePromptHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Message this session'**
+  String get remotePromptHint;
+
+  /// No description provided for @remoteSendPrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Send prompt'**
+  String get remoteSendPrompt;
+
+  /// No description provided for @remoteAttachImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Attach image'**
+  String get remoteAttachImage;
+
+  /// No description provided for @remoteRemoveAttachment.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove {name}'**
+  String remoteRemoveAttachment(String name);
+
+  /// No description provided for @remoteCancelTurn.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel turn'**
+  String get remoteCancelTurn;
+
+  /// No description provided for @remoteCancelPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancellation requested; waiting for CLI status.'**
+  String get remoteCancelPending;
+
+  /// No description provided for @remoteCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Turn cancelled.'**
+  String get remoteCancelled;
+
+  /// No description provided for @remotePromptSent.
+  ///
+  /// In en, this message translates to:
+  /// **'Prompt sent to the CLI session.'**
+  String get remotePromptSent;
+
+  /// No description provided for @remotePromptQueued.
+  ///
+  /// In en, this message translates to:
+  /// **'Prompt queued. The CLI session is offline.'**
+  String get remotePromptQueued;
+
+  /// No description provided for @remoteCommandExpired.
+  ///
+  /// In en, this message translates to:
+  /// **'The command expired before the CLI received it.'**
+  String get remoteCommandExpired;
+
+  /// No description provided for @remoteReconnecting.
+  ///
+  /// In en, this message translates to:
+  /// **'Reconnecting to the event stream…'**
+  String get remoteReconnecting;
+
+  /// No description provided for @remoteSessionExpired.
+  ///
+  /// In en, this message translates to:
+  /// **'This session is no longer available.'**
+  String get remoteSessionExpired;
+
+  /// No description provided for @remoteRequestFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'The request failed. Check your connection and try again.'**
+  String get remoteRequestFailed;
+
+  /// No description provided for @remotePreparingImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Uploading selected image…'**
+  String get remotePreparingImage;
+
+  /// No description provided for @remoteNoEvents.
+  ///
+  /// In en, this message translates to:
+  /// **'Progress and answers will appear here.'**
+  String get remoteNoEvents;
+
+  /// No description provided for @remoteArtifact.
+  ///
+  /// In en, this message translates to:
+  /// **'Session file: {name}'**
+  String remoteArtifact(String name);
+
+  /// No description provided for @remoteArtifactPreview.
+  ///
+  /// In en, this message translates to:
+  /// **'Preview image'**
+  String get remoteArtifactPreview;
+
+  /// No description provided for @remoteArtifactExpand.
+  ///
+  /// In en, this message translates to:
+  /// **'View image larger'**
+  String get remoteArtifactExpand;
+
+  /// No description provided for @remoteArtifactExpired.
+  ///
+  /// In en, this message translates to:
+  /// **'This file is no longer available.'**
+  String get remoteArtifactExpired;
+
+  /// No description provided for @remoteArtifactMissingFile.
+  ///
+  /// In en, this message translates to:
+  /// **'Image preview is unavailable because this event has no saved file reference.'**
+  String get remoteArtifactMissingFile;
+
+  /// No description provided for @remoteArtifactNotImage.
+  ///
+  /// In en, this message translates to:
+  /// **'This file is not a supported image.'**
+  String get remoteArtifactNotImage;
+
+  /// No description provided for @remoteArtifactTooLarge.
+  ///
+  /// In en, this message translates to:
+  /// **'This image is too large to preview.'**
+  String get remoteArtifactTooLarge;
+
+  /// No description provided for @remoteTurnWaiting.
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting for the CLI'**
+  String get remoteTurnWaiting;
+
+  /// No description provided for @remoteTurnPrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Prompt'**
+  String get remoteTurnPrompt;
+
+  /// No description provided for @remoteTurnRunning.
+  ///
+  /// In en, this message translates to:
+  /// **'Working'**
+  String get remoteTurnRunning;
+
+  /// No description provided for @remoteTurnComplete.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed'**
+  String get remoteTurnComplete;
+
+  /// No description provided for @remoteTurnIncomplete.
+  ///
+  /// In en, this message translates to:
+  /// **'The CLI stream ended before it reported a result.'**
+  String get remoteTurnIncomplete;
+
+  /// No description provided for @remoteTurnFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'The CLI could not complete this turn.'**
+  String get remoteTurnFailed;
+
+  /// No description provided for @remoteTurnProgressNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'Notice {number}'**
+  String remoteTurnProgressNotice(int number);
+
+  /// No description provided for @remoteProgressCommandReceived.
+  ///
+  /// In en, this message translates to:
+  /// **'The CLI received the command.'**
+  String get remoteProgressCommandReceived;
+
+  /// No description provided for @remoteProgressActionCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'An action was cancelled.'**
+  String get remoteProgressActionCancelled;
+
+  /// No description provided for @remoteProgressCancelRequested.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancellation requested.'**
+  String get remoteProgressCancelRequested;
+
+  /// No description provided for @remoteProgressCancelFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancellation failed.'**
+  String get remoteProgressCancelFailed;
+
+  /// No description provided for @remoteProgressCancelPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancellation is pending.'**
+  String get remoteProgressCancelPending;
+
   /// No description provided for @heroDemoLabel.
   ///
   /// In en, this message translates to:

@@ -35,6 +35,12 @@ final _usage = _Destination(
   AppIcons.usageSelected,
   (l) => l.usage,
 );
+final _remote = _Destination(
+  '/v1/remote',
+  AppIcons.systemTheme,
+  AppIcons.systemTheme,
+  (l) => l.remoteSessionsTitle,
+);
 
 const _logo = 'lib/presentation/frontend/assets/img/logo.png';
 
@@ -323,6 +329,11 @@ class _AppShellState extends State<AppShell> {
             selected: _at(_usage.path),
             onTap: () => go(_usage.path),
           ),
+          _NavItem(
+            destination: _remote,
+            selected: _at(_remote.path),
+            onTap: () => go(_remote.path),
+          ),
           Expanded(
             child:
                 widget.chatList ??
@@ -376,7 +387,7 @@ class _AppShellState extends State<AppShell> {
             onPressed: () => context.go('/v1/chats/temporary'),
           ),
           const SizedBox(height: Space.s8),
-          for (final d in [_chats, _usage]) ...[
+          for (final d in [_chats, _usage, _remote]) ...[
             _RailItem(
               tooltip: d.label(l),
               icon: d.iconFor(_at(d.path)),

@@ -190,3 +190,11 @@ class UploadResult {
   final String? fileId;
   final int? noticeNumber;
 }
+
+/// Raw, owner-scoped bytes returned by GET /files/{id}/content.
+class DownloadedFileContent {
+  const DownloadedFileContent({required this.contentType, required this.bytes});
+
+  final String contentType;
+  final List<int> bytes;
+}

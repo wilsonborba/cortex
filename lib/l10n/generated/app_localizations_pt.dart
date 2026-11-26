@@ -2095,6 +2095,185 @@ class AppLocalizationsPt extends AppLocalizations {
   }
 
   @override
+  String get remoteSessionsTitle => 'Sessões remotas';
+
+  @override
+  String get remoteSessionsDescription =>
+      'Controle sessões do CLI conectadas à sua conta Asodya.';
+
+  @override
+  String get remoteRefresh => 'Atualizar sessões';
+
+  @override
+  String get remoteNoSessionsTitle => 'Nenhuma sessão do CLI ainda';
+
+  @override
+  String get remoteNoSessionsBody =>
+      'Ative o controle remoto no Cortex CLI para ver uma sessão aqui.';
+
+  @override
+  String get remoteSelectSessionTitle => 'Selecione uma sessão CLI';
+
+  @override
+  String get remoteSelectSessionBody =>
+      'Escolha uma sessão à esquerda para ver o progresso e enviar comandos.';
+
+  @override
+  String get remoteOpenSession => 'Abrir sessão';
+
+  @override
+  String get remoteOnline => 'Conectado';
+
+  @override
+  String get remoteOffline => 'Desconectado';
+
+  @override
+  String remoteLastSeen(String time) {
+    return 'Visto por último $time';
+  }
+
+  @override
+  String get remoteBackToSessions => 'Todas as sessões';
+
+  @override
+  String get remoteProgress => 'Progresso';
+
+  @override
+  String get remoteAnswer => 'Resposta';
+
+  @override
+  String get remoteApprovals => 'Solicitações de aprovação';
+
+  @override
+  String get remoteApprovalDescription =>
+      'Escolha se o CLI pode continuar com esta ação.';
+
+  @override
+  String get remoteApprove => 'Aprovar';
+
+  @override
+  String get remoteDeny => 'Negar';
+
+  @override
+  String get remoteNoApprovals => 'Nenhuma aprovação pendente';
+
+  @override
+  String get remotePromptHint => 'Mensagem para esta sessão';
+
+  @override
+  String get remoteSendPrompt => 'Enviar';
+
+  @override
+  String get remoteAttachImage => 'Anexar imagem';
+
+  @override
+  String remoteRemoveAttachment(String name) {
+    return 'Remover $name';
+  }
+
+  @override
+  String get remoteCancelTurn => 'Cancelar';
+
+  @override
+  String get remoteCancelPending =>
+      'Cancelamento solicitado; aguardando o status do CLI.';
+
+  @override
+  String get remoteCancelled => 'Execução cancelada.';
+
+  @override
+  String get remotePromptSent => 'Solicitação enviada para a sessão do CLI.';
+
+  @override
+  String get remotePromptQueued =>
+      'Solicitação na fila. A sessão do CLI está desconectada.';
+
+  @override
+  String get remoteCommandExpired =>
+      'O comando expirou antes de ser recebido pelo CLI.';
+
+  @override
+  String get remoteReconnecting => 'Reconectando ao fluxo de eventos…';
+
+  @override
+  String get remoteSessionExpired => 'Esta sessão não está mais disponível.';
+
+  @override
+  String get remoteRequestFailed =>
+      'A solicitação falhou. Verifique a conexão e tente novamente.';
+
+  @override
+  String get remotePreparingImage => 'Enviando imagem selecionada…';
+
+  @override
+  String get remoteNoEvents => 'O progresso e as respostas aparecerão aqui.';
+
+  @override
+  String remoteArtifact(String name) {
+    return 'Arquivo da sessão: $name';
+  }
+
+  @override
+  String get remoteArtifactPreview => 'Pré-visualizar imagem';
+
+  @override
+  String get remoteArtifactExpand => 'Ampliar imagem';
+
+  @override
+  String get remoteArtifactExpired => 'Este arquivo não está mais disponível.';
+
+  @override
+  String get remoteArtifactMissingFile =>
+      'A pré-visualização não está disponível porque o evento não tem uma referência de arquivo salva.';
+
+  @override
+  String get remoteArtifactNotImage =>
+      'Este arquivo não é uma imagem compatível.';
+
+  @override
+  String get remoteArtifactTooLarge =>
+      'Esta imagem é grande demais para pré-visualizar.';
+
+  @override
+  String get remoteTurnWaiting => 'Aguardando o CLI';
+
+  @override
+  String get remoteTurnPrompt => 'Comando enviado';
+
+  @override
+  String get remoteTurnRunning => 'Em andamento';
+
+  @override
+  String get remoteTurnComplete => 'Concluído';
+
+  @override
+  String get remoteTurnIncomplete =>
+      'O fluxo do CLI terminou antes de informar um resultado.';
+
+  @override
+  String get remoteTurnFailed => 'O CLI não conseguiu concluir esta execução.';
+
+  @override
+  String remoteTurnProgressNotice(int number) {
+    return 'Aviso $number';
+  }
+
+  @override
+  String get remoteProgressCommandReceived => 'O CLI recebeu o comando.';
+
+  @override
+  String get remoteProgressActionCancelled => 'Uma ação foi cancelada.';
+
+  @override
+  String get remoteProgressCancelRequested => 'Cancelamento solicitado.';
+
+  @override
+  String get remoteProgressCancelFailed => 'O cancelamento falhou.';
+
+  @override
+  String get remoteProgressCancelPending => 'O cancelamento está pendente.';
+
+  @override
   String get heroDemoLabel =>
       'Exemplo gravado: dados reais do modelo, sem chamada ao vivo';
 
