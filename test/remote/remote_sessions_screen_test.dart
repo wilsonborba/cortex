@@ -9,6 +9,7 @@ import 'package:cortex/core/utils/file_picker.dart';
 import 'package:cortex/l10n/generated/app_localizations.dart';
 import 'package:cortex/presentation/frontend/screens/remote/remote_sessions_screen.dart';
 import 'package:cortex/presentation/frontend/theme/theme.dart';
+import 'package:cortex/presentation/frontend/theme/tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -118,18 +119,32 @@ Future<void> _pump(
   RemoteCliController controller, {
   required Size size,
   RemoteImagePicker? picker,
+  Brightness brightness = Brightness.dark,
+  double textScale = 1,
+  double keyboardInset = 0,
 }) async {
   tester.view.physicalSize = size;
   tester.view.devicePixelRatio = 1;
+  tester.view.viewInsets = FakeViewPadding(bottom: keyboardInset);
   addTearDown(tester.view.reset);
   await tester.pumpWidget(
     MaterialApp(
       locale: const Locale('en'),
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
-      theme: cortexTheme(Brightness.dark),
-      home: Scaffold(
-        body: RemoteSessionsScreen(controller: controller, imagePicker: picker),
+      theme: cortexTheme(brightness),
+      home: Builder(
+        builder: (context) => MediaQuery(
+          data: MediaQuery.of(
+            context,
+          ).copyWith(textScaler: TextScaler.linear(textScale)),
+          child: Scaffold(
+            body: RemoteSessionsScreen(
+              controller: controller,
+              imagePicker: picker,
+            ),
+          ),
+        ),
       ),
     ),
   );
@@ -172,7 +187,7 @@ void main() {
       expect(controller.events, hasLength(1));
       expect(find.byKey(const Key('remote-event-list')), findsOneWidget);
       expect(find.text('Reading the request'), findsOneWidget);
-      expect(find.text('Cancel turn'), findsOneWidget);
+      expect(find.byTooltip('Cancel turn'), findsOneWidget);
 
       gateway.incoming.add(
         _event(2, 'approval_request', {
@@ -228,6 +243,20 @@ void main() {
         }),
       );
       await tester.pump();
+      final photoTurn = controller.turns.singleWhere(
+        (turn) => turn.prompt == 'Summarize this image',
+      );
+      final userPrompt = find.byKey(Key('remote-user-prompt-${photoTurn.key}'));
+      final assistantAnswer = find.text('The image is ready.');
+      expect(userPrompt, findsOneWidget);
+      expect(tester.getRect(userPrompt).center.dx, greaterThan(195));
+      expect(
+        find.ancestor(of: assistantAnswer, matching: find.byType(Card)),
+        findsNothing,
+      );
+      expect(find.text('Prompt'), findsNothing);
+      expect(find.text('Answer'), findsNothing);
+      expect(find.text('Prompt sent to the CLI session.'), findsNothing);
       expect(gateway.artifactRequests, isEmpty);
       await tester.tap(
         find.byKey(const Key('remote-artifact-preview-artifact-1')),
@@ -269,7 +298,7 @@ void main() {
         }),
       );
       await tester.pump();
-      await tester.tap(find.text('Cancel turn'));
+      await tester.tap(find.byTooltip('Cancel turn'));
       await tester.pump();
       await tester.pump();
       expect(gateway.cancelCount, 1);
@@ -295,7 +324,7 @@ void main() {
     addTearDown(controller.dispose);
     await _pump(tester, controller, size: const Size(390, 844));
     await tester.tap(find.byKey(const Key('remote-session-linux-session')));
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(milliseconds: 100));
 
     gateway.incoming.add(
       _event(1, 'progress', {
@@ -322,7 +351,7 @@ void main() {
     await tester.tap(
       find.byKey(const Key('remote-artifact-preview-expired-file')),
     );
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(milliseconds: 100));
     expect(find.text('This file is no longer available.'), findsOneWidget);
 
     gateway.incoming.add(
@@ -340,7 +369,7 @@ void main() {
     await tester.tap(
       find.byKey(const Key('remote-artifact-preview-offline-file')),
     );
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(milliseconds: 100));
     expect(
       find.text('The request failed. Check your connection and try again.'),
       findsOneWidget,
@@ -392,7 +421,7 @@ void main() {
       expect(find.text('photo.jpg'), findsOneWidget);
       expect(find.text('Reviewing files'), findsOneWidget);
       expect(find.text('Run this command?'), findsOneWidget);
-      expect(find.text('Cancel turn'), findsOneWidget);
+      expect(find.byTooltip('Cancel turn'), findsOneWidget);
       expect(
         find.text('The command expired before the CLI received it.'),
         findsOneWidget,
@@ -415,7 +444,7 @@ void main() {
     addTearDown(controller.dispose);
     await _pump(tester, controller, size: const Size(1024, 768));
     await tester.tap(find.byKey(const Key('remote-session-offline-session')));
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(milliseconds: 100));
 
     expect(find.text('Office workstation'), findsWidgets);
     expect(find.text('Offline'), findsWidgets);
@@ -424,6 +453,137 @@ void main() {
       find.byKey(const Key('remote-session-linux-session')),
       findsOneWidget,
     );
+  });
+
+  testWidgets('remote composer fits compact, scaled, and desktop layouts', (
+    tester,
+  ) async {
+    for (final size in const [
+      Size(320, 844),
+      Size(390, 844),
+      Size(1440, 1200),
+    ]) {
+      final keyboardInset = size.width == 320 ? 280.0 : 0.0;
+      final gateway = _Gateway();
+      final controller = RemoteCliController(
+        gateway: gateway,
+        reconnectDelay: const Duration(hours: 1),
+      );
+      addTearDown(gateway.dispose);
+      addTearDown(controller.dispose);
+      await _pump(
+        tester,
+        controller,
+        size: size,
+        brightness: Brightness.light,
+        textScale: size.width == 320 ? 1.3 : 1,
+        keyboardInset: keyboardInset,
+      );
+      await tester.tap(find.byKey(const Key('remote-session-linux-session')));
+      await tester.pumpAndSettle();
+      controller.attachments.add(
+        const RemoteCliAttachment(
+          name: 'a-very-long-photo-attachment-name-for-layout-check.jpg',
+          fileId: 'photo-1',
+        ),
+      );
+      await tester.pump();
+      final prompt = find.byKey(const Key('remote-prompt'));
+      await tester.tap(prompt);
+      await tester.pump(const Duration(milliseconds: 250));
+      expect(
+        tester
+            .widget<AnimatedFractionallySizedBox>(
+              find.byKey(const Key('remote-composer-focus-bar')),
+            )
+            .widthFactor,
+        1,
+      );
+      await tester.enterText(prompt, 'First line\nSecond line\nThird line');
+      await tester.pumpAndSettle();
+
+      final surface = tester.getRect(
+        find.byKey(const Key('remote-composer-surface')),
+      );
+      final promptRect = tester.getRect(prompt);
+      final attachRect = tester.getRect(find.byTooltip('Attach image'));
+      final send = find.byKey(const Key('remote-send'));
+      final sendRect = tester.getRect(send);
+      final availableBottom = size.height - keyboardInset;
+
+      expect(surface.width, lessThanOrEqualTo(Space.chatColumnWidth));
+      expect(promptRect.width, greaterThan(180));
+      expect(promptRect.top, lessThan(attachRect.top));
+      expect(attachRect.width, greaterThanOrEqualTo(44));
+      expect(attachRect.height, greaterThanOrEqualTo(44));
+      expect(sendRect.width, greaterThanOrEqualTo(44));
+      expect(sendRect.height, greaterThanOrEqualTo(44));
+      expect(sendRect.bottom, lessThanOrEqualTo(availableBottom));
+      expect(find.byTooltip('Send prompt'), findsOneWidget);
+      expect(find.text('Send prompt'), findsNothing);
+      expect(
+        find.text('a-very-long-photo-attachment-name-for-layout-check.jpg'),
+        findsOneWidget,
+      );
+      expect(tester.takeException(), isNull);
+      await tester.pumpWidget(const SizedBox());
+    }
+  });
+
+  testWidgets('stream follows large growth only while reader is at latest', (
+    tester,
+  ) async {
+    final gateway = _Gateway();
+    final controller = RemoteCliController(
+      gateway: gateway,
+      reconnectDelay: const Duration(hours: 1),
+    );
+    addTearDown(gateway.dispose);
+    addTearDown(controller.dispose);
+    await _pump(tester, controller, size: const Size(390, 844));
+    await tester.tap(find.byKey(const Key('remote-session-linux-session')));
+    await tester.pumpAndSettle();
+
+    for (var i = 1; i <= 18; i++) {
+      gateway.incoming.add(
+        _event(i, 'progress', {'message': 'Progress update $i'}),
+      );
+      await tester.pump();
+    }
+    await tester.pump(const Duration(milliseconds: 250));
+    final list = tester.state<ScrollableState>(
+      find
+          .descendant(
+            of: find.byKey(const Key('remote-event-list')),
+            matching: find.byType(Scrollable),
+          )
+          .first,
+    );
+    expect(list.position.extentAfter, lessThanOrEqualTo(1));
+
+    gateway.incoming.add(
+      _event(19, 'progress', {'message': 'A large update\n' * 40}),
+    );
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 250));
+    await tester.pump(const Duration(milliseconds: 250));
+    expect(list.position.extentAfter, lessThanOrEqualTo(1));
+
+    await tester.drag(
+      find.byKey(const Key('remote-event-list')),
+      const Offset(0, 700),
+    );
+    await tester.pump(const Duration(milliseconds: 250));
+    expect(list.position.extentAfter, greaterThan(96));
+    final priorOffset = list.position.pixels;
+    gateway.incoming.add(
+      _event(20, 'progress', {
+        'message': 'New update while reading older messages',
+      }),
+    );
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 250));
+    expect(list.position.pixels, closeTo(priorOffset, 1));
   });
 
   testWidgets('desktop detail asks for a session when the list is populated', (
