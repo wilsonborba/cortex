@@ -1210,6 +1210,18 @@ abstract class AppLocalizations {
   /// **'{time} · {s} s · {input} in, {output} out tokens'**
   String statsLine(String time, String s, int input, int output);
 
+  /// No description provided for @statsTimingLine.
+  ///
+  /// In en, this message translates to:
+  /// **'{time} · {s} s'**
+  String statsTimingLine(String time, String s);
+
+  /// No description provided for @statsDurationLine.
+  ///
+  /// In en, this message translates to:
+  /// **'Duration: {s} s'**
+  String statsDurationLine(Object s);
+
   /// No description provided for @cancelledLine.
   ///
   /// In en, this message translates to:

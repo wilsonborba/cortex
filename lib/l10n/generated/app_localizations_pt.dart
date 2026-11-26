@@ -624,6 +624,16 @@ class AppLocalizationsPt extends AppLocalizations {
   }
 
   @override
+  String statsTimingLine(String time, String s) {
+    return '$time · $s s';
+  }
+
+  @override
+  String statsDurationLine(Object s) {
+    return 'Duração: $s s';
+  }
+
+  @override
   String get cancelledLine => 'Parado';
 
   @override
