@@ -635,5 +635,28 @@
   "inspectionContinue": "Continuar com “{word}”",
   "inspectionContinued": "Continuação a partir de “{word}”",
   "heroDemoLabel": "Exemplo gravado: dados reais do modelo, sem chamada ao vivo",
-  "heroDemoQuestion": "Escreva uma história de duas frases sobre uma menina chamada Mira que encontra um mapa antigo sob uma figueira."
+  "heroDemoQuestion": "Escreva uma história de duas frases sobre uma menina chamada Mira que encontra um mapa antigo sob uma figueira.",
+  "nativeWelcomeTitle": "Bem-vindo ao Cortex",
+  "nativeWelcomeBody": "Converse e trabalhe com sua memória e personas em um só espaço.",
+  "nativeSignIn": "Entrar com sua conta Asodya",
+  "nativeMatchCode": "Confirme este código na página de entrada do navegador",
+  "nativeBrowserOpened": "Conclua a entrada no navegador e volte para cá.",
+  "nativeFinishLogin": "Concluir entrada",
+  "nativeCancelLogin": "Cancelar entrada",
+  "nativeLoginChecking": "Verificando o status da entrada…",
+  "nativeLoginNotFinished": "A entrada ainda não foi concluída. Termine no navegador e verifique novamente.",
+  "nativeLoginExpired": "Esta entrada expirou. Comece novamente.",
+  "nativeLoginRefused": "Entrada recusada porque o navegador e o app estão em redes diferentes. Comece novamente na mesma rede.",
+  "nativeLoginCancelled": "Esta entrada foi cancelada. Comece novamente quando quiser.",
+  "nativeLoginUsed": "Esta entrada não pode ser usada novamente. Comece outra.",
+  "nativeLoginError": "Não foi possível concluir a entrada. Verifique a conexão e tente novamente.",
+  "nativeLoggedIn": "Conectado",
+  "nativeLoggedInFrom": "Conectado de {location}",
+  "@nativeLoggedInFrom": {
+    "placeholders": {
+      "location": {
+        "type": "String"
+      }
+    }
+  }
 }

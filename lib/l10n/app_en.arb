@@ -997,5 +997,28 @@
     }
   },
   "heroDemoLabel": "Recorded example: real model data, no live call",
-  "heroDemoQuestion": "Write a two-sentence story about a girl named Mira who finds an old map under a fig tree."
+  "heroDemoQuestion": "Write a two-sentence story about a girl named Mira who finds an old map under a fig tree.",
+  "nativeWelcomeTitle": "Welcome to Cortex",
+  "nativeWelcomeBody": "Chat and work with your memory and personas in one workspace.",
+  "nativeSignIn": "Sign in with your Asodya account",
+  "nativeMatchCode": "Confirm this code on the browser sign-in page",
+  "nativeBrowserOpened": "Finish signing in in your browser, then return here.",
+  "nativeFinishLogin": "Finish login",
+  "nativeCancelLogin": "Cancel login",
+  "nativeLoginChecking": "Checking login status…",
+  "nativeLoginNotFinished": "Login is not finished yet. Complete it in the browser, then check again.",
+  "nativeLoginExpired": "This login expired. Start again.",
+  "nativeLoginRefused": "Login refused because the browser and app are on different networks. Start again on the same network.",
+  "nativeLoginCancelled": "This login was cancelled. Start again when ready.",
+  "nativeLoginUsed": "This login cannot be used again. Start again.",
+  "nativeLoginError": "Could not finish login. Check your connection and try again.",
+  "nativeLoggedIn": "Logged in",
+  "nativeLoggedInFrom": "Logged in from {location}",
+  "@nativeLoggedInFrom": {
+    "placeholders": {
+      "location": {
+        "type": "String"
+      }
+    }
+  }
 }

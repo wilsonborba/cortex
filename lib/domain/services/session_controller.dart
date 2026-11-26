@@ -10,10 +10,17 @@ class SessionController extends ChangeNotifier {
   bool get signedIn => _signedIn;
 
   Future<void> refresh() async {
-    final value = (await service.currentStatus()).canEnterChat;
-    if (value != _signedIn) {
-      _signedIn = value;
-      notifyListeners();
+    try {
+      final value = (await service.currentStatus()).canEnterChat;
+      if (value != _signedIn) {
+        _signedIn = value;
+        notifyListeners();
+      }
+    } catch (_) {
+      if (_signedIn) {
+        _signedIn = false;
+        notifyListeners();
+      }
     }
   }
 }

@@ -2051,4 +2051,61 @@ class AppLocalizationsTh extends AppLocalizations {
   @override
   String get heroDemoQuestion =>
       'เขียนเรื่องสั้นสองประโยคเกี่ยวกับเด็กหญิงชื่อมีราที่พบแผนที่เก่าใต้ต้นมะเดื่อ';
+
+  @override
+  String get nativeWelcomeTitle => 'ยินดีต้อนรับสู่ Cortex';
+
+  @override
+  String get nativeWelcomeBody =>
+      'แชตและทำงานกับความทรงจำและบุคลิกของคุณในพื้นที่เดียว';
+
+  @override
+  String get nativeSignIn => 'เข้าสู่ระบบด้วยบัญชี Asodya';
+
+  @override
+  String get nativeMatchCode => 'ยืนยันรหัสนี้บนหน้าเข้าสู่ระบบในเบราว์เซอร์';
+
+  @override
+  String get nativeBrowserOpened =>
+      'เข้าสู่ระบบในเบราว์เซอร์ให้เสร็จ แล้วกลับมาที่นี่';
+
+  @override
+  String get nativeFinishLogin => 'เข้าสู่ระบบให้เสร็จ';
+
+  @override
+  String get nativeCancelLogin => 'ยกเลิกการเข้าสู่ระบบ';
+
+  @override
+  String get nativeLoginChecking => 'กำลังตรวจสอบสถานะการเข้าสู่ระบบ…';
+
+  @override
+  String get nativeLoginNotFinished =>
+      'ยังเข้าสู่ระบบไม่เสร็จ โปรดทำต่อในเบราว์เซอร์แล้วตรวจสอบอีกครั้ง';
+
+  @override
+  String get nativeLoginExpired => 'การเข้าสู่ระบบนี้หมดอายุแล้ว โปรดเริ่มใหม่';
+
+  @override
+  String get nativeLoginRefused =>
+      'ปฏิเสธการเข้าสู่ระบบเนื่องจากเบราว์เซอร์และแอปใช้เครือข่ายต่างกัน โปรดเริ่มใหม่บนเครือข่ายเดียวกัน';
+
+  @override
+  String get nativeLoginCancelled =>
+      'ยกเลิกการเข้าสู่ระบบนี้แล้ว พร้อมเริ่มใหม่ได้ทุกเมื่อ';
+
+  @override
+  String get nativeLoginUsed =>
+      'ไม่สามารถใช้การเข้าสู่ระบบนี้ซ้ำได้ โปรดเริ่มใหม่';
+
+  @override
+  String get nativeLoginError =>
+      'เข้าสู่ระบบไม่สำเร็จ โปรดตรวจสอบการเชื่อมต่อแล้วลองอีกครั้ง';
+
+  @override
+  String get nativeLoggedIn => 'เข้าสู่ระบบแล้ว';
+
+  @override
+  String nativeLoggedInFrom(String location) {
+    return 'เข้าสู่ระบบจาก $location';
+  }
 }

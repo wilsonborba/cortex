@@ -1,4 +1,5 @@
 import '../../core/utils/csrf.dart';
+import '../../dal/local/native_session_store.dart';
 import '../models/session_status.dart';
 
 /// Reads the authenticated session state for [SessionController].
@@ -19,12 +20,33 @@ class SessionService {
   /// [cookieReader] is injectable for tests only (VM widget tests have no
   /// real browser cookie jar to read, `readCsrfToken` always returns null
   /// there): defaults to the real `csrf` cookie check used in production.
-  const SessionService({String? Function()? cookieReader})
-    : _readSessionCookie = cookieReader ?? readCsrfToken;
+  const SessionService({
+    String? Function()? cookieReader,
+    bool isNative = false,
+    NativeSessionStore sessionStore = const NativeSessionStore(),
+  }) : _readSessionCookie = cookieReader ?? readCsrfToken,
+       _isNative = isNative,
+       _sessionStore = sessionStore;
 
   final String? Function() _readSessionCookie;
+  final bool _isNative;
+  final NativeSessionStore _sessionStore;
 
   Future<SessionStatus> currentStatus() async {
+    if (_isNative) {
+      try {
+        final sid = await _sessionStore.readSessionId();
+        final csrf = await _sessionStore.readCsrfToken();
+        return sid != null &&
+                csrf != null &&
+                sid.isNotEmpty &&
+                csrf.isNotEmpty
+            ? SessionStatus.authenticated
+            : SessionStatus.none;
+      } catch (_) {
+        return SessionStatus.none;
+      }
+    }
     final csrfToken = _readSessionCookie();
     if (csrfToken != null && csrfToken.isNotEmpty) {
       return SessionStatus.authenticated;
@@ -37,6 +59,10 @@ class SessionService {
   /// browser as authenticated. Called from `AuthService.signOut`, alongside
   /// the real backend session revocation.
   Future<void> clear() async {
-    deleteCookie('csrf');
+    if (_isNative) {
+      await _sessionStore.clearSession();
+    } else {
+      deleteCookie('csrf');
+    }
   }
 }

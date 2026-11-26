@@ -7,10 +7,12 @@ import 'package:go_router/go_router.dart';
 import 'dal/remote/auth_api_adapter.dart';
 import 'domain/services/auth_service.dart';
 import 'domain/services/session_controller.dart';
+import 'domain/services/session_service.dart';
 import 'l10n/generated/app_localizations.dart';
 import 'presentation/frontend/preferences.dart';
 import 'presentation/frontend/router.dart';
 import 'presentation/frontend/theme/theme.dart';
+import 'core/utils/platform.dart';
 
 class CortexApp extends StatefulWidget {
   const CortexApp({super.key, this.session, this.auth, this.initialLocation});
@@ -22,8 +24,13 @@ class CortexApp extends StatefulWidget {
 }
 
 class _CortexAppState extends State<CortexApp> {
-  late final SessionController _session = widget.session ?? SessionController();
-  late final AuthService _auth = widget.auth ?? AuthService(AuthApiAdapter());
+  late final SessionService _sessionService = SessionService(
+    isNative: isAndroidPlatform,
+  );
+  late final SessionController _session =
+      widget.session ?? SessionController(service: _sessionService);
+  late final AuthService _auth =
+      widget.auth ?? AuthService(AuthApiAdapter(), session: _sessionService);
   GoRouter? _router;
   final _preferences = Preferences();
 
@@ -36,18 +43,23 @@ class _CortexAppState extends State<CortexApp> {
         widget.initialLocation ??
         (kIsWeb
             ? '${browserUri.path}${browserUri.hasQuery ? '?${browserUri.query}' : ''}'
+            : isAndroidPlatform
+            ? '/v1/entry'
             : WidgetsBinding.instance.platformDispatcher.defaultRouteName);
     // The first redirect needs the real session state.
-    _session.refresh().then((_) {
-      if (!mounted) return;
-      setState(() {
-        _router = buildRouter(
-          session: _session,
-          auth: _auth,
-          initialLocation: initialLocation,
-        );
-      });
-    });
+    _session
+        .refresh()
+        .catchError((_) {})
+        .whenComplete(() {
+          if (!mounted) return;
+          setState(() {
+            _router = buildRouter(
+              session: _session,
+              auth: _auth,
+              initialLocation: initialLocation,
+            );
+          });
+        });
   }
 
   @override

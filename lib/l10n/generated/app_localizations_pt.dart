@@ -2091,4 +2091,62 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get heroDemoQuestion =>
       'Escreva uma história de duas frases sobre uma menina chamada Mira que encontra um mapa antigo sob uma figueira.';
+
+  @override
+  String get nativeWelcomeTitle => 'Bem-vindo ao Cortex';
+
+  @override
+  String get nativeWelcomeBody =>
+      'Converse e trabalhe com sua memória e personas em um só espaço.';
+
+  @override
+  String get nativeSignIn => 'Entrar com sua conta Asodya';
+
+  @override
+  String get nativeMatchCode =>
+      'Confirme este código na página de entrada do navegador';
+
+  @override
+  String get nativeBrowserOpened =>
+      'Conclua a entrada no navegador e volte para cá.';
+
+  @override
+  String get nativeFinishLogin => 'Concluir entrada';
+
+  @override
+  String get nativeCancelLogin => 'Cancelar entrada';
+
+  @override
+  String get nativeLoginChecking => 'Verificando o status da entrada…';
+
+  @override
+  String get nativeLoginNotFinished =>
+      'A entrada ainda não foi concluída. Termine no navegador e verifique novamente.';
+
+  @override
+  String get nativeLoginExpired => 'Esta entrada expirou. Comece novamente.';
+
+  @override
+  String get nativeLoginRefused =>
+      'Entrada recusada porque o navegador e o app estão em redes diferentes. Comece novamente na mesma rede.';
+
+  @override
+  String get nativeLoginCancelled =>
+      'Esta entrada foi cancelada. Comece novamente quando quiser.';
+
+  @override
+  String get nativeLoginUsed =>
+      'Esta entrada não pode ser usada novamente. Comece outra.';
+
+  @override
+  String get nativeLoginError =>
+      'Não foi possível concluir a entrada. Verifique a conexão e tente novamente.';
+
+  @override
+  String get nativeLoggedIn => 'Conectado';
+
+  @override
+  String nativeLoggedInFrom(String location) {
+    return 'Conectado de $location';
+  }
 }
