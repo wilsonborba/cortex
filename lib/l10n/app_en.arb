@@ -199,6 +199,8 @@
   "overLimit": "The message is over the input limit.",
   "uploading": "Uploading",
   "statsLine": "{time} · {s} s · {input} in, {output} out tokens",
+  "statsTimingLine": "{time} · {s} s",
+  "statsDurationLine": "Duration: {s} s",
   "cancelledLine": "Stopped",
   "steps_web_queries": "Preparing search queries",
   "steps_queue_wait": "Waiting for the model",
@@ -267,6 +269,12 @@
       "output": {
         "type": "int"
       }
+    }
+  },
+  "@statsTimingLine": {
+    "placeholders": {
+      "time": { "type": "String" },
+      "s": { "type": "String" }
     }
   },
   "temporaryBanner": "Temporary chat: not saved, lost when you refresh.",
