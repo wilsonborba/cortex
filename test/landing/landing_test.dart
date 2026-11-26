@@ -104,10 +104,10 @@ void main() {
     expect(cliReadmeUrl, '$cliRepositoryUrl#readme');
     expect(cliReleasesUrl, '$cliRepositoryUrl/releases');
     expect(cliWebInstallerUrl, 'https://cortex.asodya.com/install.sh');
-    expect(cliReleaseInstallCommand, contains(cliWebInstallerUrl));
-    expect(cliReleaseInstallCommand, contains('curl -fsSL'));
-    expect(cliReleaseInstallCommand, contains('bash "\$installer"'));
-    expect(cliReleaseInstallCommand, contains('mktemp'));
+    expect(
+      cliReleaseInstallCommand,
+      'curl -fsSL https://cortex.asodya.com/install.sh | bash',
+    );
     expect(
       cliSourceInstallCommand,
       contains('cargo install --locked --path .'),
@@ -146,19 +146,13 @@ void main() {
             find.byKey(const Key('cli-web-installer-url')),
             findsOneWidget,
           );
-          expect(find.text(l.cliSourceTitle), findsOneWidget);
           expect(find.text(l.cliReleaseStatus), findsOneWidget);
           expect(find.text(l.cliProviderNote), findsOneWidget);
           expect(find.text(l.cliSignIn), findsOneWidget);
-          expect(find.text(l.cliLinuxPrerequisite), findsOneWidget);
           final command = tester.widget<SelectableText>(
             find.byKey(const Key('cli-install-command-text')),
           );
-          expect(command.data, cliSourceInstallCommand);
-          final releaseCommand = tester.widget<SelectableText>(
-            find.byKey(const Key('cli-release-command-text')),
-          );
-          expect(releaseCommand.data, cliReleaseInstallCommand);
+          expect(command.data, cliReleaseInstallCommand);
           expect(find.byKey(const Key('cli-copy-command')), findsOneWidget);
           expect(find.byKey(const Key('cli-readme-link')), findsOneWidget);
           expect(find.byKey(const Key('cli-releases-link')), findsOneWidget);
@@ -305,7 +299,7 @@ void main() {
     await tester.ensureVisible(copy);
     await tester.pump();
     await tester.tap(copy);
-    expect(clipboardText, cliSourceInstallCommand);
+    expect(clipboardText, cliReleaseInstallCommand);
     expect(tester.takeException(), isNull);
   });
 

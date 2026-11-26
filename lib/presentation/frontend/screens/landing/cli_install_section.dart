@@ -13,10 +13,7 @@ const cliReadmeUrl = '$cliRepositoryUrl#readme';
 const cliReleasesUrl = '$cliRepositoryUrl/releases';
 const cliWebInstallerUrl = 'https://cortex.asodya.com/install.sh';
 const cliReleaseInstallCommand =
-    'installer="\$(mktemp "\${TMPDIR:-/tmp}/cortex-install.XXXXXX")" &&\n'
-    'trap \'rm -f "\$installer"\' EXIT &&\n'
-    'curl -fsSL --proto-redir \'=https\' $cliWebInstallerUrl -o "\$installer" &&\n'
-    'bash "\$installer"';
+    'curl -fsSL https://cortex.asodya.com/install.sh | bash';
 const cliSourceInstallCommand =
     'git clone https://github.com/wilsonborba/cortex_cli.git\n'
     'cd cortex_cli\n'
@@ -57,23 +54,15 @@ class CliInstallSection extends StatelessWidget {
           _CommandBox(
             command: cliReleaseInstallCommand,
             copyLabel: l.cliCopy,
-            containerKey: 'cli-release-command',
-            commandKey: 'cli-release-command-text',
-            copyKey: 'cli-copy-release-command',
+            containerKey: 'cli-install-command',
+            commandKey: 'cli-install-command-text',
+            copyKey: 'cli-copy-command',
           ),
           const SizedBox(height: Space.s8),
           Text(
             l.cliReleaseStatus,
             style: TextStyles.body2.copyWith(color: p.muted),
           ),
-          const SizedBox(height: Space.s24),
-          Text(l.cliSourceTitle, style: TextStyles.subtitle1),
-          const SizedBox(height: Space.s8),
-          Text(l.cliSourceDetail, style: TextStyles.body2),
-          const SizedBox(height: Space.s12),
-          _CommandBox(command: cliSourceInstallCommand, copyLabel: l.cliCopy),
-          const SizedBox(height: Space.s12),
-          Text(l.cliLinuxPrerequisite, style: TextStyles.caption1),
           const SizedBox(height: Space.s16),
           Text(l.cliSignIn, style: TextStyles.body1),
           const SizedBox(height: Space.s8),
