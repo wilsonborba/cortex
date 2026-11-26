@@ -1,0 +1,12 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Cortex
+GenericName=AI Workspace
+Comment=Cortex AI chat workspace application
+Exec=cortex %u
+Icon=cortex
+Terminal=false
+Categories=Utility;Network;Chat;
+StartupNotify=true
+StartupWMClass=cortex

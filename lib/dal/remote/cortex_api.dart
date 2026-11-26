@@ -14,6 +14,7 @@ import 'stream_client.dart';
 
 /// Client of the Cortex API v2 through the gateway (route map 06361aef).
 class CortexApi {
+  static const maxFileContentBytes = 5 * 1024 * 1024;
   CortexApi({String? baseUrl, http.Client? client, http.Client? streamClient})
     : base = baseUrl ?? AppSettings.cortexApiBaseUrl,
       _client = client ?? createCredentialsClient(),
@@ -106,8 +107,11 @@ class CortexApi {
           CallEvent.fromJson((item as Map).cast()),
       ];
 
-  Future<InputBudget> budget() async =>
-      InputBudget.fromJson(((await _get('/models'))['data'] as Map).cast());
+  Future<ChatModelCatalog> modelCatalog() async => ChatModelCatalog.fromJson(
+    ((await _get('/models'))['data'] as Map).cast<String, dynamic>(),
+  );
+
+  Future<InputBudget> budget() async => (await modelCatalog()).budget;
 
   Future<Map<String, dynamic>> page(
     String session, {
@@ -278,6 +282,53 @@ class CortexApi {
       fileId: data['file_id'] as String?,
       noticeNumber: (data['notice_number'] as num?)?.toInt(),
     );
+  }
+
+  /// Reads one authenticated file through the existing owner/app-scoped route.
+  /// The response is bounded while streaming so a large file cannot be
+  /// materialized in memory by the preview path.
+  Future<DownloadedFileContent> downloadFileContent(
+    String fileId, {
+    int maxBytes = maxFileContentBytes,
+  }) async {
+    if (fileId.isEmpty || maxBytes <= 0) {
+      throw const FormatException(
+        'A valid file id and byte limit are required.',
+      );
+    }
+    final request = http.Request(
+      'GET',
+      _uri('/files/${Uri.encodeComponent(fileId)}/content', {'app_id': appId}),
+    )..headers.addAll(_headers(json: false));
+    final response = await _client
+        .send(request)
+        .timeout(const Duration(seconds: 30));
+    if (response.statusCode >= 400) {
+      _body(await http.Response.fromStream(response));
+    }
+    final declaredLength = response.contentLength;
+    if (declaredLength != null && declaredLength > maxBytes) {
+      await response.stream.listen(null).cancel();
+      throw const ApiError(413, null, 'File is too large to preview.');
+    }
+    final bytes = <int>[];
+    await for (final chunk in response.stream.timeout(
+      const Duration(seconds: 30),
+    )) {
+      if (bytes.length + chunk.length > maxBytes) {
+        throw const ApiError(413, null, 'File is too large to preview.');
+      }
+      bytes.addAll(chunk);
+    }
+    final contentType = response.headers['content-type']
+        ?.split(';')
+        .first
+        .trim()
+        .toLowerCase();
+    if (contentType == null || contentType.isEmpty) {
+      throw const FormatException('File response has no content type.');
+    }
+    return DownloadedFileContent(contentType: contentType, bytes: bytes);
   }
 
   static MediaType? _media(String type) {

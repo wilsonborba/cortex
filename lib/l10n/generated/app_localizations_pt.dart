@@ -171,6 +171,80 @@ class AppLocalizationsPt extends AppLocalizations {
   String get whatTitle => 'O que ele faz';
 
   @override
+  String get cliTitle => 'Cortex CLI';
+
+  @override
+  String get cliIntro =>
+      'Use o Cortex no Linux ou macOS. Os alvos compatíveis são x86_64 e ARM64.';
+
+  @override
+  String get cliSourceTitle => 'Compile a partir do código-fonte';
+
+  @override
+  String get cliSourceDetail =>
+      'Requer Rust 1.91.1 ou mais recente com Cargo. Estes comandos instalam o cortex a partir do repositório.';
+
+  @override
+  String get cliLinuxPrerequisite =>
+      'No Linux, também são necessários libdbus-1-dev e pkg-config. O macOS usa o Keychain.';
+
+  @override
+  String get cliSignIn =>
+      'Entre na sua conta Asodya pelo navegador com cortex login.';
+
+  @override
+  String get cliProviderNote =>
+      'Entrar na Asodya não dá acesso a provedores externos de IA. As credenciais de cada provedor são configuradas separadamente.';
+
+  @override
+  String get cliInstallTitle => 'Instale pelo instalador da versão';
+
+  @override
+  String get cliInstallDetail =>
+      'Para Linux e macOS em x86_64 ou ARM64. Este comando instala a versão estável mais recente.';
+
+  @override
+  String get cliReleaseStatus =>
+      'Ainda não há uma versão estável da CLI publicada. O instalador informará quando ela estiver disponível.';
+
+  @override
+  String get androidInstallTitle => 'Cortex para Android';
+
+  @override
+  String get androidInstallDetail =>
+      'Instale o Cortex em celulares e tablets Android.';
+
+  @override
+  String get androidReleaseStatus =>
+      'O aplicativo Android assinado ainda não está disponível para download.';
+
+  @override
+  String get androidDownload => 'Baixar para Android';
+
+  @override
+  String get androidInstallHelp => 'Ajuda para instalação';
+
+  @override
+  String get androidHelpTitle => 'Instale o Cortex no Android';
+
+  @override
+  String get androidHelpDetail =>
+      'Quando o aplicativo assinado for lançado, baixe-o somente desta página da Asodya. Abra o arquivo baixado e siga as instruções do Android. Mantenha o Google Play Protect ativado. Se o Android pedir permissão para instalar pelo navegador ou gerenciador de arquivos, permita somente o aplicativo confiável usado para baixar o Cortex.';
+
+  @override
+  String get androidOfficialHelp =>
+      'Ajuda oficial de instalação e segurança do Android';
+
+  @override
+  String get cliCopy => 'Copiar comandos';
+
+  @override
+  String get cliReadme => 'README da CLI';
+
+  @override
+  String get cliReleases => 'Releases';
+
+  @override
   String get whatMemory => 'Chat com memória';
 
   @override
@@ -547,6 +621,16 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String statsLine(String time, String s, int input, int output) {
     return '$time · $s s · $input entrada, $output saída tokens';
+  }
+
+  @override
+  String statsTimingLine(String time, String s) {
+    return '$time · $s s';
+  }
+
+  @override
+  String statsDurationLine(Object s) {
+    return 'Duração: $s s';
   }
 
   @override
@@ -1181,6 +1265,34 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get composerOptions => 'Opções';
+
+  @override
+  String get modelPicker => 'Modelo';
+
+  @override
+  String modelChoice(String name) {
+    return 'Modelo · $name';
+  }
+
+  @override
+  String modelUnavailableSelection(String id) {
+    return 'Perfil indisponível: $id';
+  }
+
+  @override
+  String get modelUnavailableMessage =>
+      'O modelo selecionado não está disponível. Escolha um perfil disponível para continuar.';
+
+  @override
+  String get modelCatalogUnavailable =>
+      'Não foi possível carregar os modelos. Tente novamente antes de enviar.';
+
+  @override
+  String get modelVisionPrepass =>
+      'A visão do Cortex resume as imagens antes da resposta deste perfil de texto.';
+
+  @override
+  String get modelNoVision => 'Este perfil não aceita anexos de imagem.';
 
   @override
   String get composerEmptyReason => 'Escreva uma mensagem antes de enviar.';
@@ -2101,6 +2213,66 @@ class AppLocalizationsPt extends AppLocalizations {
   String remoteArtifact(String name) {
     return 'Arquivo da sessão: $name';
   }
+
+  @override
+  String get remoteArtifactPreview => 'Pré-visualizar imagem';
+
+  @override
+  String get remoteArtifactExpand => 'Ampliar imagem';
+
+  @override
+  String get remoteArtifactExpired => 'Este arquivo não está mais disponível.';
+
+  @override
+  String get remoteArtifactMissingFile =>
+      'A pré-visualização não está disponível porque o evento não tem uma referência de arquivo salva.';
+
+  @override
+  String get remoteArtifactNotImage =>
+      'Este arquivo não é uma imagem compatível.';
+
+  @override
+  String get remoteArtifactTooLarge =>
+      'Esta imagem é grande demais para pré-visualizar.';
+
+  @override
+  String get remoteTurnWaiting => 'Aguardando o CLI';
+
+  @override
+  String get remoteTurnPrompt => 'Comando enviado';
+
+  @override
+  String get remoteTurnRunning => 'Em andamento';
+
+  @override
+  String get remoteTurnComplete => 'Concluído';
+
+  @override
+  String get remoteTurnIncomplete =>
+      'O fluxo do CLI terminou antes de informar um resultado.';
+
+  @override
+  String get remoteTurnFailed => 'O CLI não conseguiu concluir esta execução.';
+
+  @override
+  String remoteTurnProgressNotice(int number) {
+    return 'Aviso $number';
+  }
+
+  @override
+  String get remoteProgressCommandReceived => 'O CLI recebeu o comando.';
+
+  @override
+  String get remoteProgressActionCancelled => 'Uma ação foi cancelada.';
+
+  @override
+  String get remoteProgressCancelRequested => 'Cancelamento solicitado.';
+
+  @override
+  String get remoteProgressCancelFailed => 'O cancelamento falhou.';
+
+  @override
+  String get remoteProgressCancelPending => 'O cancelamento está pendente.';
 
   @override
   String get heroDemoLabel =>

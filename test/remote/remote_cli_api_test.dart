@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:cortex/dal/remote/cortex_api.dart';
 import 'package:cortex/dal/remote/remote_cli_api.dart';
+import 'package:cortex/domain/models/api.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
@@ -64,14 +65,20 @@ void main() {
         'prompt': 'Review this image',
         'file_ids': ['fsm-file-7'],
       });
-      return http.Response('{"message":"Remote prompt queued","data":{}}', 202);
+      return http.Response(
+        '{"message":"Remote prompt queued","data":{"id":51,"kind":"prompt","payload":{"prompt":"Review this image","file_ids":["fsm-file-7"]},"created_at_ms":10}}',
+        202,
+      );
     });
     final api = RemoteCliApi(
       baseUrl: 'https://api.test/apps/cortex/v1',
       client: client,
     );
 
-    await api.sendPrompt('s1', 'Review this image', fileIds: ['fsm-file-7']);
+    expect(
+      await api.sendPrompt('s1', 'Review this image', fileIds: ['fsm-file-7']),
+      51,
+    );
   });
 
   test('parses UTF-8 events when CRLF separators cross byte chunks', () async {
@@ -191,4 +198,68 @@ void main() {
       );
     },
   );
+
+  test(
+    'downloads an artifact through the authenticated existing files route',
+    () async {
+      final image = [137, 80, 78, 71, 13, 10, 26, 10, 0];
+      final client = MockClient((request) async {
+        expect(request.method, 'GET');
+        expect(request.url.path, '/apps/cortex/v1/files/file-9/content');
+        expect(request.url.queryParameters, {'app_id': 'cortex'});
+        expect(request.headers['content-type'], isNull);
+        return http.Response.bytes(
+          image,
+          200,
+          headers: const {'content-type': 'image/png'},
+        );
+      });
+      final filesApi = CortexApi(
+        baseUrl: 'https://api.test/apps/cortex/v1',
+        client: client,
+        streamClient: client,
+      );
+      final api = RemoteCliApi(
+        baseUrl: 'https://api.test/apps/cortex/v1',
+        client: client,
+        filesApi: filesApi,
+      );
+
+      final content = await api.artifactImage('file-9');
+
+      expect(content.contentType, 'image/png');
+      expect(content.bytes, image);
+    },
+  );
+
+  test('bounds file content and preserves expired status', () async {
+    final oversized = CortexApi(
+      baseUrl: 'https://api.test/apps/cortex/v1',
+      client: MockClient(
+        (_) async => http.Response.bytes(
+          [1, 2, 3],
+          200,
+          headers: const {'content-type': 'image/png'},
+        ),
+      ),
+    );
+    await expectLater(
+      oversized.downloadFileContent('f', maxBytes: 2),
+      throwsA(isA<ApiError>().having((error) => error.status, 'status', 413)),
+    );
+
+    final expired = CortexApi(
+      baseUrl: 'https://api.test/apps/cortex/v1',
+      client: MockClient(
+        (_) async => http.Response(
+          '{"message":"File expired","data":{"error_number":1051}}',
+          404,
+        ),
+      ),
+    );
+    await expectLater(
+      expired.downloadFileContent('expired'),
+      throwsA(isA<ApiError>().having((error) => error.status, 'status', 404)),
+    );
+  });
 }

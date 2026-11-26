@@ -5,6 +5,7 @@ import 'package:cortex/domain/services/auth_service.dart';
 import 'package:cortex/domain/services/session_controller.dart';
 import 'package:cortex/domain/services/session_service.dart';
 import 'package:cortex/domain/models/remote_cli.dart';
+import 'package:cortex/domain/models/api.dart';
 import 'package:cortex/domain/services/remote_cli_gateway.dart';
 import 'package:cortex/l10n/generated/app_localizations.dart';
 import 'package:cortex/presentation/frontend/router.dart';
@@ -23,11 +24,11 @@ class _RemoteGateway implements RemoteCliGateway {
   Stream<RemoteCliEvent> events(String sessionId, {required int after}) =>
       const Stream.empty();
   @override
-  Future<void> sendPrompt(
+  Future<int?> sendPrompt(
     String sessionId,
     String prompt, {
     List<String> fileIds = const [],
-  }) async {}
+  }) async => null;
   @override
   Future<void> answerApproval(
     String sessionId,
@@ -42,6 +43,10 @@ class _RemoteGateway implements RemoteCliGateway {
     required List<int> bytes,
     required String contentType,
   }) async => 'unused';
+
+  @override
+  Future<DownloadedFileContent> artifactImage(String fileId) async =>
+      const DownloadedFileContent(contentType: 'image/png', bytes: [1, 2]);
 }
 
 class FakeAuth extends AuthService {

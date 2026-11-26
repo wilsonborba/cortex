@@ -170,6 +170,79 @@ class AppLocalizationsTh extends AppLocalizations {
   String get whatTitle => 'ทำอะไรได้บ้าง';
 
   @override
+  String get cliTitle => 'Cortex CLI';
+
+  @override
+  String get cliIntro =>
+      'ใช้ Cortex บน Linux หรือ macOS ได้ รองรับสถาปัตยกรรม x86_64 และ ARM64';
+
+  @override
+  String get cliSourceTitle => 'คอมไพล์จากซอร์สโค้ด';
+
+  @override
+  String get cliSourceDetail =>
+      'ต้องใช้ Rust 1.91.1 ขึ้นไปพร้อม Cargo คำสั่งนี้ติดตั้ง cortex จากซอร์สโค้ด';
+
+  @override
+  String get cliLinuxPrerequisite =>
+      'Linux ต้องมี libdbus-1-dev และ pkg-config ด้วย ส่วน macOS ใช้ Keychain';
+
+  @override
+  String get cliSignIn =>
+      'ลงชื่อเข้าใช้ Asodya ผ่านเบราว์เซอร์ด้วยคำสั่ง cortex login';
+
+  @override
+  String get cliProviderNote =>
+      'การลงชื่อเข้าใช้ Asodya ไม่ได้ให้สิทธิ์เข้าถึงผู้ให้บริการ AI ภายนอก ต้องตั้งค่าข้อมูลรับรองของแต่ละผู้ให้บริการแยกกัน';
+
+  @override
+  String get cliInstallTitle => 'ติดตั้งด้วยตัวติดตั้งรุ่นที่เผยแพร่';
+
+  @override
+  String get cliInstallDetail =>
+      'สำหรับ Linux และ macOS บน x86_64 หรือ ARM64 คำสั่งนี้จะติดตั้งรุ่นเสถียรล่าสุด';
+
+  @override
+  String get cliReleaseStatus =>
+      'ยังไม่มีการเผยแพร่ CLI รุ่นเสถียร ตัวติดตั้งจะแจ้งเมื่อมีรุ่นพร้อมใช้งาน';
+
+  @override
+  String get androidInstallTitle => 'Cortex สำหรับ Android';
+
+  @override
+  String get androidInstallDetail =>
+      'ติดตั้ง Cortex บนโทรศัพท์และแท็บเล็ต Android';
+
+  @override
+  String get androidReleaseStatus =>
+      'แอป Android ที่ลงนามแล้วจะยังดาวน์โหลดไม่ได้ในขณะนี้';
+
+  @override
+  String get androidDownload => 'ดาวน์โหลดสำหรับ Android';
+
+  @override
+  String get androidInstallHelp => 'วิธีติดตั้ง';
+
+  @override
+  String get androidHelpTitle => 'ติดตั้ง Cortex บน Android';
+
+  @override
+  String get androidHelpDetail =>
+      'เมื่อเผยแพร่แอปที่ลงนามแล้ว ให้ดาวน์โหลดจากหน้า Asodya นี้เท่านั้น เปิดไฟล์ที่ดาวน์โหลดและทำตามข้อความแนะนำของ Android เปิด Google Play Protect ไว้ หาก Android ขออนุญาตติดตั้งจากเบราว์เซอร์หรือแอปไฟล์ ให้อนุญาตเฉพาะแอปที่เชื่อถือได้ซึ่งใช้ดาวน์โหลด Cortex';
+
+  @override
+  String get androidOfficialHelp => 'ความปลอดภัยและวิธีติดตั้งจาก Android';
+
+  @override
+  String get cliCopy => 'คัดลอกคำสั่ง';
+
+  @override
+  String get cliReadme => 'README ของ CLI';
+
+  @override
+  String get cliReleases => 'Releases';
+
+  @override
   String get whatMemory => 'แชทพร้อมความจำ';
 
   @override
@@ -537,6 +610,16 @@ class AppLocalizationsTh extends AppLocalizations {
   @override
   String statsLine(String time, String s, int input, int output) {
     return '$time · $s วินาที · เข้า $input ออก $output โทเค็น';
+  }
+
+  @override
+  String statsTimingLine(String time, String s) {
+    return '$time · $s วินาที';
+  }
+
+  @override
+  String statsDurationLine(Object s) {
+    return 'ระยะเวลา $s วินาที';
   }
 
   @override
@@ -1161,6 +1244,34 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get composerOptions => 'ตัวเลือก';
+
+  @override
+  String get modelPicker => 'โมเดล';
+
+  @override
+  String modelChoice(String name) {
+    return 'โมเดล · $name';
+  }
+
+  @override
+  String modelUnavailableSelection(String id) {
+    return 'โปรไฟล์ไม่พร้อมใช้งาน: $id';
+  }
+
+  @override
+  String get modelUnavailableMessage =>
+      'โมเดลที่เลือกไม่พร้อมใช้งาน เลือกโปรไฟล์ที่ใช้งานได้เพื่อดำเนินการต่อ';
+
+  @override
+  String get modelCatalogUnavailable =>
+      'โหลดโปรไฟล์โมเดลไม่ได้ โปรดลองอีกครั้งก่อนส่ง';
+
+  @override
+  String get modelVisionPrepass =>
+      'ระบบวิชันของ Cortex จะสรุปภาพก่อนที่โปรไฟล์ข้อความนี้จะตอบ';
+
+  @override
+  String get modelNoVision => 'โปรไฟล์นี้ไม่รองรับไฟล์แนบรูปภาพ';
 
   @override
   String get composerEmptyReason => 'เขียนข้อความก่อนส่ง';
@@ -2058,6 +2169,64 @@ class AppLocalizationsTh extends AppLocalizations {
   String remoteArtifact(String name) {
     return 'ไฟล์เซสชัน: $name';
   }
+
+  @override
+  String get remoteArtifactPreview => 'แสดงตัวอย่างรูปภาพ';
+
+  @override
+  String get remoteArtifactExpand => 'ขยายรูปภาพ';
+
+  @override
+  String get remoteArtifactExpired => 'ไฟล์นี้ไม่พร้อมใช้งานแล้ว';
+
+  @override
+  String get remoteArtifactMissingFile =>
+      'ไม่สามารถแสดงตัวอย่างได้เนื่องจากเหตุการณ์นี้ไม่มีการอ้างอิงไฟล์ที่บันทึกไว้';
+
+  @override
+  String get remoteArtifactNotImage => 'ไฟล์นี้ไม่ใช่รูปภาพที่รองรับ';
+
+  @override
+  String get remoteArtifactTooLarge =>
+      'รูปภาพนี้มีขนาดใหญ่เกินกว่าจะแสดงตัวอย่างได้';
+
+  @override
+  String get remoteTurnWaiting => 'กำลังรอ CLI';
+
+  @override
+  String get remoteTurnPrompt => 'คำสั่ง';
+
+  @override
+  String get remoteTurnRunning => 'กำลังทำงาน';
+
+  @override
+  String get remoteTurnComplete => 'เสร็จสมบูรณ์';
+
+  @override
+  String get remoteTurnIncomplete => 'สตรีมจาก CLI จบก่อนแจ้งผลลัพธ์';
+
+  @override
+  String get remoteTurnFailed => 'CLI ทำงานนี้ไม่สำเร็จ';
+
+  @override
+  String remoteTurnProgressNotice(int number) {
+    return 'ประกาศ $number';
+  }
+
+  @override
+  String get remoteProgressCommandReceived => 'CLI ได้รับคำสั่งแล้ว';
+
+  @override
+  String get remoteProgressActionCancelled => 'ยกเลิกการดำเนินการแล้ว';
+
+  @override
+  String get remoteProgressCancelRequested => 'ส่งคำขอยกเลิกแล้ว';
+
+  @override
+  String get remoteProgressCancelFailed => 'ยกเลิกไม่สำเร็จ';
+
+  @override
+  String get remoteProgressCancelPending => 'กำลังรอการยกเลิก';
 
   @override
   String get heroDemoLabel =>

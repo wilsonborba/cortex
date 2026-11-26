@@ -149,6 +149,66 @@ class ComposerState extends State<Composer> {
     l,
   ).firstWhere((item) => item.$1 == widget.chat.options.web).$2;
 
+  bool get _showModelPicker {
+    final chat = widget.chat;
+    final catalog = chat.modelCatalog;
+    if (catalog == null || catalog.models.isEmpty) return false;
+    return catalog.hasExplicitProfiles ||
+        (chat.selectedModelId != null && chat.selectedModelUnavailable);
+  }
+
+  String _modelLabel(AppLocalizations l) {
+    final chat = widget.chat;
+    final selected = chat.selectedModel;
+    if (selected != null) return l.modelChoice(selected.name);
+    if (chat.selectedModelId != null) {
+      return l.modelUnavailableSelection(chat.selectedModelId!);
+    }
+    return l.modelPicker;
+  }
+
+  List<Widget> _modelItems(AppLocalizations l) => [
+    for (final profile in widget.chat.modelCatalog?.models ?? const [])
+      MenuItemButton(
+        key: ValueKey('model-${profile.id}'),
+        leadingIcon: Icon(
+          AppIcons.copied,
+          color: profile.id == widget.chat.selectedModelId
+              ? null
+              : Colors.transparent,
+        ),
+        onPressed: () => widget.chat.selectModel(profile.id),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 360),
+          child: Text(
+            '${profile.name} · ${profile.tier.toUpperCase()}',
+            maxLines: 3,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+      ),
+  ];
+
+  Widget _modelButton(AppLocalizations l) => MenuAnchor(
+    clipBehavior: Clip.none,
+    menuChildren: _modelItems(l),
+    builder: (context, controller, _) => TextButton(
+      key: const Key('model-picker'),
+      style: _toolStyle(Palette.from(context), false),
+      onPressed: _showModelPicker
+          ? () => controller.isOpen ? controller.close() : controller.open()
+          : null,
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: Space.topicInputWidth),
+        child: Text(
+          _modelLabel(l),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+      ),
+    ),
+  );
+
   /// Fluent radio menu items for the web modes: the checkmark on the current.
   List<Widget> _webItems(AppLocalizations l) => [
     for (final (mode, label) in _webChoices(l))
@@ -254,6 +314,22 @@ class ComposerState extends State<Composer> {
       clipBehavior: Clip.none,
       childFocusNode: _optionsFocus,
       menuChildren: [
+        if (_showModelPicker)
+          SubmenuButton(
+            key: const Key('model-picker'),
+            clipBehavior: Clip.none,
+            leadingIcon: const Icon(AppIcons.settings),
+            menuChildren: _modelItems(l),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 260),
+              child: Text(
+                _modelLabel(l),
+                maxLines: 3,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ),
+        if (_showModelPicker) const MenuGroupDivider(),
         ..._webItems(l),
         const MenuGroupDivider(),
         MenuItemButton(
@@ -428,12 +504,17 @@ class ComposerState extends State<Composer> {
     final compact = size == SizeClass.compact;
     final running = chat.running != null;
     final tokens = chat.estimate(text.text);
-    final max = chat.budget.maxTokens;
-    final over = tokens > max;
-    final near = tokens > max * Controls.budgetWarningFraction;
+    final max = chat.selectedInputLimit;
+    final modelUnavailable = chat.selectedModelUnavailable;
+    final over = chat.overLimit(text.text);
+    final near =
+        !modelUnavailable && tokens > max * Controls.budgetWarningFraction;
+    final canAttachImages = chat.selectedModel?.supportsVision == true;
     final uploading = chat.files.any((file) => file.uploading);
     final reason = running
         ? null
+        : modelUnavailable
+        ? l.modelUnavailableMessage
         : over
         ? l.overLimit
         : uploading
@@ -515,6 +596,23 @@ class ComposerState extends State<Composer> {
                                   ),
                                 ),
                               ),
+                            if (chat.selectedModel?.isT1 == true &&
+                                chat.files.any(
+                                  (file) =>
+                                      file.contentType.startsWith('image/'),
+                                ))
+                              Padding(
+                                padding: const EdgeInsets.only(
+                                  bottom: Space.s8,
+                                ),
+                                child: Text(
+                                  l.modelVisionPrepass,
+                                  key: const Key('model-vision-prepass'),
+                                  style: TextStyles.caption1.copyWith(
+                                    color: p.muted,
+                                  ),
+                                ),
+                              ),
                             flex(
                               TextField(
                                 key: const Key('composer-text'),
@@ -558,7 +656,11 @@ class ComposerState extends State<Composer> {
                               children: [
                                 IconButton(
                                   key: const Key('attach'),
-                                  tooltip: l.attach,
+                                  tooltip: chat.selectedModel == null
+                                      ? l.modelUnavailableMessage
+                                      : canAttachImages
+                                      ? l.attach
+                                      : l.modelNoVision,
                                   style: IconButton.styleFrom(
                                     fixedSize: const Size.square(Space.s32),
                                     minimumSize: const Size.square(Space.s32),
@@ -570,7 +672,9 @@ class ComposerState extends State<Composer> {
                                     AppIcons.attach,
                                     size: IconSizes.action,
                                   ),
-                                  onPressed: running ? null : _attach,
+                                  onPressed: running || !canAttachImages
+                                      ? null
+                                      : _attach,
                                 ),
                                 const SizedBox(width: Space.s4),
                                 Expanded(
@@ -585,6 +689,8 @@ class ComposerState extends State<Composer> {
                                           crossAxisAlignment:
                                               WrapCrossAlignment.center,
                                           children: [
+                                            if (_showModelPicker)
+                                              _modelButton(l),
                                             _menuButton(
                                               key: const Key('web-choice'),
                                               icon: AppIcons.web,
@@ -661,7 +767,40 @@ class ComposerState extends State<Composer> {
                               ],
                             ),
                             // Only reasons the person can act on are written.
-                            if (over || uploading)
+                            if (chat.modelCatalogFailed)
+                              Padding(
+                                padding: const EdgeInsets.only(top: Space.s4),
+                                child: Row(
+                                  children: [
+                                    Expanded(
+                                      child: Text(
+                                        l.modelCatalogUnavailable,
+                                        key: const Key('model-catalog-error'),
+                                        style: TextStyles.caption1.copyWith(
+                                          color: p.dangerForeground,
+                                        ),
+                                      ),
+                                    ),
+                                    TextButton(
+                                      key: const Key('model-catalog-retry'),
+                                      onPressed: chat.open,
+                                      child: Text(l.retry),
+                                    ),
+                                  ],
+                                ),
+                              )
+                            else if (modelUnavailable)
+                              Padding(
+                                padding: const EdgeInsets.only(top: Space.s4),
+                                child: Text(
+                                  l.modelUnavailableMessage,
+                                  key: const Key('model-unavailable'),
+                                  style: TextStyles.caption1.copyWith(
+                                    color: p.dangerForeground,
+                                  ),
+                                ),
+                              )
+                            else if (over || uploading)
                               Padding(
                                 padding: const EdgeInsets.only(top: Space.s4),
                                 child: Text(

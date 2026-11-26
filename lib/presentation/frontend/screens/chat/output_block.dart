@@ -186,7 +186,9 @@ class _OutputBlockState extends State<OutputBlock> {
     final l = AppLocalizations.of(context);
     final p = Palette.from(context);
     final o = widget.output;
-    final elapsedMs = _now().difference(o.started).inMilliseconds;
+    final elapsedMs = o.started == null
+        ? 0
+        : _now().difference(o.started!).inMilliseconds;
     if (o.running && _clock == null) {
       // The first tick at 1 s shows the indicator (no indicator before 1 s).
       _clock = Timer.periodic(WaitTimes.indicator, (_) {
@@ -200,7 +202,7 @@ class _OutputBlockState extends State<OutputBlock> {
     if (_lastStatus != state) {
       _announcement = o.running
           ? l.answerStarted
-          : o.status == 'failed'
+          : o.status == 'failed' || o.errorNumber != null
           ? processMessage(l, o.errorNumber)
           : o.status == 'cancelled'
           ? l.cancelledLine
@@ -437,12 +439,23 @@ class _OutputBlockState extends State<OutputBlock> {
           Padding(
             padding: const EdgeInsets.only(top: Space.s4),
             child: Text(
-              l.statsLine(
-                TimeOfDay.fromDateTime(o.started.toLocal()).format(context),
-                (o.totalMs! / 1000).toStringAsFixed(1),
-                o.inputTokens ?? 0,
-                o.outputTokens ?? 0,
-              ),
+              o.started == null
+                  ? l.statsDurationLine((o.totalMs! / 1000).toStringAsFixed(1))
+                  : o.inputTokens != null && o.outputTokens != null
+                  ? l.statsLine(
+                      TimeOfDay.fromDateTime(
+                        o.started!.toLocal(),
+                      ).format(context),
+                      (o.totalMs! / 1000).toStringAsFixed(1),
+                      o.inputTokens!,
+                      o.outputTokens!,
+                    )
+                  : l.statsTimingLine(
+                      TimeOfDay.fromDateTime(
+                        o.started!.toLocal(),
+                      ).format(context),
+                      (o.totalMs! / 1000).toStringAsFixed(1),
+                    ),
               key: const Key('stats-line'),
               style: TextStyles.caption1.copyWith(color: p.muted),
             ),
