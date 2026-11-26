@@ -6,6 +6,10 @@
 
 ### Bug Fixes
 
+- Clarify desktop session selection
+
+- Isolate CLI turns and in-flight prompts
+
 - Constrain long model labels on narrow screens
 
 - Preserve strict legacy input payloads
@@ -46,6 +50,16 @@
 
 - Integrate reviewed Asodya platform assets and installation wiring (#85)
 
+- Bound artifact and turn history state
+
+- Time out idle file errors and ignore stale artifacts
+
+- Ignore orphan lifecycle events
+
+- Align composer focus and turn rhythm
+
+- Integrate reviewed Fluent conversation and composer (#86)
+
 
 ### Chores
 
@@ -60,18 +74,26 @@
 
 ### Documentation
 
+- Record Android login handoff for #85
+
 - Record model selector compatibility fixes
 
 - Record reviewed installation entry
-
-- Record Android login handoff for #85
 
 - Record approved one-line installation
 
 - Record reviewed history metadata recovery
 
+- Record reviewed native entry and branding (#85)
+
 
 ### Features
+
+- Add Android remote session transport
+
+- Add native account handoff for #85
+
+- Add protected Android session controls
 
 - Add Cortex CLI installation help
 
@@ -83,8 +105,6 @@
 
 - Integrate reviewed CLI installer entry and Android help (#88)
 
-- Add native account handoff for #85
-
 - Integrate reviewed Android native entry source (#85)
 
 - Combine reviewed native entry and history recovery (#85)
@@ -95,15 +115,45 @@
 
 - Include official Asodya Android assets and release signing gate (#85)
 
+- Isolate remote CLI turns and preview images
+
+- Reshape session conversation and composer
+
 
 ### Tests
 
+- Keep phone composer visible during CLI activity
+
 - Update full-page CLI screenshots
+
+- Cover late null-id cancel events
+
+- Align screen fixture with CLI event order
+
+- Add remote navigation references
+
+- Cover composer layout and tail following
+
+- Await reconnect replay deterministically
 
 
 ### merge
 
+- Reuse approved Android native entry
+
 - Include accepted model selector compatibility fixes
+
+- Review remote lifecycle and bounded error timeout corrections
+
+- Review producer-shaped remote screen fixture and explicit test dependency
+
+- Refresh reviewed remote navigation visual references
+
+- Review Fluent remote conversation presentation
+
+- Review final Fluent remote composer refinements
+
+- Review deterministic reconnect regression gate
 
 
 ### style
