@@ -1170,6 +1170,35 @@ class AppLocalizationsEn extends AppLocalizations {
   String get composerOptions => 'Options';
 
   @override
+  String get modelPicker => 'Model';
+
+  @override
+  String modelChoice(String name) {
+    return 'Model · $name';
+  }
+
+  @override
+  String modelUnavailableSelection(String id) {
+    return 'Unavailable profile: $id';
+  }
+
+  @override
+  String get modelUnavailableMessage =>
+      'The selected model is unavailable. Choose an available profile to continue.';
+
+  @override
+  String get modelCatalogUnavailable =>
+      'Model profiles could not be loaded. Try again before sending.';
+
+  @override
+  String get modelVisionPrepass =>
+      'Cortex vision summarizes images before this text profile responds.';
+
+  @override
+  String get modelNoVision =>
+      'This profile does not support image attachments.';
+
+  @override
   String get composerEmptyReason => 'Write a message before sending.';
 
   @override

@@ -2278,6 +2278,48 @@ abstract class AppLocalizations {
   /// **'Options'**
   String get composerOptions;
 
+  /// No description provided for @modelPicker.
+  ///
+  /// In en, this message translates to:
+  /// **'Model'**
+  String get modelPicker;
+
+  /// No description provided for @modelChoice.
+  ///
+  /// In en, this message translates to:
+  /// **'Model · {name}'**
+  String modelChoice(String name);
+
+  /// No description provided for @modelUnavailableSelection.
+  ///
+  /// In en, this message translates to:
+  /// **'Unavailable profile: {id}'**
+  String modelUnavailableSelection(String id);
+
+  /// No description provided for @modelUnavailableMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'The selected model is unavailable. Choose an available profile to continue.'**
+  String get modelUnavailableMessage;
+
+  /// No description provided for @modelCatalogUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Model profiles could not be loaded. Try again before sending.'**
+  String get modelCatalogUnavailable;
+
+  /// No description provided for @modelVisionPrepass.
+  ///
+  /// In en, this message translates to:
+  /// **'Cortex vision summarizes images before this text profile responds.'**
+  String get modelVisionPrepass;
+
+  /// No description provided for @modelNoVision.
+  ///
+  /// In en, this message translates to:
+  /// **'This profile does not support image attachments.'**
+  String get modelNoVision;
+
   /// No description provided for @composerEmptyReason.
   ///
   /// In en, this message translates to:
