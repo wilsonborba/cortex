@@ -405,6 +405,7 @@ class RemoteCliController extends ChangeNotifier {
     if (remoteTurnId != null) {
       final known = _turnsByRemoteId[remoteTurnId];
       if (known != null) return known;
+      if (event.kind == 'artifact') return null;
       final active = _activeTurn;
       if (active != null && active.active && active.remoteTurnId == null) {
         active.remoteTurnId = remoteTurnId;
