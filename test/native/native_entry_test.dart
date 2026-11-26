@@ -111,6 +111,23 @@ class ReadFailureStorage extends FakeSecureStorage {
   }) async => throw StateError('synthetic vault read failure');
 }
 
+class DeleteBothFailureStorage extends FakeSecureStorage {
+  final deletes = <String>[];
+  @override
+  Future<void> delete({
+    required String key,
+    AppleOptions? iOptions,
+    AndroidOptions? aOptions,
+    LinuxOptions? lOptions,
+    WebOptions? webOptions,
+    AppleOptions? mOptions,
+    WindowsOptions? wOptions,
+  }) async {
+    deletes.add(key);
+    throw StateError('synthetic independent credential delete failure');
+  }
+}
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
@@ -193,6 +210,24 @@ void main() {
       final status = await SessionService(isNative: true, sessionStore: store).currentStatus();
       expect(status, SessionStatus.none);
       expect(vault.deletes, contains('cortex.native.csrf'));
+    });
+
+    test('known pre-clear failure cannot be ignored before credential writes', () async {
+      final vault = DeleteBothFailureStorage()
+        ..values['cortex.native.csrf'] = 'synthetic-old-csrf'
+        ..failOnCsrfWrite = true;
+      final store = NativeSessionStore(storage: vault);
+      await expectLater(
+        store.writeSession(sid: 'synthetic-new-sid', csrf: 'synthetic-new-csrf'),
+        throwsException,
+      );
+      final status = await SessionService(isNative: true, sessionStore: store).currentStatus();
+      expect(
+        status,
+        SessionStatus.none,
+        reason: 'known failed credential write must never authenticate a mixed generation pair',
+      );
+      expect(vault.values['cortex.native.sid'], isNull);
     });
   });
 

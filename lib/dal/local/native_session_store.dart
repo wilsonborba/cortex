@@ -46,7 +46,11 @@ class NativeSessionStore {
     if (cleanSid.isEmpty || cleanCsrf.isEmpty) {
       throw const FormatException('Session ID and CSRF token must not be empty');
     }
-    await clearSession().catchError((_) {});
+    try {
+      await clearSession();
+    } catch (e) {
+      throw e is Exception ? e : Exception(e.toString());
+    }
     try {
       await _storage.write(key: _sidKey, value: cleanSid);
       await _storage.write(key: _csrfKey, value: cleanCsrf);
