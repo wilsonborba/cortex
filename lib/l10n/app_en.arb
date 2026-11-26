@@ -1024,7 +1024,7 @@
   "remoteApprove": "Approve",
   "remoteDeny": "Deny",
   "remoteNoApprovals": "No pending approvals",
-  "remotePromptHint": "Send a prompt to this CLI session",
+  "remotePromptHint": "Message this session",
   "remoteSendPrompt": "Send prompt",
   "remoteAttachImage": "Attach image",
   "remoteRemoveAttachment": "Remove {name}",

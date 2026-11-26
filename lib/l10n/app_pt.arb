@@ -656,7 +656,7 @@
   "remoteApprove": "Aprovar",
   "remoteDeny": "Negar",
   "remoteNoApprovals": "Nenhuma aprovação pendente",
-  "remotePromptHint": "Envie uma solicitação para esta sessão do CLI",
+  "remotePromptHint": "Mensagem para esta sessão",
   "remoteSendPrompt": "Enviar",
   "remoteAttachImage": "Anexar imagem",
   "remoteRemoveAttachment": "Remover {name}",

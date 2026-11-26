@@ -11,6 +11,7 @@ import '../../../../domain/models/remote_cli.dart';
 import '../../../../domain/services/remote_cli_controller.dart';
 import '../../../../l10n/generated/app_localizations.dart';
 import '../../theme/app_icons.dart';
+import '../../theme/theme.dart';
 import '../../theme/tokens.dart';
 import '../../widgets/common/buttons.dart';
 import '../../widgets/common/states.dart';
@@ -32,6 +33,9 @@ class RemoteSessionsScreen extends StatefulWidget {
 
 class _RemoteSessionsScreenState extends State<RemoteSessionsScreen> {
   final prompt = TextEditingController();
+  final _promptFocus = FocusNode();
+  final _turnScrollController = ScrollController();
+  int _scrollInteractionGeneration = 0;
   bool selectingImage = false;
 
   RemoteCliController get remote => widget.controller;
@@ -57,13 +61,42 @@ class _RemoteSessionsScreenState extends State<RemoteSessionsScreen> {
   @override
   void dispose() {
     remote.removeListener(_changed);
+    _promptFocus.dispose();
+    _turnScrollController.dispose();
     unawaited(remote.closeSession(clearSessions: true));
     prompt.dispose();
     super.dispose();
   }
 
   void _changed() {
-    if (mounted) setState(() {});
+    final followTail = _nearLatest;
+    if (!mounted) return;
+    setState(() {});
+    if (followTail) _scrollToLatest();
+  }
+
+  bool get _nearLatest =>
+      !_turnScrollController.hasClients ||
+      _turnScrollController.position.maxScrollExtent -
+              _turnScrollController.position.pixels <=
+          96;
+
+  void _scrollToLatest() {
+    final interactionGeneration = _scrollInteractionGeneration;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || !_turnScrollController.hasClients) return;
+      if (_scrollInteractionGeneration != interactionGeneration) return;
+      _turnScrollController.animateTo(
+        _turnScrollController.position.maxScrollExtent,
+        duration: const Duration(milliseconds: 180),
+        curve: Curves.easeOut,
+      );
+    });
+  }
+
+  Future<void> _openSession(RemoteCliSession session) async {
+    await remote.openSession(session);
+    _scrollToLatest();
   }
 
   String _errorText(AppLocalizations l) =>
@@ -176,7 +209,7 @@ class _RemoteSessionsScreenState extends State<RemoteSessionsScreen> {
                 return _SessionTile(
                   session: session,
                   selected: selected,
-                  onTap: () => remote.openSession(session),
+                  onTap: () => _openSession(session),
                 );
               },
             ),
@@ -201,7 +234,6 @@ class _RemoteSessionsScreenState extends State<RemoteSessionsScreen> {
   }) {
     final l = AppLocalizations.of(context);
     final p = Palette.from(context);
-    final running = remote.turnRunning;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -232,6 +264,8 @@ class _RemoteSessionsScreenState extends State<RemoteSessionsScreen> {
                     ),
                     Text(
                       '${session.platform} · ${l.remoteLastSeen(DateFormat.yMMMd(l.localeName).add_Hm().format(session.lastSeen.toLocal()))}',
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
                       style: TextStyles.caption1.copyWith(color: p.muted),
                     ),
                   ],
@@ -249,19 +283,6 @@ class _RemoteSessionsScreenState extends State<RemoteSessionsScreen> {
           _Notice(text: _errorText(l), warning: true),
         if (remote.commandStatus != RemoteCliCommandStatus.none)
           _Notice(text: _commandStatusText(l, remote.commandStatus)),
-        if (running && !remote.cancelQueued)
-          Align(
-            alignment: Alignment.centerRight,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: Space.s16),
-              child: AppButton(
-                label: l.remoteCancelTurn,
-                kind: ButtonKind.secondary,
-                icon: AppIcons.close,
-                onPressed: () => remote.cancel(),
-              ),
-            ),
-          ),
         if (remote.turns.isEmpty)
           Expanded(
             child: EmptyState(
@@ -271,27 +292,41 @@ class _RemoteSessionsScreenState extends State<RemoteSessionsScreen> {
           )
         else
           Expanded(
-            child: ListView(
-              key: const Key('remote-event-list'),
-              padding: const EdgeInsets.fromLTRB(
-                Space.s16,
-                Space.s8,
-                Space.s16,
-                Space.s16,
+            child: NotificationListener<UserScrollNotification>(
+              onNotification: (_) {
+                _scrollInteractionGeneration++;
+                return false;
+              },
+              child: ListView(
+                key: const Key('remote-event-list'),
+                controller: _turnScrollController,
+                padding: const EdgeInsets.fromLTRB(
+                  Space.s16,
+                  Space.s8,
+                  Space.s16,
+                  Space.s16,
+                ),
+                children: [
+                  for (final turn in remote.turns)
+                    Center(
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(
+                          maxWidth: Space.chatColumnWidth,
+                        ),
+                        child: _TurnCard(
+                          key: ValueKey('remote-turn-${turn.key}'),
+                          turn: turn,
+                          controller: remote,
+                          sessionId: session.id,
+                          epoch: remote.operationEpoch,
+                          approvalRequests: remote.approvalRequests,
+                          answeringApprovals: remote.answeringApprovals,
+                          answerApproval: remote.answerApproval,
+                        ),
+                      ),
+                    ),
+                ],
               ),
-              children: [
-                for (final turn in remote.turns)
-                  _TurnCard(
-                    key: ValueKey('remote-turn-${turn.key}'),
-                    turn: turn,
-                    controller: remote,
-                    sessionId: session.id,
-                    epoch: remote.operationEpoch,
-                    approvalRequests: remote.approvalRequests,
-                    answeringApprovals: remote.answeringApprovals,
-                    answerApproval: remote.answerApproval,
-                  ),
-              ],
             ),
           ),
         _composer(context, session),
@@ -317,112 +352,214 @@ class _RemoteSessionsScreenState extends State<RemoteSessionsScreen> {
     final l = AppLocalizations.of(context);
     final p = Palette.from(context);
     final hasText = prompt.text.trim().isNotEmpty;
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(
-        Space.s12,
-        Space.s8,
-        Space.s12,
-        Space.s12,
-      ),
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 900),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            if (remote.attachments.isNotEmpty)
-              Wrap(
-                spacing: Space.s8,
-                runSpacing: Space.s4,
-                children: [
-                  for (final file in remote.attachments)
-                    InputChip(
-                      avatar: const Icon(
-                        AppIcons.attach,
-                        size: IconSizes.action,
-                      ),
-                      label: ConstrainedBox(
-                        constraints: const BoxConstraints(maxWidth: 240),
-                        child: Text(
-                          file.name,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                      onDeleted: () => remote.removeAttachment(file),
-                      deleteButtonTooltipMessage: l.remoteRemoveAttachment(
-                        file.name,
-                      ),
-                    ),
-                ],
+    final canSend =
+        hasText &&
+        !remote.streamExpired &&
+        !remote.sendingPrompt &&
+        !remote.promptAwaitingStart &&
+        !remote.turnRunning;
+    final canCancel = remote.turnRunning && !remote.cancelQueued;
+    return Align(
+      alignment: Alignment.center,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(
+          Space.s12,
+          Space.s8,
+          Space.s12,
+          Space.s12,
+        ),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: Space.chatColumnWidth),
+          child: Container(
+            key: const Key('remote-composer-surface'),
+            decoration: BoxDecoration(
+              color: p.raised,
+              borderRadius: BorderRadius.circular(Radii.dialog),
+              border: Border.all(color: p.stroke, width: Controls.border),
+              boxShadow: Shadows.shadow4(Theme.of(context).brightness),
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(
+                Radii.dialog - Controls.border,
               ),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                IconButton(
-                  tooltip: l.remoteAttachImage,
-                  onPressed: selectingImage ? null : _pickImages,
-                  icon: selectingImage
-                      ? const SizedBox.square(
-                          dimension: 18,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
-                      : const Icon(AppIcons.attach),
-                ),
-                Expanded(
-                  child: TextField(
-                    key: const Key('remote-prompt'),
-                    controller: prompt,
-                    minLines: 1,
-                    maxLines: 5,
-                    onChanged: (_) => setState(() {}),
-                    textInputAction: TextInputAction.newline,
-                    decoration: InputDecoration(
-                      hintText: l.remotePromptHint,
-                      filled: true,
-                      fillColor: p.background,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(Radii.control),
-                      ),
+              child: Stack(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: Space.s12,
+                      vertical: Space.s8,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (remote.attachments.isNotEmpty)
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: Space.s8),
+                            child: Wrap(
+                              spacing: Space.s8,
+                              runSpacing: Space.s8,
+                              children: [
+                                for (final file in remote.attachments)
+                                  ConstrainedBox(
+                                    constraints: const BoxConstraints(
+                                      maxWidth: 320,
+                                    ),
+                                    child: InputChip(
+                                      avatar: const Icon(
+                                        AppIcons.attach,
+                                        size: IconSizes.action,
+                                      ),
+                                      label: Text(
+                                        file.name,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      onDeleted: () =>
+                                          remote.removeAttachment(file),
+                                      deleteButtonTooltipMessage: l
+                                          .remoteRemoveAttachment(file.name),
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          ),
+                        TextField(
+                          key: const Key('remote-prompt'),
+                          controller: prompt,
+                          focusNode: _promptFocus,
+                          minLines: 1,
+                          maxLines: Controls.composerMaxLines,
+                          onChanged: (_) => setState(() {}),
+                          textInputAction: TextInputAction.newline,
+                          style: TextStyles.body2.copyWith(color: p.text),
+                          decoration: InputDecoration(
+                            hintText: l.remotePromptHint,
+                            hintStyle: TextStyles.body2.copyWith(
+                              color: p.muted,
+                            ),
+                            filled: false,
+                            isDense: true,
+                            contentPadding: const EdgeInsets.symmetric(
+                              vertical: Space.s6,
+                            ),
+                            border: InputBorder.none,
+                            enabledBorder: InputBorder.none,
+                            focusedBorder: Theme.of(
+                              context,
+                            ).inputDecorationTheme.focusedBorder,
+                          ),
+                        ),
+                        const SizedBox(height: Space.s4),
+                        Row(
+                          children: [
+                            SizedBox(
+                              width: 44,
+                              height: 44,
+                              child: IconButton(
+                                tooltip: l.remoteAttachImage,
+                                onPressed: selectingImage ? null : _pickImages,
+                                padding: EdgeInsets.zero,
+                                constraints: const BoxConstraints.tightFor(
+                                  width: 44,
+                                  height: 44,
+                                ),
+                                icon: selectingImage
+                                    ? const SizedBox.square(
+                                        dimension: 18,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                        ),
+                                      )
+                                    : const Icon(AppIcons.attach),
+                              ),
+                            ),
+                            const Spacer(),
+                            SizedBox(
+                              width: 44,
+                              height: 44,
+                              child: Tooltip(
+                                message: remote.turnRunning
+                                    ? l.remoteCancelTurn
+                                    : l.remoteSendPrompt,
+                                child: Semantics(
+                                  button: true,
+                                  enabled: canCancel || canSend,
+                                  label: remote.turnRunning
+                                      ? l.remoteCancelTurn
+                                      : l.remoteSendPrompt,
+                                  excludeSemantics: true,
+                                  child: FilledButton(
+                                    key: const Key('remote-send'),
+                                    onPressed: canCancel
+                                        ? remote.cancel
+                                        : canSend
+                                        ? () async {
+                                            final value = prompt.text;
+                                            final sessionId = session.id;
+                                            final epoch = remote.operationEpoch;
+                                            final sending = remote.sendPrompt(
+                                              value,
+                                            );
+                                            _scrollToLatest();
+                                            final sent = await sending;
+                                            if (sent &&
+                                                mounted &&
+                                                prompt.text == value &&
+                                                remote.isCurrentSession(
+                                                  sessionId,
+                                                  epoch,
+                                                )) {
+                                              prompt.clear();
+                                              setState(() {});
+                                            }
+                                          }
+                                        : null,
+                                    style:
+                                        buttonStyle(
+                                          p,
+                                          remote.turnRunning
+                                              ? ButtonAppearance.secondary
+                                              : ButtonAppearance.primary,
+                                          size: ButtonSize.small,
+                                        ).copyWith(
+                                          minimumSize:
+                                              const WidgetStatePropertyAll(
+                                                Size.square(44),
+                                              ),
+                                          padding: const WidgetStatePropertyAll(
+                                            EdgeInsets.zero,
+                                          ),
+                                        ),
+                                    child:
+                                        remote.sendingPrompt ||
+                                            remote.promptAwaitingStart ||
+                                            (remote.turnRunning &&
+                                                remote.cancelQueued)
+                                        ? const SizedBox.square(
+                                            dimension: 18,
+                                            child: CircularProgressIndicator(
+                                              strokeWidth: 2,
+                                            ),
+                                          )
+                                        : Icon(
+                                            remote.turnRunning
+                                                ? AppIcons.stop
+                                                : AppIcons.send,
+                                          ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
                   ),
-                ),
-                const SizedBox(width: Space.s8),
-                AppButton.primary(
-                  key: const Key('remote-send'),
-                  label: l.remoteSendPrompt,
-                  icon: AppIcons.send,
-                  onPressed:
-                      hasText &&
-                          !remote.streamExpired &&
-                          !remote.sendingPrompt &&
-                          !remote.promptAwaitingStart &&
-                          !remote.turnRunning
-                      ? () async {
-                          final text = prompt.text;
-                          final sessionId = session.id;
-                          final epoch = remote.operationEpoch;
-                          final sent = await remote.sendPrompt(text);
-                          if (sent &&
-                              mounted &&
-                              prompt.text == text &&
-                              remote.isCurrentSession(sessionId, epoch)) {
-                            prompt.clear();
-                            setState(() {});
-                          }
-                        }
-                      : null,
-                ),
-              ],
-            ),
-            if (!session.online)
-              Padding(
-                padding: const EdgeInsets.only(top: Space.s4, left: Space.s48),
-                child: Text(
-                  l.remoteOffline,
-                  style: TextStyles.caption1.copyWith(color: p.muted),
-                ),
+                ],
               ),
-          ],
+            ),
+          ),
         ),
       ),
     );
@@ -547,77 +684,110 @@ class _TurnCard extends StatelessWidget {
       RemoteCliTurnStatus.failed => l.remoteTurnFailed,
       RemoteCliTurnStatus.cancelled => l.remoteCancelled,
     };
-    return Card(
+    return Padding(
       key: Key('remote-turn-card-${turn.key}'),
-      margin: const EdgeInsets.only(bottom: Space.s12),
-      color: p.surface,
-      child: Padding(
-        padding: const EdgeInsets.all(Space.s12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            if (turn.prompt.isNotEmpty) ...[
-              Text(
-                l.remoteTurnPrompt,
-                style: TextStyles.caption1Strong.copyWith(color: p.text2),
-              ),
-              const SizedBox(height: Space.s4),
-              SelectableText(
-                turn.prompt,
-                style: TextStyles.body2.copyWith(color: p.text),
-              ),
-              const SizedBox(height: Space.s8),
-            ],
-            Text(status, style: TextStyles.caption1.copyWith(color: p.muted)),
-            for (final event in turn.events)
-              if (event.kind == 'progress')
-                _EventLine(
-                  title: l.remoteProgress,
-                  text: _progressText(l, event),
-                  icon: AppIcons.activity,
-                ),
-            if (turn.answer.isNotEmpty) ...[
-              const SizedBox(height: Space.s8),
-              Text(
-                l.remoteAnswer,
-                style: TextStyles.body1Strong.copyWith(color: p.text),
-              ),
-              const SizedBox(height: Space.s4),
-              SelectableText(
-                turn.answer,
-                style: TextStyles.body1.copyWith(color: p.text),
-              ),
-            ],
-            for (final event in turn.events.where(
-              (event) => event.kind == 'artifact',
-            ))
-              _ArtifactPreview(
-                key: ValueKey('remote-artifact-$sessionId-${event.id}'),
-                event: event,
-                controller: controller,
-                sessionId: sessionId,
-                epoch: epoch,
-              ),
-            if (approvals.isNotEmpty) ...[
-              const SizedBox(height: Space.s12),
-              Text(
-                l.remoteApprovals,
-                style: TextStyles.body1Strong.copyWith(color: p.text),
-              ),
-              for (final event in approvals)
-                _ApprovalCard(
-                  event: event,
-                  busy: answeringApprovals.contains(
-                    '${event.payload['approval_id']}',
+      padding: const EdgeInsets.only(bottom: Space.s16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          if (turn.prompt.isNotEmpty) ...[
+            Align(
+              alignment: AlignmentDirectional.centerEnd,
+              child: LayoutBuilder(
+                builder: (context, constraints) => Container(
+                  key: Key('remote-user-prompt-${turn.key}'),
+                  constraints: BoxConstraints(
+                    maxWidth: constraints.maxWidth * Space.userBubbleFraction,
                   ),
-                  onAnswer: (approved) => answerApproval(
-                    '${event.payload['approval_id']}',
-                    approved: approved,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: Space.s12,
+                    vertical: Space.s8,
+                  ),
+                  decoration: BoxDecoration(
+                    color: p.surface,
+                    borderRadius: BorderRadius.circular(Radii.dialog),
+                  ),
+                  child: SelectableText(
+                    turn.prompt,
+                    style: TextStyles.body2.copyWith(color: p.text),
                   ),
                 ),
-            ],
+              ),
+            ),
+            const SizedBox(height: Space.s12),
           ],
-        ),
+          Row(
+            children: [
+              if (turn.status == RemoteCliTurnStatus.running ||
+                  turn.status == RemoteCliTurnStatus.awaitingResponse)
+                Padding(
+                  padding: const EdgeInsets.only(right: Space.s8),
+                  child: SizedBox.square(
+                    dimension: 14,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: p.muted,
+                    ),
+                  ),
+                )
+              else
+                Padding(
+                  padding: const EdgeInsets.only(right: Space.s8),
+                  child: Icon(
+                    turn.status == RemoteCliTurnStatus.failed
+                        ? AppIcons.warning
+                        : AppIcons.bot,
+                    size: IconSizes.action,
+                    color: turn.status == RemoteCliTurnStatus.failed
+                        ? p.warningForeground
+                        : p.muted,
+                  ),
+                ),
+              Flexible(
+                child: Text(
+                  status,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyles.caption1.copyWith(color: p.muted),
+                ),
+              ),
+            ],
+          ),
+          for (final event in turn.events)
+            if (event.kind == 'progress')
+              _EventLine(
+                text: _progressText(l, event),
+                icon: AppIcons.activity,
+              ),
+          if (turn.answer.isNotEmpty) ...[
+            const SizedBox(height: Space.s8),
+            SelectableText(
+              turn.answer,
+              style: TextStyles.body1.copyWith(color: p.text),
+            ),
+          ],
+          for (final event in turn.events.where(
+            (event) => event.kind == 'artifact',
+          ))
+            _ArtifactPreview(
+              key: ValueKey('remote-artifact-$sessionId-${event.id}'),
+              event: event,
+              controller: controller,
+              sessionId: sessionId,
+              epoch: epoch,
+            ),
+          for (final event in approvals)
+            _ApprovalCard(
+              event: event,
+              busy: answeringApprovals.contains(
+                '${event.payload['approval_id']}',
+              ),
+              onAnswer: (approved) => answerApproval(
+                '${event.payload['approval_id']}',
+                approved: approved,
+              ),
+            ),
+        ],
       ),
     );
   }
@@ -699,6 +869,13 @@ class _ArtifactPreviewState extends State<_ArtifactPreview> {
                     l.remoteArtifactMissingFile,
                     style: TextStyles.caption1.copyWith(color: p.muted),
                   ),
+                )
+              : MediaQuery.sizeOf(context).width < 600
+              ? IconButton(
+                  key: Key('remote-artifact-preview-$_fileId'),
+                  tooltip: l.remoteArtifactPreview,
+                  onPressed: _loading ? null : _togglePreview,
+                  icon: Icon(_expanded ? AppIcons.collapse : AppIcons.expand),
                 )
               : TextButton.icon(
                   key: Key('remote-artifact-preview-$_fileId'),
@@ -905,12 +1082,7 @@ class _Notice extends StatelessWidget {
 }
 
 class _EventLine extends StatelessWidget {
-  const _EventLine({
-    required this.title,
-    required this.text,
-    required this.icon,
-  });
-  final String title;
+  const _EventLine({required this.text, required this.icon});
   final String text;
   final IconData icon;
 
@@ -929,11 +1101,7 @@ class _EventLine extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  title,
-                  style: TextStyles.caption1Strong.copyWith(color: p.text2),
-                ),
-                Text(text, style: TextStyles.body2.copyWith(color: p.text)),
+                Text(text, style: TextStyles.caption1.copyWith(color: p.muted)),
               ],
             ),
           ),

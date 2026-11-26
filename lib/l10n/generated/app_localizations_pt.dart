@@ -2158,8 +2158,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get remoteNoApprovals => 'Nenhuma aprovação pendente';
 
   @override
-  String get remotePromptHint =>
-      'Envie uma solicitação para esta sessão do CLI';
+  String get remotePromptHint => 'Mensagem para esta sessão';
 
   @override
   String get remoteSendPrompt => 'Enviar';

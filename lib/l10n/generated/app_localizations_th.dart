@@ -2118,7 +2118,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get remoteNoApprovals => 'ไม่มีคำขออนุมัติที่รอดำเนินการ';
 
   @override
-  String get remotePromptHint => 'ส่งคำสั่งไปยังเซสชัน CLI นี้';
+  String get remotePromptHint => 'ส่งข้อความถึงเซสชันนี้';
 
   @override
   String get remoteSendPrompt => 'ส่งคำสั่ง';

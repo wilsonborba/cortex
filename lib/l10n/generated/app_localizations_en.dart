@@ -2140,7 +2140,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get remoteNoApprovals => 'No pending approvals';
 
   @override
-  String get remotePromptHint => 'Send a prompt to this CLI session';
+  String get remotePromptHint => 'Message this session';
 
   @override
   String get remoteSendPrompt => 'Send prompt';
