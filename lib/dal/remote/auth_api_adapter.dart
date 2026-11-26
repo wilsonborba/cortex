@@ -171,20 +171,24 @@ class AuthApiAdapter {
     return age >= const Duration(minutes: 30);
   }
 
-  Future<String> nativeHandoffStatus({Duration timeout = defaultTimeout}) async {
+  Future<String> nativeHandoffStatus({
+    Duration timeout = defaultTimeout,
+  }) async {
     final pending = await _pendingHandoff();
     http.Response response;
     try {
-      response = await _httpClient.post(
-        Uri.parse('$apiForAppsBaseUrl/apps/api/v1/exchange'),
-        headers: const {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          'app': AppSettings.appIdentifier,
-          'handoff_id': pending.handoffId,
-          'challenge': pending.challenge,
-          'status': true,
-        }),
-      ).timeout(timeout);
+      response = await _httpClient
+          .post(
+            Uri.parse('$apiForAppsBaseUrl/apps/api/v1/exchange'),
+            headers: const {'Content-Type': 'application/json'},
+            body: jsonEncode({
+              'app': AppSettings.appIdentifier,
+              'handoff_id': pending.handoffId,
+              'challenge': pending.challenge,
+              'status': true,
+            }),
+          )
+          .timeout(timeout);
     } on TimeoutException {
       throw const NativeHandoffException('TIMEOUT', 408);
     }
@@ -220,21 +224,22 @@ class AuthApiAdapter {
     final pending = await _pendingHandoff();
     http.Response response;
     try {
-      response = await _httpClient.post(
-        Uri.parse('$apiForAppsBaseUrl/apps/api/v1/exchange'),
-        headers: const {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          'app': AppSettings.appIdentifier,
-          'handoff_id': pending.handoffId,
-          'secret': pending.secret,
-        }),
-      ).timeout(timeout);
+      response = await _httpClient
+          .post(
+            Uri.parse('$apiForAppsBaseUrl/apps/api/v1/exchange'),
+            headers: const {'Content-Type': 'application/json'},
+            body: jsonEncode({
+              'app': AppSettings.appIdentifier,
+              'handoff_id': pending.handoffId,
+              'secret': pending.secret,
+            }),
+          )
+          .timeout(timeout);
     } on TimeoutException {
       throw const NativeHandoffException('TIMEOUT', 408);
     }
     final body = _handoffBody(response, attempt: pending);
-    final data = (body['data'] as Map)
-        .cast<String, dynamic>();
+    final data = (body['data'] as Map).cast<String, dynamic>();
     final sid = data['session_id'];
     final csrf = data['csrf_token'];
     if (sid is! String ||
@@ -250,9 +255,7 @@ class AuthApiAdapter {
       final city = location['city'];
       final country = location['country'];
       final countryName = country is String && country.trim().isNotEmpty
-          ? await _sessionStore.localizedCountryName(
-              country.trim(),
-            )
+          ? await _sessionStore.localizedCountryName(country.trim())
           : null;
       final values = [
         if (city is String && city.trim().isNotEmpty) city.trim(),
@@ -267,16 +270,18 @@ class AuthApiAdapter {
     final pending = await _pendingHandoff();
     http.Response response;
     try {
-      response = await _httpClient.post(
-        Uri.parse('$apiForAppsBaseUrl/apps/api/v1/exchange'),
-        headers: const {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          'app': AppSettings.appIdentifier,
-          'handoff_id': pending.handoffId,
-          'secret': pending.secret,
-          'cancel': true,
-        }),
-      ).timeout(timeout);
+      response = await _httpClient
+          .post(
+            Uri.parse('$apiForAppsBaseUrl/apps/api/v1/exchange'),
+            headers: const {'Content-Type': 'application/json'},
+            body: jsonEncode({
+              'app': AppSettings.appIdentifier,
+              'handoff_id': pending.handoffId,
+              'secret': pending.secret,
+              'cancel': true,
+            }),
+          )
+          .timeout(timeout);
     } on TimeoutException {
       throw const NativeHandoffException('TIMEOUT', 408);
     }
@@ -284,8 +289,7 @@ class AuthApiAdapter {
     await _sessionStore.clearPendingHandoff();
   }
 
-  Future<void> discardNativeLogin() =>
-      _sessionStore.clearPendingHandoff();
+  Future<void> discardNativeLogin() => _sessionStore.clearPendingHandoff();
 
   Future<NativeLoginAttempt> _pendingHandoff() async {
     final raw = await _sessionStore.readPendingHandoff();

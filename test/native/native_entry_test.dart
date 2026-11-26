@@ -137,124 +137,171 @@ void main() {
       expect(manifestFile.existsSync(), isTrue);
       final content = manifestFile.readAsStringSync();
       expect(
-        content.contains('<uses-permission android:name="android.permission.INTERNET"/>'),
+        content.contains(
+          '<uses-permission android:name="android.permission.INTERNET"/>',
+        ),
         isTrue,
-        reason: 'Main AndroidManifest must contain INTERNET permission for release builds',
+        reason:
+            'Main AndroidManifest must contain INTERNET permission for release builds',
       );
     });
   });
 
   group('Cortex #85 Native Session Store & Partial Failure Cleanup', () {
-    test('writeSession rejects empty or whitespace session_id and csrf_token', () async {
-      final fakeStorage = FakeSecureStorage();
-      final store = NativeSessionStore(storage: fakeStorage);
+    test(
+      'writeSession rejects empty or whitespace session_id and csrf_token',
+      () async {
+        final fakeStorage = FakeSecureStorage();
+        final store = NativeSessionStore(storage: fakeStorage);
 
-      expect(
-        () => store.writeSession(sid: '', csrf: 'valid-csrf'),
-        throwsA(isA<FormatException>()),
-      );
-      expect(
-        () => store.writeSession(sid: 'valid-sid', csrf: '   '),
-        throwsA(isA<FormatException>()),
-      );
-      expect(fakeStorage.values.isEmpty, isTrue);
-    });
+        expect(
+          () => store.writeSession(sid: '', csrf: 'valid-csrf'),
+          throwsA(isA<FormatException>()),
+        );
+        expect(
+          () => store.writeSession(sid: 'valid-sid', csrf: '   '),
+          throwsA(isA<FormatException>()),
+        );
+        expect(fakeStorage.values.isEmpty, isTrue);
+      },
+    );
 
-    test('writeSession cleans up partial credentials if CSRF storage write fails', () async {
-      final fakeStorage = FakeSecureStorage();
-      fakeStorage.failOnCsrfWrite = true;
-      final store = NativeSessionStore(storage: fakeStorage);
+    test(
+      'writeSession cleans up partial credentials if CSRF storage write fails',
+      () async {
+        final fakeStorage = FakeSecureStorage();
+        fakeStorage.failOnCsrfWrite = true;
+        final store = NativeSessionStore(storage: fakeStorage);
 
-      await expectLater(
-        () => store.writeSession(sid: 'test-session-id', csrf: 'test-csrf-token'),
-        throwsException,
-      );
+        await expectLater(
+          () => store.writeSession(
+            sid: 'test-session-id',
+            csrf: 'test-csrf-token',
+          ),
+          throwsException,
+        );
 
-      // Verify session ID was NOT left in storage after failure:
-      final sid = await store.readSessionId();
-      final csrf = await store.readCsrfToken();
-      expect(sid, isNull);
-      expect(csrf, isNull);
-      expect(fakeStorage.values.isEmpty, isTrue);
-    });
+        // Verify session ID was NOT left in storage after failure:
+        final sid = await store.readSessionId();
+        final csrf = await store.readCsrfToken();
+        expect(sid, isNull);
+        expect(csrf, isNull);
+        expect(fakeStorage.values.isEmpty, isTrue);
+      },
+    );
 
-    test('SessionService.currentStatus returns none if sid or csrf is missing or empty', () async {
-      final fakeStorage = FakeSecureStorage();
-      final store = NativeSessionStore(storage: fakeStorage);
-      final sessionService = SessionService(isNative: true, sessionStore: store);
+    test(
+      'SessionService.currentStatus returns none if sid or csrf is missing or empty',
+      () async {
+        final fakeStorage = FakeSecureStorage();
+        final store = NativeSessionStore(storage: fakeStorage);
+        final sessionService = SessionService(
+          isNative: true,
+          sessionStore: store,
+        );
 
-      expect(await sessionService.currentStatus(), SessionStatus.none);
+        expect(await sessionService.currentStatus(), SessionStatus.none);
 
-      // Only sid present
-      fakeStorage.values['cortex.native.sid'] = 'some-sid';
-      expect(await sessionService.currentStatus(), SessionStatus.none);
+        // Only sid present
+        fakeStorage.values['cortex.native.sid'] = 'some-sid';
+        expect(await sessionService.currentStatus(), SessionStatus.none);
 
-      // Both present but csrf empty string
-      fakeStorage.values['cortex.native.csrf'] = '  ';
-      expect(await sessionService.currentStatus(), SessionStatus.none);
+        // Both present but csrf empty string
+        fakeStorage.values['cortex.native.csrf'] = '  ';
+        expect(await sessionService.currentStatus(), SessionStatus.none);
 
-      // Both valid
-      fakeStorage.values['cortex.native.csrf'] = 'valid-csrf';
-      expect(await sessionService.currentStatus(), SessionStatus.authenticated);
-    });
+        // Both valid
+        fakeStorage.values['cortex.native.csrf'] = 'valid-csrf';
+        expect(
+          await sessionService.currentStatus(),
+          SessionStatus.authenticated,
+        );
+      },
+    );
 
-    test('partial write cleanup attempts both keys and cannot authenticate mixed pair', () async {
-      final vault = DeleteFailureStorage()
-        ..values['cortex.native.csrf'] = 'synthetic-old-csrf'
-        ..failOnCsrfWrite = true;
-      final store = NativeSessionStore(storage: vault);
-      await expectLater(
-        store.writeSession(sid: 'synthetic-new-sid', csrf: 'synthetic-new-csrf'),
-        throwsException,
-      );
-      final status = await SessionService(isNative: true, sessionStore: store).currentStatus();
-      expect(status, SessionStatus.none);
-      expect(vault.deletes, contains('cortex.native.csrf'));
-    });
+    test(
+      'partial write cleanup attempts both keys and cannot authenticate mixed pair',
+      () async {
+        final vault = DeleteFailureStorage()
+          ..values['cortex.native.csrf'] = 'synthetic-old-csrf'
+          ..failOnCsrfWrite = true;
+        final store = NativeSessionStore(storage: vault);
+        await expectLater(
+          store.writeSession(
+            sid: 'synthetic-new-sid',
+            csrf: 'synthetic-new-csrf',
+          ),
+          throwsException,
+        );
+        final status = await SessionService(
+          isNative: true,
+          sessionStore: store,
+        ).currentStatus();
+        expect(status, SessionStatus.none);
+        expect(vault.deletes, contains('cortex.native.csrf'));
+      },
+    );
 
-    test('known pre-clear failure cannot be ignored before credential writes', () async {
-      final vault = DeleteBothFailureStorage()
-        ..values['cortex.native.csrf'] = 'synthetic-old-csrf'
-        ..failOnCsrfWrite = true;
-      final store = NativeSessionStore(storage: vault);
-      await expectLater(
-        store.writeSession(sid: 'synthetic-new-sid', csrf: 'synthetic-new-csrf'),
-        throwsException,
-      );
-      final status = await SessionService(isNative: true, sessionStore: store).currentStatus();
-      expect(
-        status,
-        SessionStatus.none,
-        reason: 'known failed credential write must never authenticate a mixed generation pair',
-      );
-      expect(vault.values['cortex.native.sid'], isNull);
-    });
+    test(
+      'known pre-clear failure cannot be ignored before credential writes',
+      () async {
+        final vault = DeleteBothFailureStorage()
+          ..values['cortex.native.csrf'] = 'synthetic-old-csrf'
+          ..failOnCsrfWrite = true;
+        final store = NativeSessionStore(storage: vault);
+        await expectLater(
+          store.writeSession(
+            sid: 'synthetic-new-sid',
+            csrf: 'synthetic-new-csrf',
+          ),
+          throwsException,
+        );
+        final status = await SessionService(
+          isNative: true,
+          sessionStore: store,
+        ).currentStatus();
+        expect(
+          status,
+          SessionStatus.none,
+          reason:
+              'known failed credential write must never authenticate a mixed generation pair',
+        );
+        expect(vault.values['cortex.native.sid'], isNull);
+      },
+    );
   });
 
   group('Cortex #85 Native Vault Read Failure Recovery', () {
-    testWidgets('vault read failure still permits a usable native login route', (tester) async {
-      final store = NativeSessionStore(storage: ReadFailureStorage());
-      final sessionService = SessionService(isNative: true, sessionStore: store);
-      final session = SessionController(service: sessionService);
-      final auth = AuthService(
-        AuthApiAdapter(
+    testWidgets(
+      'vault read failure still permits a usable native login route',
+      (tester) async {
+        final store = NativeSessionStore(storage: ReadFailureStorage());
+        final sessionService = SessionService(
+          isNative: true,
           sessionStore: store,
-          httpClient: MockClient((_) async => http.Response('{}', 200)),
-        ),
-        session: sessionService,
-      );
-      await tester.pumpWidget(
-        CortexApp(session: session, auth: auth, initialLocation: '/v1/entry'),
-      );
-      await tester.pump(const Duration(milliseconds: 100));
-      final app = tester.widget<MaterialApp>(find.byType(MaterialApp));
-      expect(
-        app.routerConfig,
-        isNotNull,
-        reason: 'vault read failure must not leave permanent startup Skeleton',
-      );
-      expect(find.byType(NativeEntryPage), findsOneWidget);
-    });
+        );
+        final session = SessionController(service: sessionService);
+        final auth = AuthService(
+          AuthApiAdapter(
+            sessionStore: store,
+            httpClient: MockClient((_) async => http.Response('{}', 200)),
+          ),
+          session: sessionService,
+        );
+        await tester.pumpWidget(
+          CortexApp(session: session, auth: auth, initialLocation: '/v1/entry'),
+        );
+        await tester.pump(const Duration(milliseconds: 100));
+        final app = tester.widget<MaterialApp>(find.byType(MaterialApp));
+        expect(
+          app.routerConfig,
+          isNotNull,
+          reason:
+              'vault read failure must not leave permanent startup Skeleton',
+        );
+        expect(find.byType(NativeEntryPage), findsOneWidget);
+      },
+    );
   });
 
   group('Cortex #85 AuthApiAdapter Native Handoff & Timeouts', () {
@@ -279,263 +326,308 @@ void main() {
       expect(decoded['handoff_id'], attempt.handoffId);
     });
 
-    test('finishNativeLogin rejects empty string session_id or csrf_token', () async {
-      final fakeStorage = FakeSecureStorage();
-      final store = NativeSessionStore(storage: fakeStorage);
-      await store.writePendingHandoff(jsonEncode({
-        'handoff_id': 'h-123',
-        'secret': 's-123',
-        'challenge': 'c-123',
-      }));
-
-      final mockClient = MockClient((request) async {
-        return http.Response(
+    test(
+      'finishNativeLogin rejects empty string session_id or csrf_token',
+      () async {
+        final fakeStorage = FakeSecureStorage();
+        final store = NativeSessionStore(storage: fakeStorage);
+        await store.writePendingHandoff(
           jsonEncode({
-            'status': 'success',
-            'data': {
-              'session_id': '   ',
-              'csrf_token': '',
-            },
+            'handoff_id': 'h-123',
+            'secret': 's-123',
+            'challenge': 'c-123',
           }),
-          200,
-          headers: {'content-type': 'application/json'},
         );
-      });
 
-      final adapter = AuthApiAdapter(
-        httpClient: mockClient,
-        sessionStore: store,
-      );
+        final mockClient = MockClient((request) async {
+          return http.Response(
+            jsonEncode({
+              'status': 'success',
+              'data': {'session_id': '   ', 'csrf_token': ''},
+            }),
+            200,
+            headers: {'content-type': 'application/json'},
+          );
+        });
 
-      expect(
-        () => adapter.finishNativeLogin(),
-        throwsA(
-          isA<NativeHandoffException>().having(
-            (e) => e.code,
-            'code',
-            'INVALID_RESPONSE',
+        final adapter = AuthApiAdapter(
+          httpClient: mockClient,
+          sessionStore: store,
+        );
+
+        expect(
+          () => adapter.finishNativeLogin(),
+          throwsA(
+            isA<NativeHandoffException>().having(
+              (e) => e.code,
+              'code',
+              'INVALID_RESPONSE',
+            ),
           ),
-        ),
-      );
-      // Credentials must not be saved:
-      expect(await store.readSessionId(), isNull);
-    });
-
-    test('bounded timeout triggers on slow network in native status/finish/cancel', () async {
-      final fakeStorage = FakeSecureStorage();
-      final store = NativeSessionStore(storage: fakeStorage);
-      await store.writePendingHandoff(jsonEncode({
-        'handoff_id': 'h-123',
-        'secret': 's-123',
-        'challenge': 'c-123',
-      }));
-
-      final hangingClient = MockClient((request) async {
-        await Future.delayed(const Duration(milliseconds: 100));
-        return http.Response('{}', 200);
-      });
-
-      final adapter = AuthApiAdapter(
-        httpClient: hangingClient,
-        sessionStore: store,
-      );
-
-      // Using an explicit short timeout for deterministic test execution:
-      const shortTimeout = Duration(milliseconds: 20);
-
-      expect(
-        () => adapter.nativeHandoffStatus(timeout: shortTimeout),
-        throwsA(
-          isA<NativeHandoffException>().having((e) => e.code, 'code', 'TIMEOUT'),
-        ),
-      );
-
-      expect(
-        () => adapter.finishNativeLogin(timeout: shortTimeout),
-        throwsA(
-          isA<NativeHandoffException>().having((e) => e.code, 'code', 'TIMEOUT'),
-        ),
-      );
-
-      expect(
-        () => adapter.cancelNativeLogin(timeout: shortTimeout),
-        throwsA(
-          isA<NativeHandoffException>().having((e) => e.code, 'code', 'TIMEOUT'),
-        ),
-      );
-    });
-
-    test('cancelNativeLogin issues cancel payload and clears pending handoff', () async {
-      final fakeStorage = FakeSecureStorage();
-      final store = NativeSessionStore(storage: fakeStorage);
-      await store.writePendingHandoff(jsonEncode({
-        'handoff_id': 'h-cancel',
-        'secret': 's-cancel',
-        'challenge': 'c-cancel',
-      }));
-
-      bool cancelSent = false;
-      final mockClient = MockClient((request) async {
-        final body = jsonDecode(request.body) as Map<String, dynamic>;
-        if (body['cancel'] == true && body['handoff_id'] == 'h-cancel') {
-          cancelSent = true;
-        }
-        return http.Response(
-          jsonEncode({'status': 'success', 'data': {'status': 'cancelled'}}),
-          200,
         );
-      });
+        // Credentials must not be saved:
+        expect(await store.readSessionId(), isNull);
+      },
+    );
 
-      final adapter = AuthApiAdapter(
-        httpClient: mockClient,
-        sessionStore: store,
-      );
-
-      await adapter.cancelNativeLogin();
-      expect(cancelSent, isTrue);
-      expect(await store.readPendingHandoff(), isNull);
-    });
-
-    test('successful finishNativeLogin stores clean credentials and clears pending', () async {
-      final fakeStorage = FakeSecureStorage();
-      final store = NativeSessionStore(storage: fakeStorage);
-      await store.writePendingHandoff(jsonEncode({
-        'handoff_id': 'h-ok',
-        'secret': 's-ok',
-        'challenge': 'c-ok',
-      }));
-
-      final mockClient = MockClient((request) async {
-        return http.Response(
+    test(
+      'bounded timeout triggers on slow network in native status/finish/cancel',
+      () async {
+        final fakeStorage = FakeSecureStorage();
+        final store = NativeSessionStore(storage: fakeStorage);
+        await store.writePendingHandoff(
           jsonEncode({
-            'status': 'success',
-            'data': {
-              'session_id': 'real-session-sid-12345',
-              'csrf_token': 'real-csrf-token-67890',
-              'location': {'city': 'Bangkok', 'country': 'TH'},
-            },
+            'handoff_id': 'h-123',
+            'secret': 's-123',
+            'challenge': 'c-123',
           }),
-          200,
-          headers: {'content-type': 'application/json'},
         );
-      });
 
-      final adapter = AuthApiAdapter(
-        httpClient: mockClient,
-        sessionStore: store,
-      );
+        final hangingClient = MockClient((request) async {
+          await Future.delayed(const Duration(milliseconds: 100));
+          return http.Response('{}', 200);
+        });
 
-      final location = await adapter.finishNativeLogin();
-      expect(location, contains('Bangkok'));
-      expect(await store.readSessionId(), 'real-session-sid-12345');
-      expect(await store.readCsrfToken(), 'real-csrf-token-67890');
-      expect(await store.readPendingHandoff(), isNull);
+        final adapter = AuthApiAdapter(
+          httpClient: hangingClient,
+          sessionStore: store,
+        );
 
-      final session = SessionService(isNative: true, sessionStore: store);
-      expect(await session.currentStatus(), SessionStatus.authenticated);
-    });
+        // Using an explicit short timeout for deterministic test execution:
+        const shortTimeout = Duration(milliseconds: 20);
+
+        expect(
+          () => adapter.nativeHandoffStatus(timeout: shortTimeout),
+          throwsA(
+            isA<NativeHandoffException>().having(
+              (e) => e.code,
+              'code',
+              'TIMEOUT',
+            ),
+          ),
+        );
+
+        expect(
+          () => adapter.finishNativeLogin(timeout: shortTimeout),
+          throwsA(
+            isA<NativeHandoffException>().having(
+              (e) => e.code,
+              'code',
+              'TIMEOUT',
+            ),
+          ),
+        );
+
+        expect(
+          () => adapter.cancelNativeLogin(timeout: shortTimeout),
+          throwsA(
+            isA<NativeHandoffException>().having(
+              (e) => e.code,
+              'code',
+              'TIMEOUT',
+            ),
+          ),
+        );
+      },
+    );
+
+    test(
+      'cancelNativeLogin issues cancel payload and clears pending handoff',
+      () async {
+        final fakeStorage = FakeSecureStorage();
+        final store = NativeSessionStore(storage: fakeStorage);
+        await store.writePendingHandoff(
+          jsonEncode({
+            'handoff_id': 'h-cancel',
+            'secret': 's-cancel',
+            'challenge': 'c-cancel',
+          }),
+        );
+
+        bool cancelSent = false;
+        final mockClient = MockClient((request) async {
+          final body = jsonDecode(request.body) as Map<String, dynamic>;
+          if (body['cancel'] == true && body['handoff_id'] == 'h-cancel') {
+            cancelSent = true;
+          }
+          return http.Response(
+            jsonEncode({
+              'status': 'success',
+              'data': {'status': 'cancelled'},
+            }),
+            200,
+          );
+        });
+
+        final adapter = AuthApiAdapter(
+          httpClient: mockClient,
+          sessionStore: store,
+        );
+
+        await adapter.cancelNativeLogin();
+        expect(cancelSent, isTrue);
+        expect(await store.readPendingHandoff(), isNull);
+      },
+    );
+
+    test(
+      'successful finishNativeLogin stores clean credentials and clears pending',
+      () async {
+        final fakeStorage = FakeSecureStorage();
+        final store = NativeSessionStore(storage: fakeStorage);
+        await store.writePendingHandoff(
+          jsonEncode({
+            'handoff_id': 'h-ok',
+            'secret': 's-ok',
+            'challenge': 'c-ok',
+          }),
+        );
+
+        final mockClient = MockClient((request) async {
+          return http.Response(
+            jsonEncode({
+              'status': 'success',
+              'data': {
+                'session_id': 'real-session-sid-12345',
+                'csrf_token': 'real-csrf-token-67890',
+                'location': {'city': 'Bangkok', 'country': 'TH'},
+              },
+            }),
+            200,
+            headers: {'content-type': 'application/json'},
+          );
+        });
+
+        final adapter = AuthApiAdapter(
+          httpClient: mockClient,
+          sessionStore: store,
+        );
+
+        final location = await adapter.finishNativeLogin();
+        expect(location, contains('Bangkok'));
+        expect(await store.readSessionId(), 'real-session-sid-12345');
+        expect(await store.readCsrfToken(), 'real-csrf-token-67890');
+        expect(await store.readPendingHandoff(), isNull);
+
+        final session = SessionService(isNative: true, sessionStore: store);
+        expect(await session.currentStatus(), SessionStatus.authenticated);
+      },
+    );
   });
 
   group('Cortex #85 NativeEntryPage Widget Interaction', () {
-    testWidgets('Displays welcome and sign-in button when no handoff is active', (tester) async {
-      final fakeStorage = FakeSecureStorage();
-      final store = NativeSessionStore(storage: fakeStorage);
-      final adapter = AuthApiAdapter(sessionStore: store);
-      final session = SessionService(isNative: true, sessionStore: store);
-      final sessionCtrl = SessionController(service: session);
-      final auth = AuthService(adapter, session: session);
+    testWidgets(
+      'Displays welcome and sign-in button when no handoff is active',
+      (tester) async {
+        final fakeStorage = FakeSecureStorage();
+        final store = NativeSessionStore(storage: fakeStorage);
+        final adapter = AuthApiAdapter(sessionStore: store);
+        final session = SessionService(isNative: true, sessionStore: store);
+        final sessionCtrl = SessionController(service: session);
+        final auth = AuthService(adapter, session: session);
 
-      await tester.pumpWidget(
-        MaterialApp(
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-          home: NativeEntryPage(auth: auth, session: sessionCtrl),
-        ),
-      );
-      await tester.pumpAndSettle();
+        await tester.pumpWidget(
+          MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: NativeEntryPage(auth: auth, session: sessionCtrl),
+          ),
+        );
+        await tester.pumpAndSettle();
 
-      expect(find.byType(FilledButton), findsOneWidget);
-      expect(find.text('Sign in with your Asodya account'), findsOneWidget);
-    });
+        expect(find.byType(FilledButton), findsOneWidget);
+        expect(find.text('Sign in with your Asodya account'), findsOneWidget);
+      },
+    );
 
-    testWidgets('Timeout on status check leaves action buttons enabled for retry', (tester) async {
-      final fakeStorage = FakeSecureStorage();
-      final store = NativeSessionStore(storage: fakeStorage);
-      await store.writePendingHandoff(jsonEncode({
-        'handoff_id': 'h-slow',
-        'secret': 's-slow',
-        'challenge': 'c-slow',
-        'created_at': DateTime.now().toUtc().toIso8601String(),
-      }));
+    testWidgets(
+      'Timeout on status check leaves action buttons enabled for retry',
+      (tester) async {
+        final fakeStorage = FakeSecureStorage();
+        final store = NativeSessionStore(storage: fakeStorage);
+        await store.writePendingHandoff(
+          jsonEncode({
+            'handoff_id': 'h-slow',
+            'secret': 's-slow',
+            'challenge': 'c-slow',
+            'created_at': DateTime.now().toUtc().toIso8601String(),
+          }),
+        );
 
-      final hangingClient = MockClient((request) async {
-        await Future.delayed(const Duration(milliseconds: 50));
-        return http.Response('{}', 200);
-      });
+        final hangingClient = MockClient((request) async {
+          await Future.delayed(const Duration(milliseconds: 50));
+          return http.Response('{}', 200);
+        });
 
-      final adapter = AuthApiAdapter(
-        httpClient: hangingClient,
-        sessionStore: store,
-      );
-      final session = SessionService(isNative: true, sessionStore: store);
-      final sessionCtrl = SessionController(service: session);
-      final auth = AuthService(adapter, session: session);
+        final adapter = AuthApiAdapter(
+          httpClient: hangingClient,
+          sessionStore: store,
+        );
+        final session = SessionService(isNative: true, sessionStore: store);
+        final sessionCtrl = SessionController(service: session);
+        final auth = AuthService(adapter, session: session);
 
-      await tester.pumpWidget(
-        MaterialApp(
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-          home: NativeEntryPage(auth: auth, session: sessionCtrl),
-        ),
-      );
-      await tester.pumpAndSettle();
+        await tester.pumpWidget(
+          MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: NativeEntryPage(auth: auth, session: sessionCtrl),
+          ),
+        );
+        await tester.pumpAndSettle();
 
-      // Verify match code card is visible:
-      expect(find.byType(Card), findsOneWidget);
-      // Buttons for finish and cancel must be present and enabled:
-      final finishBtn = tester.widget<FilledButton>(find.byType(FilledButton));
-      final cancelBtn = tester.widget<TextButton>(find.byType(TextButton));
-      expect(finishBtn.onPressed, isNotNull);
-      expect(cancelBtn.onPressed, isNotNull);
-    });
+        // Verify match code card is visible:
+        expect(find.byType(Card), findsOneWidget);
+        // Buttons for finish and cancel must be present and enabled:
+        final finishBtn = tester.widget<FilledButton>(
+          find.byType(FilledButton),
+        );
+        final cancelBtn = tester.widget<TextButton>(find.byType(TextButton));
+        expect(finishBtn.onPressed, isNotNull);
+        expect(cancelBtn.onPressed, isNotNull);
+      },
+    );
   });
 
   group('Cortex #85 30-Minute No-Record Expiry & Clock Control', () {
-    test('fresh attempt (<30m) preserves HANDOFF_NOT_FINISHED status', () async {
-      final baseTime = DateTime.utc(2026, 11, 26, 12, 0, 0);
-      var currentTime = baseTime;
-      final fakeStorage = FakeSecureStorage();
-      final store = NativeSessionStore(storage: fakeStorage);
-      final adapter = AuthApiAdapter(
-        sessionStore: store,
-        clock: () => currentTime,
-        httpClient: MockClient((request) async {
-          return http.Response(
-            jsonEncode({
-              'status': 'error',
-              'data': {'code': 'HANDOFF_NOT_FINISHED'},
-            }),
-            400,
-            headers: {'content-type': 'application/json'},
-          );
-        }),
-      );
+    test(
+      'fresh attempt (<30m) preserves HANDOFF_NOT_FINISHED status',
+      () async {
+        final baseTime = DateTime.utc(2026, 11, 26, 12, 0, 0);
+        var currentTime = baseTime;
+        final fakeStorage = FakeSecureStorage();
+        final store = NativeSessionStore(storage: fakeStorage);
+        final adapter = AuthApiAdapter(
+          sessionStore: store,
+          clock: () => currentTime,
+          httpClient: MockClient((request) async {
+            return http.Response(
+              jsonEncode({
+                'status': 'error',
+                'data': {'code': 'HANDOFF_NOT_FINISHED'},
+              }),
+              400,
+              headers: {'content-type': 'application/json'},
+            );
+          }),
+        );
 
-      await adapter.prepareNativeLogin();
-      // Advance clock by 10 minutes (fresh):
-      currentTime = baseTime.add(const Duration(minutes: 10));
+        await adapter.prepareNativeLogin();
+        // Advance clock by 10 minutes (fresh):
+        currentTime = baseTime.add(const Duration(minutes: 10));
 
-      await expectLater(
-        adapter.finishNativeLogin(),
-        throwsA(
-          isA<NativeHandoffException>().having(
-            (e) => e.code,
-            'code',
-            'HANDOFF_NOT_FINISHED',
+        await expectLater(
+          adapter.finishNativeLogin(),
+          throwsA(
+            isA<NativeHandoffException>().having(
+              (e) => e.code,
+              'code',
+              'HANDOFF_NOT_FINISHED',
+            ),
           ),
-        ),
-      );
-    });
+        );
+      },
+    );
 
     test('exact 30 minute boundary maps to HANDOFF_EXPIRED', () async {
       final baseTime = DateTime.utc(2026, 11, 26, 12, 0, 0);
@@ -669,68 +761,71 @@ void main() {
       );
     });
 
-    test('legacy or malformed timestamp is not assumed fresh and maps to HANDOFF_EXPIRED', () async {
-      final fakeStorage = FakeSecureStorage();
-      final store = NativeSessionStore(storage: fakeStorage);
-      final adapter = AuthApiAdapter(
-        sessionStore: store,
-        httpClient: MockClient((request) async {
-          return http.Response(
-            jsonEncode({
-              'status': 'error',
-              'data': {'code': 'HANDOFF_NOT_FINISHED'},
-            }),
-            400,
-            headers: {'content-type': 'application/json'},
-          );
-        }),
-      );
+    test(
+      'legacy or malformed timestamp is not assumed fresh and maps to HANDOFF_EXPIRED',
+      () async {
+        final fakeStorage = FakeSecureStorage();
+        final store = NativeSessionStore(storage: fakeStorage);
+        final adapter = AuthApiAdapter(
+          sessionStore: store,
+          httpClient: MockClient((request) async {
+            return http.Response(
+              jsonEncode({
+                'status': 'error',
+                'data': {'code': 'HANDOFF_NOT_FINISHED'},
+              }),
+              400,
+              headers: {'content-type': 'application/json'},
+            );
+          }),
+        );
 
-      // Legacy payload with no created_at:
-      await store.writePendingHandoff(
-        jsonEncode({
-          'handoff_id': 'legacy-handoff',
-          'secret': 'legacy-secret',
-          'challenge': 'Yw3NKWbEM2aRElRIu7JbT_QSpJxzLbLIq8G4WBvXEN0',
-        }),
-      );
+        // Legacy payload with no created_at:
+        await store.writePendingHandoff(
+          jsonEncode({
+            'handoff_id': 'legacy-handoff',
+            'secret': 'legacy-secret',
+            'challenge': 'Yw3NKWbEM2aRElRIu7JbT_QSpJxzLbLIq8G4WBvXEN0',
+          }),
+        );
 
-      final legacyRestored = await adapter.restoreNativeLogin();
-      expect(legacyRestored, isNotNull);
-      expect(legacyRestored!.matchCode, 'MMG4');
+        final legacyRestored = await adapter.restoreNativeLogin();
+        expect(legacyRestored, isNotNull);
+        expect(legacyRestored!.matchCode, 'MMG4');
 
-      await expectLater(
-        adapter.finishNativeLogin(),
-        throwsA(
-          isA<NativeHandoffException>().having(
-            (e) => e.code,
-            'code',
-            'HANDOFF_EXPIRED',
+        await expectLater(
+          adapter.finishNativeLogin(),
+          throwsA(
+            isA<NativeHandoffException>().having(
+              (e) => e.code,
+              'code',
+              'HANDOFF_EXPIRED',
+            ),
           ),
-        ),
-      );
+        );
 
-      // Malformed timestamp:
-      await store.writePendingHandoff(
-        jsonEncode({
-          'handoff_id': 'malformed-handoff',
-          'secret': 'malformed-secret',
-          'challenge': 'Yw3NKWbEM2aRElRIu7JbT_QSpJxzLbLIq8G4WBvXEN0',
-          'created_at': 'not-a-valid-date-string',
-        }),
-      );
+        // Malformed timestamp:
+        await store.writePendingHandoff(
+          jsonEncode({
+            'handoff_id': 'malformed-handoff',
+            'secret': 'malformed-secret',
+            'challenge': 'Yw3NKWbEM2aRElRIu7JbT_QSpJxzLbLIq8G4WBvXEN0',
+            'created_at': 'not-a-valid-date-string',
+          }),
+        );
 
-      await expectLater(
-        adapter.finishNativeLogin(),
-        throwsA(
-          isA<NativeHandoffException>().having(
-            (e) => e.code,
-            'code',
-            'HANDOFF_EXPIRED',
+        await expectLater(
+          adapter.finishNativeLogin(),
+          throwsA(
+            isA<NativeHandoffException>().having(
+              (e) => e.code,
+              'code',
+              'HANDOFF_EXPIRED',
+            ),
           ),
-        ),
-      );
-    });
+        );
+      },
+    );
 
     test('restored handoff uses exact FINAL MMG4 match-code vector', () async {
       final fakeStorage = FakeSecureStorage();
@@ -742,43 +837,57 @@ void main() {
           'challenge': 'Yw3NKWbEM2aRElRIu7JbT_QSpJxzLbLIq8G4WBvXEN0',
         }),
       );
-      final attempt = await AuthApiAdapter(sessionStore: store).restoreNativeLogin();
+      final attempt = await AuthApiAdapter(
+        sessionStore: store,
+      ).restoreNativeLogin();
       expect(attempt!.matchCode, 'MMG4');
     });
 
-    testWidgets('genuine hanging status times out at 15s and enables finish and cancel', (tester) async {
-      final fakeStorage = FakeSecureStorage();
-      final store = NativeSessionStore(storage: fakeStorage);
-      await store.writePendingHandoff(
-        jsonEncode({
-          'handoff_id': 'synthetic-handoff',
-          'secret': 'AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8',
-          'challenge': 'Yw3NKWbEM2aRElRIu7JbT_QSpJxzLbLIq8G4WBvXEN0',
-        }),
-      );
-      final client = MockClient((_) => Completer<http.Response>().future);
-      final service = SessionService(isNative: true, sessionStore: store);
-      final auth = AuthService(
-        AuthApiAdapter(sessionStore: store, httpClient: client),
-        session: service,
-      );
-      await tester.pumpWidget(
-        MaterialApp(
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-          home: NativeEntryPage(
-            auth: auth,
-            session: SessionController(service: service),
+    testWidgets(
+      'genuine hanging status times out at 15s and enables finish and cancel',
+      (tester) async {
+        final fakeStorage = FakeSecureStorage();
+        final store = NativeSessionStore(storage: fakeStorage);
+        await store.writePendingHandoff(
+          jsonEncode({
+            'handoff_id': 'synthetic-handoff',
+            'secret': 'AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8',
+            'challenge': 'Yw3NKWbEM2aRElRIu7JbT_QSpJxzLbLIq8G4WBvXEN0',
+          }),
+        );
+        final client = MockClient((_) => Completer<http.Response>().future);
+        final service = SessionService(isNative: true, sessionStore: store);
+        final auth = AuthService(
+          AuthApiAdapter(sessionStore: store, httpClient: client),
+          session: service,
+        );
+        await tester.pumpWidget(
+          MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: NativeEntryPage(
+              auth: auth,
+              session: SessionController(service: service),
+            ),
           ),
-        ),
-      );
-      await tester.pump();
-      expect(tester.widget<FilledButton>(find.byType(FilledButton)).onPressed, isNull);
-      await tester.pump(const Duration(seconds: 15));
-      await tester.pump();
-      expect(tester.widget<FilledButton>(find.byType(FilledButton)).onPressed, isNotNull);
-      expect(tester.widget<TextButton>(find.byType(TextButton)).onPressed, isNotNull);
-      expect(await store.readPendingHandoff(), isNotNull);
-    });
+        );
+        await tester.pump();
+        expect(
+          tester.widget<FilledButton>(find.byType(FilledButton)).onPressed,
+          isNull,
+        );
+        await tester.pump(const Duration(seconds: 15));
+        await tester.pump();
+        expect(
+          tester.widget<FilledButton>(find.byType(FilledButton)).onPressed,
+          isNotNull,
+        );
+        expect(
+          tester.widget<TextButton>(find.byType(TextButton)).onPressed,
+          isNotNull,
+        );
+        expect(await store.readPendingHandoff(), isNotNull);
+      },
+    );
   });
 }

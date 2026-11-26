@@ -37,10 +37,7 @@ class SessionService {
       try {
         final sid = await _sessionStore.readSessionId();
         final csrf = await _sessionStore.readCsrfToken();
-        return sid != null &&
-                csrf != null &&
-                sid.isNotEmpty &&
-                csrf.isNotEmpty
+        return sid != null && csrf != null && sid.isNotEmpty && csrf.isNotEmpty
             ? SessionStatus.authenticated
             : SessionStatus.none;
       } catch (_) {
