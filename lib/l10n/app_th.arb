@@ -164,6 +164,7 @@
   "overLimit": "ข้อความเกินขีดจำกัดอินพุต",
   "uploading": "กำลังอัปโหลด",
   "statsLine": "{time} · {s} วินาที · เข้า {input} ออก {output} โทเค็น",
+  "statsTimingLine": "{time} · {s} วินาที",
   "cancelledLine": "หยุดแล้ว",
   "steps_web_queries": "กำลังเตรียมคำค้น",
   "steps_queue_wait": "กำลังรอโมเดล",

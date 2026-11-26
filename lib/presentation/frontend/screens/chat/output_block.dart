@@ -437,12 +437,21 @@ class _OutputBlockState extends State<OutputBlock> {
           Padding(
             padding: const EdgeInsets.only(top: Space.s4),
             child: Text(
-              l.statsLine(
-                TimeOfDay.fromDateTime(o.started.toLocal()).format(context),
-                (o.totalMs! / 1000).toStringAsFixed(1),
-                o.inputTokens ?? 0,
-                o.outputTokens ?? 0,
-              ),
+              o.inputTokens != null && o.outputTokens != null
+                  ? l.statsLine(
+                      TimeOfDay.fromDateTime(
+                        o.started.toLocal(),
+                      ).format(context),
+                      (o.totalMs! / 1000).toStringAsFixed(1),
+                      o.inputTokens!,
+                      o.outputTokens!,
+                    )
+                  : l.statsTimingLine(
+                      TimeOfDay.fromDateTime(
+                        o.started.toLocal(),
+                      ).format(context),
+                      (o.totalMs! / 1000).toStringAsFixed(1),
+                    ),
               key: const Key('stats-line'),
               style: TextStyles.caption1.copyWith(color: p.muted),
             ),

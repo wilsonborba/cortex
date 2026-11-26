@@ -164,6 +164,7 @@
   "overLimit": "A mensagem passa do limite de entrada.",
   "uploading": "Enviando",
   "statsLine": "{time} · {s} s · {input} entrada, {output} saída tokens",
+  "statsTimingLine": "{time} · {s} s",
   "cancelledLine": "Parado",
   "steps_web_queries": "Preparando as buscas",
   "steps_queue_wait": "Aguardando o modelo",

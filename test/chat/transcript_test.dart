@@ -41,6 +41,73 @@ Widget outputApp(OutputView output) => MaterialApp(
   ),
 );
 void main() {
+  testWidgets('history controller restores a blocked run without retry', (
+    tester,
+  ) async {
+    final api = fixture.Api()
+      ..page = {
+        'chat': {'session_id': fixture.sid, 'title': 'Synthetic saved chat'},
+        'inputs': [
+          {'input_id': 'i-block', 'text': 'Synthetic blocked request'},
+        ],
+        'outputs': [
+          {
+            'input_id': 'i-block',
+            'output_id': 'o-block',
+            'session_id': fixture.sid,
+            'status': 'failed',
+            'text': '',
+            'run': {'total_ms': 25, 'error_number': securityBlock},
+          },
+        ],
+      };
+    final (chat, _) = await fixture.pump(
+      tester,
+      session: fixture.sid,
+      api: api,
+    );
+    await tester.pumpAndSettle();
+    final output = chat.exchanges.single.output;
+    expect(output.status, 'failed');
+    expect(output.errorNumber, securityBlock);
+    expect(output.totalMs, 25);
+    expect(find.byIcon(AppIcons.securityBlock), findsOneWidget);
+    expect(find.byTooltip('Retry'), findsNothing);
+    chat.dispose();
+  });
+
+  testWidgets('history ordinary failure retains its retry action', (
+    tester,
+  ) async {
+    final api = fixture.Api()
+      ..page = {
+        'chat': {'session_id': fixture.sid, 'title': 'Synthetic saved chat'},
+        'inputs': [
+          {'input_id': 'i-failed', 'text': 'Synthetic failed request'},
+        ],
+        'outputs': [
+          {
+            'input_id': 'i-failed',
+            'output_id': 'o-failed',
+            'session_id': fixture.sid,
+            'status': 'failed',
+            'text': '',
+            'run': {'total_ms': 40, 'error_number': 1012},
+          },
+        ],
+      };
+    final (chat, _) = await fixture.pump(
+      tester,
+      session: fixture.sid,
+      api: api,
+    );
+    await tester.pumpAndSettle();
+    expect(chat.exchanges.single.output.errorNumber, 1012);
+    expect(find.byTooltip('Retry'), findsOneWidget);
+    expect(find.byIcon(AppIcons.securityBlock), findsNothing);
+    chat.dispose();
+  });
+
   testWidgets('three older pages keep a known exchange at the same position', (
     tester,
   ) async {
@@ -233,4 +300,20 @@ void main() {
       if (state == 'cancelled') expect(find.text('Stopped'), findsOneWidget);
     });
   }
+  testWidgets('timing-only history never displays invented token zeros', (
+    tester,
+  ) async {
+    final output = OutputView.fromHistory({
+      'output_id': 'legacy',
+      'status': 'done',
+      'text': 'Synthetic answer',
+      'run': {'total_ms': 1250},
+    });
+    await tester.pumpWidget(outputApp(output));
+    await tester.pumpAndSettle();
+    final line = tester.widget<Text>(find.byKey(const Key('stats-line')));
+    expect(line.data, contains('1.3 s'));
+    expect(line.data, isNot(contains('0 in')));
+    expect(line.data, isNot(contains('0 out')));
+  });
 }

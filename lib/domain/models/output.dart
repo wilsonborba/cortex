@@ -1,6 +1,11 @@
 import 'dart:convert';
 import 'api.dart';
 
+int? _historyUnsigned(Object? value) =>
+    value is int && value >= 0 ? value : null;
+int? _historyErrorNumber(Object? value) =>
+    value is int && value >= 0 && value <= 65535 ? value : null;
+
 class StageState {
   StageState(this.name, this.status, this.timeMs);
   final String name;
@@ -33,7 +38,7 @@ class OutputView {
   final notices = <(int number, String message)>[];
   int? errorNumber;
   String? errorMessage;
-  int? inputTokens, outputTokens, totalMs;
+  int? inputTokens, outputTokens, totalTokens, totalMs;
   int lastEventId = 0;
   DateTime started = DateTime.now();
 
@@ -49,6 +54,21 @@ class OutputView {
       outputId: o['output_id'] as String?,
       status: '${o['status']}',
     )..sessionId = o['session_id'] as String?;
+    final run = o['run'];
+    if (run is Map) {
+      view
+        ..totalMs = _historyUnsigned(run['total_ms'])
+        ..errorNumber = view.status == 'failed'
+            ? _historyErrorNumber(run['error_number'])
+            : null;
+      final tokens = run['tokens'];
+      if (tokens is Map) {
+        view
+          ..inputTokens = _historyUnsigned(tokens['input'])
+          ..outputTokens = _historyUnsigned(tokens['output'])
+          ..totalTokens = _historyUnsigned(tokens['total']);
+      }
+    }
     view.answer.write(o['text'] ?? '');
     final thinking = o['thinking_text'] as String?;
     if (thinking != null && thinking.isNotEmpty) {
@@ -138,6 +158,7 @@ class OutputView {
         final tokens = (d['tokens'] as Map?) ?? const {};
         inputTokens = (tokens['input'] as num?)?.toInt();
         outputTokens = (tokens['output'] as num?)?.toInt();
+        totalTokens = (tokens['total'] as num?)?.toInt();
         totalMs = (d['total_ms'] as num?)?.toInt();
         status = stages.any((s) => s.status == 'cancelled')
             ? 'cancelled'
