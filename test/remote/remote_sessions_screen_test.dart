@@ -205,7 +205,22 @@ void main() {
       expect(gateway.prompts.single.fileIds, ['selected-file-1']);
 
       gateway.incoming.add(
-        _event(4, 'artifact', {
+        _event(4, 'progress', {
+          'turn_id': 'turn-photo',
+          'message': 'Rendering the requested image',
+        }),
+      );
+      gateway.incoming.add(
+        _event(5, 'answer_part', {
+          'turn_id': 'turn-photo',
+          'text': 'The image is ready.',
+        }),
+      );
+      gateway.incoming.add(
+        _event(6, 'turn_end', {'turn_id': 'turn-photo', 'status': 'complete'}),
+      );
+      gateway.incoming.add(
+        _event(7, 'artifact', {
           'turn_id': 'turn-photo',
           'file_id': 'artifact-1',
           'name': 'result.png',
@@ -239,11 +254,26 @@ void main() {
       await tester.tap(find.byTooltip('Close'));
       await tester.pumpAndSettle();
 
+      await tester.enterText(
+        find.byKey(const Key('remote-prompt')),
+        'Cancel the next request',
+      );
+      await tester.pump();
+      await tester.tap(find.byKey(const Key('remote-send')));
+      await tester.pump();
+      expect(gateway.prompts, hasLength(2));
+      gateway.incoming.add(
+        _event(8, 'progress', {
+          'turn_id': 'turn-cancel',
+          'message': 'Starting a cancellable request',
+        }),
+      );
+      await tester.pump();
       await tester.tap(find.text('Cancel turn'));
       await tester.pump();
       await tester.pump();
       expect(gateway.cancelCount, 1);
-      expect(gateway.cancelledTurnIds, ['turn-photo']);
+      expect(gateway.cancelledTurnIds, ['turn-cancel']);
       expect(
         find.text('Cancellation requested; waiting for CLI status.'),
         findsOneWidget,
