@@ -20,6 +20,12 @@
 
 - Use the approved single command installer (#88)
 
+- Restore run metadata from history
+
+- Render terminal history metadata accurately
+
+- Restore reviewed saved history metadata (#89)
+
 
 ### Chores
 
@@ -31,6 +37,8 @@
 - Record model selector compatibility fixes
 
 - Record reviewed installation entry
+
+- Record approved one-line installation
 
 
 ### Features
