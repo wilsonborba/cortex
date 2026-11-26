@@ -31,13 +31,16 @@ class AuthApiAdapter {
     this.apiForAppsBaseUrl = AppSettings.apiForAppsBaseUrl,
     http.Client? httpClient,
     NativeSessionStore sessionStore = const NativeSessionStore(),
+    DateTime Function()? clock,
   }) : _httpClient = httpClient ?? createCredentialsClient(),
-       _sessionStore = sessionStore;
+       _sessionStore = sessionStore,
+       _clock = clock ?? DateTime.now;
 
   final String ssoAuthBaseUrl;
   final String apiForAppsBaseUrl;
   final http.Client _httpClient;
   final NativeSessionStore _sessionStore;
+  final DateTime Function() _clock;
 
   /// Builds the URL Cortex should redirect the browser to in order to start
   /// an `auth_apps` login/signup, carrying an encrypted `app_context` that
@@ -123,17 +126,20 @@ class AuthApiAdapter {
     final secret = _base64Url(secretBytes);
     final challenge = _base64Url(sha256.convert(secretBytes).bytes);
     final code = _matchCode(base64Url.decode(base64Url.normalize(challenge)));
+    final now = _clock().toUtc();
     final pending = NativeLoginAttempt(
       handoffId: handoffId,
       secret: secret,
       challenge: challenge,
       matchCode: code,
+      createdAt: now,
     );
     await _sessionStore.writePendingHandoff(
       jsonEncode({
         'handoff_id': handoffId,
         'secret': secret,
         'challenge': challenge,
+        'created_at': now.toIso8601String(),
       }),
     );
     return pending.copyWith(launchUri: _nativeSsoUri(pending));
@@ -155,6 +161,16 @@ class AuthApiAdapter {
 
   static const Duration defaultTimeout = Duration(seconds: 15);
 
+  bool _isHandoffExpired(NativeLoginAttempt attempt) {
+    final created = attempt.createdAt;
+    if (created == null) {
+      // Legacy or malformed timestamp must not be assumed fresh indefinitely
+      return true;
+    }
+    final age = _clock().toUtc().difference(created);
+    return age >= const Duration(minutes: 30);
+  }
+
   Future<String> nativeHandoffStatus({Duration timeout = defaultTimeout}) async {
     final pending = await _pendingHandoff();
     http.Response response;
@@ -172,9 +188,13 @@ class AuthApiAdapter {
     } on TimeoutException {
       throw const NativeHandoffException('TIMEOUT', 408);
     }
-    final body = _handoffBody(response);
+    final body = _handoffBody(response, attempt: pending);
     final status = (body['data'] as Map?)?['status'];
-    return status is String ? status : 'unknown';
+    final statusStr = status is String ? status : 'unknown';
+    if (statusStr != 'done' && _isHandoffExpired(pending)) {
+      throw const NativeHandoffException('HANDOFF_EXPIRED', 410);
+    }
+    return statusStr;
   }
 
   Future<NativeLoginAttempt?> restoreNativeLogin() async {
@@ -182,11 +202,17 @@ class AuthApiAdapter {
     if (raw == null) return null;
     final value = (jsonDecode(raw) as Map).cast<String, dynamic>();
     final challenge = value['challenge'] as String;
+    DateTime? createdAt;
+    final rawCreated = value['created_at'];
+    if (rawCreated is String) {
+      createdAt = DateTime.tryParse(rawCreated)?.toUtc();
+    }
     return NativeLoginAttempt(
       handoffId: value['handoff_id'] as String,
       secret: value['secret'] as String,
       challenge: challenge,
       matchCode: _matchCode(base64Url.decode(base64Url.normalize(challenge))),
+      createdAt: createdAt,
     );
   }
 
@@ -206,7 +232,8 @@ class AuthApiAdapter {
     } on TimeoutException {
       throw const NativeHandoffException('TIMEOUT', 408);
     }
-    final data = (_handoffBody(response)['data'] as Map)
+    final body = _handoffBody(response, attempt: pending);
+    final data = (body['data'] as Map)
         .cast<String, dynamic>();
     final sid = data['session_id'];
     final csrf = data['csrf_token'];
@@ -253,7 +280,7 @@ class AuthApiAdapter {
     } on TimeoutException {
       throw const NativeHandoffException('TIMEOUT', 408);
     }
-    _handoffBody(response);
+    _handoffBody(response, attempt: pending);
     await _sessionStore.clearPendingHandoff();
   }
 
@@ -266,15 +293,24 @@ class AuthApiAdapter {
       throw const NativeHandoffException('NO_PENDING_LOGIN', 400);
     }
     final value = (jsonDecode(raw) as Map).cast<String, dynamic>();
+    DateTime? createdAt;
+    final rawCreated = value['created_at'];
+    if (rawCreated is String) {
+      createdAt = DateTime.tryParse(rawCreated)?.toUtc();
+    }
     return NativeLoginAttempt(
       handoffId: value['handoff_id'] as String,
       secret: value['secret'] as String,
       challenge: value['challenge'] as String,
       matchCode: '',
+      createdAt: createdAt,
     );
   }
 
-  Map<String, dynamic> _handoffBody(http.Response response) {
+  Map<String, dynamic> _handoffBody(
+    http.Response response, {
+    NativeLoginAttempt? attempt,
+  }) {
     Map<String, dynamic> body;
     try {
       body = (jsonDecode(utf8.decode(response.bodyBytes)) as Map)
@@ -285,10 +321,15 @@ class AuthApiAdapter {
     if (response.statusCode >= 400) {
       final data = body['data'];
       final code = data is Map ? data['code'] : null;
-      throw NativeHandoffException(
-        code is String ? code : 'HANDOFF_FAILED',
-        response.statusCode,
-      );
+      final codeStr = code is String ? code : 'HANDOFF_FAILED';
+      if ((codeStr == 'HANDOFF_NOT_FINISHED' ||
+              codeStr == 'NO_RECORD' ||
+              response.statusCode == 404) &&
+          attempt != null &&
+          _isHandoffExpired(attempt)) {
+        throw const NativeHandoffException('HANDOFF_EXPIRED', 410);
+      }
+      throw NativeHandoffException(codeStr, response.statusCode);
     }
     return body;
   }
@@ -339,18 +380,22 @@ class NativeLoginAttempt {
     required this.secret,
     required this.challenge,
     required this.matchCode,
+    this.createdAt,
     this.launchUri,
   });
   final String handoffId, secret, challenge, matchCode;
+  final DateTime? createdAt;
   final Uri? launchUri;
 
-  NativeLoginAttempt copyWith({Uri? launchUri}) => NativeLoginAttempt(
-    handoffId: handoffId,
-    secret: secret,
-    challenge: challenge,
-    matchCode: matchCode,
-    launchUri: launchUri ?? this.launchUri,
-  );
+  NativeLoginAttempt copyWith({Uri? launchUri, DateTime? createdAt}) =>
+      NativeLoginAttempt(
+        handoffId: handoffId,
+        secret: secret,
+        challenge: challenge,
+        matchCode: matchCode,
+        createdAt: createdAt ?? this.createdAt,
+        launchUri: launchUri ?? this.launchUri,
+      );
 }
 
 class NativeHandoffException implements Exception {

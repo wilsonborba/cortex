@@ -1,5 +1,7 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'package:cortex/app.dart';
 import 'package:cortex/dal/local/native_session_store.dart';
 import 'package:cortex/dal/remote/auth_api_adapter.dart';
 import 'package:cortex/domain/models/session_status.dart';
@@ -76,6 +78,39 @@ class FakeSecureStorage extends FlutterSecureStorage {
   }
 }
 
+class DeleteFailureStorage extends FakeSecureStorage {
+  final deletes = <String>[];
+  @override
+  Future<void> delete({
+    required String key,
+    AppleOptions? iOptions,
+    AndroidOptions? aOptions,
+    LinuxOptions? lOptions,
+    WebOptions? webOptions,
+    AppleOptions? mOptions,
+    WindowsOptions? wOptions,
+  }) async {
+    deletes.add(key);
+    if (key == 'cortex.native.sid') {
+      throw StateError('synthetic SID delete failure');
+    }
+    values.remove(key);
+  }
+}
+
+class ReadFailureStorage extends FakeSecureStorage {
+  @override
+  Future<String?> read({
+    required String key,
+    AppleOptions? iOptions,
+    AndroidOptions? aOptions,
+    LinuxOptions? lOptions,
+    WebOptions? webOptions,
+    AppleOptions? mOptions,
+    WindowsOptions? wOptions,
+  }) async => throw StateError('synthetic vault read failure');
+}
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
@@ -144,6 +179,46 @@ void main() {
       // Both valid
       fakeStorage.values['cortex.native.csrf'] = 'valid-csrf';
       expect(await sessionService.currentStatus(), SessionStatus.authenticated);
+    });
+
+    test('partial write cleanup attempts both keys and cannot authenticate mixed pair', () async {
+      final vault = DeleteFailureStorage()
+        ..values['cortex.native.csrf'] = 'synthetic-old-csrf'
+        ..failOnCsrfWrite = true;
+      final store = NativeSessionStore(storage: vault);
+      await expectLater(
+        store.writeSession(sid: 'synthetic-new-sid', csrf: 'synthetic-new-csrf'),
+        throwsException,
+      );
+      final status = await SessionService(isNative: true, sessionStore: store).currentStatus();
+      expect(status, SessionStatus.none);
+      expect(vault.deletes, contains('cortex.native.csrf'));
+    });
+  });
+
+  group('Cortex #85 Native Vault Read Failure Recovery', () {
+    testWidgets('vault read failure still permits a usable native login route', (tester) async {
+      final store = NativeSessionStore(storage: ReadFailureStorage());
+      final sessionService = SessionService(isNative: true, sessionStore: store);
+      final session = SessionController(service: sessionService);
+      final auth = AuthService(
+        AuthApiAdapter(
+          sessionStore: store,
+          httpClient: MockClient((_) async => http.Response('{}', 200)),
+        ),
+        session: sessionService,
+      );
+      await tester.pumpWidget(
+        CortexApp(session: session, auth: auth, initialLocation: '/v1/entry'),
+      );
+      await tester.pump(const Duration(milliseconds: 100));
+      final app = tester.widget<MaterialApp>(find.byType(MaterialApp));
+      expect(
+        app.routerConfig,
+        isNotNull,
+        reason: 'vault read failure must not leave permanent startup Skeleton',
+      );
+      expect(find.byType(NativeEntryPage), findsOneWidget);
     });
   });
 
@@ -355,6 +430,7 @@ void main() {
         'handoff_id': 'h-slow',
         'secret': 's-slow',
         'challenge': 'c-slow',
+        'created_at': DateTime.now().toUtc().toIso8601String(),
       }));
 
       final hangingClient = MockClient((request) async {
@@ -386,6 +462,288 @@ void main() {
       final cancelBtn = tester.widget<TextButton>(find.byType(TextButton));
       expect(finishBtn.onPressed, isNotNull);
       expect(cancelBtn.onPressed, isNotNull);
+    });
+  });
+
+  group('Cortex #85 30-Minute No-Record Expiry & Clock Control', () {
+    test('fresh attempt (<30m) preserves HANDOFF_NOT_FINISHED status', () async {
+      final baseTime = DateTime.utc(2026, 11, 26, 12, 0, 0);
+      var currentTime = baseTime;
+      final fakeStorage = FakeSecureStorage();
+      final store = NativeSessionStore(storage: fakeStorage);
+      final adapter = AuthApiAdapter(
+        sessionStore: store,
+        clock: () => currentTime,
+        httpClient: MockClient((request) async {
+          return http.Response(
+            jsonEncode({
+              'status': 'error',
+              'data': {'code': 'HANDOFF_NOT_FINISHED'},
+            }),
+            400,
+            headers: {'content-type': 'application/json'},
+          );
+        }),
+      );
+
+      await adapter.prepareNativeLogin();
+      // Advance clock by 10 minutes (fresh):
+      currentTime = baseTime.add(const Duration(minutes: 10));
+
+      await expectLater(
+        adapter.finishNativeLogin(),
+        throwsA(
+          isA<NativeHandoffException>().having(
+            (e) => e.code,
+            'code',
+            'HANDOFF_NOT_FINISHED',
+          ),
+        ),
+      );
+    });
+
+    test('exact 30 minute boundary maps to HANDOFF_EXPIRED', () async {
+      final baseTime = DateTime.utc(2026, 11, 26, 12, 0, 0);
+      var currentTime = baseTime;
+      final fakeStorage = FakeSecureStorage();
+      final store = NativeSessionStore(storage: fakeStorage);
+      final adapter = AuthApiAdapter(
+        sessionStore: store,
+        clock: () => currentTime,
+        httpClient: MockClient((request) async {
+          return http.Response(
+            jsonEncode({
+              'status': 'error',
+              'data': {'code': 'HANDOFF_NOT_FINISHED'},
+            }),
+            400,
+            headers: {'content-type': 'application/json'},
+          );
+        }),
+      );
+
+      await adapter.prepareNativeLogin();
+      // Advance clock by exactly 30 minutes:
+      currentTime = baseTime.add(const Duration(minutes: 30));
+
+      await expectLater(
+        adapter.finishNativeLogin(),
+        throwsA(
+          isA<NativeHandoffException>().having(
+            (e) => e.code,
+            'code',
+            'HANDOFF_EXPIRED',
+          ),
+        ),
+      );
+    });
+
+    test('expired attempt (>30m) maps to HANDOFF_EXPIRED', () async {
+      final baseTime = DateTime.utc(2026, 11, 26, 12, 0, 0);
+      var currentTime = baseTime;
+      final fakeStorage = FakeSecureStorage();
+      final store = NativeSessionStore(storage: fakeStorage);
+      final adapter = AuthApiAdapter(
+        sessionStore: store,
+        clock: () => currentTime,
+        httpClient: MockClient((request) async {
+          return http.Response(
+            jsonEncode({
+              'status': 'error',
+              'data': {'code': 'HANDOFF_NOT_FINISHED'},
+            }),
+            400,
+            headers: {'content-type': 'application/json'},
+          );
+        }),
+      );
+
+      await adapter.prepareNativeLogin();
+      // Advance clock by 35 minutes:
+      currentTime = baseTime.add(const Duration(minutes: 35));
+
+      await expectLater(
+        adapter.finishNativeLogin(),
+        throwsA(
+          isA<NativeHandoffException>().having(
+            (e) => e.code,
+            'code',
+            'HANDOFF_EXPIRED',
+          ),
+        ),
+      );
+    });
+
+    test('restored valid old attempt respects 30m boundary', () async {
+      final baseTime = DateTime.utc(2026, 11, 26, 12, 0, 0);
+      var currentTime = baseTime;
+      final fakeStorage = FakeSecureStorage();
+      final store = NativeSessionStore(storage: fakeStorage);
+      final adapter = AuthApiAdapter(
+        sessionStore: store,
+        clock: () => currentTime,
+        httpClient: MockClient((request) async {
+          return http.Response(
+            jsonEncode({
+              'status': 'error',
+              'data': {'code': 'HANDOFF_NOT_FINISHED'},
+            }),
+            400,
+            headers: {'content-type': 'application/json'},
+          );
+        }),
+      );
+
+      // Write pre-existing valid handoff timestamped at baseTime:
+      await store.writePendingHandoff(
+        jsonEncode({
+          'handoff_id': 'valid-old-handoff',
+          'secret': 'valid-old-secret',
+          'challenge': 'Yw3NKWbEM2aRElRIu7JbT_QSpJxzLbLIq8G4WBvXEN0',
+          'created_at': baseTime.toIso8601String(),
+        }),
+      );
+
+      // 1. Restored when 15 minutes old:
+      currentTime = baseTime.add(const Duration(minutes: 15));
+      final freshRestored = await adapter.restoreNativeLogin();
+      expect(freshRestored, isNotNull);
+      expect(freshRestored!.matchCode, 'MMG4');
+      await expectLater(
+        adapter.finishNativeLogin(),
+        throwsA(
+          isA<NativeHandoffException>().having(
+            (e) => e.code,
+            'code',
+            'HANDOFF_NOT_FINISHED',
+          ),
+        ),
+      );
+
+      // 2. Clock moves to 31 minutes old:
+      currentTime = baseTime.add(const Duration(minutes: 31));
+      await expectLater(
+        adapter.finishNativeLogin(),
+        throwsA(
+          isA<NativeHandoffException>().having(
+            (e) => e.code,
+            'code',
+            'HANDOFF_EXPIRED',
+          ),
+        ),
+      );
+    });
+
+    test('legacy or malformed timestamp is not assumed fresh and maps to HANDOFF_EXPIRED', () async {
+      final fakeStorage = FakeSecureStorage();
+      final store = NativeSessionStore(storage: fakeStorage);
+      final adapter = AuthApiAdapter(
+        sessionStore: store,
+        httpClient: MockClient((request) async {
+          return http.Response(
+            jsonEncode({
+              'status': 'error',
+              'data': {'code': 'HANDOFF_NOT_FINISHED'},
+            }),
+            400,
+            headers: {'content-type': 'application/json'},
+          );
+        }),
+      );
+
+      // Legacy payload with no created_at:
+      await store.writePendingHandoff(
+        jsonEncode({
+          'handoff_id': 'legacy-handoff',
+          'secret': 'legacy-secret',
+          'challenge': 'Yw3NKWbEM2aRElRIu7JbT_QSpJxzLbLIq8G4WBvXEN0',
+        }),
+      );
+
+      final legacyRestored = await adapter.restoreNativeLogin();
+      expect(legacyRestored, isNotNull);
+      expect(legacyRestored!.matchCode, 'MMG4');
+
+      await expectLater(
+        adapter.finishNativeLogin(),
+        throwsA(
+          isA<NativeHandoffException>().having(
+            (e) => e.code,
+            'code',
+            'HANDOFF_EXPIRED',
+          ),
+        ),
+      );
+
+      // Malformed timestamp:
+      await store.writePendingHandoff(
+        jsonEncode({
+          'handoff_id': 'malformed-handoff',
+          'secret': 'malformed-secret',
+          'challenge': 'Yw3NKWbEM2aRElRIu7JbT_QSpJxzLbLIq8G4WBvXEN0',
+          'created_at': 'not-a-valid-date-string',
+        }),
+      );
+
+      await expectLater(
+        adapter.finishNativeLogin(),
+        throwsA(
+          isA<NativeHandoffException>().having(
+            (e) => e.code,
+            'code',
+            'HANDOFF_EXPIRED',
+          ),
+        ),
+      );
+    });
+
+    test('restored handoff uses exact FINAL MMG4 match-code vector', () async {
+      final fakeStorage = FakeSecureStorage();
+      final store = NativeSessionStore(storage: fakeStorage);
+      await store.writePendingHandoff(
+        jsonEncode({
+          'handoff_id': 'synthetic-handoff',
+          'secret': 'AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8',
+          'challenge': 'Yw3NKWbEM2aRElRIu7JbT_QSpJxzLbLIq8G4WBvXEN0',
+        }),
+      );
+      final attempt = await AuthApiAdapter(sessionStore: store).restoreNativeLogin();
+      expect(attempt!.matchCode, 'MMG4');
+    });
+
+    testWidgets('genuine hanging status times out at 15s and enables finish and cancel', (tester) async {
+      final fakeStorage = FakeSecureStorage();
+      final store = NativeSessionStore(storage: fakeStorage);
+      await store.writePendingHandoff(
+        jsonEncode({
+          'handoff_id': 'synthetic-handoff',
+          'secret': 'AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8',
+          'challenge': 'Yw3NKWbEM2aRElRIu7JbT_QSpJxzLbLIq8G4WBvXEN0',
+        }),
+      );
+      final client = MockClient((_) => Completer<http.Response>().future);
+      final service = SessionService(isNative: true, sessionStore: store);
+      final auth = AuthService(
+        AuthApiAdapter(sessionStore: store, httpClient: client),
+        session: service,
+      );
+      await tester.pumpWidget(
+        MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: NativeEntryPage(
+            auth: auth,
+            session: SessionController(service: service),
+          ),
+        ),
+      );
+      await tester.pump();
+      expect(tester.widget<FilledButton>(find.byType(FilledButton)).onPressed, isNull);
+      await tester.pump(const Duration(seconds: 15));
+      await tester.pump();
+      expect(tester.widget<FilledButton>(find.byType(FilledButton)).onPressed, isNotNull);
+      expect(tester.widget<TextButton>(find.byType(TextButton)).onPressed, isNotNull);
+      expect(await store.readPendingHandoff(), isNotNull);
     });
   });
 }

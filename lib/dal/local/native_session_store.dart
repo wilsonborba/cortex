@@ -46,6 +46,7 @@ class NativeSessionStore {
     if (cleanSid.isEmpty || cleanCsrf.isEmpty) {
       throw const FormatException('Session ID and CSRF token must not be empty');
     }
+    await clearSession().catchError((_) {});
     try {
       await _storage.write(key: _sidKey, value: cleanSid);
       await _storage.write(key: _csrfKey, value: cleanCsrf);
@@ -56,8 +57,20 @@ class NativeSessionStore {
   }
 
   Future<void> clearSession() async {
-    await _storage.delete(key: _sidKey);
-    await _storage.delete(key: _csrfKey);
+    Object? firstError;
+    try {
+      await _storage.delete(key: _sidKey);
+    } catch (e) {
+      firstError = e;
+    }
+    try {
+      await _storage.delete(key: _csrfKey);
+    } catch (e) {
+      firstError ??= e;
+    }
+    if (firstError != null) {
+      throw firstError;
+    }
   }
 
   Future<String?> readPendingHandoff() => _storage.read(key: _pendingKey);

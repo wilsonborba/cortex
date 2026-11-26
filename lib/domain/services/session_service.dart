@@ -34,14 +34,18 @@ class SessionService {
 
   Future<SessionStatus> currentStatus() async {
     if (_isNative) {
-      final sid = await _sessionStore.readSessionId();
-      final csrf = await _sessionStore.readCsrfToken();
-      return sid != null &&
-              csrf != null &&
-              sid.isNotEmpty &&
-              csrf.isNotEmpty
-          ? SessionStatus.authenticated
-          : SessionStatus.none;
+      try {
+        final sid = await _sessionStore.readSessionId();
+        final csrf = await _sessionStore.readCsrfToken();
+        return sid != null &&
+                csrf != null &&
+                sid.isNotEmpty &&
+                csrf.isNotEmpty
+            ? SessionStatus.authenticated
+            : SessionStatus.none;
+      } catch (_) {
+        return SessionStatus.none;
+      }
     }
     final csrfToken = _readSessionCookie();
     if (csrfToken != null && csrfToken.isNotEmpty) {
