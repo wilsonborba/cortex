@@ -1090,6 +1090,12 @@ abstract class AppLocalizations {
   /// **'{time} · {s} s'**
   String statsTimingLine(String time, String s);
 
+  /// No description provided for @statsDurationLine.
+  ///
+  /// In en, this message translates to:
+  /// **'Duration: {s} s'**
+  String statsDurationLine(Object s);
+
   /// No description provided for @cancelledLine.
   ///
   /// In en, this message translates to:

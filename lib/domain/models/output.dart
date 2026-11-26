@@ -5,6 +5,12 @@ int? _historyUnsigned(Object? value) =>
     value is int && value >= 0 ? value : null;
 int? _historyErrorNumber(Object? value) =>
     value is int && value >= 0 && value <= 65535 ? value : null;
+DateTime? _historyTimestamp(Object? value) {
+  if (value is! String || !RegExp(r'(?:Z|[+-]\d{2}:\d{2})$').hasMatch(value)) {
+    return null;
+  }
+  return DateTime.tryParse(value);
+}
 
 class StageState {
   StageState(this.name, this.status, this.timeMs);
@@ -22,7 +28,8 @@ class ThinkingPart {
 
 /// One output, built from the stream events (area 10) or from the history.
 class OutputView {
-  OutputView({this.outputId, this.status = 'running'});
+  OutputView({this.outputId, this.status = 'running'})
+    : started = DateTime.now();
   String? outputId;
   String? sessionId;
   String status;
@@ -40,25 +47,28 @@ class OutputView {
   String? errorMessage;
   int? inputTokens, outputTokens, totalTokens, totalMs;
   int lastEventId = 0;
-  DateTime started = DateTime.now();
+  DateTime? started;
 
   /// Set when this answer continues a saved answer (cortex#82).
   ContinueSource? continuedFrom;
 
-  bool get running => status == 'running';
+  bool get running => status == 'running' && errorNumber == null;
   bool get thinkingRuns =>
       running && stages.any((s) => s.name == 'think' && s.status == 'started');
 
   factory OutputView.fromHistory(Map<String, dynamic> o) {
-    final view = OutputView(
-      outputId: o['output_id'] as String?,
-      status: '${o['status']}',
-    )..sessionId = o['session_id'] as String?;
+    final view =
+        OutputView(
+            outputId: o['output_id'] as String?,
+            status: '${o['status']}',
+          )
+          ..sessionId = o['session_id'] as String?
+          ..started = _historyTimestamp(o['created_at']);
     final run = o['run'];
     if (run is Map) {
       view
         ..totalMs = _historyUnsigned(run['total_ms'])
-        ..errorNumber = view.status == 'failed'
+        ..errorNumber = view.status == 'failed' || view.status == 'running'
             ? _historyErrorNumber(run['error_number'])
             : null;
       final tokens = run['tokens'];

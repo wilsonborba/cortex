@@ -28,7 +28,24 @@ void main() {
       expect(missing.totalMs, isNull);
       expect(missing.inputTokens, isNull);
       expect(missing.errorNumber, isNull);
+      expect(missing.started, isNull);
       expect(missing.continuedFrom!.outputId, oid);
+
+      final historical = OutputView.fromHistory({
+        'output_id': 'dated',
+        'status': 'done',
+        'text': 'answer',
+        'created_at': '2026-11-01T03:04:05Z',
+      });
+      expect(historical.started, DateTime.utc(2026, 11, 1, 3, 4, 5));
+
+      final malformedTimestamp = OutputView.fromHistory({
+        'output_id': 'malformed-date',
+        'status': 'done',
+        'text': 'answer',
+        'created_at': 'not-a-timestamp',
+      });
+      expect(malformedTimestamp.started, isNull);
 
       final timingOnly = OutputView.fromHistory({
         'output_id': 'legacy',
@@ -73,12 +90,33 @@ void main() {
       expect(failed.status, 'failed');
       expect(failed.errorNumber, 1014);
 
+      final terminalRun = OutputView.fromHistory({
+        'output_id': 'terminal-save-error',
+        'status': 'running',
+        'text': 'partial answer',
+        'run': {'total_ms': 25, 'error_number': 1017},
+      });
+      expect(terminalRun.status, 'running');
+      expect(terminalRun.running, isFalse);
+      expect(terminalRun.errorNumber, 1017);
+      expect(terminalRun.totalMs, 25);
+
+      final genuinelyRunning = OutputView.fromHistory({
+        'output_id': 'still-running',
+        'status': 'running',
+        'text': 'partial answer',
+        'run': {'total_ms': 25},
+      });
+      expect(genuinelyRunning.running, isTrue);
+      expect(genuinelyRunning.errorNumber, isNull);
+
       final invalid = OutputView.fromHistory({
         'output_id': 'invalid',
         'status': 'done',
         'text': 'kept',
         'run': {
           'total_ms': 'unknown',
+          'created_at': 'yesterday',
           'error_number': 70000,
           'tokens': {'input': -1, 'output': 'missing', 'total': 0},
         },
@@ -86,6 +124,7 @@ void main() {
       expect(invalid.answer.toString(), 'kept');
       expect(invalid.totalMs, isNull);
       expect(invalid.errorNumber, isNull);
+      expect(invalid.started, isNull);
       expect(invalid.inputTokens, isNull);
       expect(invalid.outputTokens, isNull);
       expect(invalid.totalTokens, 0);

@@ -41,6 +41,51 @@ Widget outputApp(OutputView output) => MaterialApp(
   ),
 );
 void main() {
+  testWidgets('terminal run error in a running SQL row is shown as terminal', (
+    tester,
+  ) async {
+    final api = fixture.Api()
+      ..page = {
+        'chat': {'session_id': fixture.sid, 'title': 'Synthetic saved chat'},
+        'inputs': [
+          {'input_id': 'i-save-error', 'text': 'Synthetic failed save'},
+        ],
+        'outputs': [
+          {
+            'input_id': 'i-save-error',
+            'output_id': 'o-save-error',
+            'session_id': fixture.sid,
+            'status': 'running',
+            'created_at': '2026-11-01T03:04:05Z',
+            'text': 'Synthetic partial answer',
+            'run': {'total_ms': 25, 'error_number': 1017},
+          },
+        ],
+      };
+    final (chat, _) = await fixture.pump(
+      tester,
+      session: fixture.sid,
+      api: api,
+    );
+    await tester.pumpAndSettle();
+    final output = chat.exchanges.single.output;
+    expect(output.status, 'running');
+    expect(output.errorNumber, 1017);
+    expect(output.totalMs, 25);
+    expect(output.started, DateTime.utc(2026, 11, 1, 3, 4, 5));
+    expect(chat.running, isNull);
+    expect(find.byKey(const Key('output-error')), findsOneWidget);
+    expect(find.byTooltip('Retry'), findsOneWidget);
+    expect(find.byKey(const Key('status-line')), findsNothing);
+    final stats = tester.widget<Text>(find.byKey(const Key('stats-line')));
+    expect(stats.data, contains('0.0 s')); // 25 ms at one decimal place
+    final time = TimeOfDay.fromDateTime(
+      output.started!.toLocal(),
+    ).format(tester.element(find.byKey(const Key('stats-line'))));
+    expect(stats.data, contains(time));
+    chat.dispose();
+  });
+
   testWidgets('history controller restores a blocked run without retry', (
     tester,
   ) async {
@@ -313,6 +358,7 @@ void main() {
     await tester.pumpAndSettle();
     final line = tester.widget<Text>(find.byKey(const Key('stats-line')));
     expect(line.data, contains('1.3 s'));
+    expect(line.data, startsWith('Duration:'));
     expect(line.data, isNot(contains('0 in')));
     expect(line.data, isNot(contains('0 out')));
   });

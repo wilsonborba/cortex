@@ -179,6 +179,7 @@
   "uploading": "Uploading",
   "statsLine": "{time} · {s} s · {input} in, {output} out tokens",
   "statsTimingLine": "{time} · {s} s",
+  "statsDurationLine": "Duration: {s} s",
   "cancelledLine": "Stopped",
   "steps_web_queries": "Preparing search queries",
   "steps_queue_wait": "Waiting for the model",

@@ -545,6 +545,11 @@ class AppLocalizationsTh extends AppLocalizations {
   }
 
   @override
+  String statsDurationLine(Object s) {
+    return 'ระยะเวลา $s วินาที';
+  }
+
+  @override
   String get cancelledLine => 'หยุดแล้ว';
 
   @override

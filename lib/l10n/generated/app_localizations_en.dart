@@ -551,6 +551,11 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String statsDurationLine(Object s) {
+    return 'Duration: $s s';
+  }
+
+  @override
   String get cancelledLine => 'Stopped';
 
   @override
