@@ -1,5 +1,5 @@
 name: cortex
-description: Cortex chat workspace for Flutter web.
+description: Cortex AI chat workspace application for Android, web, and desktop.
 publish_to: none
 version: 2.3.2+1
 environment:
