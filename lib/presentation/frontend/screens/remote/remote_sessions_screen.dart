@@ -44,6 +44,7 @@ class _RemoteSessionsScreenState extends State<RemoteSessionsScreen> {
   void initState() {
     super.initState();
     remote.addListener(_changed);
+    _promptFocus.addListener(_promptFocusChanged);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) remote.refreshSessions();
     });
@@ -61,11 +62,16 @@ class _RemoteSessionsScreenState extends State<RemoteSessionsScreen> {
   @override
   void dispose() {
     remote.removeListener(_changed);
+    _promptFocus.removeListener(_promptFocusChanged);
     _promptFocus.dispose();
     _turnScrollController.dispose();
     unawaited(remote.closeSession(clearSessions: true));
     prompt.dispose();
     super.dispose();
+  }
+
+  void _promptFocusChanged() {
+    if (mounted) setState(() {});
   }
 
   void _changed() {
@@ -281,7 +287,8 @@ class _RemoteSessionsScreenState extends State<RemoteSessionsScreen> {
           _Notice(text: l.remoteSessionExpired, warning: true),
         if (remote.failure != null && !remote.streamExpired)
           _Notice(text: _errorText(l), warning: true),
-        if (remote.commandStatus != RemoteCliCommandStatus.none)
+        if (remote.commandStatus != RemoteCliCommandStatus.none &&
+            remote.commandStatus != RemoteCliCommandStatus.promptSent)
           _Notice(text: _commandStatusText(l, remote.commandStatus)),
         if (remote.turns.isEmpty)
           Expanded(
@@ -351,6 +358,9 @@ class _RemoteSessionsScreenState extends State<RemoteSessionsScreen> {
   Widget _composer(BuildContext context, RemoteCliSession session) {
     final l = AppLocalizations.of(context);
     final p = Palette.from(context);
+    final focusDuration = FoundationTokens.of(
+      context,
+    ).duration(context, MotionDurations.normal);
     final hasText = prompt.text.trim().isNotEmpty;
     final canSend =
         hasText &&
@@ -445,9 +455,7 @@ class _RemoteSessionsScreenState extends State<RemoteSessionsScreen> {
                             ),
                             border: InputBorder.none,
                             enabledBorder: InputBorder.none,
-                            focusedBorder: Theme.of(
-                              context,
-                            ).inputDecorationTheme.focusedBorder,
+                            focusedBorder: InputBorder.none,
                           ),
                         ),
                         const SizedBox(height: Space.s4),
@@ -554,6 +562,25 @@ class _RemoteSessionsScreenState extends State<RemoteSessionsScreen> {
                           ],
                         ),
                       ],
+                    ),
+                  ),
+                  Positioned(
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    child: Center(
+                      child: AnimatedFractionallySizedBox(
+                        key: const Key('remote-composer-focus-bar'),
+                        duration: focusDuration,
+                        curve: MotionCurves.decelerateMid,
+                        widthFactor: _promptFocus.hasFocus ? 1 : 0,
+                        child: Container(
+                          height: Strokes.thick,
+                          color: _promptFocus.hasFocus
+                              ? p.brandStroke1
+                              : Colors.transparent,
+                        ),
+                      ),
                     ),
                   ),
                 ],
@@ -686,7 +713,7 @@ class _TurnCard extends StatelessWidget {
     };
     return Padding(
       key: Key('remote-turn-card-${turn.key}'),
-      padding: const EdgeInsets.only(bottom: Space.s16),
+      padding: const EdgeInsets.only(bottom: Space.s24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -763,7 +790,7 @@ class _TurnCard extends StatelessWidget {
             const SizedBox(height: Space.s8),
             SelectableText(
               turn.answer,
-              style: TextStyles.body1.copyWith(color: p.text),
+              style: TextStyles.body2.copyWith(color: p.text),
             ),
           ],
           for (final event in turn.events.where(

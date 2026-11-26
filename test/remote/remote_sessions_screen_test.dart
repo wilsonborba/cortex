@@ -256,6 +256,7 @@ void main() {
       );
       expect(find.text('Prompt'), findsNothing);
       expect(find.text('Answer'), findsNothing);
+      expect(find.text('Prompt sent to the CLI session.'), findsNothing);
       expect(gateway.artifactRequests, isEmpty);
       await tester.tap(
         find.byKey(const Key('remote-artifact-preview-artifact-1')),
@@ -488,6 +489,16 @@ void main() {
       );
       await tester.pump();
       final prompt = find.byKey(const Key('remote-prompt'));
+      await tester.tap(prompt);
+      await tester.pump(const Duration(milliseconds: 250));
+      expect(
+        tester
+            .widget<AnimatedFractionallySizedBox>(
+              find.byKey(const Key('remote-composer-focus-bar')),
+            )
+            .widthFactor,
+        1,
+      );
       await tester.enterText(prompt, 'First line\nSecond line\nThird line');
       await tester.pumpAndSettle();
 
