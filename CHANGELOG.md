@@ -4,24 +4,52 @@
 ## Unreleased
 
 
-### Features
-
-- Parse allowlisted chat profiles and preserve model selection on new, saved, continued, and temporary inputs (#87)
-
-- Add the T0/T1 model picker, per-profile input limits, and unavailable-model feedback to the composer (#87)
-
-- Keep long model labels readable in the compact Options menu at narrow widths and larger text sizes (#87)
-
-- Omit profile IDs for legacy budget-only APIs while preserving IDs for explicit catalogs (#87)
-
-- Add localized Cortex CLI source-install help to the product landing page (#88)
-
 ### Bug Fixes
 
-- Preserve the existing T0 composer for legacy catalogs and keep explicit recovery for unavailable saved profiles (#87)
+- Constrain long model labels on narrow screens
 
-- Keep model menu boundaries and shadows visible in both themes (#87)
+- Preserve strict legacy input payloads
 
+- Preserve model menu shadows
+
+- Keep legacy T0 composer unchanged
+
+- Keep CLI availability copy user-facing
+
+- Keep installer out of SPA rewrite
+
+
+### Chores
+
+- Merge v2.3.2 back to feature/main
+
+
+### Documentation
+
+- Record model selector compatibility fixes
+
+
+### Features
+
+- Add Cortex CLI installation help
+
+- Parse and send selected chat profiles
+
+- Add profile selection to the chat composer
+
+- Add stable CLI and Android install entry
+
+- Integrate reviewed CLI installer entry and Android help (#88)
+
+
+### Tests
+
+- Update full-page CLI screenshots
+
+
+### merge
+
+- Include accepted model selector compatibility fixes
 
 ## v2.3.2 - 2026-11-16
 
@@ -645,5 +673,3 @@ only), full test suite (35 tests) passes.
 - Feature/6-chat-features into feature/main
 
 - Feature/7-resilience-features into feature/main
-
-
