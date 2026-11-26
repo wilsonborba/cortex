@@ -2,6 +2,7 @@ import '../../domain/models/answer_inspection.dart';
 import '../../domain/models/telemetry.dart';
 import 'dart:async';
 import 'dart:convert';
+import 'dart:typed_data';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import '../../core/settings.dart';
@@ -15,6 +16,7 @@ import 'stream_client.dart';
 /// Client of the Cortex API v2 through the gateway (route map 06361aef).
 class CortexApi {
   static const maxFileContentBytes = 5 * 1024 * 1024;
+  static const maxFileErrorResponseBytes = 64 * 1024;
   CortexApi({String? baseUrl, http.Client? client, http.Client? streamClient})
     : base = baseUrl ?? AppSettings.cortexApiBaseUrl,
       _client = client ?? createCredentialsClient(),
@@ -304,7 +306,15 @@ class CortexApi {
         .send(request)
         .timeout(const Duration(seconds: 30));
     if (response.statusCode >= 400) {
-      _body(await http.Response.fromStream(response));
+      final errorResponse = await _boundedFileErrorResponse(response);
+      if (errorResponse == null) {
+        throw ApiError(
+          response.statusCode,
+          null,
+          'File error response is too large to preview.',
+        );
+      }
+      _body(errorResponse);
     }
     final declaredLength = response.contentLength;
     if (declaredLength != null && declaredLength > maxBytes) {
@@ -329,6 +339,39 @@ class CortexApi {
       throw const FormatException('File response has no content type.');
     }
     return DownloadedFileContent(contentType: contentType, bytes: bytes);
+  }
+
+  Future<http.Response?> _boundedFileErrorResponse(
+    http.StreamedResponse response,
+  ) async {
+    final declaredLength = response.contentLength;
+    if (declaredLength != null && declaredLength > maxFileErrorResponseBytes) {
+      await response.stream.listen((_) {}).cancel();
+      return null;
+    }
+    final iterator = StreamIterator<List<int>>(response.stream);
+    final bytes = BytesBuilder(copy: false);
+    try {
+      while (await iterator.moveNext()) {
+        final chunk = iterator.current;
+        if (bytes.length + chunk.length > maxFileErrorResponseBytes) {
+          await iterator.cancel();
+          return null;
+        }
+        bytes.add(chunk);
+      }
+    } finally {
+      await iterator.cancel();
+    }
+    return http.Response.bytes(
+      bytes.takeBytes(),
+      response.statusCode,
+      headers: response.headers,
+      request: response.request,
+      isRedirect: response.isRedirect,
+      persistentConnection: response.persistentConnection,
+      reasonPhrase: response.reasonPhrase,
+    );
   }
 
   static MediaType? _media(String type) {

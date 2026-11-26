@@ -610,4 +610,96 @@ void main() {
     controller.dispose();
     await gateway.dispose();
   });
+
+  test('late lifecycle events do not create a phantom turn', () async {
+    final gateway = _Gateway();
+    final controller = RemoteCliController(gateway: gateway);
+    await controller.openSession(_session());
+    await Future<void>.delayed(Duration.zero);
+
+    gateway.stream.add(_event(1, 'cancel'));
+    gateway.stream.add(_event(2, 'progress', {'status': 'cancelled'}));
+    gateway.stream.add(
+      _event(3, 'artifact', {
+        'turn_id': 'already-completed',
+        'file_id': 'file-1',
+      }),
+    );
+    await Future<void>.delayed(Duration.zero);
+
+    expect(controller.turns, isEmpty);
+    expect(controller.turnRunning, isFalse);
+
+    expect(await controller.sendPrompt('create an image'), isTrue);
+    gateway.stream.add(
+      _event(4, 'progress', {
+        'turn_id': 'completed-turn',
+        'message': 'Working',
+      }),
+    );
+    gateway.stream.add(
+      _event(5, 'turn_end', {
+        'turn_id': 'completed-turn',
+        'status': 'complete',
+      }),
+    );
+    gateway.stream.add(
+      _event(6, 'artifact', {'turn_id': 'completed-turn', 'file_id': 'file-2'}),
+    );
+    await Future<void>.delayed(Duration.zero);
+
+    expect(controller.turns, hasLength(1));
+    expect(controller.turns.single.status, RemoteCliTurnStatus.complete);
+    expect(controller.turnRunning, isFalse);
+
+    await controller.closeSession();
+    controller.dispose();
+    await gateway.dispose();
+  });
+
+  test('per-session turn and event history stays within 500 items', () async {
+    final gateway = _Gateway();
+    final controller = RemoteCliController(gateway: gateway);
+    await controller.openSession(_session());
+    await Future<void>.delayed(Duration.zero);
+
+    var id = 0;
+    for (var turn = 0; turn < 501; turn++) {
+      final remoteId = 'turn-$turn';
+      gateway.stream.add(
+        _event(++id, 'progress', {'turn_id': remoteId, 'message': 'Working'}),
+      );
+      gateway.stream.add(
+        _event(++id, 'answer_part', {'turn_id': remoteId, 'text': 'Done'}),
+      );
+      gateway.stream.add(
+        _event(++id, 'turn_end', {'turn_id': remoteId, 'status': 'complete'}),
+      );
+    }
+    await Future<void>.delayed(Duration.zero);
+
+    expect(controller.events, hasLength(RemoteCliController.maxStoredEvents));
+    expect(
+      controller.turns.length,
+      lessThanOrEqualTo(RemoteCliController.maxStoredEvents),
+    );
+    final retainedEventIds = controller.events.map((event) => event.id).toSet();
+    expect(
+      controller.turns
+          .expand((turn) => turn.events)
+          .every((event) => retainedEventIds.contains(event.id)),
+      isTrue,
+    );
+    expect(
+      controller.turns.fold<int>(
+        0,
+        (count, turn) => count + turn.events.length,
+      ),
+      lessThanOrEqualTo(RemoteCliController.maxStoredEvents),
+    );
+
+    await controller.closeSession();
+    controller.dispose();
+    await gateway.dispose();
+  });
 }
