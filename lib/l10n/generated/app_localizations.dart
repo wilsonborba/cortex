@@ -412,6 +412,132 @@ abstract class AppLocalizations {
   /// **'What it does'**
   String get whatTitle;
 
+  /// No description provided for @cliTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Cortex CLI'**
+  String get cliTitle;
+
+  /// No description provided for @cliIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'Use Cortex from Linux or macOS. Supported targets are x86_64 and ARM64.'**
+  String get cliIntro;
+
+  /// No description provided for @cliSourceTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Build from source'**
+  String get cliSourceTitle;
+
+  /// No description provided for @cliSourceDetail.
+  ///
+  /// In en, this message translates to:
+  /// **'Requires Rust 1.91.1 or newer with Cargo. These commands install cortex from its source checkout.'**
+  String get cliSourceDetail;
+
+  /// No description provided for @cliLinuxPrerequisite.
+  ///
+  /// In en, this message translates to:
+  /// **'Linux also needs libdbus-1-dev and pkg-config. macOS uses Keychain.'**
+  String get cliLinuxPrerequisite;
+
+  /// No description provided for @cliSignIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to Asodya in your browser with cortex login.'**
+  String get cliSignIn;
+
+  /// No description provided for @cliProviderNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Asodya sign-in does not provide external AI provider access. Provider credentials are configured separately.'**
+  String get cliProviderNote;
+
+  /// No description provided for @cliInstallTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Install with the release installer'**
+  String get cliInstallTitle;
+
+  /// No description provided for @cliInstallDetail.
+  ///
+  /// In en, this message translates to:
+  /// **'For Linux and macOS on x86_64 or ARM64. This command installs the latest stable release.'**
+  String get cliInstallDetail;
+
+  /// No description provided for @cliReleaseStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'No stable CLI release is published yet. The installer will report when a release becomes available.'**
+  String get cliReleaseStatus;
+
+  /// No description provided for @androidInstallTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Cortex for Android'**
+  String get androidInstallTitle;
+
+  /// No description provided for @androidInstallDetail.
+  ///
+  /// In en, this message translates to:
+  /// **'Install Cortex on Android phones and tablets.'**
+  String get androidInstallDetail;
+
+  /// No description provided for @androidReleaseStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'The signed Android app is not available for download yet.'**
+  String get androidReleaseStatus;
+
+  /// No description provided for @androidDownload.
+  ///
+  /// In en, this message translates to:
+  /// **'Download for Android'**
+  String get androidDownload;
+
+  /// No description provided for @androidInstallHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Installation help'**
+  String get androidInstallHelp;
+
+  /// No description provided for @androidHelpTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Install Cortex on Android'**
+  String get androidHelpTitle;
+
+  /// No description provided for @androidHelpDetail.
+  ///
+  /// In en, this message translates to:
+  /// **'When the signed app is released, download it only from this Asodya page. Open the downloaded file and follow Android\'s prompts. Keep Google Play Protect on. If Android asks to allow installs from your browser or files app, allow only the trusted app you used to download Cortex.'**
+  String get androidHelpDetail;
+
+  /// No description provided for @androidOfficialHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Android safety and install help'**
+  String get androidOfficialHelp;
+
+  /// No description provided for @cliCopy.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy commands'**
+  String get cliCopy;
+
+  /// No description provided for @cliReadme.
+  ///
+  /// In en, this message translates to:
+  /// **'CLI README'**
+  String get cliReadme;
+
+  /// No description provided for @cliReleases.
+  ///
+  /// In en, this message translates to:
+  /// **'Releases'**
+  String get cliReleases;
+
   /// No description provided for @whatMemory.
   ///
   /// In en, this message translates to:
@@ -1083,6 +1209,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{time} · {s} s · {input} in, {output} out tokens'**
   String statsLine(String time, String s, int input, int output);
+
+  /// No description provided for @statsTimingLine.
+  ///
+  /// In en, this message translates to:
+  /// **'{time} · {s} s'**
+  String statsTimingLine(String time, String s);
+
+  /// No description provided for @statsDurationLine.
+  ///
+  /// In en, this message translates to:
+  /// **'Duration: {s} s'**
+  String statsDurationLine(Object s);
 
   /// No description provided for @cancelledLine.
   ///
@@ -2277,6 +2415,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Options'**
   String get composerOptions;
+
+  /// No description provided for @modelPicker.
+  ///
+  /// In en, this message translates to:
+  /// **'Model'**
+  String get modelPicker;
+
+  /// No description provided for @modelChoice.
+  ///
+  /// In en, this message translates to:
+  /// **'Model · {name}'**
+  String modelChoice(String name);
+
+  /// No description provided for @modelUnavailableSelection.
+  ///
+  /// In en, this message translates to:
+  /// **'Unavailable profile: {id}'**
+  String modelUnavailableSelection(String id);
+
+  /// No description provided for @modelUnavailableMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'The selected model is unavailable. Choose an available profile to continue.'**
+  String get modelUnavailableMessage;
+
+  /// No description provided for @modelCatalogUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Model profiles could not be loaded. Try again before sending.'**
+  String get modelCatalogUnavailable;
+
+  /// No description provided for @modelVisionPrepass.
+  ///
+  /// In en, this message translates to:
+  /// **'Cortex vision summarizes images before this text profile responds.'**
+  String get modelVisionPrepass;
+
+  /// No description provided for @modelNoVision.
+  ///
+  /// In en, this message translates to:
+  /// **'This profile does not support image attachments.'**
+  String get modelNoVision;
 
   /// No description provided for @composerEmptyReason.
   ///

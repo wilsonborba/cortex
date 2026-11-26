@@ -9,9 +9,12 @@ import 'package:cortex/l10n/generated/app_localizations.dart';
 import 'package:cortex/presentation/frontend/preferences.dart';
 import 'package:cortex/presentation/frontend/router.dart';
 import 'package:cortex/presentation/frontend/screens/landing/demo.dart';
+import 'package:cortex/presentation/frontend/screens/landing/cli_install_section.dart';
 import 'package:cortex/presentation/frontend/screens/landing/diagrams.dart';
 import 'package:cortex/presentation/frontend/theme/theme.dart';
+import 'package:cortex/presentation/frontend/widgets/common/buttons.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
@@ -96,6 +99,210 @@ Widget demo({bool still = false}) => MaterialApp(
 );
 
 void main() {
+  test('CLI help points to canonical repository README and releases', () {
+    expect(cliRepositoryUrl, 'https://github.com/wilsonborba/cortex_cli');
+    expect(cliReadmeUrl, '$cliRepositoryUrl#readme');
+    expect(cliReleasesUrl, '$cliRepositoryUrl/releases');
+    expect(cliWebInstallerUrl, 'https://cortex.asodya.com/install.sh');
+    expect(
+      cliReleaseInstallCommand,
+      'curl -fsSL https://cortex.asodya.com/install.sh | bash',
+    );
+    expect(
+      cliSourceInstallCommand,
+      contains('cargo install --locked --path .'),
+    );
+    expect(
+      cliSourceInstallCommand,
+      contains('git clone $cliRepositoryUrl.git'),
+    );
+  });
+
+  for (final locale in [
+    const Locale('en'),
+    const Locale('pt', 'BR'),
+    const Locale('th'),
+  ]) {
+    for (final width in [320.0, 390.0, 1440.0]) {
+      testWidgets(
+        'CLI help fits ${locale.languageCode} at ${width.toInt()}px',
+        (tester) async {
+          final (_, _) = await pump(
+            tester,
+            '/v1/home',
+            size: Size(width, 1000),
+            locale: locale,
+            scale: 1.5,
+          );
+          final section = find.byKey(const Key('cli-install-section'));
+          expect(section, findsOneWidget);
+          final l = AppLocalizations.of(tester.element(section));
+          expect(find.text(l.cliTitle), findsOneWidget);
+          expect(find.text(l.cliIntro), findsOneWidget);
+          expect(find.text(l.cliInstallTitle), findsOneWidget);
+          expect(find.text(l.cliInstallDetail), findsOneWidget);
+          expect(find.text(cliWebInstallerUrl), findsOneWidget);
+          expect(
+            find.byKey(const Key('cli-web-installer-url')),
+            findsOneWidget,
+          );
+          expect(find.text(l.cliReleaseStatus), findsOneWidget);
+          expect(find.text(l.cliProviderNote), findsOneWidget);
+          expect(find.text(l.cliSignIn), findsOneWidget);
+          final command = tester.widget<SelectableText>(
+            find.byKey(const Key('cli-install-command-text')),
+          );
+          expect(command.data, cliReleaseInstallCommand);
+          expect(find.byKey(const Key('cli-copy-command')), findsOneWidget);
+          expect(find.byKey(const Key('cli-readme-link')), findsOneWidget);
+          expect(find.byKey(const Key('cli-releases-link')), findsOneWidget);
+          expect(
+            find.byKey(const Key('android-install-section')),
+            findsOneWidget,
+          );
+          expect(find.text(l.androidInstallTitle), findsOneWidget);
+          expect(find.text(l.androidReleaseStatus), findsOneWidget);
+          final androidDownload = tester.widget<AppButton>(
+            find.byKey(const Key('android-download')),
+          );
+          expect(androidDownload.onPressed, isNull);
+          expect(find.byKey(const Key('android-install-help')), findsOneWidget);
+          expect(tester.getRect(section).left, greaterThanOrEqualTo(0));
+          expect(tester.getRect(section).right, lessThanOrEqualTo(width));
+          expect(tester.takeException(), isNull);
+        },
+      );
+    }
+  }
+
+  testWidgets('visible CLI installer address opens the public shim URL', (
+    tester,
+  ) async {
+    final launchedUrls = <String>[];
+    const launcherChannel = MethodChannel('plugins.flutter.io/url_launcher');
+    tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+      launcherChannel,
+      (call) async {
+        if (call.method == 'launch') {
+          launchedUrls.add(
+            (call.arguments as Map<Object?, Object?>)['url'] as String,
+          );
+        }
+        return true;
+      },
+    );
+    addTearDown(
+      () => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+        launcherChannel,
+        null,
+      ),
+    );
+    await pump(tester, '/v1/home', size: const Size(390, 844));
+    final link = find.byKey(const Key('cli-web-installer-url'));
+    await tester.ensureVisible(link);
+    await tester.pump();
+    await tester.tap(link);
+    expect(launchedUrls, [cliWebInstallerUrl]);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets(
+    'Android help explains the released-app flow and links official guidance',
+    (tester) async {
+      final launchedUrls = <String>[];
+      const launcherChannel = MethodChannel('plugins.flutter.io/url_launcher');
+      tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+        launcherChannel,
+        (call) async {
+          if (call.method == 'launch') {
+            launchedUrls.add(
+              (call.arguments as Map<Object?, Object?>)['url'] as String,
+            );
+          }
+          return true;
+        },
+      );
+      addTearDown(
+        () => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+          launcherChannel,
+          null,
+        ),
+      );
+      await pump(tester, '/v1/home', size: const Size(390, 844));
+      final help = find.byKey(const Key('android-install-help'));
+      await tester.ensureVisible(help);
+      await tester.pump();
+      await tester.tap(help);
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
+      final l = AppLocalizations.of(tester.element(find.byType(AlertDialog)));
+      expect(find.text(l.androidHelpTitle), findsOneWidget);
+      expect(find.text(l.androidHelpDetail), findsOneWidget);
+      expect(find.text(l.androidOfficialHelp), findsOneWidget);
+      expect(
+        find.byKey(const Key('android-official-help-link')),
+        findsOneWidget,
+      );
+      await tester.tap(find.byKey(const Key('android-official-help-link')));
+      expect(launchedUrls, [AndroidInstallSection.androidHelpUrl]);
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  for (final size in [const Size(390, 844), const Size(1440, 1200)]) {
+    testWidgets(
+      'installation actions are reachable by scrolling at ${size.width.toInt()}px',
+      (tester) async {
+        await pump(tester, '/v1/home', size: size);
+        final cli = tester.getRect(
+          find.byKey(const Key('cli-install-section')),
+        );
+        final android = tester.getRect(
+          find.byKey(const Key('android-install-section')),
+        );
+        debugPrint(
+          'INSTALL_SECTION_GEOMETRY width=${size.width} cli=$cli android=$android',
+        );
+        final help = find.byKey(const Key('android-install-help'));
+        await tester.ensureVisible(help);
+        await tester.pump();
+        final helpRect = tester.getRect(help);
+        expect(helpRect.top, greaterThanOrEqualTo(0));
+        expect(helpRect.bottom, lessThanOrEqualTo(size.height));
+        expect(tester.takeException(), isNull);
+      },
+    );
+  }
+
+  testWidgets('CLI install command copy button writes the full command', (
+    tester,
+  ) async {
+    String? clipboardText;
+    tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+      SystemChannels.platform,
+      (call) async {
+        if (call.method == 'Clipboard.setData') {
+          clipboardText =
+              (call.arguments as Map<Object?, Object?>)['text'] as String?;
+        }
+        return null;
+      },
+    );
+    addTearDown(
+      () => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+        SystemChannels.platform,
+        null,
+      ),
+    );
+    await pump(tester, '/v1/home');
+    final copy = find.byKey(const Key('cli-copy-command'));
+    await tester.ensureVisible(copy);
+    await tester.pump();
+    await tester.tap(copy);
+    expect(clipboardText, cliReleaseInstallCommand);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets(
     'expanded header: logo, 5 section links, language, theme, Log in',
     (tester) async {

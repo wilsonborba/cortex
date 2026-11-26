@@ -66,6 +66,10 @@ class ChatController extends ChangeNotifier {
   final files = <AttachedFile>[];
   final options = InputOptions();
   InputBudget budget = InputBudget.fallback;
+  ChatModelCatalog? modelCatalog;
+  bool modelCatalogFailed = false;
+  String? selectedModelId;
+  bool _modelSelectionRestored = false;
   Map<String, dynamic>? chat;
   List<Map<String, dynamic>> personas = const [];
   bool loading = false;
@@ -79,6 +83,9 @@ class ChatController extends ChangeNotifier {
   OutputView? get running =>
       exchanges.where((e) => e.output.running).lastOrNull?.output;
   bool get isNew => sessionId == null;
+  ChatModelProfile? get selectedModel => modelCatalog?.find(selectedModelId);
+  bool get selectedModelUnavailable => selectedModel == null;
+  int get selectedInputLimit => selectedModel?.maxInputTokens ?? 0;
 
   void _notify() {
     if (!_disposed) notifyListeners();
@@ -95,8 +102,17 @@ class ChatController extends ChangeNotifier {
     loading = true;
     _notify();
     try {
-      budget = await api.budget();
-    } catch (_) {}
+      modelCatalog = await api.modelCatalog();
+      modelCatalogFailed = false;
+      budget = modelCatalog!.budget;
+      if (!_modelSelectionRestored && isNew) {
+        selectedModelId = modelCatalog!.defaultModelId;
+        _modelSelectionRestored = true;
+      }
+    } catch (_) {
+      modelCatalog = null;
+      modelCatalogFailed = true;
+    }
     if (isNew && !temporary) {
       try {
         personas = await api.botPersonas();
@@ -116,6 +132,15 @@ class ChatController extends ChangeNotifier {
     try {
       final page = await api.page(sessionId!, before: before);
       chat = (page['chat'] as Map?)?.cast();
+      if (!_modelSelectionRestored && before == null) {
+        final persistedModel = chat?['model_id'];
+        // Older saved chats predate model selection and use T0. Keep that
+        // compatibility explicit; an unknown persisted ID remains unavailable.
+        selectedModelId = persistedModel is String && persistedModel.isNotEmpty
+            ? persistedModel
+            : 'cortex-t0';
+        _modelSelectionRestored = true;
+      }
       final outputs = {
         for (final o in (page['outputs'] as List? ?? const []))
           o['input_id']: o,
@@ -156,7 +181,15 @@ class ChatController extends ChangeNotifier {
   }
 
   int estimate(String text) => budget.estimate(utf8.encode(text).length);
-  bool overLimit(String text) => estimate(text) > budget.maxTokens;
+  bool overLimit(String text) =>
+      selectedModel == null || estimate(text) > selectedInputLimit;
+
+  void selectModel(String modelId) {
+    if (modelCatalog?.find(modelId) == null) return;
+    selectedModelId = modelId;
+    _modelSelectionRestored = true;
+    _notify();
+  }
 
   /// Files go first through POST /files, then file_ids in the input (30.3).
   Future<void> attach(AttachedFile file) async {
@@ -187,7 +220,11 @@ class ChatController extends ChangeNotifier {
   }
 
   Future<void> send(String text) async {
-    if (running != null || overLimit(text) || files.any((f) => f.uploading)) {
+    final profile = selectedModel;
+    if (profile == null ||
+        running != null ||
+        overLimit(text) ||
+        files.any((f) => f.uploading)) {
       return;
     }
     final ids = [
@@ -212,6 +249,9 @@ class ChatController extends ChangeNotifier {
       'file_ids': ids,
       ...options.toBody(),
     };
+    if (modelCatalog?.hasExplicitProfiles == true) {
+      body['model_id'] = profile.id;
+    }
     if (isNew) {
       body['app_id'] = CortexApi.appId;
       if (temporary) body['temporary'] = true;
@@ -229,25 +269,26 @@ class ChatController extends ChangeNotifier {
   /// data; the client sends only ids. The new answer repeats the source
   /// question. Temporary chats save no alternatives and cannot continue.
   Future<void> continueFrom(Exchange source, ContinueSource from) async {
-    if (running != null || temporary || sessionId == null) return;
+    final profile = selectedModel;
+    if (profile == null || running != null || temporary || sessionId == null) {
+      return;
+    }
     final output = OutputView()..continuedFrom = from;
     exchanges.add(
       Exchange(text: source.text, createdAt: DateTime.now(), output: output),
     );
     _notify();
-    _listen(
-      output,
-      api.input(
-        session: sessionId,
-        body: {
-          'continue_from': {
-            'output_id': from.outputId,
-            'token_position': from.tokenPosition,
-            'alternative_rank': from.rank,
-          },
-        },
-      ),
-    );
+    final body = <String, Object?>{
+      'continue_from': {
+        'output_id': from.outputId,
+        'token_position': from.tokenPosition,
+        'alternative_rank': from.rank,
+      },
+    };
+    if (modelCatalog?.hasExplicitProfiles == true) {
+      body['model_id'] = profile.id;
+    }
+    _listen(output, api.input(session: sessionId, body: body));
   }
 
   void _listen(OutputView output, Stream<ChatEvent> stream) {

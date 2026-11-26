@@ -171,6 +171,79 @@ class AppLocalizationsEn extends AppLocalizations {
   String get whatTitle => 'What it does';
 
   @override
+  String get cliTitle => 'Cortex CLI';
+
+  @override
+  String get cliIntro =>
+      'Use Cortex from Linux or macOS. Supported targets are x86_64 and ARM64.';
+
+  @override
+  String get cliSourceTitle => 'Build from source';
+
+  @override
+  String get cliSourceDetail =>
+      'Requires Rust 1.91.1 or newer with Cargo. These commands install cortex from its source checkout.';
+
+  @override
+  String get cliLinuxPrerequisite =>
+      'Linux also needs libdbus-1-dev and pkg-config. macOS uses Keychain.';
+
+  @override
+  String get cliSignIn =>
+      'Sign in to Asodya in your browser with cortex login.';
+
+  @override
+  String get cliProviderNote =>
+      'Asodya sign-in does not provide external AI provider access. Provider credentials are configured separately.';
+
+  @override
+  String get cliInstallTitle => 'Install with the release installer';
+
+  @override
+  String get cliInstallDetail =>
+      'For Linux and macOS on x86_64 or ARM64. This command installs the latest stable release.';
+
+  @override
+  String get cliReleaseStatus =>
+      'No stable CLI release is published yet. The installer will report when a release becomes available.';
+
+  @override
+  String get androidInstallTitle => 'Cortex for Android';
+
+  @override
+  String get androidInstallDetail =>
+      'Install Cortex on Android phones and tablets.';
+
+  @override
+  String get androidReleaseStatus =>
+      'The signed Android app is not available for download yet.';
+
+  @override
+  String get androidDownload => 'Download for Android';
+
+  @override
+  String get androidInstallHelp => 'Installation help';
+
+  @override
+  String get androidHelpTitle => 'Install Cortex on Android';
+
+  @override
+  String get androidHelpDetail =>
+      'When the signed app is released, download it only from this Asodya page. Open the downloaded file and follow Android\'s prompts. Keep Google Play Protect on. If Android asks to allow installs from your browser or files app, allow only the trusted app you used to download Cortex.';
+
+  @override
+  String get androidOfficialHelp => 'Android safety and install help';
+
+  @override
+  String get cliCopy => 'Copy commands';
+
+  @override
+  String get cliReadme => 'CLI README';
+
+  @override
+  String get cliReleases => 'Releases';
+
+  @override
   String get whatMemory => 'Chat with memory';
 
   @override
@@ -543,6 +616,16 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String statsLine(String time, String s, int input, int output) {
     return '$time · $s s · $input in, $output out tokens';
+  }
+
+  @override
+  String statsTimingLine(String time, String s) {
+    return '$time · $s s';
+  }
+
+  @override
+  String statsDurationLine(Object s) {
+    return 'Duration: $s s';
   }
 
   @override
@@ -1168,6 +1251,35 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get composerOptions => 'Options';
+
+  @override
+  String get modelPicker => 'Model';
+
+  @override
+  String modelChoice(String name) {
+    return 'Model · $name';
+  }
+
+  @override
+  String modelUnavailableSelection(String id) {
+    return 'Unavailable profile: $id';
+  }
+
+  @override
+  String get modelUnavailableMessage =>
+      'The selected model is unavailable. Choose an available profile to continue.';
+
+  @override
+  String get modelCatalogUnavailable =>
+      'Model profiles could not be loaded. Try again before sending.';
+
+  @override
+  String get modelVisionPrepass =>
+      'Cortex vision summarizes images before this text profile responds.';
+
+  @override
+  String get modelNoVision =>
+      'This profile does not support image attachments.';
 
   @override
   String get composerEmptyReason => 'Write a message before sending.';

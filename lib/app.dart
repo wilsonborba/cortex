@@ -47,7 +47,7 @@ class _CortexAppState extends State<CortexApp> {
             ? '/v1/entry'
             : WidgetsBinding.instance.platformDispatcher.defaultRouteName);
     // The first redirect needs the real session state.
-    _session.refresh().then((_) {
+    _session.refresh().catchError((_) {}).whenComplete(() {
       if (!mounted) return;
       setState(() {
         _router = buildRouter(

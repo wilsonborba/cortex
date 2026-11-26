@@ -175,6 +175,7 @@ class _NativeEntryPageState extends State<NativeEntryPage>
       'LOGIN_REFUSED_NETWORK' => l.nativeLoginRefused,
       'HANDOFF_CANCELLED' => l.nativeLoginCancelled,
       'HANDOFF_USED' => l.nativeLoginUsed,
+      'TIMEOUT' => l.nativeLoginError,
       _ => l.nativeLoginError,
     };
   }
