@@ -18,6 +18,8 @@
 
 - Keep installer out of SPA rewrite
 
+- Use the approved single command installer (#88)
+
 
 ### Chores
 
@@ -27,6 +29,8 @@
 ### Documentation
 
 - Record model selector compatibility fixes
+
+- Record reviewed installation entry
 
 
 ### Features
@@ -41,6 +45,8 @@
 
 - Integrate reviewed CLI installer entry and Android help (#88)
 
+- Replace CLI installer command with one-line curl snippet and refresh goldens (#88)
+
 
 ### Tests
 
@@ -50,6 +56,7 @@
 ### merge
 
 - Include accepted model selector compatibility fixes
+
 
 ## v2.3.2 - 2026-11-16
 
@@ -68,6 +75,10 @@
 - Merge v2.3.1 back to feature/main
 
 - Prepare development for v2.3.2
+
+- Prepare v2.3.2
+
+- Release v2.3.2
 
 
 ## v2.3.1 - 2026-11-16
