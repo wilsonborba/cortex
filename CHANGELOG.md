@@ -18,18 +18,44 @@
 
 - Keep installer out of SPA rewrite
 
-- Use the approved single command installer (#88)
+- Resolve root review gates for Android manifest, session validation, and timeouts (#85)
+
+- Resolve vault cleanup, startup error recovery, and 30m handoff expiry (#85)
+
+- Fail closed on pre-clear errors before credential write (#85)
 
 - Restore run metadata from history
 
 - Render terminal history metadata accurately
 
+- Simplify installation to the owner requested command (#88)
+
+- Use official crisp Asodya 512 master for Android launcher and web icons (#85)
+
+- Use the approved single command installer (#88)
+
+- Refresh native and history review on accepted installation base (#85, #89)
+
 - Restore reviewed saved history metadata (#89)
+
+- Refresh pending platform review on accepted history (#85)
+
+- Resolve cross-platform assets, launch screens, and identifiers (#85)
+
+- Resolve Android splash bitmap, Windows multi-size ICO, and Linux bundle installation (#85)
+
+- Integrate reviewed Asodya platform assets and installation wiring (#85)
 
 
 ### Chores
 
 - Merge v2.3.2 back to feature/main
+
+- Forward align with accepted feature/main 965078f
+
+- Pin exact locked versions for crypto 3.0.7 and flutter_secure_storage 10.3.4 (#85)
+
+- Include exact native session dependency pins (#85)
 
 
 ### Documentation
@@ -38,7 +64,11 @@
 
 - Record reviewed installation entry
 
+- Record Android login handoff for #85
+
 - Record approved one-line installation
+
+- Record reviewed history metadata recovery
 
 
 ### Features
@@ -53,7 +83,17 @@
 
 - Integrate reviewed CLI installer entry and Android help (#88)
 
+- Add native account handoff for #85
+
+- Integrate reviewed Android native entry source (#85)
+
+- Combine reviewed native entry and history recovery (#85)
+
 - Replace CLI installer command with one-line curl snippet and refresh goldens (#88)
+
+- Replace default launcher with Cortex brand logo and configure fail-closed release signing (#85)
+
+- Include official Asodya Android assets and release signing gate (#85)
 
 
 ### Tests
@@ -65,6 +105,10 @@
 
 - Include accepted model selector compatibility fixes
 
+
+### style
+
+- Format dart files in native session and auth (#85)
 
 ## v2.3.2 - 2026-11-16
 
