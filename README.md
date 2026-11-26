@@ -1,17 +1,16 @@
-# cortex
+# Cortex
 
-A new Flutter project.
+Cortex is an AI chat workspace application for Android, web, and desktop.
 
-## Getting Started
+## Platforms
 
-This project is a starting point for a Flutter application.
+- **Android**: Direct APK distribution with native account login and Keystore security.
+- **Web**: Progressive Web Application (PWA) with responsive desktop and mobile viewports.
+- **Desktop (Linux, macOS, Windows)**: Native runners configured with official application branding and identifiers. Native distribution artifacts are built and released through official release channels.
 
-A few resources to get you started if this is your first Flutter project:
+## Development
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+Prerequisites: Flutter SDK (3.11+).
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+- Run analyzer: `flutter analyze`
+- Run test suite: `flutter test`
