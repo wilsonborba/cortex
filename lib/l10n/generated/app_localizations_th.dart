@@ -2171,6 +2171,64 @@ class AppLocalizationsTh extends AppLocalizations {
   }
 
   @override
+  String get remoteArtifactPreview => 'แสดงตัวอย่างรูปภาพ';
+
+  @override
+  String get remoteArtifactExpand => 'ขยายรูปภาพ';
+
+  @override
+  String get remoteArtifactExpired => 'ไฟล์นี้ไม่พร้อมใช้งานแล้ว';
+
+  @override
+  String get remoteArtifactMissingFile =>
+      'ไม่สามารถแสดงตัวอย่างได้เนื่องจากเหตุการณ์นี้ไม่มีการอ้างอิงไฟล์ที่บันทึกไว้';
+
+  @override
+  String get remoteArtifactNotImage => 'ไฟล์นี้ไม่ใช่รูปภาพที่รองรับ';
+
+  @override
+  String get remoteArtifactTooLarge =>
+      'รูปภาพนี้มีขนาดใหญ่เกินกว่าจะแสดงตัวอย่างได้';
+
+  @override
+  String get remoteTurnWaiting => 'กำลังรอ CLI';
+
+  @override
+  String get remoteTurnPrompt => 'คำสั่ง';
+
+  @override
+  String get remoteTurnRunning => 'กำลังทำงาน';
+
+  @override
+  String get remoteTurnComplete => 'เสร็จสมบูรณ์';
+
+  @override
+  String get remoteTurnIncomplete => 'สตรีมจาก CLI จบก่อนแจ้งผลลัพธ์';
+
+  @override
+  String get remoteTurnFailed => 'CLI ทำงานนี้ไม่สำเร็จ';
+
+  @override
+  String remoteTurnProgressNotice(int number) {
+    return 'ประกาศ $number';
+  }
+
+  @override
+  String get remoteProgressCommandReceived => 'CLI ได้รับคำสั่งแล้ว';
+
+  @override
+  String get remoteProgressActionCancelled => 'ยกเลิกการดำเนินการแล้ว';
+
+  @override
+  String get remoteProgressCancelRequested => 'ส่งคำขอยกเลิกแล้ว';
+
+  @override
+  String get remoteProgressCancelFailed => 'ยกเลิกไม่สำเร็จ';
+
+  @override
+  String get remoteProgressCancelPending => 'กำลังรอการยกเลิก';
+
+  @override
   String get heroDemoLabel =>
       'ตัวอย่างที่บันทึกไว้: ข้อมูลจริงจากโมเดล ไม่มีการเรียกใช้สด';
 

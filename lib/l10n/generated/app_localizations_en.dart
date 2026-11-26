@@ -2195,6 +2195,64 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get remoteArtifactPreview => 'Preview image';
+
+  @override
+  String get remoteArtifactExpand => 'View image larger';
+
+  @override
+  String get remoteArtifactExpired => 'This file is no longer available.';
+
+  @override
+  String get remoteArtifactMissingFile =>
+      'Image preview is unavailable because this event has no saved file reference.';
+
+  @override
+  String get remoteArtifactNotImage => 'This file is not a supported image.';
+
+  @override
+  String get remoteArtifactTooLarge => 'This image is too large to preview.';
+
+  @override
+  String get remoteTurnWaiting => 'Waiting for the CLI';
+
+  @override
+  String get remoteTurnPrompt => 'Prompt';
+
+  @override
+  String get remoteTurnRunning => 'Working';
+
+  @override
+  String get remoteTurnComplete => 'Completed';
+
+  @override
+  String get remoteTurnIncomplete =>
+      'The CLI stream ended before it reported a result.';
+
+  @override
+  String get remoteTurnFailed => 'The CLI could not complete this turn.';
+
+  @override
+  String remoteTurnProgressNotice(int number) {
+    return 'Notice $number';
+  }
+
+  @override
+  String get remoteProgressCommandReceived => 'The CLI received the command.';
+
+  @override
+  String get remoteProgressActionCancelled => 'An action was cancelled.';
+
+  @override
+  String get remoteProgressCancelRequested => 'Cancellation requested.';
+
+  @override
+  String get remoteProgressCancelFailed => 'Cancellation failed.';
+
+  @override
+  String get remoteProgressCancelPending => 'Cancellation is pending.';
+
+  @override
   String get heroDemoLabel => 'Recorded example: real model data, no live call';
 
   @override

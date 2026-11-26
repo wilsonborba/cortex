@@ -1,10 +1,12 @@
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../core/utils/file_picker.dart';
 import '../../../../core/utils/remote_image_picker.dart';
+import '../../../../domain/models/api.dart';
 import '../../../../domain/models/remote_cli.dart';
 import '../../../../domain/services/remote_cli_controller.dart';
 import '../../../../l10n/generated/app_localizations.dart';
@@ -199,7 +201,6 @@ class _RemoteSessionsScreenState extends State<RemoteSessionsScreen> {
   }) {
     final l = AppLocalizations.of(context);
     final p = Palette.from(context);
-    final answer = remote.answerText;
     final running = remote.turnRunning;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -261,7 +262,7 @@ class _RemoteSessionsScreenState extends State<RemoteSessionsScreen> {
               ),
             ),
           ),
-        if (remote.events.isEmpty)
+        if (remote.turns.isEmpty)
           Expanded(
             child: EmptyState(
               title: l.remoteNoEvents,
@@ -279,38 +280,17 @@ class _RemoteSessionsScreenState extends State<RemoteSessionsScreen> {
                 Space.s16,
               ),
               children: [
-                for (final event in remote.events)
-                  if (event.kind == 'progress')
-                    _EventLine(
-                      title: l.remoteProgress,
-                      text:
-                          '${event.payload['message'] ?? event.payload['event'] ?? ''}',
-                      icon: AppIcons.activity,
-                    ),
-                if (answer.isNotEmpty) ...[
-                  const SizedBox(height: Space.s12),
-                  Text(
-                    l.remoteAnswer,
-                    style: TextStyles.body1Strong.copyWith(color: p.text),
+                for (final turn in remote.turns)
+                  _TurnCard(
+                    key: ValueKey('remote-turn-${turn.key}'),
+                    turn: turn,
+                    controller: remote,
+                    sessionId: session.id,
+                    epoch: remote.operationEpoch,
+                    approvalRequests: remote.approvalRequests,
+                    answeringApprovals: remote.answeringApprovals,
+                    answerApproval: remote.answerApproval,
                   ),
-                  const SizedBox(height: Space.s4),
-                  SelectableText(
-                    answer,
-                    style: TextStyles.body1.copyWith(color: p.text),
-                  ),
-                ],
-                for (final event in remote.events.where(
-                  (event) => event.kind == 'artifact',
-                ))
-                  ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    leading: const Icon(AppIcons.file),
-                    title: Text(
-                      l.remoteArtifact('${event.payload['name'] ?? ''}'),
-                    ),
-                  ),
-                const SizedBox(height: Space.s16),
-                _approvals(context),
               ],
             ),
           ),
@@ -329,41 +309,9 @@ class _RemoteSessionsScreenState extends State<RemoteSessionsScreen> {
     RemoteCliCommandStatus.commandExpired => l.remoteCommandExpired,
     RemoteCliCommandStatus.cancelPending => l.remoteCancelPending,
     RemoteCliCommandStatus.cancelled => l.remoteCancelled,
+    RemoteCliCommandStatus.turnFailed => l.remoteTurnFailed,
+    RemoteCliCommandStatus.turnIncomplete => l.remoteTurnIncomplete,
   };
-
-  Widget _approvals(BuildContext context) {
-    final l = AppLocalizations.of(context);
-    final p = Palette.from(context);
-    final pending = remote.approvalRequests;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Text(
-          l.remoteApprovals,
-          style: TextStyles.body1Strong.copyWith(color: p.text),
-        ),
-        if (pending.isEmpty)
-          Padding(
-            padding: const EdgeInsets.only(top: Space.s8),
-            child: Text(
-              l.remoteNoApprovals,
-              style: TextStyles.caption1.copyWith(color: p.muted),
-            ),
-          ),
-        for (final event in pending)
-          _ApprovalCard(
-            event: event,
-            busy: remote.answeringApprovals.contains(
-              '${event.payload['approval_id']}',
-            ),
-            onAnswer: (approved) => remote.answerApproval(
-              '${event.payload['approval_id']}',
-              approved: approved,
-            ),
-          ),
-      ],
-    );
-  }
 
   Widget _composer(BuildContext context, RemoteCliSession session) {
     final l = AppLocalizations.of(context);
@@ -444,7 +392,11 @@ class _RemoteSessionsScreenState extends State<RemoteSessionsScreen> {
                   label: l.remoteSendPrompt,
                   icon: AppIcons.send,
                   onPressed:
-                      hasText && !remote.streamExpired && !remote.sendingPrompt
+                      hasText &&
+                          !remote.streamExpired &&
+                          !remote.sendingPrompt &&
+                          !remote.promptAwaitingStart &&
+                          !remote.turnRunning
                       ? () async {
                           final text = prompt.text;
                           final sessionId = session.id;
@@ -551,6 +503,349 @@ class _SessionTile extends StatelessWidget {
               ),
               const SizedBox(width: Space.s8),
               _OnlineBadge(online: session.online),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _TurnCard extends StatelessWidget {
+  const _TurnCard({
+    super.key,
+    required this.turn,
+    required this.controller,
+    required this.sessionId,
+    required this.epoch,
+    required this.approvalRequests,
+    required this.answeringApprovals,
+    required this.answerApproval,
+  });
+
+  final RemoteCliTurn turn;
+  final RemoteCliController controller;
+  final String sessionId;
+  final int epoch;
+  final List<RemoteCliEvent> approvalRequests;
+  final Set<String> answeringApprovals;
+  final Future<void> Function(String, {required bool approved}) answerApproval;
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
+    final p = Palette.from(context);
+    final approvals = approvalRequests
+        .where((event) => turn.events.any((item) => item.id == event.id))
+        .toList(growable: false);
+    final status = switch (turn.status) {
+      RemoteCliTurnStatus.queued => l.remotePromptQueued,
+      RemoteCliTurnStatus.awaitingResponse => l.remoteTurnWaiting,
+      RemoteCliTurnStatus.running => l.remoteTurnRunning,
+      RemoteCliTurnStatus.complete => l.remoteTurnComplete,
+      RemoteCliTurnStatus.incomplete => l.remoteTurnIncomplete,
+      RemoteCliTurnStatus.failed => l.remoteTurnFailed,
+      RemoteCliTurnStatus.cancelled => l.remoteCancelled,
+    };
+    return Card(
+      key: Key('remote-turn-card-${turn.key}'),
+      margin: const EdgeInsets.only(bottom: Space.s12),
+      color: p.surface,
+      child: Padding(
+        padding: const EdgeInsets.all(Space.s12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            if (turn.prompt.isNotEmpty) ...[
+              Text(
+                l.remoteTurnPrompt,
+                style: TextStyles.caption1Strong.copyWith(color: p.text2),
+              ),
+              const SizedBox(height: Space.s4),
+              SelectableText(
+                turn.prompt,
+                style: TextStyles.body2.copyWith(color: p.text),
+              ),
+              const SizedBox(height: Space.s8),
+            ],
+            Text(status, style: TextStyles.caption1.copyWith(color: p.muted)),
+            for (final event in turn.events)
+              if (event.kind == 'progress')
+                _EventLine(
+                  title: l.remoteProgress,
+                  text: _progressText(l, event),
+                  icon: AppIcons.activity,
+                ),
+            if (turn.answer.isNotEmpty) ...[
+              const SizedBox(height: Space.s8),
+              Text(
+                l.remoteAnswer,
+                style: TextStyles.body1Strong.copyWith(color: p.text),
+              ),
+              const SizedBox(height: Space.s4),
+              SelectableText(
+                turn.answer,
+                style: TextStyles.body1.copyWith(color: p.text),
+              ),
+            ],
+            for (final event in turn.events.where(
+              (event) => event.kind == 'artifact',
+            ))
+              _ArtifactPreview(
+                key: ValueKey('remote-artifact-$sessionId-${event.id}'),
+                event: event,
+                controller: controller,
+                sessionId: sessionId,
+                epoch: epoch,
+              ),
+            if (approvals.isNotEmpty) ...[
+              const SizedBox(height: Space.s12),
+              Text(
+                l.remoteApprovals,
+                style: TextStyles.body1Strong.copyWith(color: p.text),
+              ),
+              for (final event in approvals)
+                _ApprovalCard(
+                  event: event,
+                  busy: answeringApprovals.contains(
+                    '${event.payload['approval_id']}',
+                  ),
+                  onAnswer: (approved) => answerApproval(
+                    '${event.payload['approval_id']}',
+                    approved: approved,
+                  ),
+                ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  String _progressText(AppLocalizations l, RemoteCliEvent event) {
+    final payload = event.payload;
+    final message = payload['message'];
+    if (message is String && message.isNotEmpty) return message;
+    final status = payload['status'];
+    if (status is String) {
+      switch (status) {
+        case 'command_received':
+          return l.remoteProgressCommandReceived;
+        case 'cancelled':
+          return l.remoteProgressActionCancelled;
+        case 'cancel_requested':
+          return l.remoteProgressCancelRequested;
+        case 'cancel_failed':
+          return l.remoteProgressCancelFailed;
+        case 'cancel_pending':
+          return l.remoteProgressCancelPending;
+      }
+    }
+    for (final key in ['stage', 'step', 'event']) {
+      final value = payload[key];
+      if (value is String && value.isNotEmpty) return value;
+    }
+    final notice = payload['notice_number'];
+    if (notice is int) return l.remoteTurnProgressNotice(notice);
+    return '';
+  }
+}
+
+class _ArtifactPreview extends StatefulWidget {
+  const _ArtifactPreview({
+    super.key,
+    required this.event,
+    required this.controller,
+    required this.sessionId,
+    required this.epoch,
+  });
+
+  final RemoteCliEvent event;
+  final RemoteCliController controller;
+  final String sessionId;
+  final int epoch;
+
+  @override
+  State<_ArtifactPreview> createState() => _ArtifactPreviewState();
+}
+
+class _ArtifactPreviewState extends State<_ArtifactPreview> {
+  bool _expanded = false;
+  bool _loading = false;
+  bool _unavailable = false;
+  bool _tooLarge = false;
+  bool _notImage = false;
+  Object? _error;
+  Uint8List? _bytes;
+
+  String get _fileId => '${widget.event.payload['file_id'] ?? ''}';
+  String get _name => '${widget.event.payload['name'] ?? ''}';
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
+    final p = Palette.from(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        ListTile(
+          contentPadding: EdgeInsets.zero,
+          leading: const Icon(AppIcons.file),
+          title: Text(l.remoteArtifact(_name)),
+          trailing: _fileId.isEmpty
+              ? ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 180),
+                  child: Text(
+                    l.remoteArtifactMissingFile,
+                    style: TextStyles.caption1.copyWith(color: p.muted),
+                  ),
+                )
+              : TextButton.icon(
+                  key: Key('remote-artifact-preview-$_fileId'),
+                  onPressed: _loading ? null : _togglePreview,
+                  icon: Icon(_expanded ? AppIcons.collapse : AppIcons.expand),
+                  label: Text(l.remoteArtifactPreview),
+                ),
+        ),
+        if (_expanded)
+          Padding(
+            padding: const EdgeInsets.only(bottom: Space.s8),
+            child: _previewBody(context),
+          ),
+      ],
+    );
+  }
+
+  Widget _previewBody(BuildContext context) {
+    final l = AppLocalizations.of(context);
+    final p = Palette.from(context);
+    if (_loading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+    if (_unavailable) return Text(l.remoteArtifactExpired);
+    if (_tooLarge) return Text(l.remoteArtifactTooLarge);
+    if (_notImage) return Text(l.remoteArtifactNotImage);
+    if (_error != null) return Text(l.remoteRequestFailed);
+    final bytes = _bytes;
+    if (bytes == null) return const SizedBox.shrink();
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(Radii.control),
+            child: Image.memory(
+              bytes,
+              key: Key('remote-artifact-image-$_fileId'),
+              height: 220,
+              fit: BoxFit.contain,
+              errorBuilder: (_, _, _) => Padding(
+                padding: const EdgeInsets.all(Space.s12),
+                child: Text(l.remoteArtifactNotImage),
+              ),
+            ),
+          ),
+        ),
+        IconButton(
+          tooltip: l.remoteArtifactExpand,
+          onPressed: () => _showExpanded(context, bytes),
+          icon: Icon(AppIcons.fit, color: p.text2),
+        ),
+      ],
+    );
+  }
+
+  Future<void> _togglePreview() async {
+    if (_expanded) {
+      setState(() {
+        _expanded = false;
+        _bytes = null;
+      });
+      return;
+    }
+    setState(() => _expanded = true);
+    if (_bytes != null || _loading || _unavailable || _notImage || _tooLarge) {
+      return;
+    }
+    setState(() => _loading = true);
+    try {
+      final content = await widget.controller.artifactImage(
+        _fileId,
+        sessionId: widget.sessionId,
+        epoch: widget.epoch,
+      );
+      if (!mounted) return;
+      if (content == null) {
+        setState(() => _unavailable = true);
+        return;
+      }
+      final signature = _imageType(content.bytes);
+      if (signature == null || signature != content.contentType) {
+        setState(() => _notImage = true);
+        return;
+      }
+      setState(() => _bytes = Uint8List.fromList(content.bytes));
+    } catch (error) {
+      if (!mounted) return;
+      if (error is ApiError &&
+          (error.status == 404 || error.status == 401 || error.status == 403)) {
+        setState(() => _unavailable = true);
+      } else if (error is ApiError && error.status == 413) {
+        setState(() => _tooLarge = true);
+      } else {
+        setState(() => _error = error);
+      }
+    } finally {
+      if (mounted) setState(() => _loading = false);
+    }
+  }
+
+  String? _imageType(List<int> bytes) {
+    bool starts(List<int> prefix) =>
+        bytes.length >= prefix.length &&
+        List<int>.generate(prefix.length, (index) => bytes[index]).toString() ==
+            prefix.toString();
+    if (starts(const [137, 80, 78, 71, 13, 10, 26, 10])) return 'image/png';
+    if (starts(const [255, 216, 255])) return 'image/jpeg';
+    if (starts(const [71, 73, 70, 56, 55, 97]) ||
+        starts(const [71, 73, 70, 56, 57, 97])) {
+      return 'image/gif';
+    }
+    return bytes.length >= 12 &&
+            String.fromCharCodes(bytes.sublist(0, 4)) == 'RIFF' &&
+            String.fromCharCodes(bytes.sublist(8, 12)) == 'WEBP'
+        ? 'image/webp'
+        : null;
+  }
+
+  void _showExpanded(BuildContext context, Uint8List bytes) {
+    showDialog<void>(
+      context: context,
+      builder: (context) => Dialog(
+        child: Padding(
+          padding: const EdgeInsets.all(Space.s16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Align(
+                alignment: Alignment.centerRight,
+                child: IconButton(
+                  tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
+                  onPressed: () => Navigator.of(context).pop(),
+                  icon: const Icon(AppIcons.close),
+                ),
+              ),
+              Flexible(
+                child: InteractiveViewer(
+                  child: Image.memory(
+                    bytes,
+                    fit: BoxFit.contain,
+                    errorBuilder: (_, _, _) => Text(
+                      AppLocalizations.of(context).remoteArtifactNotImage,
+                    ),
+                  ),
+                ),
+              ),
             ],
           ),
         ),

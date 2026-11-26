@@ -3945,6 +3945,114 @@ abstract class AppLocalizations {
   /// **'Session file: {name}'**
   String remoteArtifact(String name);
 
+  /// No description provided for @remoteArtifactPreview.
+  ///
+  /// In en, this message translates to:
+  /// **'Preview image'**
+  String get remoteArtifactPreview;
+
+  /// No description provided for @remoteArtifactExpand.
+  ///
+  /// In en, this message translates to:
+  /// **'View image larger'**
+  String get remoteArtifactExpand;
+
+  /// No description provided for @remoteArtifactExpired.
+  ///
+  /// In en, this message translates to:
+  /// **'This file is no longer available.'**
+  String get remoteArtifactExpired;
+
+  /// No description provided for @remoteArtifactMissingFile.
+  ///
+  /// In en, this message translates to:
+  /// **'Image preview is unavailable because this event has no saved file reference.'**
+  String get remoteArtifactMissingFile;
+
+  /// No description provided for @remoteArtifactNotImage.
+  ///
+  /// In en, this message translates to:
+  /// **'This file is not a supported image.'**
+  String get remoteArtifactNotImage;
+
+  /// No description provided for @remoteArtifactTooLarge.
+  ///
+  /// In en, this message translates to:
+  /// **'This image is too large to preview.'**
+  String get remoteArtifactTooLarge;
+
+  /// No description provided for @remoteTurnWaiting.
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting for the CLI'**
+  String get remoteTurnWaiting;
+
+  /// No description provided for @remoteTurnPrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Prompt'**
+  String get remoteTurnPrompt;
+
+  /// No description provided for @remoteTurnRunning.
+  ///
+  /// In en, this message translates to:
+  /// **'Working'**
+  String get remoteTurnRunning;
+
+  /// No description provided for @remoteTurnComplete.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed'**
+  String get remoteTurnComplete;
+
+  /// No description provided for @remoteTurnIncomplete.
+  ///
+  /// In en, this message translates to:
+  /// **'The CLI stream ended before it reported a result.'**
+  String get remoteTurnIncomplete;
+
+  /// No description provided for @remoteTurnFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'The CLI could not complete this turn.'**
+  String get remoteTurnFailed;
+
+  /// No description provided for @remoteTurnProgressNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'Notice {number}'**
+  String remoteTurnProgressNotice(int number);
+
+  /// No description provided for @remoteProgressCommandReceived.
+  ///
+  /// In en, this message translates to:
+  /// **'The CLI received the command.'**
+  String get remoteProgressCommandReceived;
+
+  /// No description provided for @remoteProgressActionCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'An action was cancelled.'**
+  String get remoteProgressActionCancelled;
+
+  /// No description provided for @remoteProgressCancelRequested.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancellation requested.'**
+  String get remoteProgressCancelRequested;
+
+  /// No description provided for @remoteProgressCancelFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancellation failed.'**
+  String get remoteProgressCancelFailed;
+
+  /// No description provided for @remoteProgressCancelPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancellation is pending.'**
+  String get remoteProgressCancelPending;
+
   /// No description provided for @heroDemoLabel.
   ///
   /// In en, this message translates to:

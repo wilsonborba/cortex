@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:cortex/domain/models/remote_cli.dart';
+import 'package:cortex/domain/models/api.dart';
 import 'package:cortex/domain/services/remote_cli_controller.dart';
 import 'package:cortex/domain/services/remote_cli_gateway.dart';
 import 'package:cortex/core/utils/file_picker.dart';
@@ -19,6 +20,9 @@ class _Gateway implements RemoteCliGateway {
   Object? sessionsError;
   int sessionCalls = 0;
   int cancelCount = 0;
+  final cancelledTurnIds = <String?>[];
+  final artifactRequests = <String>[];
+  final artifactErrors = <String, Object>{};
 
   @override
   Future<List<RemoteCliSession>> sessions() async {
@@ -35,13 +39,14 @@ class _Gateway implements RemoteCliGateway {
       incoming.stream;
 
   @override
-  Future<void> sendPrompt(
+  Future<int?> sendPrompt(
     String sessionId,
     String prompt, {
     List<String> fileIds = const [],
   }) async {
     prompts.add((sessionId: sessionId, prompt: prompt, fileIds: [...fileIds]));
     await promptGate?.future;
+    return prompts.length;
   }
 
   @override
@@ -56,6 +61,7 @@ class _Gateway implements RemoteCliGateway {
   @override
   Future<void> cancel(String sessionId, {String? turnId}) async {
     cancelCount++;
+    cancelledTurnIds.add(turnId);
   }
 
   @override
@@ -66,6 +72,17 @@ class _Gateway implements RemoteCliGateway {
   }) async {
     uploads.add((name: name, bytes: bytes, contentType: contentType));
     return 'selected-file-1';
+  }
+
+  @override
+  Future<DownloadedFileContent> artifactImage(String fileId) async {
+    artifactRequests.add(fileId);
+    final error = artifactErrors[fileId];
+    if (error != null) throw error;
+    return const DownloadedFileContent(
+      contentType: 'image/png',
+      bytes: [137, 80, 78, 71, 13, 10, 26, 10],
+    );
   }
 
   Future<void> dispose() => incoming.close();
@@ -163,6 +180,8 @@ void main() {
       await tester.tap(find.text('Deny'));
       await tester.pump();
       expect(gateway.approvals, [(id: 'approval-1', approved: false)]);
+      gateway.incoming.add(_event(3, 'turn_end', {'status': 'complete'}));
+      await tester.pump();
 
       await tester.tap(find.byTooltip('Attach image'));
       await tester.pumpAndSettle();
@@ -180,16 +199,99 @@ void main() {
       expect(gateway.prompts.single.prompt, 'Summarize this image');
       expect(gateway.prompts.single.fileIds, ['selected-file-1']);
 
+      gateway.incoming.add(
+        _event(4, 'artifact', {
+          'turn_id': 'turn-photo',
+          'file_id': 'artifact-1',
+          'name': 'result.png',
+          'content_type': 'image/png',
+        }),
+      );
+      await tester.pump();
+      expect(gateway.artifactRequests, isEmpty);
+      await tester.tap(
+        find.byKey(const Key('remote-artifact-preview-artifact-1')),
+      );
+      await tester.pumpAndSettle();
+      expect(gateway.artifactRequests, ['artifact-1']);
+      expect(
+        find.byKey(const Key('remote-artifact-image-artifact-1')),
+        findsOneWidget,
+      );
+      await tester.tap(find.byTooltip('View image larger'));
+      await tester.pumpAndSettle();
+      expect(find.byType(InteractiveViewer), findsOneWidget);
+      await tester.tap(find.byTooltip('Close'));
+      await tester.pumpAndSettle();
+
       await tester.tap(find.text('Cancel turn'));
       await tester.pump();
       await tester.pump();
       expect(gateway.cancelCount, 1);
+      expect(gateway.cancelledTurnIds, ['turn-photo']);
       expect(
         find.text('Cancellation requested; waiting for CLI status.'),
         findsOneWidget,
       );
     },
   );
+
+  testWidgets('artifact preview distinguishes expiry from request failure', (
+    tester,
+  ) async {
+    final gateway = _Gateway()
+      ..artifactErrors['expired-file'] = const ApiError(404, null, 'expired')
+      ..artifactErrors['offline-file'] = const ApiError(503, null, 'offline');
+    final controller = RemoteCliController(
+      gateway: gateway,
+      reconnectDelay: const Duration(hours: 1),
+    );
+    addTearDown(gateway.dispose);
+    addTearDown(controller.dispose);
+    await _pump(tester, controller, size: const Size(390, 844));
+    await tester.tap(find.byKey(const Key('remote-session-linux-session')));
+    await tester.pumpAndSettle();
+
+    gateway.incoming.add(
+      _event(1, 'artifact', {
+        'turn_id': 'turn-1',
+        'file_id': 'expired-file',
+        'name': 'expired.png',
+      }),
+    );
+    await tester.pump();
+    await tester.pump();
+    await tester.ensureVisible(
+      find.byKey(const Key('remote-artifact-preview-expired-file')),
+    );
+    await tester.tap(
+      find.byKey(const Key('remote-artifact-preview-expired-file')),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('This file is no longer available.'), findsOneWidget);
+
+    gateway.incoming.add(
+      _event(2, 'artifact', {
+        'turn_id': 'turn-1',
+        'file_id': 'offline-file',
+        'name': 'offline.png',
+      }),
+    );
+    await tester.pump();
+    await tester.pump();
+    await tester.ensureVisible(
+      find.byKey(const Key('remote-artifact-preview-offline-file')),
+    );
+    await tester.tap(
+      find.byKey(const Key('remote-artifact-preview-offline-file')),
+    );
+    await tester.pumpAndSettle();
+    expect(
+      find.text('The request failed. Check your connection and try again.'),
+      findsOneWidget,
+    );
+    expect(gateway.artifactRequests, ['expired-file', 'offline-file']);
+  });
 
   testWidgets(
     'phone composer remains visible with answer, approval, error, and cancel',

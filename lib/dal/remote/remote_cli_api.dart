@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 
 import '../../core/settings.dart';
 import '../../core/utils/csrf.dart';
+import '../../domain/models/api.dart';
 import '../../domain/models/remote_cli.dart';
 import '../../domain/services/remote_cli_gateway.dart';
 import 'cortex_api.dart';
@@ -190,15 +191,18 @@ class RemoteCliApi implements RemoteCliGateway {
   }
 
   @override
-  Future<void> sendPrompt(
+  Future<int?> sendPrompt(
     String sessionId,
     String prompt, {
     List<String> fileIds = const [],
   }) async {
-    await _post('${_sessionPath(sessionId)}/prompts', {
+    final response = await _post('${_sessionPath(sessionId)}/prompts', {
       'prompt': prompt,
       'file_ids': fileIds,
     });
+    final data = (response['data'] as Map?) ?? const {};
+    final id = data['id'] ?? data['command_id'];
+    return id is num ? id.toInt() : null;
   }
 
   @override
@@ -233,4 +237,8 @@ class RemoteCliApi implements RemoteCliGateway {
     }
     return id;
   }
+
+  @override
+  Future<DownloadedFileContent> artifactImage(String fileId) =>
+      _filesApi.downloadFileContent(fileId);
 }

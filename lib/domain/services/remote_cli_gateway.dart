@@ -1,3 +1,4 @@
+import '../models/api.dart';
 import '../models/remote_cli.dart';
 
 /// Transport boundary for the Android remote-control screens.
@@ -6,7 +7,7 @@ abstract interface class RemoteCliGateway {
 
   Stream<RemoteCliEvent> events(String sessionId, {required int after});
 
-  Future<void> sendPrompt(
+  Future<int?> sendPrompt(
     String sessionId,
     String prompt, {
     List<String> fileIds = const [],
@@ -26,4 +27,6 @@ abstract interface class RemoteCliGateway {
     required List<int> bytes,
     required String contentType,
   });
+
+  Future<DownloadedFileContent> artifactImage(String fileId);
 }
