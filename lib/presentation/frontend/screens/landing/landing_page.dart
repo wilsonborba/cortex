@@ -192,7 +192,14 @@ class LandingPage extends StatelessWidget {
                           section(null, l.whatTitle, _What(size: size)),
                           const Padding(
                             padding: EdgeInsets.only(top: Space.section),
-                            child: CliInstallSection(),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                CliInstallSection(),
+                                SizedBox(height: Space.section),
+                                AndroidInstallSection(),
+                              ],
+                            ),
                           ),
                         ],
                         if (current == LandingSection.howItWorks)

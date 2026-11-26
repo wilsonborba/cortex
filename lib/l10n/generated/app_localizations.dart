@@ -454,11 +454,71 @@ abstract class AppLocalizations {
   /// **'Asodya sign-in does not provide external AI provider access. Provider credentials are configured separately.'**
   String get cliProviderNote;
 
+  /// No description provided for @cliInstallTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Install with the release installer'**
+  String get cliInstallTitle;
+
+  /// No description provided for @cliInstallDetail.
+  ///
+  /// In en, this message translates to:
+  /// **'For Linux and macOS on x86_64 or ARM64. This command installs the latest stable release.'**
+  String get cliInstallDetail;
+
   /// No description provided for @cliReleaseStatus.
   ///
   /// In en, this message translates to:
-  /// **'Installers are not available yet. Build from source or check Releases for updates.'**
+  /// **'No stable CLI release is published yet. The installer will report when a release becomes available.'**
   String get cliReleaseStatus;
+
+  /// No description provided for @androidInstallTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Cortex for Android'**
+  String get androidInstallTitle;
+
+  /// No description provided for @androidInstallDetail.
+  ///
+  /// In en, this message translates to:
+  /// **'Install Cortex on Android phones and tablets.'**
+  String get androidInstallDetail;
+
+  /// No description provided for @androidReleaseStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'The signed Android app is not available for download yet.'**
+  String get androidReleaseStatus;
+
+  /// No description provided for @androidDownload.
+  ///
+  /// In en, this message translates to:
+  /// **'Download for Android'**
+  String get androidDownload;
+
+  /// No description provided for @androidInstallHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Installation help'**
+  String get androidInstallHelp;
+
+  /// No description provided for @androidHelpTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Install Cortex on Android'**
+  String get androidHelpTitle;
+
+  /// No description provided for @androidHelpDetail.
+  ///
+  /// In en, this message translates to:
+  /// **'When the signed app is released, download it only from this Asodya page. Open the downloaded file and follow Android\'s prompts. Keep Google Play Protect on. If Android asks to allow installs from your browser or files app, allow only the trusted app you used to download Cortex.'**
+  String get androidHelpDetail;
+
+  /// No description provided for @androidOfficialHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Android safety and install help'**
+  String get androidOfficialHelp;
 
   /// No description provided for @cliCopy.
   ///

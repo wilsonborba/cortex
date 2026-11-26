@@ -197,8 +197,42 @@ class AppLocalizationsEn extends AppLocalizations {
       'Asodya sign-in does not provide external AI provider access. Provider credentials are configured separately.';
 
   @override
+  String get cliInstallTitle => 'Install with the release installer';
+
+  @override
+  String get cliInstallDetail =>
+      'For Linux and macOS on x86_64 or ARM64. This command installs the latest stable release.';
+
+  @override
   String get cliReleaseStatus =>
-      'Installers are not available yet. Build from source or check Releases for updates.';
+      'No stable CLI release is published yet. The installer will report when a release becomes available.';
+
+  @override
+  String get androidInstallTitle => 'Cortex for Android';
+
+  @override
+  String get androidInstallDetail =>
+      'Install Cortex on Android phones and tablets.';
+
+  @override
+  String get androidReleaseStatus =>
+      'The signed Android app is not available for download yet.';
+
+  @override
+  String get androidDownload => 'Download for Android';
+
+  @override
+  String get androidInstallHelp => 'Installation help';
+
+  @override
+  String get androidHelpTitle => 'Install Cortex on Android';
+
+  @override
+  String get androidHelpDetail =>
+      'When the signed app is released, download it only from this Asodya page. Open the downloaded file and follow Android\'s prompts. Keep Google Play Protect on. If Android asks to allow installs from your browser or files app, allow only the trusted app you used to download Cortex.';
+
+  @override
+  String get androidOfficialHelp => 'Android safety and install help';
 
   @override
   String get cliCopy => 'Copy commands';

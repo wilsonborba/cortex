@@ -12,6 +12,7 @@ import 'package:cortex/presentation/frontend/screens/landing/demo.dart';
 import 'package:cortex/presentation/frontend/screens/landing/cli_install_section.dart';
 import 'package:cortex/presentation/frontend/screens/landing/diagrams.dart';
 import 'package:cortex/presentation/frontend/theme/theme.dart';
+import 'package:cortex/presentation/frontend/widgets/common/buttons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -102,6 +103,11 @@ void main() {
     expect(cliRepositoryUrl, 'https://github.com/wilsonborba/cortex_cli');
     expect(cliReadmeUrl, '$cliRepositoryUrl#readme');
     expect(cliReleasesUrl, '$cliRepositoryUrl/releases');
+    expect(cliWebInstallerUrl, 'https://cortex.asodya.com/install.sh');
+    expect(cliReleaseInstallCommand, contains(cliWebInstallerUrl));
+    expect(cliReleaseInstallCommand, contains('curl -fsSL'));
+    expect(cliReleaseInstallCommand, contains('bash "\$installer"'));
+    expect(cliReleaseInstallCommand, contains('mktemp'));
     expect(
       cliSourceInstallCommand,
       contains('cargo install --locked --path .'),
@@ -133,6 +139,13 @@ void main() {
           final l = AppLocalizations.of(tester.element(section));
           expect(find.text(l.cliTitle), findsOneWidget);
           expect(find.text(l.cliIntro), findsOneWidget);
+          expect(find.text(l.cliInstallTitle), findsOneWidget);
+          expect(find.text(l.cliInstallDetail), findsOneWidget);
+          expect(find.text(cliWebInstallerUrl), findsOneWidget);
+          expect(
+            find.byKey(const Key('cli-web-installer-url')),
+            findsOneWidget,
+          );
           expect(find.text(l.cliSourceTitle), findsOneWidget);
           expect(find.text(l.cliReleaseStatus), findsOneWidget);
           expect(find.text(l.cliProviderNote), findsOneWidget);
@@ -142,15 +155,129 @@ void main() {
             find.byKey(const Key('cli-install-command-text')),
           );
           expect(command.data, cliSourceInstallCommand);
+          final releaseCommand = tester.widget<SelectableText>(
+            find.byKey(const Key('cli-release-command-text')),
+          );
+          expect(releaseCommand.data, cliReleaseInstallCommand);
           expect(find.byKey(const Key('cli-copy-command')), findsOneWidget);
           expect(find.byKey(const Key('cli-readme-link')), findsOneWidget);
           expect(find.byKey(const Key('cli-releases-link')), findsOneWidget);
+          expect(
+            find.byKey(const Key('android-install-section')),
+            findsOneWidget,
+          );
+          expect(find.text(l.androidInstallTitle), findsOneWidget);
+          expect(find.text(l.androidReleaseStatus), findsOneWidget);
+          final androidDownload = tester.widget<AppButton>(
+            find.byKey(const Key('android-download')),
+          );
+          expect(androidDownload.onPressed, isNull);
+          expect(find.byKey(const Key('android-install-help')), findsOneWidget);
           expect(tester.getRect(section).left, greaterThanOrEqualTo(0));
           expect(tester.getRect(section).right, lessThanOrEqualTo(width));
           expect(tester.takeException(), isNull);
         },
       );
     }
+  }
+
+  testWidgets('visible CLI installer address opens the public shim URL', (
+    tester,
+  ) async {
+    final launchedUrls = <String>[];
+    const launcherChannel = MethodChannel('plugins.flutter.io/url_launcher');
+    tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+      launcherChannel,
+      (call) async {
+        if (call.method == 'launch') {
+          launchedUrls.add(
+            (call.arguments as Map<Object?, Object?>)['url'] as String,
+          );
+        }
+        return true;
+      },
+    );
+    addTearDown(
+      () => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+        launcherChannel,
+        null,
+      ),
+    );
+    await pump(tester, '/v1/home', size: const Size(390, 844));
+    final link = find.byKey(const Key('cli-web-installer-url'));
+    await tester.ensureVisible(link);
+    await tester.pump();
+    await tester.tap(link);
+    expect(launchedUrls, [cliWebInstallerUrl]);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets(
+    'Android help explains the released-app flow and links official guidance',
+    (tester) async {
+      final launchedUrls = <String>[];
+      const launcherChannel = MethodChannel('plugins.flutter.io/url_launcher');
+      tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+        launcherChannel,
+        (call) async {
+          if (call.method == 'launch') {
+            launchedUrls.add(
+              (call.arguments as Map<Object?, Object?>)['url'] as String,
+            );
+          }
+          return true;
+        },
+      );
+      addTearDown(
+        () => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+          launcherChannel,
+          null,
+        ),
+      );
+      await pump(tester, '/v1/home', size: const Size(390, 844));
+      final help = find.byKey(const Key('android-install-help'));
+      await tester.ensureVisible(help);
+      await tester.pump();
+      await tester.tap(help);
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
+      final l = AppLocalizations.of(tester.element(find.byType(AlertDialog)));
+      expect(find.text(l.androidHelpTitle), findsOneWidget);
+      expect(find.text(l.androidHelpDetail), findsOneWidget);
+      expect(find.text(l.androidOfficialHelp), findsOneWidget);
+      expect(
+        find.byKey(const Key('android-official-help-link')),
+        findsOneWidget,
+      );
+      await tester.tap(find.byKey(const Key('android-official-help-link')));
+      expect(launchedUrls, [AndroidInstallSection.androidHelpUrl]);
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  for (final size in [const Size(390, 844), const Size(1440, 1200)]) {
+    testWidgets(
+      'installation actions are reachable by scrolling at ${size.width.toInt()}px',
+      (tester) async {
+        await pump(tester, '/v1/home', size: size);
+        final cli = tester.getRect(
+          find.byKey(const Key('cli-install-section')),
+        );
+        final android = tester.getRect(
+          find.byKey(const Key('android-install-section')),
+        );
+        debugPrint(
+          'INSTALL_SECTION_GEOMETRY width=${size.width} cli=$cli android=$android',
+        );
+        final help = find.byKey(const Key('android-install-help'));
+        await tester.ensureVisible(help);
+        await tester.pump();
+        final helpRect = tester.getRect(help);
+        expect(helpRect.top, greaterThanOrEqualTo(0));
+        expect(helpRect.bottom, lessThanOrEqualTo(size.height));
+        expect(tester.takeException(), isNull);
+      },
+    );
   }
 
   testWidgets('CLI install command copy button writes the full command', (

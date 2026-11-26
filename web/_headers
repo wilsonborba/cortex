@@ -18,3 +18,8 @@
 
 /version.json
   Cache-Control: no-cache, no-store, must-revalidate
+
+/install.sh
+  Content-Type: text/x-shellscript; charset=utf-8
+  Cache-Control: public, max-age=300
+  X-Content-Type-Options: nosniff
