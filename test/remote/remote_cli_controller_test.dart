@@ -123,16 +123,30 @@ void main() {
         gateway: gateway,
         reconnectDelay: const Duration(milliseconds: 1),
       );
-      await controller.openSession(_session());
-      await Future<void>.delayed(const Duration(milliseconds: 20));
+      final replayFinished = Completer<void>();
+      void waitForReplay() {
+        if (controller.lastEventId == 5 && !replayFinished.isCompleted) {
+          replayFinished.complete();
+        }
+      }
 
-      expect(controller.events.map((event) => event.id), [4, 5]);
-      expect(gateway.cursors.take(2), [0, 4]);
-      expect(controller.lastEventId, 5);
+      controller.addListener(waitForReplay);
+      try {
+        await controller.openSession(_session());
+        if (controller.lastEventId != 5) {
+          await replayFinished.future.timeout(const Duration(seconds: 3));
+        }
 
-      await controller.closeSession();
-      controller.dispose();
-      await gateway.dispose();
+        expect(controller.events.map((event) => event.id), [4, 5]);
+        expect(gateway.cursors.take(2), [0, 4]);
+        expect(controller.lastEventId, 5);
+
+        await controller.closeSession();
+      } finally {
+        controller.removeListener(waitForReplay);
+        controller.dispose();
+        await gateway.dispose();
+      }
     },
   );
 
