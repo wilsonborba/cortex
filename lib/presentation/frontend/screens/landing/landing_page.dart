@@ -17,6 +17,7 @@ import 'demo.dart';
 import 'diagrams.dart';
 import 'inspection_demo.dart';
 import 'engineering_page.dart';
+import 'cli_install_section.dart';
 
 const hippocampusRepo = 'https://github.com/wilsonborba/hippocampus';
 const asodyaSite = 'https://asodya.com';
@@ -189,6 +190,17 @@ class LandingPage extends StatelessWidget {
                             onHow: () => go(LandingSection.howItWorks),
                           ),
                           section(null, l.whatTitle, _What(size: size)),
+                          const Padding(
+                            padding: EdgeInsets.only(top: Space.section),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                CliInstallSection(),
+                                SizedBox(height: Space.section),
+                                AndroidInstallSection(),
+                              ],
+                            ),
+                          ),
                         ],
                         if (current == LandingSection.howItWorks)
                           section(

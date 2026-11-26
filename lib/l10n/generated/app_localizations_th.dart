@@ -170,6 +170,79 @@ class AppLocalizationsTh extends AppLocalizations {
   String get whatTitle => 'ทำอะไรได้บ้าง';
 
   @override
+  String get cliTitle => 'Cortex CLI';
+
+  @override
+  String get cliIntro =>
+      'ใช้ Cortex บน Linux หรือ macOS ได้ รองรับสถาปัตยกรรม x86_64 และ ARM64';
+
+  @override
+  String get cliSourceTitle => 'คอมไพล์จากซอร์สโค้ด';
+
+  @override
+  String get cliSourceDetail =>
+      'ต้องใช้ Rust 1.91.1 ขึ้นไปพร้อม Cargo คำสั่งนี้ติดตั้ง cortex จากซอร์สโค้ด';
+
+  @override
+  String get cliLinuxPrerequisite =>
+      'Linux ต้องมี libdbus-1-dev และ pkg-config ด้วย ส่วน macOS ใช้ Keychain';
+
+  @override
+  String get cliSignIn =>
+      'ลงชื่อเข้าใช้ Asodya ผ่านเบราว์เซอร์ด้วยคำสั่ง cortex login';
+
+  @override
+  String get cliProviderNote =>
+      'การลงชื่อเข้าใช้ Asodya ไม่ได้ให้สิทธิ์เข้าถึงผู้ให้บริการ AI ภายนอก ต้องตั้งค่าข้อมูลรับรองของแต่ละผู้ให้บริการแยกกัน';
+
+  @override
+  String get cliInstallTitle => 'ติดตั้งด้วยตัวติดตั้งรุ่นที่เผยแพร่';
+
+  @override
+  String get cliInstallDetail =>
+      'สำหรับ Linux และ macOS บน x86_64 หรือ ARM64 คำสั่งนี้จะติดตั้งรุ่นเสถียรล่าสุด';
+
+  @override
+  String get cliReleaseStatus =>
+      'ยังไม่มีการเผยแพร่ CLI รุ่นเสถียร ตัวติดตั้งจะแจ้งเมื่อมีรุ่นพร้อมใช้งาน';
+
+  @override
+  String get androidInstallTitle => 'Cortex สำหรับ Android';
+
+  @override
+  String get androidInstallDetail =>
+      'ติดตั้ง Cortex บนโทรศัพท์และแท็บเล็ต Android';
+
+  @override
+  String get androidReleaseStatus =>
+      'แอป Android ที่ลงนามแล้วจะยังดาวน์โหลดไม่ได้ในขณะนี้';
+
+  @override
+  String get androidDownload => 'ดาวน์โหลดสำหรับ Android';
+
+  @override
+  String get androidInstallHelp => 'วิธีติดตั้ง';
+
+  @override
+  String get androidHelpTitle => 'ติดตั้ง Cortex บน Android';
+
+  @override
+  String get androidHelpDetail =>
+      'เมื่อเผยแพร่แอปที่ลงนามแล้ว ให้ดาวน์โหลดจากหน้า Asodya นี้เท่านั้น เปิดไฟล์ที่ดาวน์โหลดและทำตามข้อความแนะนำของ Android เปิด Google Play Protect ไว้ หาก Android ขออนุญาตติดตั้งจากเบราว์เซอร์หรือแอปไฟล์ ให้อนุญาตเฉพาะแอปที่เชื่อถือได้ซึ่งใช้ดาวน์โหลด Cortex';
+
+  @override
+  String get androidOfficialHelp => 'ความปลอดภัยและวิธีติดตั้งจาก Android';
+
+  @override
+  String get cliCopy => 'คัดลอกคำสั่ง';
+
+  @override
+  String get cliReadme => 'README ของ CLI';
+
+  @override
+  String get cliReleases => 'Releases';
+
+  @override
   String get whatMemory => 'แชทพร้อมความจำ';
 
   @override
