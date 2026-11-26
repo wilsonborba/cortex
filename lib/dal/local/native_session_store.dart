@@ -44,7 +44,9 @@ class NativeSessionStore {
     final cleanSid = sid.trim();
     final cleanCsrf = csrf.trim();
     if (cleanSid.isEmpty || cleanCsrf.isEmpty) {
-      throw const FormatException('Session ID and CSRF token must not be empty');
+      throw const FormatException(
+        'Session ID and CSRF token must not be empty',
+      );
     }
     try {
       await clearSession();

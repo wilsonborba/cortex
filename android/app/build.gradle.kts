@@ -29,11 +29,46 @@ android {
         versionName = flutter.versionName
     }
 
+    val keystorePath = System.getenv("CORTEX_RELEASE_KEYSTORE_PATH")
+    val keystorePassword = System.getenv("CORTEX_RELEASE_KEYSTORE_PASSWORD")
+    val keyAlias = System.getenv("CORTEX_RELEASE_KEY_ALIAS")
+    val keyPassword = System.getenv("CORTEX_RELEASE_KEY_PASSWORD")
+    val hasReleaseSigning = !keystorePath.isNullOrBlank() &&
+        !keystorePassword.isNullOrBlank() &&
+        !keyAlias.isNullOrBlank() &&
+        !keyPassword.isNullOrBlank()
+
+    signingConfigs {
+        if (hasReleaseSigning) {
+            create("release") {
+                storeFile = file(keystorePath!!)
+                storePassword = keystorePassword
+                keyAlias = keyAlias
+                keyPassword = keyPassword
+            }
+        }
+    }
+
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.getByName("debug")
+            if (hasReleaseSigning) {
+                signingConfig = signingConfigs.getByName("release")
+            } else {
+                signingConfig = null
+                tasks.matching {
+                    it.name.contains("Release", ignoreCase = true) &&
+                        (it.name.startsWith("assemble") || it.name.startsWith("bundle"))
+                }.configureEach {
+                    doFirst {
+                        throw GradleException(
+                            "Release build requires CORTEX_RELEASE_KEYSTORE_PATH, " +
+                                "CORTEX_RELEASE_KEYSTORE_PASSWORD, CORTEX_RELEASE_KEY_ALIAS, " +
+                                "and CORTEX_RELEASE_KEY_PASSWORD environment variables. " +
+                                "Silent debug signing for release builds is forbidden."
+                        )
+                    }
+                }
+            }
         }
     }
 }
